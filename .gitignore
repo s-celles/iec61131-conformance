@@ -3,3 +3,4 @@ harness/ironplc/target
 harness/matiec/build
 *.iplc
 formal/.lake
+__pycache__/

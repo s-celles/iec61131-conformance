@@ -1,0 +1,178 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+  schedule:
+    - cron: "0 4 * * 1" # weekly, also runs the (slow) RuSTy job
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+# Runtime commits the evidence files in notes/evidence/ were recorded with
+# (see notes/evidence/COMMANDS.md). Bump together with the evidence files.
+env:
+  IRONPLC_SHA: 5ea0610a0620dd84e5864c96ecb805001d88bc4d
+  MATIEC_SHA: 3a41303bcb4e50403417bc39c63f88981d7d961e
+  RUSTY_SHA: e911ee5e0bce0ba60086ff5269d74090a27c32d6
+
+jobs:
+  formal:
+    name: Lean model and proofs
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Traces.lean is in sync with the .trace files
+        run: |
+          python3 -I formal/gen_traces.py
+          git diff --exit-code -- formal/Conformance/Traces.lean \
+            || { echo "::error file=formal/Conformance/Traces.lean::out of date, run python3 -I formal/gen_traces.py"; exit 1; }
+
+      - name: Install elan
+        run: |
+          curl -sSfL https://raw.githubusercontent.com/leanprover/elan/master/elan-init.sh \
+            | sh -s -- -y --default-toolchain none
+          echo "$HOME/.elan/bin" >> "$GITHUB_PATH"
+
+      - uses: actions/cache@v4
+        with:
+          path: |
+            ~/.elan/toolchains
+            formal/.lake
+          key: lean-${{ hashFiles('formal/lean-toolchain', 'formal/lake-manifest.json') }}-${{ hashFiles('formal/**/*.lean') }}
+          restore-keys: lean-${{ hashFiles('formal/lean-toolchain', 'formal/lake-manifest.json') }}-
+
+      - name: lake build
+        working-directory: formal
+        run: lake build
+
+  ironplc:
+    name: IronPLC (vs evidence)
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Fetch IronPLC at pinned commit
+        run: |
+          git init -q ironplc-src
+          git -C ironplc-src fetch -q --depth 1 https://github.com/ironplc/ironplc "$IRONPLC_SHA"
+          git -C ironplc-src checkout -q FETCH_HEAD
+
+      - uses: Swatinem/rust-cache@v2
+        with:
+          key: ${{ env.IRONPLC_SHA }}
+          workspaces: |
+            ironplc-src/compiler
+            harness/ironplc
+
+      - name: Build IronPLC and harness
+        run: |
+          # Only the compiler binary is needed: the harness links the VM crate.
+          (cd ironplc-src/compiler && cargo build --release --bin ironplcc)
+          (cd harness/ironplc && cargo build --release)
+
+      - name: Run suite and compare with notes/evidence/ironplc-run.txt
+        run: |
+          .github/scripts/check-evidence.sh notes/evidence/ironplc-run.txt -- \
+            ./harness/ironplc/target/release/iec61131-conformance-ironplc \
+              --ironplcc ironplc-src/compiler/target/release/ironplcc --record conformance
+
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: ironplc-run
+          path: ${{ runner.temp }}/ironplc-run.txt
+          if-no-files-found: ignore
+
+  matiec:
+    name: matiec (vs evidence)
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install build dependencies
+        run: sudo apt-get update -q && sudo apt-get install -yq flex bison autoconf automake
+
+      - uses: actions/cache@v4
+        id: matiec-cache
+        with:
+          path: ${{ runner.temp }}/matiec
+          key: matiec-${{ env.MATIEC_SHA }}
+
+      - name: Fetch and build matiec at pinned commit
+        if: steps.matiec-cache.outputs.cache-hit != 'true'
+        run: |
+          git init -q "$RUNNER_TEMP/matiec"
+          cd "$RUNNER_TEMP/matiec"
+          git fetch -q --depth 1 https://github.com/beremiz/matiec "$MATIEC_SHA"
+          git checkout -q FETCH_HEAD
+          autoreconf -i && ./configure && make -j"$(nproc)"
+
+      - name: Run suite and compare with notes/evidence/matiec-run.txt
+        run: |
+          .github/scripts/check-evidence.sh notes/evidence/matiec-run.txt -- \
+            python3 -I harness/matiec/run.py --iec2c "$RUNNER_TEMP/matiec/iec2c" \
+              --matiec-lib "$RUNNER_TEMP/matiec/lib" --record conformance
+
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: matiec-run
+          path: ${{ runner.temp }}/matiec-run.txt
+          if-no-files-found: ignore
+
+  rusty:
+    name: RuSTy (vs evidence)
+    # Needs LLVM 21 and a full RuSTy build: weekly and on demand only.
+    if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-24.04
+    env:
+      LLVM_SYS_211_PREFIX: /usr/lib/llvm-21
+      LLVM_CONFIG: /usr/lib/llvm-21/bin/llvm-config
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install LLVM 21
+        run: |
+          curl -fsSL https://apt.llvm.org/llvm-snapshot.gpg.key | sudo gpg --dearmor -o /etc/apt/trusted.gpg.d/llvm.gpg
+          echo "deb https://apt.llvm.org/noble/ llvm-toolchain-noble-21 main" | sudo tee /etc/apt/sources.list.d/llvm.list
+          sudo apt-get update -q
+          sudo apt-get install -yq llvm-21-dev libpolly-21-dev liblld-21-dev clang-21 lld-21 libzstd-dev
+          echo /usr/lib/llvm-21/bin >> "$GITHUB_PATH"
+
+      - name: Fetch RuSTy at pinned commit
+        run: |
+          git init -q "$RUNNER_TEMP/rusty"
+          git -C "$RUNNER_TEMP/rusty" fetch -q --depth 1 https://github.com/PLC-lang/rusty "$RUSTY_SHA"
+          git -C "$RUNNER_TEMP/rusty" checkout -q FETCH_HEAD
+
+      - uses: Swatinem/rust-cache@v2
+        with:
+          key: ${{ env.RUSTY_SHA }}
+          workspaces: ${{ runner.temp }}/rusty
+
+      - name: Build plc and mock-time stdlib
+        working-directory: ${{ runner.temp }}/rusty
+        run: |
+          cargo build --release
+          cargo build --release -p iec61131std --features mock_time
+
+      - name: Run suite and compare with notes/evidence/rusty-run.txt
+        run: |
+          .github/scripts/check-evidence.sh notes/evidence/rusty-run.txt -- \
+            python3 -I harness/rusty/run.py --plc "$RUNNER_TEMP/rusty/target/release/plc" \
+              --rusty-src "$RUNNER_TEMP/rusty" --record conformance
+
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: rusty-run
+          path: ${{ runner.temp }}/rusty-run.txt
+          if-no-files-found: ignore

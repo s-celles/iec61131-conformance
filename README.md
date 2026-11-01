@@ -45,6 +45,26 @@ difference, not a failure.
 Scope of this first cut: BOOL, INT, DINT, UINT, TIME only; one program, one
 cyclic task; no located variables, no REAL, no strings, no arrays.
 
+## Continuous integration
+
+`.github/workflows/ci.yml` runs on every push and pull request:
+
+- `formal`: checks `Traces.lean` is up to date with the `.trace` files, then
+  `lake build` (the proofs are the only hard gate: a `.trace` that no longer
+  follows from the model fails the build).
+- `ironplc`, `matiec`: build the runtime at the commit recorded in
+  `notes/evidence/COMMANDS.md`, run the suite with `--record`, and diff the
+  output against `notes/evidence/<runtime>-run.txt`. The runtimes are known
+  to fail some conformant tests (`notes/findings.md`), so the harness exit
+  status is not the gate; what must not change silently is the recorded
+  result. If a change to a test or harness alters it, regenerate the
+  evidence file in the same commit.
+- `rusty`: same, but weekly and on `workflow_dispatch` only (needs LLVM 21
+  and a full RuSTy build).
+
+To bump a runtime, update its SHA in the workflow `env` and the evidence
+file together.
+
 ## Running against IronPLC
 
 The harness links the `ironplc_vm` crate directly because the `ironplcvm`
@@ -54,7 +74,7 @@ through a symlink `ironplc-src` at the suite root:
 
 ```sh
 git clone https://github.com/ironplc/ironplc
-(cd ironplc/compiler && cargo build --release -p ironplcc -p ironplcvm)
+(cd ironplc/compiler && cargo build --release --bin ironplcc --bin ironplcvm)
 ln -s $PWD/ironplc iec61131-conformance/ironplc-src
 cd iec61131-conformance
 (cd harness/ironplc && cargo build --release)
