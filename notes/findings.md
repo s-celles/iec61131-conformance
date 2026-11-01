@@ -151,6 +151,7 @@ Reported together with item 3: https://github.com/ironplc/ironplc/issues/2546
 ## 11. MAX and MIN accept only two inputs
 
 Reported: https://github.com/ironplc/ironplc/issues/2548
+Fix proposed: https://github.com/ironplc/ironplc/pull/2551
 
 - Reproducer: `conformance/ops/std_functions_ext.st`: `P4018 Function call
   has wrong number of arguments (function=MAX, expected=2, actual=3)`,
