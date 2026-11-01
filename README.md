@@ -88,8 +88,8 @@ located variables.
   status is not the gate; what must not change silently is the recorded
   result. If a change to a test or harness alters it, regenerate the
   evidence file in the same commit.
-- `rusty`: same, but weekly and on `workflow_dispatch` only (needs LLVM 21
-  and a full RuSTy build).
+- `rusty`: same, on pull requests, weekly and on `workflow_dispatch` (needs
+  LLVM 21 and a full RuSTy build; skipped on plain pushes to `main`).
 
 To bump a runtime, update its SHA in the workflow `env` and the evidence
 file together.
@@ -134,7 +134,9 @@ python3 -I formal/gen_traces.py  # regenerate Traces.lean after editing a .trace
 ```
 
 `formal/Conformance/Semantics.lean` is an executable model of TON, TOF, TP,
-R_TRIG, F_TRIG, SR, RS and CTU as one-cycle state machines.
+R_TRIG, F_TRIG, SR, RS, CTU, CTD and CTUD as one-cycle state machines, and of
+a configuration's task scheduler (periodic and SINGLE tasks run in priority
+order, declaration order on ties) applied to the `config/` tests.
 `formal/Conformance/Proofs.lean` proves, by evaluation, that each
 `status: conformant` trace of those blocks is exactly the model's output,
 and proves general properties (TON Q implies ET = PT, TOF never pulses at

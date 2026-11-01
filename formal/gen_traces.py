@@ -53,6 +53,19 @@ TESTS = {
                              lambda i: f"({b(i['cu'])}, {b(i['cd'])}, {b(i['r'])}, {b(i['ld'])})",
                              ["qu", "qd", "cv"],
                              lambda o: f"({opt(b, o['qu'])}, {opt(b, o['qd'])}, {opt(z, o['cv'])})"),
+    "config/globals_external": ("globalsExternal", ["g_in"], lambda i: z(i["g_in"]),
+                                ["g_cnt", "g_sum", "p0.n"],
+                                lambda o: f"({opt(z, o['g_cnt'])}, {opt(z, o['g_sum'])}, {opt(n, o['p0.n'])})"),
+    "config/two_periods": ("twoPeriods", [], lambda i: "()", ["fast_n", "slow_n"],
+                           lambda o: f"({opt(n, o['fast_n'])}, {opt(n, o['slow_n'])})"),
+    "config/priority_order": ("priorityOrder", [], lambda i: "()", ["g", "p_reader.seen"],
+                              lambda o: f"({opt(n, o['g'])}, {opt(n, o['p_reader.seen'])})"),
+    "config/global_exchange": ("globalExchange", [], lambda i: "()", ["cmd", "p_cons.ack", "p_cons.changes"],
+                               lambda o: f"({opt(n, o['cmd'])}, {opt(n, o['p_cons.ack'])}, {opt(n, o['p_cons.changes'])})"),
+    "config/event_single": ("eventSingle", ["trig"], lambda i: b(i["trig"]), ["ev_n", "tick_n"],
+                            lambda o: f"({opt(n, o['ev_n'])}, {opt(n, o['tick_n'])})"),
+    "undefined/tasks_same_priority": ("tasksSamePriority", [], lambda i: "()", ["marks"],
+                                      lambda o: opt(z, o["marks"])),
     "counters/ctud": ("ctud", ["cu", "cd", "r", "ld"],
                       lambda i: f"({b(i['cu'])}, {b(i['cd'])}, {b(i['r'])}, {b(i['ld'])})",
                       ["qu", "qd", "cv"],
@@ -62,7 +75,9 @@ TESTS = {
 INPUT_TYPES = {"ton": "Bool", "tof": "Bool", "tp": "Bool", "rTrig": "Bool", "fTrig": "Bool",
                "srRs": "Bool × Bool", "ctu": "Bool × Bool", "ctd": "Bool × Bool",
                "ctud": "Bool × Bool × Bool × Bool", "powerOn": "Bool",
-               "ctdBounds": "Bool × Bool", "ctudBounds": "Bool × Bool × Bool × Bool"}
+               "ctdBounds": "Bool × Bool", "ctudBounds": "Bool × Bool × Bool × Bool",
+               "globalsExternal": "Int", "twoPeriods": "Unit", "priorityOrder": "Unit",
+               "globalExchange": "Unit", "eventSingle": "Bool", "tasksSamePriority": "Unit"}
 OUTPUT_TYPES = {"ton": "Option Bool × Option Nat", "tof": "Option Bool × Option Nat",
                 "tp": "Option Bool × Option Nat", "rTrig": "Option Bool", "fTrig": "Option Bool",
                 "srRs": "Option Bool × Option Bool", "ctu": "Option Bool × Option Nat",
@@ -70,7 +85,13 @@ OUTPUT_TYPES = {"ton": "Option Bool × Option Nat", "tof": "Option Bool × Optio
                 "ctud": "Option Bool × Option Bool × Option Int",
                 "powerOn": "Option Bool × Option Bool",
                 "ctdBounds": "Option Bool × Option Int",
-                "ctudBounds": "Option Bool × Option Bool × Option Int"}
+                "ctudBounds": "Option Bool × Option Bool × Option Int",
+                "globalsExternal": "Option Int × Option Int × Option Nat",
+                "twoPeriods": "Option Nat × Option Nat",
+                "priorityOrder": "Option Nat × Option Nat",
+                "globalExchange": "Option Nat × Option Nat × Option Nat",
+                "eventSingle": "Option Nat × Option Nat",
+                "tasksSamePriority": "Option Int"}
 
 
 def initial_inputs(trace, st_text):

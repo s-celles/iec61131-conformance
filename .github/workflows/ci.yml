@@ -130,8 +130,9 @@ jobs:
 
   rusty:
     name: RuSTy (vs evidence)
-    # Needs LLVM 21 and a full RuSTy build: weekly and on demand only.
-    if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
+    # Needs LLVM 21 and a full RuSTy build (~10 min with a warm cargo cache):
+    # on pull requests, weekly, and on demand; not on every push to main.
+    if: github.event_name == 'pull_request' || github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
     runs-on: ubuntu-24.04
     env:
       LLVM_SYS_211_PREFIX: /usr/lib/llvm-21

@@ -232,4 +232,107 @@ def CTUD (rule : CtuRule) (pv : Int) :
     Block CtudState (Bool × Bool × Bool × Bool) (Bool × Bool × Int) :=
   ⟨⟨false, false, 0⟩, ctudStep rule pv⟩
 
+/-! ## Configurations: tasks and scheduling (ed.3 6.8.2, SPEC.md version 2)
+
+A configuration is a list of tasks over shared globals `G` and the
+programs' local state `L`. At a step at time `t`, a periodic task is due
+when its interval divides `t`, a SINGLE task when its Boolean input has
+risen since the previous step. Due tasks run one after the other in order
+of priority (0 first); tasks of equal priority keep their declaration
+order, which is the model's choice where the standard says nothing. -/
+
+inductive Trigger (G : Type)
+  /-- `TASK t(INTERVAL := ...)`, interval in ms. -/
+  | periodic (intervalMs : Nat)
+  /-- `TASK t(SINGLE := input)`: runs on a rising edge of `input`. -/
+  | single (input : G → Bool)
+
+structure Task (G L : Type) where
+  priority : Nat
+  trigger : Trigger G
+  /-- The task's program: reads and writes the globals and the locals. -/
+  run : G → L → G × L
+
+structure ConfigState (G L : Type) where
+  globals : G
+  locals : L
+  /-- Previous value of each task's SINGLE input (FALSE for periodic tasks),
+  in task order. -/
+  prevInput : List Bool
+
+/-- (due now, input value to remember). -/
+def Task.due (t : Task G L) (prev : Bool) (g : G) (time : Nat) : Bool × Bool :=
+  match t.trigger with
+  | .periodic i => (time % i == 0, false)
+  | .single f => let now := f g; (now && !prev, now)
+
+/-- Stable insertion by priority: a task goes after the tasks of lower or
+equal priority number already placed. -/
+def insertByPriority (x : Task G L) : List (Task G L) → List (Task G L)
+  | [] => [x]
+  | y :: ys => if y.priority ≤ x.priority then y :: insertByPriority x ys else x :: y :: ys
+
+/-- Inserting the tasks in declaration order keeps that order among equal
+priorities. -/
+def sortByPriority (tasks : List (Task G L)) : List (Task G L) :=
+  tasks.foldl (fun acc t => insertByPriority t acc) []
+
+/-- One simulation step at time `time`. -/
+def configStep (tasks : List (Task G L)) (s : ConfigState G L) (time : Nat) : ConfigState G L :=
+  let flags := (tasks.zip s.prevInput).map fun (t, p) => t.due p s.globals time
+  let dueTasks := ((tasks.zip flags).filter fun (_, f) => f.1).map (·.1)
+  let (g, l) := (sortByPriority dueTasks).foldl (fun (g, l) t => t.run g l) (s.globals, s.locals)
+  { globals := g, locals := l, prevInput := flags.map (·.2) }
+
+/-- A configuration as a block: the step's inputs are written into the
+globals first, the outputs are read after the last task. -/
+def Config (tasks : List (Task G L)) (applyInput : I → G → G) (observe : G → L → O)
+    (g₀ : G) (l₀ : L) : Block (ConfigState G L) I O :=
+  ⟨⟨g₀, l₀, tasks.map fun _ => false⟩, fun s i t =>
+    let s' := configStep tasks { s with globals := applyInput i s.globals } t
+    (s', observe s'.globals s'.locals)⟩
+
+/-! ### The suite's configurations (`conformance/config/`) -/
+
+/-- `config/globals_external`: one program on a 100 ms task; globals
+(g_in, g_cnt, g_sum), local n. -/
+def globalsExternalCfg : Block (ConfigState (Int × Int × Int) Nat) Int (Int × Int × Nat) :=
+  Config [⟨0, .periodic 100, fun (i, c, s) n => ((i, c + 1, s + i), n + 1)⟩]
+    (fun i (_, c, s) => (i, c, s)) (fun (_, c, s) n => (c, s, n)) (0, 0, 1000) 0
+
+/-- `config/two_periods`: fast (100 ms, priority 1) and slow (300 ms,
+priority 2) counters in globals (fast_n, slow_n). -/
+def twoPeriodsCfg : Block (ConfigState (Nat × Nat) Unit) Unit (Nat × Nat) :=
+  Config [⟨1, .periodic 100, fun (f, s) u => ((f + 1, s), u)⟩,
+          ⟨2, .periodic 300, fun (f, s) u => ((f, s + 1), u)⟩]
+    (fun _ g => g) (fun g _ => g) (0, 0) ()
+
+/-- `config/priority_order`: reader (declared first, priority 1) copies the
+global g into its local seen; writer (priority 0) adds 10 to g. -/
+def priorityOrderCfg : Block (ConfigState Nat Nat) Unit (Nat × Nat) :=
+  Config [⟨1, .periodic 100, fun g _ => (g, g)⟩,
+          ⟨0, .periodic 100, fun g seen => (g + 10, seen)⟩]
+    (fun _ g => g) (fun g seen => (g, seen)) 0 0
+
+/-- `config/global_exchange`: producer (200 ms, priority 0) increments cmd;
+consumer (100 ms, priority 1) keeps (ack, changes). -/
+def globalExchangeCfg : Block (ConfigState Nat (Nat × Nat)) Unit (Nat × Nat × Nat) :=
+  Config [⟨0, .periodic 200, fun cmd l => (cmd + 1, l)⟩,
+          ⟨1, .periodic 100, fun cmd (ack, ch) => (cmd, (cmd, if cmd == ack then ch else ch + 1))⟩]
+    (fun _ g => g) (fun cmd (ack, ch) => (cmd, ack, ch)) 0 (0, 0)
+
+/-- `config/event_single`: ticker (100 ms, priority 1) and an event task
+(SINGLE := trig, priority 0); globals (trig, ev_n, tick_n). -/
+def eventSingleCfg : Block (ConfigState (Bool × Nat × Nat) Unit) Bool (Nat × Nat) :=
+  Config [⟨1, .periodic 100, fun (tr, e, k) u => ((tr, e, k + 1), u)⟩,
+          ⟨0, .single (·.1), fun (tr, e, k) u => ((tr, e + 1, k), u)⟩]
+    (fun tr (_, e, k) => (tr, e, k)) (fun (_, e, k) _ => (e, k)) (false, 0, 0) ()
+
+/-- `undefined/tasks_same_priority`: two 100 ms tasks of priority 0 that
+append their digit to marks; the model keeps declaration order. -/
+def tasksSamePriorityCfg : Block (ConfigState Int Unit) Unit Int :=
+  Config [⟨0, .periodic 100, fun m u => (m * 10 + 1, u)⟩,
+          ⟨0, .periodic 100, fun m u => (m * 10 + 2, u)⟩]
+    (fun _ g => g) (fun g _ => g) 0 ()
+
 end Conformance

@@ -317,6 +317,110 @@ def ctudBoundsExpected : List (Option Bool × Option Bool × Option Int) :=
    (some false, some true, some 0),
    (some false, some true, some 0)]
 
+/-- conformance/config/globals_external.trace: (time ms, inputs) per cycle. -/
+def globalsExternalInputs : List (Nat × (Int)) :=
+  [(0, 5),
+   (100, (-3)),
+   (200, (-3)),
+   (300, 0)]
+
+/-- conformance/config/globals_external.trace: expected outputs per cycle (`none` = `?`). -/
+def globalsExternalExpected : List (Option Int × Option Int × Option Nat) :=
+  [(some 1, some 1005, some 1),
+   (some 2, some 1002, some 2),
+   (some 3, some 999, some 3),
+   (some 4, some 999, some 4)]
+
+/-- conformance/config/two_periods.trace: (time ms, inputs) per cycle. -/
+def twoPeriodsInputs : List (Nat × (Unit)) :=
+  [(0, ()),
+   (100, ()),
+   (200, ()),
+   (300, ()),
+   (400, ()),
+   (500, ()),
+   (600, ()),
+   (700, ())]
+
+/-- conformance/config/two_periods.trace: expected outputs per cycle (`none` = `?`). -/
+def twoPeriodsExpected : List (Option Nat × Option Nat) :=
+  [(some 1, some 1),
+   (some 2, some 1),
+   (some 3, some 1),
+   (some 4, some 2),
+   (some 5, some 2),
+   (some 6, some 2),
+   (some 7, some 3),
+   (some 8, some 3)]
+
+/-- conformance/config/priority_order.trace: (time ms, inputs) per cycle. -/
+def priorityOrderInputs : List (Nat × (Unit)) :=
+  [(0, ()),
+   (100, ()),
+   (200, ()),
+   (300, ())]
+
+/-- conformance/config/priority_order.trace: expected outputs per cycle (`none` = `?`). -/
+def priorityOrderExpected : List (Option Nat × Option Nat) :=
+  [(some 10, some 10),
+   (some 20, some 20),
+   (some 30, some 30),
+   (some 40, some 40)]
+
+/-- conformance/config/global_exchange.trace: (time ms, inputs) per cycle. -/
+def globalExchangeInputs : List (Nat × (Unit)) :=
+  [(0, ()),
+   (100, ()),
+   (200, ()),
+   (300, ()),
+   (400, ()),
+   (500, ())]
+
+/-- conformance/config/global_exchange.trace: expected outputs per cycle (`none` = `?`). -/
+def globalExchangeExpected : List (Option Nat × Option Nat × Option Nat) :=
+  [(some 1, some 1, some 1),
+   (some 1, some 1, some 1),
+   (some 2, some 2, some 2),
+   (some 2, some 2, some 2),
+   (some 3, some 3, some 3),
+   (some 3, some 3, some 3)]
+
+/-- conformance/config/event_single.trace: (time ms, inputs) per cycle. -/
+def eventSingleInputs : List (Nat × (Bool)) :=
+  [(0, false),
+   (100, true),
+   (200, true),
+   (300, false),
+   (400, true),
+   (500, false),
+   (600, true)]
+
+/-- conformance/config/event_single.trace: expected outputs per cycle (`none` = `?`). -/
+def eventSingleExpected : List (Option Nat × Option Nat) :=
+  [(some 0, some 1),
+   (some 1, some 2),
+   (some 1, some 3),
+   (some 1, some 4),
+   (some 2, some 5),
+   (some 2, some 6),
+   (some 3, some 7)]
+
+/-- conformance/undefined/tasks_same_priority.trace: (time ms, inputs) per cycle. -/
+def tasksSamePriorityInputs : List (Nat × (Unit)) :=
+  [(0, ()),
+   (100, ()),
+   (200, ()),
+   (300, ()),
+   (400, ())]
+
+/-- conformance/undefined/tasks_same_priority.trace: expected outputs per cycle (`none` = `?`). -/
+def tasksSamePriorityExpected : List (Option Int) :=
+  [some 12,
+   some 1212,
+   some 121212,
+   some 12121212,
+   some 1212121212]
+
 /-- conformance/counters/ctud.trace: (time ms, inputs) per cycle. -/
 def ctudInputs : List (Nat × (Bool × Bool × Bool × Bool)) :=
   [(0, (false, false, false, false)),

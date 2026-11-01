@@ -90,6 +90,17 @@ theorem power_on_r_trig_trace : conforms R_TRIG powerOnInputs powerOnExpectedR =
 theorem power_on_f_trig_trace_ed3 : conforms (F_TRIG true) powerOnInputs powerOnExpectedF = true := by decide
 theorem power_on_f_trig_trace_fdis : conforms (F_TRIG false) powerOnInputs powerOnExpectedF = true := by decide
 
+/-- Configurations (SPEC.md version 2): the task scheduler of
+`Semantics.lean`, with priority order and declaration order on ties,
+produces each `config/` trace; the equal-priority trace is what matiec
+does and what the model's tie rule gives. -/
+theorem globals_external_trace : conforms globalsExternalCfg globalsExternalInputs globalsExternalExpected = true := by decide
+theorem two_periods_trace : conforms twoPeriodsCfg twoPeriodsInputs twoPeriodsExpected = true := by decide
+theorem priority_order_trace : conforms priorityOrderCfg priorityOrderInputs priorityOrderExpected = true := by decide
+theorem global_exchange_trace : conforms globalExchangeCfg globalExchangeInputs globalExchangeExpected = true := by decide
+theorem event_single_trace : conforms eventSingleCfg eventSingleInputs eventSingleExpected = true := by decide
+theorem tasks_same_priority_trace : conforms tasksSamePriorityCfg tasksSamePriorityInputs tasksSamePriorityExpected = true := by decide
+
 /-! ## 2. Properties of the models
 
 These are the properties the differential run showed one runtime violating
@@ -253,5 +264,23 @@ theorem tp_idle_rising_edge_starts_pulse (pt tr t : Nat) :
     (tpStep pt ⟨false, .idle, tr⟩ true t).2 = (true, 0) ∧
     (tpStep pt ⟨false, .idle, tr⟩ true t).1.phase = .pulsing := by
   simp [tpStep]
+
+/-- Scheduling: the writer (priority 0) runs before the reader (priority 1)
+although it is declared second, so in every step the reader's local equals
+the global just written. matiec, which runs tasks in declaration order,
+violates this (`notes/comparison.md`, beremiz/matiec#43). -/
+theorem priority_order_reader_sees_writer (s : ConfigState Nat Nat) (k : Nat)
+    (h : s.prevInput = [false, false]) :
+    let s' := configStep [⟨1, .periodic 100, fun g _ => (g, g)⟩,
+                          ⟨0, .periodic 100, fun g seen => (g + 10, seen)⟩] s (k * 100)
+    s'.locals = s'.globals := by
+  simp [configStep, Task.due, h, sortByPriority, insertByPriority, Nat.mul_mod_left]
+
+/-- A SINGLE task does not run while its input stays TRUE: with the input
+already seen TRUE, the step leaves ev_n unchanged. -/
+theorem single_task_needs_a_rising_edge (e k : Nat) :
+    (configStep [⟨0, .single (·.1), fun (tr, e, k) u => ((tr, e + 1, k), u)⟩]
+      ⟨(true, e, k), (), [true]⟩ 100).globals = (true, e, k) := by
+  simp [configStep, Task.due, sortByPriority]
 
 end Conformance
