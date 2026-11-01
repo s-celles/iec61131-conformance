@@ -135,7 +135,7 @@ hand. CI checks the table is in sync with the evidence.
 | control-flow/return | PASS | PASS | PASS | PASS | PASS | RETURN in an FB and in a function, on all |
 | data/array_2d | **FAIL** (compile) | PASS | **FAIL** (compile) | PASS | PASS | two-dimensional array and array of a named array type with a nested initialiser: IronPLC rejects the nested initialiser (findings #22), the OpenPLC fork crashes on it (fork #6) |
 | data/array_of_struct | **FAIL** (compile) | PASS | **FAIL** (compile) | PASS | PASS | structure initialisers inside an array initialiser: IronPLC (findings #22) and the OpenPLC fork (fork #7) reject the syntax |
-| data/defaults | PASS | PASS | PASS | **FAIL** (cycles 0-1) | **FAIL** (cycles 0-1) | default initial values: STruC++ (STruC++ #9) and RuSTy (RuSTy #7) start a subrange at 0 instead of its lower limit; everything else agrees |
+| data/defaults | PASS | PASS | PASS | **FAIL** (cycles 0-1) | **FAIL** (cycles 0-1) | default initial values: STruC++ (STruC++ #9, STruCpp#260) and RuSTy (RuSTy #7, PLC-lang/rusty#2039) start a subrange at 0 instead of its lower limit; everything else agrees |
 | ops/date_time | PASS | **ERROR** (build) | PASS | **FAIL** (compile) | PASS | IronPLC and the OpenPLC fork compute all of table 30; upstream matiec does not build (`_____time_sub`, beremiz/matiec#40); STruC++ types `TOD - TOD` as TOD (STruC++ #8, STruCpp#259) |
 | ops/trunc | PASS | PASS | PASS | PASS | PASS | TRUNC toward zero on all |
 | pou/fb_in_out | **FAIL** (compile) | PASS | PASS | PASS | PASS | IronPLC does not lower VAR_IN_OUT of an FB (findings #21); upstream matiec builds the function with VAR_IN_OUT only where an implicit declaration is not an error (matiec #13, beremiz/matiec#49) |
@@ -297,7 +297,7 @@ in `conformance/` and the output in `notes/evidence/rusty-run.txt`:
    (`libs/stdlib/iec61131-st/bistable_functionblocks.st`), so programs
    written with the standard's `S1`/`R` and `S`/`R1` (ed.3 table 42) fail to
    compile with `E048 Could not resolve reference to S1`.
-7. **A subrange variable starts at 0, not at its lower limit**
+7. **A subrange variable starts at 0, not at its lower limit** (PLC-lang/rusty#2039)
    (`data/defaults`, `SMALL : INT (5..10)` reads 0 where ed.3 6.4.4.4.3 gives
    5; IronPLC and both matiecs give 5, STruC++ also 0). Every other lot 4
    test passes on RuSTy, CONTINUE and METHOD included.
