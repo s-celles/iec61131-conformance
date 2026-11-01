@@ -1,34 +1,34 @@
 ### conformance/config/event_single.st
 FAIL    conformance/config/event_single.st
         ironplcc failed to compile the program:
-[0m[1m[38;5;9merror[P9999][0m[1m: Capability is not implemented (yet!)[0m
-  [0m[36m┌─[0m /Users/scelles/git/github/s-celles/iec61131-conformance/conformance/config/event_single.st:9:9
-  [0m[36m│[0m
-[0m[36m2[0m [0m[36m│[0m PROGRAM on_event
-  [0m[36m│[0m         [0m[36m--------[0m [0m[36m1st PROGRAM declaration[0m
-  [0m[36m·[0m
-[0m[36m9[0m [0m[36m│[0m PROGRAM [0m[31mticker[0m
-  [0m[36m│[0m         [0m[31m^^^^^^[0m [0m[31m2nd PROGRAM declaration; the compiler currently runs only one PROGRAM[0m
-  [0m[36m│[0m
-  [0m[36m=[0m Compile a single PROGRAM for now. Support for more than one PROGRAM is tracked in https://github.com/ironplc/ironplc/issues/1613
-  [0m[36m=[0m Learn more: https://www.ironplc.com/reference/compiler/problems/P9999.html?version=0.251.0&channel=cli&file=/Users/scelles/.rustup/toolchains/stable-aarch64-apple-darwin/lib/rustlib/src/rust/library/core/src/ops/function.rs&line=250
+error[P9999]: Capability is not implemented (yet!)
+  ┌─ <root>/conformance/config/event_single.st:9:9
+  │
+2 │ PROGRAM on_event
+  │         -------- 1st PROGRAM declaration
+  ·
+9 │ PROGRAM ticker
+  │         ^^^^^^ 2nd PROGRAM declaration; the compiler currently runs only one PROGRAM
+  │
+  = Compile a single PROGRAM for now. Support for more than one PROGRAM is tracked in https://github.com/ironplc/ironplc/issues/1613
+  = Learn more: https://www.ironplc.com/reference/compiler/problems/P9999.html?version=0.251.0&channel=cli&file=<file>&line=<n>
 
 Error: "Compile failed with 1 problem(s)"
 
 ### conformance/config/global_exchange.st
 FAIL    conformance/config/global_exchange.st
         ironplcc failed to compile the program:
-[0m[1m[38;5;9merror[P9999][0m[1m: Capability is not implemented (yet!)[0m
-   [0m[36m┌─[0m /Users/scelles/git/github/s-celles/iec61131-conformance/conformance/config/global_exchange.st:12:9
-   [0m[36m│[0m
-[0m[36m 5[0m [0m[36m│[0m PROGRAM producer
-   [0m[36m│[0m         [0m[36m--------[0m [0m[36m1st PROGRAM declaration[0m
-   [0m[36m·[0m
-[0m[36m12[0m [0m[36m│[0m PROGRAM [0m[31mconsumer[0m
-   [0m[36m│[0m         [0m[31m^^^^^^^^[0m [0m[31m2nd PROGRAM declaration; the compiler currently runs only one PROGRAM[0m
-   [0m[36m│[0m
-   [0m[36m=[0m Compile a single PROGRAM for now. Support for more than one PROGRAM is tracked in https://github.com/ironplc/ironplc/issues/1613
-   [0m[36m=[0m Learn more: https://www.ironplc.com/reference/compiler/problems/P9999.html?version=0.251.0&channel=cli&file=/Users/scelles/.rustup/toolchains/stable-aarch64-apple-darwin/lib/rustlib/src/rust/library/core/src/ops/function.rs&line=250
+error[P9999]: Capability is not implemented (yet!)
+   ┌─ <root>/conformance/config/global_exchange.st:12:9
+   │
+ 5 │ PROGRAM producer
+   │         -------- 1st PROGRAM declaration
+   ·
+12 │ PROGRAM consumer
+   │         ^^^^^^^^ 2nd PROGRAM declaration; the compiler currently runs only one PROGRAM
+   │
+   = Compile a single PROGRAM for now. Support for more than one PROGRAM is tracked in https://github.com/ironplc/ironplc/issues/1613
+   = Learn more: https://www.ironplc.com/reference/compiler/problems/P9999.html?version=0.251.0&channel=cli&file=<file>&line=<n>
 
 Error: "Compile failed with 1 problem(s)"
 
@@ -41,34 +41,34 @@ PASS    conformance/config/globals_external.st
 ### conformance/config/priority_order.st
 FAIL    conformance/config/priority_order.st
         ironplcc failed to compile the program:
-[0m[1m[38;5;9merror[P9999][0m[1m: Capability is not implemented (yet!)[0m
-   [0m[36m┌─[0m /Users/scelles/git/github/s-celles/iec61131-conformance/conformance/config/priority_order.st:14:9
-   [0m[36m│[0m
-[0m[36m 4[0m [0m[36m│[0m PROGRAM reader
-   [0m[36m│[0m         [0m[36m------[0m [0m[36m1st PROGRAM declaration[0m
-   [0m[36m·[0m
-[0m[36m14[0m [0m[36m│[0m PROGRAM [0m[31mwriter[0m
-   [0m[36m│[0m         [0m[31m^^^^^^[0m [0m[31m2nd PROGRAM declaration; the compiler currently runs only one PROGRAM[0m
-   [0m[36m│[0m
-   [0m[36m=[0m Compile a single PROGRAM for now. Support for more than one PROGRAM is tracked in https://github.com/ironplc/ironplc/issues/1613
-   [0m[36m=[0m Learn more: https://www.ironplc.com/reference/compiler/problems/P9999.html?version=0.251.0&channel=cli&file=/Users/scelles/.rustup/toolchains/stable-aarch64-apple-darwin/lib/rustlib/src/rust/library/core/src/ops/function.rs&line=250
+error[P9999]: Capability is not implemented (yet!)
+   ┌─ <root>/conformance/config/priority_order.st:14:9
+   │
+ 4 │ PROGRAM reader
+   │         ------ 1st PROGRAM declaration
+   ·
+14 │ PROGRAM writer
+   │         ^^^^^^ 2nd PROGRAM declaration; the compiler currently runs only one PROGRAM
+   │
+   = Compile a single PROGRAM for now. Support for more than one PROGRAM is tracked in https://github.com/ironplc/ironplc/issues/1613
+   = Learn more: https://www.ironplc.com/reference/compiler/problems/P9999.html?version=0.251.0&channel=cli&file=<file>&line=<n>
 
 Error: "Compile failed with 1 problem(s)"
 
 ### conformance/config/two_periods.st
 FAIL    conformance/config/two_periods.st
         ironplcc failed to compile the program:
-[0m[1m[38;5;9merror[P9999][0m[1m: Capability is not implemented (yet!)[0m
-  [0m[36m┌─[0m /Users/scelles/git/github/s-celles/iec61131-conformance/conformance/config/two_periods.st:9:9
-  [0m[36m│[0m
-[0m[36m2[0m [0m[36m│[0m PROGRAM fast
-  [0m[36m│[0m         [0m[36m----[0m [0m[36m1st PROGRAM declaration[0m
-  [0m[36m·[0m
-[0m[36m9[0m [0m[36m│[0m PROGRAM [0m[31mslow[0m
-  [0m[36m│[0m         [0m[31m^^^^[0m [0m[31m2nd PROGRAM declaration; the compiler currently runs only one PROGRAM[0m
-  [0m[36m│[0m
-  [0m[36m=[0m Compile a single PROGRAM for now. Support for more than one PROGRAM is tracked in https://github.com/ironplc/ironplc/issues/1613
-  [0m[36m=[0m Learn more: https://www.ironplc.com/reference/compiler/problems/P9999.html?version=0.251.0&channel=cli&file=/Users/scelles/.rustup/toolchains/stable-aarch64-apple-darwin/lib/rustlib/src/rust/library/core/src/ops/function.rs&line=250
+error[P9999]: Capability is not implemented (yet!)
+  ┌─ <root>/conformance/config/two_periods.st:9:9
+  │
+2 │ PROGRAM fast
+  │         ---- 1st PROGRAM declaration
+  ·
+9 │ PROGRAM slow
+  │         ^^^^ 2nd PROGRAM declaration; the compiler currently runs only one PROGRAM
+  │
+  = Compile a single PROGRAM for now. Support for more than one PROGRAM is tracked in https://github.com/ironplc/ironplc/issues/1613
+  = Learn more: https://www.ironplc.com/reference/compiler/problems/P9999.html?version=0.251.0&channel=cli&file=<file>&line=<n>
 
 Error: "Compile failed with 1 problem(s)"
 
@@ -87,13 +87,13 @@ PASS    conformance/control-flow/case_expr.st
 ### conformance/control-flow/continue.st
 FAIL    conformance/control-flow/continue.st
         ironplcc failed to compile the program:
-[0m[1m[38;5;9merror[P0002][0m[1m: Syntax error[0m
-   [0m[36m┌─[0m /Users/scelles/git/github/s-celles/iec61131-conformance/conformance/control-flow/continue.st:21:15
-   [0m[36m│[0m
-[0m[36m21[0m [0m[36m│[0m       CONTINUE[0m[31m;[0m
-   [0m[36m│[0m               [0m[31m^[0m [0m[31mExpected ' ' (space) | '\t' (tab) | '(' | '(* ... *)' (comment) | '.' | ':=' | 'REF' | '[' | '\n' (new line) | '^' | '{ ... }' (pragma) | R | REF | S. Found text ';' that matched token ';'[0m
-   [0m[36m│[0m
-   [0m[36m=[0m Learn more: https://www.ironplc.com/reference/compiler/problems/P0002.html?version=0.251.0&channel=cli
+error[P0002]: Syntax error
+   ┌─ <root>/conformance/control-flow/continue.st:21:15
+   │
+21 │       CONTINUE;
+   │               ^ Expected ' ' (space) | '\t' (tab) | '(' | '(* ... *)' (comment) | '.' | ':=' | 'REF' | '[' | '\n' (new line) | '^' | '{ ... }' (pragma) | R | REF | S. Found text ';' that matched token ';'
+   │
+   = Learn more: https://www.ironplc.com/reference/compiler/problems/P0002.html?version=0.251.0&channel=cli
 
 Error: "Compile failed with 1 problem(s)"
 
@@ -242,13 +242,13 @@ FAIL    conformance/counters/ctud_bounds.st
 ### conformance/data/array_2d.st
 FAIL    conformance/data/array_2d.st
         ironplcc failed to compile the program:
-[0m[1m[38;5;9merror[P0002][0m[1m: Syntax error[0m
-   [0m[36m┌─[0m /Users/scelles/git/github/s-celles/iec61131-conformance/conformance/data/array_2d.st:21:32
-   [0m[36m│[0m
-[0m[36m21[0m [0m[36m│[0m     a : ARRAY[0..1] OF ROW := [[0m[31m[[0m10, 20, 30], [40, 50, 60]];
-   [0m[36m│[0m                                [0m[31m^[0m [0m[31mExpected "..." (double byte string) | ' ' (space) | '\t' (tab) | '(* ... *)' (comment) | '+' | '-' | '...' (single byte string) | 'ANY' | 'ANY_BIT' | 'ANY_DATE' | 'ANY_DERIVED' | 'ANY_ELEMENTARY' | 'ANY_INT' | 'ANY_MAGNITUDE' | 'ANY_NUM' | 'ANY_REAL' | 'ANY_STRING' | 'BOOL' | 'BYTE' | 'DATE' | 'D' | 'DATE_AND_TIME' | 'DT' | 'DINT' | 'DWORD' | 'FALSE' | 'F_EDGE' | 'INT' | 'LDATE' | 'LDATE_AND_TIME' | 'LDT' | 'LINT' | 'LREAL' | 'LTIME' | 'LTIME_OF_DAY' | 'LTOD' | 'LWORD' | 'ON' | 'REAL' | 'R_EDGE' | 'SINT' | 'STEP' | 'STRING' | 'TIME' | 'TIME_OF_DAY' | 'TOD' | 'TRUE' | 'UDINT' | 'UINT' | 'ULINT' | 'USINT' | 'WORD' | 'WSTRING' | '\n' (new line) | ']' | '{ ... }' (pragma) | (fixed point) | (floating point) | (identifier) | 16#[0-9A-F][0-9A-F_]* (hexadecimal bit string) | 2#[0-1][0-1]* (binary bit string) | 8#[0-7][0-7]* (octal bit string) | D | T | [0-9][0-9_]* (integer). Found text '[' that matched token '['[0m
-   [0m[36m│[0m
-   [0m[36m=[0m Learn more: https://www.ironplc.com/reference/compiler/problems/P0002.html?version=0.251.0&channel=cli
+error[P0002]: Syntax error
+   ┌─ <root>/conformance/data/array_2d.st:21:32
+   │
+21 │     a : ARRAY[0..1] OF ROW := [[10, 20, 30], [40, 50, 60]];
+   │                                ^ Expected "..." (double byte string) | ' ' (space) | '\t' (tab) | '(* ... *)' (comment) | '+' | '-' | '...' (single byte string) | 'ANY' | 'ANY_BIT' | 'ANY_DATE' | 'ANY_DERIVED' | 'ANY_ELEMENTARY' | 'ANY_INT' | 'ANY_MAGNITUDE' | 'ANY_NUM' | 'ANY_REAL' | 'ANY_STRING' | 'BOOL' | 'BYTE' | 'DATE' | 'D' | 'DATE_AND_TIME' | 'DT' | 'DINT' | 'DWORD' | 'FALSE' | 'F_EDGE' | 'INT' | 'LDATE' | 'LDATE_AND_TIME' | 'LDT' | 'LINT' | 'LREAL' | 'LTIME' | 'LTIME_OF_DAY' | 'LTOD' | 'LWORD' | 'ON' | 'REAL' | 'R_EDGE' | 'SINT' | 'STEP' | 'STRING' | 'TIME' | 'TIME_OF_DAY' | 'TOD' | 'TRUE' | 'UDINT' | 'UINT' | 'ULINT' | 'USINT' | 'WORD' | 'WSTRING' | '\n' (new line) | ']' | '{ ... }' (pragma) | (fixed point) | (floating point) | (identifier) | 16#[0-9A-F][0-9A-F_]* (hexadecimal bit string) | 2#[0-1][0-1]* (binary bit string) | 8#[0-7][0-7]* (octal bit string) | D | T | [0-9][0-9_]* (integer). Found text '[' that matched token '['
+   │
+   = Learn more: https://www.ironplc.com/reference/compiler/problems/P0002.html?version=0.251.0&channel=cli
 
 Error: "Compile failed with 1 problem(s)"
 
@@ -266,13 +266,13 @@ PASS    conformance/data/array_internal.st
 ### conformance/data/array_of_struct.st
 FAIL    conformance/data/array_of_struct.st
         ironplcc failed to compile the program:
-[0m[1m[38;5;9merror[P0002][0m[1m: Syntax error[0m
-   [0m[36m┌─[0m /Users/scelles/git/github/s-celles/iec61131-conformance/conformance/data/array_of_struct.st:22:36
-   [0m[36m│[0m
-[0m[36m22[0m [0m[36m│[0m     pts : ARRAY[1..3] OF POINT := [[0m[31m([0mx := 1, y := 10), (x := 2, y := 20), (x := 3, y := 30)];
-   [0m[36m│[0m                                    [0m[31m^[0m [0m[31mExpected "..." (double byte string) | ' ' (space) | '\t' (tab) | '(* ... *)' (comment) | '+' | '-' | '...' (single byte string) | 'ANY' | 'ANY_BIT' | 'ANY_DATE' | 'ANY_DERIVED' | 'ANY_ELEMENTARY' | 'ANY_INT' | 'ANY_MAGNITUDE' | 'ANY_NUM' | 'ANY_REAL' | 'ANY_STRING' | 'BOOL' | 'BYTE' | 'DATE' | 'D' | 'DATE_AND_TIME' | 'DT' | 'DINT' | 'DWORD' | 'FALSE' | 'F_EDGE' | 'INT' | 'LDATE' | 'LDATE_AND_TIME' | 'LDT' | 'LINT' | 'LREAL' | 'LTIME' | 'LTIME_OF_DAY' | 'LTOD' | 'LWORD' | 'ON' | 'REAL' | 'R_EDGE' | 'SINT' | 'STEP' | 'STRING' | 'TIME' | 'TIME_OF_DAY' | 'TOD' | 'TRUE' | 'UDINT' | 'UINT' | 'ULINT' | 'USINT' | 'WORD' | 'WSTRING' | '\n' (new line) | ']' | '{ ... }' (pragma) | (fixed point) | (floating point) | (identifier) | 16#[0-9A-F][0-9A-F_]* (hexadecimal bit string) | 2#[0-1][0-1]* (binary bit string) | 8#[0-7][0-7]* (octal bit string) | D | T | [0-9][0-9_]* (integer). Found text '(' that matched token '('[0m
-   [0m[36m│[0m
-   [0m[36m=[0m Learn more: https://www.ironplc.com/reference/compiler/problems/P0002.html?version=0.251.0&channel=cli
+error[P0002]: Syntax error
+   ┌─ <root>/conformance/data/array_of_struct.st:22:36
+   │
+22 │     pts : ARRAY[1..3] OF POINT := [(x := 1, y := 10), (x := 2, y := 20), (x := 3, y := 30)];
+   │                                    ^ Expected "..." (double byte string) | ' ' (space) | '\t' (tab) | '(* ... *)' (comment) | '+' | '-' | '...' (single byte string) | 'ANY' | 'ANY_BIT' | 'ANY_DATE' | 'ANY_DERIVED' | 'ANY_ELEMENTARY' | 'ANY_INT' | 'ANY_MAGNITUDE' | 'ANY_NUM' | 'ANY_REAL' | 'ANY_STRING' | 'BOOL' | 'BYTE' | 'DATE' | 'D' | 'DATE_AND_TIME' | 'DT' | 'DINT' | 'DWORD' | 'FALSE' | 'F_EDGE' | 'INT' | 'LDATE' | 'LDATE_AND_TIME' | 'LDT' | 'LINT' | 'LREAL' | 'LTIME' | 'LTIME_OF_DAY' | 'LTOD' | 'LWORD' | 'ON' | 'REAL' | 'R_EDGE' | 'SINT' | 'STEP' | 'STRING' | 'TIME' | 'TIME_OF_DAY' | 'TOD' | 'TRUE' | 'UDINT' | 'UINT' | 'ULINT' | 'USINT' | 'WORD' | 'WSTRING' | '\n' (new line) | ']' | '{ ... }' (pragma) | (fixed point) | (floating point) | (identifier) | 16#[0-9A-F][0-9A-F_]* (hexadecimal bit string) | 2#[0-1][0-1]* (binary bit string) | 8#[0-7][0-7]* (octal bit string) | D | T | [0-9][0-9_]* (integer). Found text '(' that matched token '('
+   │
+   = Learn more: https://www.ironplc.com/reference/compiler/problems/P0002.html?version=0.251.0&channel=cli
 
 Error: "Compile failed with 1 problem(s)"
 
@@ -291,13 +291,13 @@ PASS    conformance/data/enum.st
 ### conformance/data/struct_internal.st
 FAIL    conformance/data/struct_internal.st
         ironplcc failed to compile the program:
-[0m[1m[38;5;9merror[P9999][0m[1m: Capability is not implemented (yet!)[0m
-   [0m[36m┌─[0m /Users/scelles/git/github/s-celles/iec61131-conformance/conformance/data/struct_internal.st:37:8
-   [0m[36m│[0m
-[0m[36m37[0m [0m[36m│[0m   r.tl [0m[31m:=[0m q;
-   [0m[36m│[0m        [0m[31m^^[0m [0m[31mStatement code generation does not support yet[0m
-   [0m[36m│[0m
-   [0m[36m=[0m Learn more: https://www.ironplc.com/reference/compiler/problems/P9999.html?version=0.251.0&channel=cli&file=codegen/src/body/mod.rs&line=66
+error[P9999]: Capability is not implemented (yet!)
+   ┌─ <root>/conformance/data/struct_internal.st:37:8
+   │
+37 │   r.tl := q;
+   │        ^^ Statement code generation does not support yet
+   │
+   = Learn more: https://www.ironplc.com/reference/compiler/problems/P9999.html?version=0.251.0&channel=cli&file=<file>&line=<n>
 
 Error: "Compile failed with 1 problem(s)"
 
@@ -427,21 +427,21 @@ PASS    conformance/ops/std_functions.st
 ### conformance/ops/std_functions_ext.st
 FAIL    conformance/ops/std_functions_ext.st
         ironplcc failed to compile the program:
-[0m[1m[38;5;9merror[P4018][0m[1m: Function call has wrong number of arguments (function=MAX, expected=2, actual=3)[0m
-   [0m[36m┌─[0m /Users/scelles/git/github/s-celles/iec61131-conformance/conformance/ops/std_functions_ext.st:18:11
-   [0m[36m│[0m
-[0m[36m18[0m [0m[36m│[0m   max3 := [0m[31mMAX[0m(a, b, c);
-   [0m[36m│[0m           [0m[31m^^^[0m [0m[31mFunction call[0m
-   [0m[36m│[0m
-   [0m[36m=[0m Learn more: https://www.ironplc.com/reference/compiler/problems/P4018.html?version=0.251.0&channel=cli
+error[P4018]: Function call has wrong number of arguments (function=MAX, expected=2, actual=3)
+   ┌─ <root>/conformance/ops/std_functions_ext.st:18:11
+   │
+18 │   max3 := MAX(a, b, c);
+   │           ^^^ Function call
+   │
+   = Learn more: https://www.ironplc.com/reference/compiler/problems/P4018.html?version=0.251.0&channel=cli
 
-[0m[1m[38;5;9merror[P4018][0m[1m: Function call has wrong number of arguments (function=MIN, expected=2, actual=3)[0m
-   [0m[36m┌─[0m /Users/scelles/git/github/s-celles/iec61131-conformance/conformance/ops/std_functions_ext.st:19:11
-   [0m[36m│[0m
-[0m[36m19[0m [0m[36m│[0m   min3 := [0m[31mMIN[0m(a, b, c);
-   [0m[36m│[0m           [0m[31m^^^[0m [0m[31mFunction call[0m
-   [0m[36m│[0m
-   [0m[36m=[0m Learn more: https://www.ironplc.com/reference/compiler/problems/P4018.html?version=0.251.0&channel=cli
+error[P4018]: Function call has wrong number of arguments (function=MIN, expected=2, actual=3)
+   ┌─ <root>/conformance/ops/std_functions_ext.st:19:11
+   │
+19 │   min3 := MIN(a, b, c);
+   │           ^^^ Function call
+   │
+   = Learn more: https://www.ironplc.com/reference/compiler/problems/P4018.html?version=0.251.0&channel=cli
 
 Error: "Compile failed with 2 problem(s)"
 
@@ -463,34 +463,34 @@ PASS    conformance/ops/trunc.st
 ### conformance/pou/fb_en_eno.st
 FAIL    conformance/pou/fb_en_eno.st
         ironplcc failed to compile the program:
-[0m[1m[38;5;9merror[P0002][0m[1m: Syntax error[0m
-   [0m[36m┌─[0m /Users/scelles/git/github/s-celles/iec61131-conformance/conformance/pou/fb_en_eno.st:25:5
-   [0m[36m│[0m
-[0m[36m25[0m [0m[36m│[0m   c([0m[31mEN[0m := run_it, inc := inc);
-   [0m[36m│[0m     [0m[31m^^[0m [0m[31mExpected "..." (double byte string) | %[IQM]([XBWDL])?([0-9](\.[0-9])*) (direct address) | ' ' (space) | '\t' (tab) | '(' | '(* ... *)' (comment) | ')' | '+' | '-' | '...' (single byte string) | 'AND' | '&' | 'BOOL' | 'BYTE' | 'DATE' | 'D' | 'DATE_AND_TIME' | 'DT' | 'DINT' | 'DWORD' | 'FALSE' | 'F_EDGE' | 'INT' | 'LDATE' | 'LDATE_AND_TIME' | 'LDT' | 'LINT' | 'LREAL' | 'LTIME' | 'LTIME_OF_DAY' | 'LTOD' | 'LWORD' | 'MOD' | 'NOT' | 'NULL' | 'ON' | 'OR' | 'REAL' | 'REF' | 'R_EDGE' | 'SINT' | 'STEP' | 'STRING' | 'SUPER' | 'THIS' | 'TIME' | 'TIME_OF_DAY' | 'TOD' | 'TRUE' | 'UDINT' | 'UINT' | 'ULINT' | 'USINT' | 'WORD' | 'WSTRING' | 'XOR' | '\n' (new line) | '{ ... }' (pragma) | (fixed point) | (floating point) | (identifier) | 16#[0-9A-F][0-9A-F_]* (hexadecimal bit string) | 2#[0-1][0-1]* (binary bit string) | 8#[0-7][0-7]* (octal bit string) | D | T | [0-9][0-9_]* (integer). Found text 'EN' that matched token 'EN'[0m
-   [0m[36m│[0m
-   [0m[36m=[0m Learn more: https://www.ironplc.com/reference/compiler/problems/P0002.html?version=0.251.0&channel=cli
+error[P0002]: Syntax error
+   ┌─ <root>/conformance/pou/fb_en_eno.st:25:5
+   │
+25 │   c(EN := run_it, inc := inc);
+   │     ^^ Expected "..." (double byte string) | %[IQM]([XBWDL])?([0-9](\.[0-9])*) (direct address) | ' ' (space) | '\t' (tab) | '(' | '(* ... *)' (comment) | ')' | '+' | '-' | '...' (single byte string) | 'AND' | '&' | 'BOOL' | 'BYTE' | 'DATE' | 'D' | 'DATE_AND_TIME' | 'DT' | 'DINT' | 'DWORD' | 'FALSE' | 'F_EDGE' | 'INT' | 'LDATE' | 'LDATE_AND_TIME' | 'LDT' | 'LINT' | 'LREAL' | 'LTIME' | 'LTIME_OF_DAY' | 'LTOD' | 'LWORD' | 'MOD' | 'NOT' | 'NULL' | 'ON' | 'OR' | 'REAL' | 'REF' | 'R_EDGE' | 'SINT' | 'STEP' | 'STRING' | 'SUPER' | 'THIS' | 'TIME' | 'TIME_OF_DAY' | 'TOD' | 'TRUE' | 'UDINT' | 'UINT' | 'ULINT' | 'USINT' | 'WORD' | 'WSTRING' | 'XOR' | '\n' (new line) | '{ ... }' (pragma) | (fixed point) | (floating point) | (identifier) | 16#[0-9A-F][0-9A-F_]* (hexadecimal bit string) | 2#[0-1][0-1]* (binary bit string) | 8#[0-7][0-7]* (octal bit string) | D | T | [0-9][0-9_]* (integer). Found text 'EN' that matched token 'EN'
+   │
+   = Learn more: https://www.ironplc.com/reference/compiler/problems/P0002.html?version=0.251.0&channel=cli
 
 Error: "Compile failed with 1 problem(s)"
 
 ### conformance/pou/fb_in_out.st
 FAIL    conformance/pou/fb_in_out.st
         ironplcc failed to compile the program:
-[0m[1m[38;5;9merror[P9999][0m[1m: Capability is not implemented (yet!)[0m
-   [0m[36m┌─[0m /Users/scelles/git/github/s-celles/iec61131-conformance/conformance/pou/fb_in_out.st:11:7
-   [0m[36m│[0m
-[0m[36m11[0m [0m[36m│[0m   acc [0m[31m:=[0m acc + inc;
-   [0m[36m│[0m       [0m[31m^^[0m [0m[31mNot implemented at lowering/src/program.rs#L581[0m
-   [0m[36m│[0m
-   [0m[36m=[0m Learn more: https://www.ironplc.com/reference/compiler/problems/P9999.html?version=0.251.0&channel=cli&file=lowering/src/program.rs&line=581
+error[P9999]: Capability is not implemented (yet!)
+   ┌─ <root>/conformance/pou/fb_in_out.st:11:7
+   │
+11 │   acc := acc + inc;
+   │       ^^ Not implemented at lowering/src/program.rs#L581
+   │
+   = Learn more: https://www.ironplc.com/reference/compiler/problems/P9999.html?version=0.251.0&channel=cli&file=<file>&line=<n>
 
-[0m[1m[38;5;9merror[P9999][0m[1m: Capability is not implemented (yet!)[0m
-   [0m[36m┌─[0m /Users/scelles/git/github/s-celles/iec61131-conformance/conformance/pou/fb_in_out.st:43:3
-   [0m[36m│[0m
-[0m[36m43[0m [0m[36m│[0m   [0m[31madd_fb(inc := inc, acc := total)[0m;
-   [0m[36m│[0m   [0m[31m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m [0m[31mNot implemented at lowering/src/program.rs#L581[0m
-   [0m[36m│[0m
-   [0m[36m=[0m Learn more: https://www.ironplc.com/reference/compiler/problems/P9999.html?version=0.251.0&channel=cli&file=lowering/src/program.rs&line=581
+error[P9999]: Capability is not implemented (yet!)
+   ┌─ <root>/conformance/pou/fb_in_out.st:43:3
+   │
+43 │   add_fb(inc := inc, acc := total);
+   │   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ Not implemented at lowering/src/program.rs#L581
+   │
+   = Learn more: https://www.ironplc.com/reference/compiler/problems/P9999.html?version=0.251.0&channel=cli&file=<file>&line=<n>
 
 Error: "Compile failed with 2 problem(s)"
 
@@ -515,13 +515,13 @@ PASS    conformance/pou/fb_input_retention.st
 ### conformance/pou/fb_method.st
 FAIL    conformance/pou/fb_method.st
         ironplcc failed to compile the program:
-[0m[1m[38;5;9merror[P0002][0m[1m: Syntax error[0m
-   [0m[36m┌─[0m /Users/scelles/git/github/s-celles/iec61131-conformance/conformance/pou/fb_method.st:11:10
-   [0m[36m│[0m
-[0m[36m11[0m [0m[36m│[0m   METHOD [0m[31mBUMP[0m : INT
-   [0m[36m│[0m          [0m[31m^^^^[0m [0m[31mExpected ' ' (space) | '\t' (tab) | '(' | '(* ... *)' (comment) | '.' | ':=' | 'REF' | '[' | '\n' (new line) | '^' | '{ ... }' (pragma) | R | REF | S. Found text 'BUMP' that matched token (identifier)[0m
-   [0m[36m│[0m
-   [0m[36m=[0m Learn more: https://www.ironplc.com/reference/compiler/problems/P0002.html?version=0.251.0&channel=cli
+error[P0002]: Syntax error
+   ┌─ <root>/conformance/pou/fb_method.st:11:10
+   │
+11 │   METHOD BUMP : INT
+   │          ^^^^ Expected ' ' (space) | '\t' (tab) | '(' | '(* ... *)' (comment) | '.' | ':=' | 'REF' | '[' | '\n' (new line) | '^' | '{ ... }' (pragma) | R | REF | S. Found text 'BUMP' that matched token (identifier)
+   │
+   = Learn more: https://www.ironplc.com/reference/compiler/problems/P0002.html?version=0.251.0&channel=cli
 
 Error: "Compile failed with 1 problem(s)"
 
@@ -538,13 +538,13 @@ PASS    conformance/pou/fb_two_instances.st
 ### conformance/pou/fb_var_temp.st
 FAIL    conformance/pou/fb_var_temp.st
         ironplcc failed to compile the program:
-[0m[1m[38;5;9merror[P9999][0m[1m: Capability is not implemented (yet!)[0m
-   [0m[36m┌─[0m /Users/scelles/git/github/s-celles/iec61131-conformance/conformance/pou/fb_var_temp.st:11:5
-   [0m[36m│[0m
-[0m[36m11[0m [0m[36m│[0m     [0m[31mt[0m : INT;
-   [0m[36m│[0m     [0m[31m^[0m [0m[31mStarting value code generation does not support yet[0m
-   [0m[36m│[0m
-   [0m[36m=[0m Learn more: https://www.ironplc.com/reference/compiler/problems/P9999.html?version=0.251.0&channel=cli&file=codegen/src/body/mod.rs&line=80
+error[P9999]: Capability is not implemented (yet!)
+   ┌─ <root>/conformance/pou/fb_var_temp.st:11:5
+   │
+11 │     t : INT;
+   │     ^ Starting value code generation does not support yet
+   │
+   = Learn more: https://www.ironplc.com/reference/compiler/problems/P9999.html?version=0.251.0&channel=cli&file=<file>&line=<n>
 
 Error: "Compile failed with 1 problem(s)"
 
@@ -559,21 +559,21 @@ PASS    conformance/pou/function_call.st
 ### conformance/pou/function_input_default.st
 FAIL    conformance/pou/function_input_default.st
         ironplcc failed to compile the program:
-[0m[1m[38;5;9merror[P4018][0m[1m: Function call has wrong number of arguments (function=SCALE, expected=3, actual=1)[0m
-   [0m[36m┌─[0m /Users/scelles/git/github/s-celles/iec61131-conformance/conformance/pou/function_input_default.st:22:13
-   [0m[36m│[0m
-[0m[36m22[0m [0m[36m│[0m   dflt   := [0m[31mSCALE[0m(x := x);
-   [0m[36m│[0m             [0m[31m^^^^^[0m [0m[31mFunction call[0m
-   [0m[36m│[0m
-   [0m[36m=[0m Learn more: https://www.ironplc.com/reference/compiler/problems/P4018.html?version=0.251.0&channel=cli
+error[P4018]: Function call has wrong number of arguments (function=SCALE, expected=3, actual=1)
+   ┌─ <root>/conformance/pou/function_input_default.st:22:13
+   │
+22 │   dflt   := SCALE(x := x);
+   │             ^^^^^ Function call
+   │
+   = Learn more: https://www.ironplc.com/reference/compiler/problems/P4018.html?version=0.251.0&channel=cli
 
-[0m[1m[38;5;9merror[P4018][0m[1m: Function call has wrong number of arguments (function=SCALE, expected=3, actual=2)[0m
-   [0m[36m┌─[0m /Users/scelles/git/github/s-celles/iec61131-conformance/conformance/pou/function_input_default.st:23:13
-   [0m[36m│[0m
-[0m[36m23[0m [0m[36m│[0m   with_k := [0m[31mSCALE[0m(x := x, k := 10);
-   [0m[36m│[0m             [0m[31m^^^^^[0m [0m[31mFunction call[0m
-   [0m[36m│[0m
-   [0m[36m=[0m Learn more: https://www.ironplc.com/reference/compiler/problems/P4018.html?version=0.251.0&channel=cli
+error[P4018]: Function call has wrong number of arguments (function=SCALE, expected=3, actual=2)
+   ┌─ <root>/conformance/pou/function_input_default.st:23:13
+   │
+23 │   with_k := SCALE(x := x, k := 10);
+   │             ^^^^^ Function call
+   │
+   = Learn more: https://www.ironplc.com/reference/compiler/problems/P4018.html?version=0.251.0&channel=cli
 
 Error: "Compile failed with 2 problem(s)"
 
@@ -770,17 +770,17 @@ SAME    conformance/undefined/subrange_out_of_range.st (implementation-defined)
 ### conformance/undefined/tasks_same_priority.st
 DIFFERS conformance/undefined/tasks_same_priority.st (implementation-defined)
         ironplcc failed to compile the program:
-[0m[1m[38;5;9merror[P9999][0m[1m: Capability is not implemented (yet!)[0m
-   [0m[36m┌─[0m /Users/scelles/git/github/s-celles/iec61131-conformance/conformance/undefined/tasks_same_priority.st:10:9
-   [0m[36m│[0m
-[0m[36m 3[0m [0m[36m│[0m PROGRAM mark_a
-   [0m[36m│[0m         [0m[36m------[0m [0m[36m1st PROGRAM declaration[0m
-   [0m[36m·[0m
-[0m[36m10[0m [0m[36m│[0m PROGRAM [0m[31mmark_b[0m
-   [0m[36m│[0m         [0m[31m^^^^^^[0m [0m[31m2nd PROGRAM declaration; the compiler currently runs only one PROGRAM[0m
-   [0m[36m│[0m
-   [0m[36m=[0m Compile a single PROGRAM for now. Support for more than one PROGRAM is tracked in https://github.com/ironplc/ironplc/issues/1613
-   [0m[36m=[0m Learn more: https://www.ironplc.com/reference/compiler/problems/P9999.html?version=0.251.0&channel=cli&file=/Users/scelles/.rustup/toolchains/stable-aarch64-apple-darwin/lib/rustlib/src/rust/library/core/src/ops/function.rs&line=250
+error[P9999]: Capability is not implemented (yet!)
+   ┌─ <root>/conformance/undefined/tasks_same_priority.st:10:9
+   │
+ 3 │ PROGRAM mark_a
+   │         ------ 1st PROGRAM declaration
+   ·
+10 │ PROGRAM mark_b
+   │         ^^^^^^ 2nd PROGRAM declaration; the compiler currently runs only one PROGRAM
+   │
+   = Compile a single PROGRAM for now. Support for more than one PROGRAM is tracked in https://github.com/ironplc/ironplc/issues/1613
+   = Learn more: https://www.ironplc.com/reference/compiler/problems/P9999.html?version=0.251.0&channel=cli&file=<file>&line=<n>
 
 Error: "Compile failed with 1 problem(s)"
 
