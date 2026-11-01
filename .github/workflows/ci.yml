@@ -23,6 +23,7 @@ env:
   OPENPLC_SHA: b5d41356dab4aeadca0dd7ca64ba542f870b595d
   STRUCPP_SHA: 72dfcb8b1c5a41a68bfbf4b133169189c58f04b3
   RUSTY_SHA: e911ee5e0bce0ba60086ff5269d74090a27c32d6
+  FOURDIAC_VERSION: "3.3.0"   # 4diac IDE release and the 4diac-forte git tag
 
 jobs:
   formal:
@@ -210,6 +211,60 @@ jobs:
         with:
           name: strucpp-run
           path: ${{ runner.temp }}/strucpp-run.txt
+          if-no-files-found: ignore
+
+  fourdiac:
+    name: 4diac (vs evidence)
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/cache@v4
+        id: ide-cache
+        with:
+          path: ${{ runner.temp }}/4diac-ide
+          key: 4diac-ide-${{ env.FOURDIAC_VERSION }}-linux-x86_64
+
+      - name: Fetch the 4diac IDE (Linux x86_64, with its bundled JRE)
+        if: steps.ide-cache.outputs.cache-hit != 'true'
+        run: |
+          mkdir -p "$RUNNER_TEMP/4diac-ide"
+          curl -fsSL -o "$RUNNER_TEMP/4diac-ide.tar.gz" \
+            "https://download.eclipse.org/4diac/releases/${FOURDIAC_VERSION%.*}/4diac-ide/4diac-ide_${FOURDIAC_VERSION}-linux.gtk.x86_64.tar.gz"
+          tar -xzf "$RUNNER_TEMP/4diac-ide.tar.gz" -C "$RUNNER_TEMP/4diac-ide" --strip-components=1
+          rm "$RUNNER_TEMP/4diac-ide.tar.gz"
+
+      - uses: actions/cache@v4
+        id: forte-cache
+        with:
+          path: ${{ runner.temp }}/4diac-forte
+          key: 4diac-forte-${{ env.FOURDIAC_VERSION }}-shared
+
+      - name: Fetch FORTE at the pinned tag and build it as a shared library
+        if: steps.forte-cache.outputs.cache-hit != 'true'
+        run: |
+          git clone -q --depth 1 -b "$FOURDIAC_VERSION" https://github.com/eclipse-4diac/4diac-forte "$RUNNER_TEMP/4diac-forte"
+          cmake -S "$RUNNER_TEMP/4diac-forte" -B "$RUNNER_TEMP/4diac-forte/build" -DFORTE_ARCHITECTURE=Posix \
+            -DFORTE_BUILD_EXECUTABLE=OFF -DBUILD_SHARED_LIBS=ON -DCMAKE_BUILD_TYPE=Release \
+            -DFORTE_MODULE_IEC61131=ON -DFORTE_MODULE_CONVERT=ON -DFORTE_MODULE_UTILS=ON \
+            -DFORTE_COM_ETH=OFF -DFORTE_COM_FBDK=OFF -DFORTE_COM_LOCAL=ON
+          cmake --build "$RUNNER_TEMP/4diac-forte/build" -j"$(nproc)"
+
+      - name: Install a virtual display for the IDE's SWT
+        run: sudo apt-get update -q && sudo apt-get install -y -q xvfb
+
+      - name: Run suite and compare with notes/evidence/4diac-run.txt
+        run: |
+          .github/scripts/check-evidence.sh notes/evidence/4diac-run.txt -- \
+            xvfb-run -a python3 -I harness/4diac/run.py --ide "$RUNNER_TEMP/4diac-ide" \
+              --forte-src "$RUNNER_TEMP/4diac-forte" --forte-build "$RUNNER_TEMP/4diac-forte/build" \
+              --record conformance
+
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: 4diac-run
+          path: ${{ runner.temp }}/4diac-run.txt
           if-no-files-found: ignore
 
   rusty:
