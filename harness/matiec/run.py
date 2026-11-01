@@ -24,6 +24,7 @@ out differently for reasons outside the suite: integer division by zero does
 not trap on AArch64 (undefined/div_zero reports values instead of a trap),
 and clang rejects the implicit function declaration iec2c emits for a user
 FUNCTION called before its definition (undefined/eval_order fails to build).
+Both are reported upstream: beremiz/matiec#38 (division) and #39 (guard).
 """
 import argparse
 import os

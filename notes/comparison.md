@@ -70,7 +70,7 @@ Legend: PASS/FAIL for `status: conformant` traces; SAME/DIFFERS for
 | pou/function_call | PASS | PASS | PASS | |
 | pou/fb_two_instances | PASS | PASS | PASS | |
 | undefined/int_overflow | SAME | SAME | SAME | all three wrap in two's complement |
-| undefined/div_zero | SAME | SAME | SAME | IronPLC: VM trap "divide by zero"; matiec and RuSTy: native integer division, the process receives SIGFPE (the drivers report it as `trap`). All stop the scan; none computes `MOD` |
+| undefined/div_zero | SAME | SAME | SAME | IronPLC: VM trap "divide by zero"; matiec and RuSTy: native integer division, the process receives SIGFPE (the drivers report it as `trap`). All stop the scan; none computes `MOD`. matiec's `/` is a bare C division, so on AArch64 it returns 0 instead of trapping (beremiz/matiec#38); its `MOD` and `DIV()` are guarded |
 | undefined/eval_order | SAME | SAME | SAME | all three evaluate the left operand of `-` first |
 | undefined/for_bound_modified | SAME | SAME | SAME | all three re-read the final value on every iteration |
 | undefined/ctu_pv_zero | SAME | **DIFFERS** | SAME | IronPLC counts (CV = 1, 2) with Q always TRUE; matiec never counts because `CV < PV` is false at PV = 0, Q always TRUE. Same Q, different CV |
