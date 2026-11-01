@@ -242,8 +242,12 @@ def run_test(st_path: Path, opts):
             "getters": c_getters(outputs),
             "period": trace.period_ms,
         })
-        r = subprocess.run(["gcc", "-O0", "-w", "-no-pie", "-o", "driver", "driver.c", "prog.o", str(stdlib_a),
-                            "-lpthread", "-ldl", "-lm"], cwd=work, capture_output=True, text=True)
+        link = ["gcc", "-O0", "-w", "-no-pie", "-o", "driver", "driver.c", "prog.o", str(stdlib_a),
+                "-lpthread", "-ldl", "-lm"]
+        if sys.platform == "darwin":
+            # the stdlib's iana-time-zone dependency calls CoreFoundation
+            link += ["-framework", "CoreFoundation"]
+        r = subprocess.run(link, cwd=work, capture_output=True, text=True)
         if r.returncode != 0:
             return "ERROR", ["gcc failed:\n" + r.stderr[:3000]], []
         stdin = "".join(

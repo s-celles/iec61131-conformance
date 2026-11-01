@@ -83,7 +83,7 @@ Legend: PASS/FAIL for `status: conformant` traces; SAME/DIFFERS for
 | ops/std_functions | PASS | PASS | PASS | |
 | ops/std_functions_ext | **FAIL** (compile) | PASS | **FAIL** (compile) | IronPLC: MAX and MIN with three inputs are P4018 (findings #11, ironplc#2548); RuSTy: formal argument names on a standard function (`LIMIT(MN := ..)`) are E048 "Could not resolve reference to MN" (other runtimes #4) |
 | ops/conversions | PASS | PASS | PASS | |
-| ops/time_arith | PASS | **ERROR** (build) | PASS | matiec emits `_____time_add`/`_____time_sub` for `+`/`-` on TIME (`print_binary_function` adds `___` to a name that already starts with `__`), a symbol that does not exist, so the program never builds (beremiz/matiec#40) |
+| ops/time_arith | PASS | **ERROR** (build) | PASS | matiec emits `_____time_add`/`_____time_sub` for `+`/`-` on TIME (`print_binary_function` adds `___` to a name that already starts with `__`), a symbol that does not exist, so the program never builds (beremiz/matiec#40); with #40 fixed, `T#1h2m3s4ms` is still 1 ns short (beremiz/matiec#44) |
 | ops/literals | PASS | PASS | PASS | |
 | ops/bit_ops | PASS | PASS | PASS | |
 | data/array_internal | PASS | PASS | PASS | |
