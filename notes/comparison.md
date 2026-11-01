@@ -179,7 +179,7 @@ Also observed, not a deviation: `TIME` is 32-bit milliseconds in this
 build (so `T#500ms` in a trace is the integer 500 in the generated code),
 which is why the driver passes milliseconds rather than nanoseconds.
 
-4. **Formal argument names on standard functions** (PLC-lang/rusty#2035, LIMIT declares MIN/MAX): `LIMIT(MN := b, IN := a, MX := c)` and `SEL(G := g, IN0 := a, IN1 := b)` are rejected (E089 invalid call parameters, E048 could not resolve reference to MN), although table 31 names those parameters and 7.2.3.1 allows formal invocation of any function. The positional forms in `ops/std_functions` compile and pass. (`ops/std_functions_ext`)
+4. **Formal argument names on standard functions** (PLC-lang/rusty#2035, LIMIT declares MIN/MAX; fix in PR #2038): `LIMIT(MN := b, IN := a, MX := c)` and `SEL(G := g, IN0 := a, IN1 := b)` are rejected (E089 invalid call parameters, E048 could not resolve reference to MN), although table 31 names those parameters and 7.2.3.1 allows formal invocation of any function. The positional forms in `ops/std_functions` compile and pass. (`ops/std_functions_ext`)
 
 5. **EN/ENO on a function block invocation** (PLC-lang/rusty#2036): `c(EN := run_it, inc := inc)` is rejected (E089 invalid call parameters, E048 could not resolve reference to EN), so the implicit EN input of ed.3 6.6.1.7 table 20 is not available on function blocks. (`pou/fb_en_eno`)
 
