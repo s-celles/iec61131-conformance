@@ -96,11 +96,11 @@ Legend: PASS/FAIL for `status: conformant` traces; SAME/DIFFERS for
 | ops/real_conversions | **FAIL** (cycles 0, 1, 3, 4) | PASS | PASS | IronPLC truncates REAL_TO_INT and LREAL_TO_DINT instead of rounding to nearest (findings #16, ironplc#1813) |
 | ops/real_compare | PASS | PASS | PASS | |
 | ops/lreal_precision | PASS | PASS | **FAIL** (cycles 0-3, big) | binary64 within 1e-12; RuSTy evaluates the untyped literals of `1.0E15 + 1.0` as REAL before widening, giving 999999986991104 (other runtimes #6) |
-| strings/literals_escapes | PASS | PASS | RUSTY_literals_escapes | |
-| strings/declared_length | PASS | **FAIL** (compile) | RUSTY_declared_length | matiec: a `STRING[n]` variable is parsed but then "not declared in this scope" (stage3 visitors for `single_byte_string_var_declaration_c` are commented out) |
-| strings/functions | PASS | **FAIL** (cycle 0) | RUSTY_functions | matiec: `REPLACE(IN1, IN2, L, P)` copies only min(LEN(IN2), L) characters of IN2 (`__replace`, `iec_std_functions.h`), so with L = 1 'hYllo' instead of 'hYYllo' |
-| strings/compare | PASS | PASS | RUSTY_compare | |
-| strings/concat_assign | PASS | PASS | RUSTY_concat_assign | |
+| strings/literals_escapes | PASS | PASS | PASS | |
+| strings/declared_length | PASS | **FAIL** (compile) | PASS | matiec: a `STRING[n]` variable is parsed but then "not declared in this scope" (stage3 visitors for `single_byte_string_var_declaration_c` are commented out) |
+| strings/functions | PASS | **FAIL** (cycle 0) | PASS | matiec: `REPLACE(IN1, IN2, L, P)` copies only min(LEN(IN2), L) characters of IN2 (`__replace`, `iec_std_functions.h`), so with L = 1 'hYllo' instead of 'hYYllo' |
+| strings/compare | PASS | PASS | PASS | |
+| strings/concat_assign | PASS | PASS | PASS | |
 | undefined/int_overflow | SAME | SAME | SAME | all three wrap in two's complement |
 | undefined/div_zero | SAME | SAME | SAME | IronPLC: VM trap "divide by zero"; matiec and RuSTy: native integer division, the process receives SIGFPE (the drivers report it as `trap`). All stop the scan; none computes `MOD`. matiec's `/` is a bare C division, so on AArch64 it returns 0 instead of trapping (beremiz/matiec#38); its `MOD` and `DIV()` are guarded |
 | undefined/eval_order | SAME | SAME | SAME | all three evaluate the left operand of `-` first |
@@ -114,10 +114,10 @@ Legend: PASS/FAIL for `status: conformant` traces; SAME/DIFFERS for
 | undefined/array_out_of_bounds | SAME | **DIFFERS** (cycle 2) | **DIFFERS** (cycle 2) | IronPLC traps ("array index out of bounds"); matiec and RuSTy have no check and read past the array, both give v=4 (findings #15) |
 | undefined/real_div_zero | SAME | SAME | SAME | inf, -inf, NaN on all, no trap (findings #17) |
 | undefined/real_to_int_ties | SAME | **DIFFERS** (cycles 1, 3) | **DIFFERS** (all ties) | three behaviours: IronPLC truncates (3.5 -> 3), matiec rounds half to even (3.5 -> 4, ed.2 2.5.1.5.1), RuSTy rounds half away from zero (2.5 -> 3, -2.5 -> -3) |
-| undefined/string_truncate | SAME | **DIFFERS** (compile) | RUSTY_string_truncate | IronPLC truncates to the declared length; matiec cannot declare `STRING[n]` (see declared_length) |
-| undefined/string_conversions | SAME | SAME | RUSTY_string_conversions | plain decimal, leading minus, on all |
+| undefined/string_truncate | SAME | **DIFFERS** (compile) | SAME | IronPLC truncates to the declared length; matiec cannot declare `STRING[n]` (see declared_length) |
+| undefined/string_conversions | SAME | SAME | SAME | plain decimal, leading minus, on all |
 
-Totals: IronPLC 37/46 conformant pass; matiec 39/46; RuSTy RUSTY_TOTAL/46. No test
+Totals: IronPLC 37/46 conformant pass; matiec 39/46; RuSTy 39/46. No test
 other than the six control-flow/POU/R_TRIG ones and the four "all SAME"
 corners has the same result on all three runtimes: the three disagree
 somewhere on tof, tp, f_trig, sr_rs, ctu, ctd, ctud, ctd_bounds, ctud_bounds,
