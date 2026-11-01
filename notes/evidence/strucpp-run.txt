@@ -390,38 +390,45 @@ PASS    conformance/pou/function_var_not_retained.st
 ### conformance/strings/compare.st
 ERROR   conformance/strings/compare.st
         g++ failed:
-prog.cpp:48:12: error: invalid operands to binary expression ('IEC_STRING' (aka 'IECStringVar<254>') and 'const char[2]')
+prog.cpp: In member function ‘virtual void strucpp::Program_MAIN::run()’:
+prog.cpp:48:12: error: no match for ‘operator<’ (operand types are ‘strucpp::IEC_STRING’ {aka ‘strucpp::IECStringVar<254>’} and ‘const char [2]’)
    48 |     L4 = E < "a";
       |          ~ ^ ~~~
-<strucpp>/src/runtime/include/iec_var.hpp:438:13: note: candidate template ignored: could not match 'IECVar' against 'IECStringVar'
+      |          |   |
+      |          |   const char [2]
+      |          strucpp::IEC_STRING {aka strucpp::IECStringVar<254>}
+In file included from prog.hpp:7,
+                 from prog.cpp:4:
+<strucpp>/src/runtime/include/iec_var.hpp:438:13: note: candidate: ‘template<class T> bool strucpp::operator<(const IECVar<T>&, const IECVar<T>&)’
   438 | inline bool operator<(const IECVar<T>& a, const IECVar<T>& b) noexcept {
-      |             ^
-<strucpp>/src/runtime/include/iec_var.hpp:462:34: note: candidate template ignored: could not match 'IECVar' against 'IECStringVar'
+      |             ^~~~~~~~
+<strucpp>/src/runtime/include/iec_var.hpp:438:13: note:   template argument deduction/substitution failed:
+prog.cpp:48:14: note:   ‘strucpp::IEC_STRING’ {aka ‘strucpp::IECStringVar<254>’} is not derived from ‘const strucpp::IECVar<T>’
+   48 |     L4 = E < "a";
+      |              ^~~
+<strucpp>/src/runtime/include/iec_var.hpp:462:34: note: candidate: ‘template<class T> bool strucpp::operator<(const IECVar<T>&, T)’
   462 | template<typename T> inline bool operator<(const IECVar<T>& a, T b) noexcept { return a.get() < b; }
-      |                                  ^
-<strucpp>/src/runtime/include/iec_var.hpp:463:34: note: candidate template ignored: could not match 'const IECVar<T>' against 'const char[2]'
+      |                                  ^~~~~~~~
+<strucpp>/src/runtime/include/iec_var.hpp:462:34: note:   template argument deduction/substitution failed:
+prog.cpp:48:14: note:   ‘strucpp::IEC_STRING’ {aka ‘strucpp::IECStringVar<254>’} is not derived from ‘const strucpp::IECVar<T>’
+   48 |     L4 = E < "a";
+      |              ^~~
+<strucpp>/src/runtime/include/iec_var.hpp:463:34: note: candidate: ‘template<class T> bool strucpp::operator<(T, const IECVar<T>&)’
   463 | template<typename T> inline bool operator<(T a, const IECVar<T>& b) noexcept { return a < b.get(); }
-      |                                  ^
-<strucpp>/src/runtime/include/iec_string.hpp:595:13: note: candidate template ignored: could not match 'const IECStringVar<Len2>' against 'const char[2]'
+      |                                  ^~~~~~~~
+<strucpp>/src/runtime/include/iec_var.hpp:463:34: note:   template argument deduction/substitution failed:
+prog.cpp:48:14: note:   mismatched types ‘const strucpp::IECVar<T>’ and ‘const char [2]’
+   48 |     L4 = E < "a";
+      |              ^~~
+In file included from <strucpp>/src/runtime/include/iec_std_lib.hpp:27,
+                 from prog.hpp:11:
+<strucpp>/src/runtime/include/iec_string.hpp:595:13: note: candidate: ‘template<long unsigned int Len1, long unsigned int Len2> bool strucpp::operator<(const IECStringVar<Len1>&, const IECStringVar<Len2>&)’
   595 | inline bool operator<(const IECStringVar<Len1>& a, const IECStringVar<Len2>& b) noexcept {
-      |             ^
-<strucpp>/src/runtime/include/iec_string.hpp:600:13: note: candidate template ignored: could not match 'IECString' against 'IECStringVar'
-  600 | inline bool operator<(const IECString<Len1>& a, const IECStringVar<Len2>& b) noexcept {
-      |             ^
-<strucpp>/src/runtime/include/iec_string.hpp:605:13: note: candidate template ignored: could not match 'const IECString<Len2>' against 'const char[2]'
-  605 | inline bool operator<(const IECStringVar<Len1>& a, const IECString<Len2>& b) noexcept {
-      |             ^
-prog.cpp:49:14: error: invalid operands to binary expression ('const char[2]' and 'IEC_STRING' (aka 'IECStringVar<254>'))
-   49 |     G1 = "b" > A;
-      |          ~~~ ^ ~
-<strucpp>/src/runtime/include/iec_var.hpp:443:13: note: candidate template ignored: could not match 'const IECVar<T>' against 'const char[2]'
-  443 | inline bool operator>(const IECVar<T>& a, const IECVar<T>& b) noexcept {
-      |             ^
-<strucpp>/src/runtime/include/iec_var.hpp:464:34: note: candidate template ignored: could not match 'const IECVar<T>' against 'const char[2]'
-  464 | template<typename T> inline bool operator>(const IECVar<T>& a, T b) noexcept { return a.get() > b; }
-      |                                  ^
-<strucpp>/src/runtime/include/iec_var.hpp:465:34: note: candidate template ignored: could not match 'IECVar' against 'IECStringVar'
- 
+      |             ^~~~~~~~
+<strucpp>/src/runtime/include/iec_string.hpp:595:13: note:   template argument deduction/substitution failed:
+prog.cpp:48:14: note:   mismatched types ‘const strucpp::IECStringVar<Len2>’ and ‘const char [2]’
+   48 |     L4 = E < "a";
+
 ### conformance/strings/concat_assign.st
 0 push=TRUE => acc='x' n=1 copy='ab'
 1 push=TRUE => acc='xx' n=2 copy='abz'
@@ -457,40 +464,45 @@ prog.st:10:5: error: Expected `END_PROGRAM`, found identifier `S4`.
 ### conformance/strings/functions.st
 ERROR   conformance/strings/functions.st
         g++ failed:
-prog.cpp:43:13: error: no matching function for call to 'LEN'
+prog.cpp: In member function ‘virtual void strucpp::Program_MAIN::run()’:
+prog.cpp:43:16: error: no matching function for call to ‘LEN(const char [6])’
    43 |     O_LEN = LEN("hello");
-      |             ^~~
-<strucpp>/src/runtime/include/iec_string.hpp:629:15: note: candidate template ignored: could not match 'const IECString<MaxLen>' against 'const char[6]'
+      |             ~~~^~~~~~~~~
+In file included from <strucpp>/src/runtime/include/iec_std_lib.hpp:27,
+                 from prog.hpp:11,
+                 from prog.cpp:4:
+<strucpp>/src/runtime/include/iec_string.hpp:629:15: note: candidate: ‘template<long unsigned int MaxLen> size_t strucpp::LEN(const IECString<MaxLen>&)’
   629 | inline size_t LEN(const IECString<MaxLen>& s) noexcept {
-      |               ^
-<strucpp>/src/runtime/include/iec_string.hpp:635:15: note: candidate template ignored: could not match 'const IECStringVar<MaxLen>' against 'const char[6]'
+      |               ^~~
+<strucpp>/src/runtime/include/iec_string.hpp:629:15: note:   template argument deduction/substitution failed:
+prog.cpp:43:16: note:   mismatched types ‘const strucpp::IECString<MaxLen>’ and ‘const char [6]’
+   43 |     O_LEN = LEN("hello");
+      |             ~~~^~~~~~~~~
+<strucpp>/src/runtime/include/iec_string.hpp:635:15: note: candidate: ‘template<long unsigned int MaxLen> size_t strucpp::LEN(const IECStringVar<Len1>&)’
   635 | inline size_t LEN(const IECStringVar<MaxLen>& s) noexcept {
-      |               ^
-<strucpp>/src/runtime/include/iec_string.hpp:827:15: note: candidate template ignored: could not match 'const IECVar<IECString<MaxLen>>' against 'const char[6]'
+      |               ^~~
+<strucpp>/src/runtime/include/iec_string.hpp:635:15: note:   template argument deduction/substitution failed:
+prog.cpp:43:16: note:   mismatched types ‘const strucpp::IECStringVar<Len1>’ and ‘const char [6]’
+   43 |     O_LEN = LEN("hello");
+      |             ~~~^~~~~~~~~
+<strucpp>/src/runtime/include/iec_string.hpp:827:15: note: candidate: ‘template<long unsigned int MaxLen> size_t strucpp::LEN(const IECVar<IECString<MaxLen> >&)’
   827 | inline size_t LEN(const IECVar<IECString<MaxLen>>& s) noexcept {
-      |               ^
-prog.cpp:44:16: error: no matching function for call to 'CONCAT'
+      |               ^~~
+<strucpp>/src/runtime/include/iec_string.hpp:827:15: note:   template argument deduction/substitution failed:
+prog.cpp:43:16: note:   mismatched types ‘const strucpp::IECVar<strucpp::IECString<MaxLen> >’ and ‘const char [6]’
+   43 |     O_LEN = LEN("hello");
+      |             ~~~^~~~~~~~~
+prog.cpp:44:22: error: no matching function for call to ‘CONCAT(const char [3], const char [3])’
    44 |     O_CONCAT = CONCAT("ab", "cd");
-      |                ^~~~~~
-<strucpp>/src/runtime/include/iec_string.hpp:658:1: note: candidate template ignored: could not match 'const IECString<MaxLen1>' against 'const char[3]'
+      |                ~~~~~~^~~~~~~~~~~~
+<strucpp>/src/runtime/include/iec_string.hpp:658:1: note: candidate: ‘template<long unsigned int MaxLen1, long unsigned int MaxLen2> strucpp::IECString<((MaxLen1 > MaxLen2) ? MaxLen1 :  MaxLen2)> strucpp::CONCAT(const IECString<MaxLen>&, const IECString<Len2>&)’
   658 | CONCAT(const IECString<MaxLen1>& s1, const IECString<MaxLen2>& s2) noexcept {
-      | ^
-<strucpp>/src/runtime/include/iec_string.hpp:668:1: note: candidate template ignored: could not match 'const IECString<MaxLen1>' against 'const char[3]'
-  668 | CONCAT(const IECString<MaxLen1>& s1, const IECString<MaxLen2>& s2, const Args&... rest) noexcept {
-      | ^
-<strucpp>/src/runtime/include/iec_string.hpp:755:1: note: candidate template ignored: could not match 'const IECStringVar<MaxLen1>' against 'const char[3]'
-  755 | CONCAT(const IECStringVar<MaxLen1>& s1, const IECStringVar<MaxLen2>& s2) noexcept {
-      | ^
-<strucpp>/src/runtime/include/iec_string.hpp:761:1: note: candidate template ignored: could not match 'const IECStringVar<MaxLen1>' against 'const char[3]'
-  761 | CONCAT(const IECStringVar<MaxLen1>& s1, const IECString<MaxLen2>& s2) noexcept {
-      | ^
-<strucpp>/src/runtime/include/iec_string.hpp:767:1: note: candidate template ignored: could not match 'const IECString<MaxLen1>' against 'const char[3]'
-  767 | CONCAT(const IECString<MaxLen1>& s1, const IECStringVar<MaxLen2>& s2) noexcept {
-      | ^
-<strucpp>/src/runtime/include/iec_string.hpp:890:1: note: candidate template ignored: could not match 'const IECVar<IECString<MaxLen1>>' against 'const char[3]'
-  890 | CONCAT(const IECVar<IECString<MaxLen1>>& s1, const IECString<MaxLen2>& s2) noexcept {
-      | ^
-<strucpp>/src/runtime/include/iec_s
+      | ^~~~~~
+<strucpp>/src/runtime/include/iec_string.hpp:658:1: note:   template argument deduction/substitution failed:
+prog.cpp:44:22: note:   mismatched types ‘const strucpp::IECString<MaxLen>’ and ‘const char [3]’
+   44 |     O_CONCAT = CONCAT("ab", "cd");
+      |                ~~~~~~^~~~~~~~~~~~
+/home/runne
 ### conformance/strings/literals_escapes.st
 0 => s1='abc' s2='' s3='it$'s' s4='$$' s5='a$20b' s6='tab$Tx' s7='nl$Ly' s8='AB' n1=3
 1 => s1='abc' s2='' s3='it$'s' s4='$$' s5='a$20b' s6='tab$Tx' s7='nl$Ly' s8='AB' n1=3
@@ -574,9 +586,8 @@ SAME    conformance/undefined/dint_to_int_overflow.st
 ### conformance/undefined/div_zero.st
 0 a=7 b=2 => q=3 m=1
 1 a=-7 b=2 => q=-3 m=-1
-2 a=7 b=0 => q=0 m=7
-DIFFERS conformance/undefined/div_zero.st
-        cycle 2 (trace line 24): expected a trap, got q=0 m=7
+2 a=7 b=0 => trap   # SIGFPE
+SAME    conformance/undefined/div_zero.st
 ### conformance/undefined/eval_order.st
 0 reset=TRUE => y=-19 c=2
 1 reset=TRUE => y=-19 c=2
@@ -605,7 +616,7 @@ SAME    conformance/undefined/int_overflow.st
 0 x=1.0 y=2.0 => q=0.5
 1 x=1.0 y=0.0 => q=inf
 2 x=-1.0 y=0.0 => q=-inf
-3 x=0.0 y=0.0 => q=nan
+3 x=0.0 y=0.0 => q=-nan
 4 x=1.0 y=2.0 => q=0.5
 SAME    conformance/undefined/real_div_zero.st
 ### conformance/undefined/real_to_int_ties.st
@@ -697,5 +708,5 @@ DIFFERS conformance/undefined/ton_pt_change.st
         cycle 10 (trace line 36): et expected T#800ms, got T#200ms
         cycle 11 (trace line 37): et expected T#800ms, got T#200ms
 
-67 tests: 41 pass, 7 fail, 9 same, 7 differs, 3 error
+67 tests: 41 pass, 7 fail, 10 same, 6 differs, 3 error
 exit 1

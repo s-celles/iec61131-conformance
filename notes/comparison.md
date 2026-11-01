@@ -109,7 +109,7 @@ Legend: PASS/FAIL for `status: conformant` traces; SAME/DIFFERS for
 | config/global_exchange | **FAIL** (compile) | PASS | PASS | PASS | **ERROR** (configuration) | |
 | config/event_single | **FAIL** (compile) | PASS | PASS | **ERROR** (SINGLE not driven) | **ERROR** (configuration) | IronPLC: P4047 SINGLE not supported (findings #18); matiec: an R_TRIG on the SINGLE input, one run per rising edge |
 | undefined/int_overflow | SAME | SAME | SAME | SAME | SAME | all three wrap in two's complement |
-| undefined/div_zero | SAME | SAME | **DIFFERS** (cycle 2) | **DIFFERS** (cycle 2) | SAME | IronPLC: VM trap "divide by zero"; matiec and RuSTy: native integer division, the process receives SIGFPE (the drivers report it as `trap`). All stop the scan; none computes `MOD`. matiec's `/` is a bare C division, so on AArch64 it returns 0 instead of trapping (beremiz/matiec#38, fix in PR #47); its `MOD` and `DIV()` are guarded |
+| undefined/div_zero | SAME | SAME | SAME | SAME | SAME | IronPLC: VM trap "divide by zero"; matiec and RuSTy: native integer division, the process receives SIGFPE (the drivers report it as `trap`). All stop the scan; none computes `MOD`. matiec's `/` is a bare C division, so on AArch64 it returns 0 instead of trapping (beremiz/matiec#38, fix in PR #47); its `MOD` and `DIV()` are guarded |
 | undefined/eval_order | SAME | SAME | SAME | SAME | SAME | all three evaluate the left operand of `-` first |
 | undefined/for_bound_modified | SAME | SAME | SAME | SAME | SAME | all three re-read the final value on every iteration |
 | undefined/ctu_pv_zero | SAME | **DIFFERS** | **DIFFERS** (cycles 1-3) | **DIFFERS** (cycles 1-3) | SAME | IronPLC counts (CV = 1, 2) with Q always TRUE; matiec never counts because `CV < PV` is false at PV = 0, Q always TRUE. Same Q, different CV |
@@ -190,26 +190,28 @@ included (the bundled `iec-standard-fb` library takes the ed.3 reading of
 `F_TRIG`); the counters follow the FDIS 2001 bodies (`CV < PV`, `CV > 0`),
 as matiec's do. The failures are in the front end and the string codegen:
 
-1. **Typed integer literals are not lexed**: `INT#-5`, `UINT#65535`,
-   `DINT#16#7FFF_FFFF` and `DINT#-2147483648` stop the lexer with
-   "unexpected character `#`" (`ops/literals`, `undefined/string_conversions`);
-   `16#FF`, `2#1010_1010`, `8#17` and `1_000_000` are fine. Related:
-   Autonomy-Logic/STruCpp#216 (qualified enum literals).
-2. **`STRING[n]` is not parsed**, neither in a `VAR` section nor in a `TYPE`
+1. **A typed literal with a negative value is not lexed** (Autonomy-Logic/STruCpp#255): `INT#-5` and
+   `DINT#-2147483648` stop the lexer with "unexpected character `#`"
+   (`ops/literals`, `undefined/string_conversions`); the `TypedLiteral` token
+   (`src/frontend/lexer.ts:536`) has no sign in its pattern. `UINT#65535`,
+   `DINT#16#7FFF_FFFF`, `16#FF`, `2#1010_1010`, `8#17` and `1_000_000` are
+   fine. Related: Autonomy-Logic/STruCpp#216 (qualified enum literals).
+2. **`STRING[n]` is not parsed** (STruCpp#256), neither in a `VAR` section nor in a `TYPE`
    (`strings/declared_length`, `undefined/string_truncate`).
-3. **String literals reach the C++ as `const char[]`**: `LEN('hello')`,
+3. **String literals reach the C++ as `const char[]`** (STruCpp#257): `LEN('hello')`,
    `CONCAT('ab', 'cd')` and `e < 'a'` are emitted as `LEN("hello")`,
    `CONCAT("ab", "cd")`, `E < "a"`, which the runtime's `IECString`
    templates do not accept, so g++ fails (`strings/functions`,
    `strings/compare`); the same operations on string variables compile.
-4. **`VAR_TEMP` is a member of the function block**, so it keeps its value
+4. **`VAR_TEMP` is a member of the function block** (STruCpp#258), so it keeps its value
    between calls: `t := t + x` accumulates (`pou/fb_var_temp`, 7 where 4 is
    expected); a FUNCTION's `VAR` is a local and is not retained
    (`pou/function_var_not_retained` passes).
-5. **Division by zero is defined**: `7 / 0 = 0` and `7 MOD 0 = 7`, no trap
-   (`undefined/div_zero`); an array index out of range throws
-   `std::out_of_range`, which the harness reports as a trap
-   (`undefined/array_out_of_bounds` matches).
+5. **Integer division by zero is the bare C++ division**: SIGFPE on x86-64
+   (`undefined/div_zero` matches the trap), `7 / 0 = 0` and `7 MOD 0 = 7` on
+   AArch64, the same CPU dependence as matiec's `/` (beremiz/matiec#38); an
+   array index out of range throws `std::out_of_range`, which the harness
+   reports as a trap (`undefined/array_out_of_bounds` matches).
 6. Real-to-integer ties round away from zero, like RuSTy.
 7. **Tasks**: STruC++ compiles the configuration (intervals, priorities) but
    leaves the scheduling to the runtime; its own `--build` loop runs the
