@@ -7,7 +7,8 @@ Text runtimes: plain `.st` programs paired with plain-text expected
 input/output traces, one record per scan cycle. Dedicated to the public
 domain under CC0 1.0 (see `LICENSE`).
 
-Status: 67 tests, run against IronPLC, matiec, OpenPLC's matiec fork (and RuSTy,
+Status: 67 tests, run against IronPLC, matiec, OpenPLC's matiec fork, STruC++
+(and RuSTy,
 see `notes/comparison.md`), with a Lean 4 model of the function block
 semantics that the expected traces are proved to follow from.
 
@@ -51,6 +52,7 @@ harness/
   ironplc/     Rust: drives the ironplc_vm crate with simulated time
   matiec/      Python: iec2c + generated C driver with simulated time (also
                drives the matiec fork bundled in OpenPLC_v3)
+  strucpp/     Python: strucpp (ST -> C++) + generated C++ driver with simulated time
   rusty/       Python: plc (RuSTy) + mock-time stdlib + C driver
 formal/        Lean 4: executable FB semantics, trace theorems, properties
 notes/
@@ -82,8 +84,9 @@ located variables.
 - `formal`: checks `Traces.lean` is up to date with the `.trace` files, then
   `lake build` (the proofs are the only hard gate: a `.trace` that no longer
   follows from the model fails the build).
-- `ironplc`, `matiec`, `openplc` (the matiec fork in OpenPLC_v3): build the
-  runtime at the commit recorded in
+- `ironplc`, `matiec`, `openplc` (the matiec fork in OpenPLC_v3), `strucpp`
+  (STruC++, built from source with Node 22): build the runtime at the commit
+  recorded in
   `notes/evidence/COMMANDS.md`, run the suite with `--record`, and diff the
   output against `notes/evidence/<runtime>-run.txt`. The runtimes are known
   to fail some conformant tests (`notes/findings.md`), so the harness exit
@@ -135,6 +138,22 @@ git clone --depth 1 https://github.com/thiagoralves/OpenPLC_v3 openplc
 python3 -I harness/matiec/run.py --iec2c openplc/utils/matiec_src/iec2c \
     --matiec-lib openplc/utils/matiec_src/lib conformance
 ```
+
+## Running against STruC++
+
+STruC++ (Autonomy-Logic/STruCpp, the ST to C++ compiler of OpenPLC Runtime
+v4) is a TypeScript program with a header-only C++14 runtime:
+
+```sh
+git clone https://github.com/Autonomy-Logic/STruCpp strucpp
+(cd strucpp && npm ci --ignore-scripts && npx tsc && node scripts/rebuild-libs.mjs)
+python3 -I harness/strucpp/run.py --strucpp "node strucpp/dist/node/cli.js" \
+    --runtime-include strucpp/src/runtime/include conformance
+```
+
+The harness drives the compiled programs with its own driver; for a
+`CONFIGURATION` it runs the periodic tasks the way STruC++'s own REPL loop
+does (declaration order, priority ignored) and does not drive `SINGLE` tasks.
 
 ## Running against RuSTy
 

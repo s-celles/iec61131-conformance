@@ -26,6 +26,12 @@ git clone --depth 1 https://github.com/thiagoralves/OpenPLC_v3 scratch/openplc
 python3 -I harness/matiec/run.py --iec2c scratch/openplc/utils/matiec_src/iec2c \
     --matiec-lib scratch/openplc/utils/matiec_src/lib --record conformance > notes/evidence/openplc-run.txt
 
+# STruC++ 72dfcb8 (v0.7.0, built from source with Node 22; 2026-11-01)
+git clone https://github.com/Autonomy-Logic/STruCpp scratch/strucpp
+(cd scratch/strucpp && git checkout 72dfcb8 && npm ci --ignore-scripts && npx tsc && node scripts/rebuild-libs.mjs)
+python3 -I harness/strucpp/run.py --strucpp "node scratch/strucpp/dist/node/cli.js" \
+    --runtime-include scratch/strucpp/src/runtime/include --record conformance > notes/evidence/strucpp-run.txt
+
 # RuSTy e911ee5 (LLVM 21 from apt.llvm.org)
 curl -fsSL https://apt.llvm.org/llvm-snapshot.gpg.key | gpg --dearmor -o /etc/apt/trusted.gpg.d/llvm.gpg
 echo "deb https://apt.llvm.org/noble/ llvm-toolchain-noble-21 main" > /etc/apt/sources.list.d/llvm.list

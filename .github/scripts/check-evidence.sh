@@ -27,7 +27,7 @@ name=$(basename "$evidence")
 cp "$out" "${RUNNER_TEMP:-/tmp}/$name"
 summary=$(grep -E '^[0-9]+ tests:' "$out" || echo "no summary line")
 root=$(pwd -P)
-normalise() { sed -E -e $'s/\x1b\\[[0-9;]*m//g' -e 's#/tmp/[A-Za-z0-9_.-]+/#<tmpdir>/#g' -e "s#$root/#<root>/#g" -e "s#${RUNNER_TEMP:-/nonexistent}/#<tmp>/#g" -e 's/&file=[^&]*&line=[0-9]+/\&file=<file>\&line=<n>/g' "$1"; }
+normalise() { sed -E -e $'s/\x1b\\[[0-9;]*m//g' -e 's#/tmp/[A-Za-z0-9_.-]+/#<tmpdir>/#g' -e "s#$root/#<root>/#g" -e "s#${RUNNER_TEMP:-/nonexistent}/#<tmp>/#g" -e 's#<tmp>/strucpp/#<strucpp>/#g'  -e 's/&file=[^&]*&line=[0-9]+/\&file=<file>\&line=<n>/g' "$1"; }
 if diff -u --label "$evidence" --label "harness output" <(normalise "$evidence") <(normalise "$out"); then
   echo "### $name: matches evidence — $summary" >> "${GITHUB_STEP_SUMMARY:-/dev/null}"
 else

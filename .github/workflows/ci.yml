@@ -21,6 +21,7 @@ env:
   IRONPLC_SHA: 5ea0610a0620dd84e5864c96ecb805001d88bc4d
   MATIEC_SHA: 3a41303bcb4e50403417bc39c63f88981d7d961e
   OPENPLC_SHA: b5d41356dab4aeadca0dd7ca64ba542f870b595d
+  STRUCPP_SHA: 72dfcb8b1c5a41a68bfbf4b133169189c58f04b3
   RUSTY_SHA: e911ee5e0bce0ba60086ff5269d74090a27c32d6
 
 jobs:
@@ -166,6 +167,46 @@ jobs:
         with:
           name: openplc-run
           path: ${{ runner.temp }}/openplc-run.txt
+          if-no-files-found: ignore
+
+  strucpp:
+    name: STruC++ (vs evidence)
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - uses: actions/cache@v4
+        id: strucpp-cache
+        with:
+          path: ${{ runner.temp }}/strucpp
+          key: strucpp-${{ env.STRUCPP_SHA }}
+
+      - name: Fetch STruC++ at pinned commit and build it from source
+        if: steps.strucpp-cache.outputs.cache-hit != 'true'
+        run: |
+          git init -q "$RUNNER_TEMP/strucpp"
+          cd "$RUNNER_TEMP/strucpp"
+          git fetch -q --depth 1 https://github.com/Autonomy-Logic/STruCpp "$STRUCPP_SHA"
+          git checkout -q FETCH_HEAD
+          npm ci --ignore-scripts
+          npx tsc
+          node scripts/rebuild-libs.mjs
+
+      - name: Run suite and compare with notes/evidence/strucpp-run.txt
+        run: |
+          .github/scripts/check-evidence.sh notes/evidence/strucpp-run.txt -- \
+            python3 -I harness/strucpp/run.py --strucpp "node $RUNNER_TEMP/strucpp/dist/node/cli.js" \
+              --runtime-include "$RUNNER_TEMP/strucpp/src/runtime/include" --record conformance
+
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: strucpp-run
+          path: ${{ runner.temp }}/strucpp-run.txt
           if-no-files-found: ignore
 
   rusty:
