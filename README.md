@@ -7,7 +7,7 @@ Text runtimes: plain `.st` programs paired with plain-text expected
 input/output traces, one record per scan cycle. Dedicated to the public
 domain under CC0 1.0 (see `LICENSE`).
 
-Status: 67 tests, run against IronPLC and matiec (and RuSTy,
+Status: 67 tests, run against IronPLC, matiec, OpenPLC's matiec fork (and RuSTy,
 see `notes/comparison.md`), with a Lean 4 model of the function block
 semantics that the expected traces are proved to follow from.
 
@@ -49,7 +49,8 @@ conformance/
                tasks_same_priority
 harness/
   ironplc/     Rust: drives the ironplc_vm crate with simulated time
-  matiec/      Python: iec2c + generated C driver with simulated time
+  matiec/      Python: iec2c + generated C driver with simulated time (also
+               drives the matiec fork bundled in OpenPLC_v3)
   rusty/       Python: plc (RuSTy) + mock-time stdlib + C driver
 formal/        Lean 4: executable FB semantics, trace theorems, properties
 notes/
@@ -81,7 +82,8 @@ located variables.
 - `formal`: checks `Traces.lean` is up to date with the `.trace` files, then
   `lake build` (the proofs are the only hard gate: a `.trace` that no longer
   follows from the model fails the build).
-- `ironplc`, `matiec`: build the runtime at the commit recorded in
+- `ironplc`, `matiec`, `openplc` (the matiec fork in OpenPLC_v3): build the
+  runtime at the commit recorded in
   `notes/evidence/COMMANDS.md`, run the suite with `--record`, and diff the
   output against `notes/evidence/<runtime>-run.txt`. The runtimes are known
   to fail some conformant tests (`notes/findings.md`), so the harness exit
@@ -120,6 +122,18 @@ fails, so the command is CI-ready.
 ```sh
 git clone https://github.com/beremiz/matiec && (cd matiec && ./configure && make)
 python3 -I harness/matiec/run.py --iec2c matiec/iec2c --matiec-lib matiec/lib conformance
+```
+
+## Running against OpenPLC's matiec fork
+
+OpenPLC_v3 bundles its own, older, matiec (`utils/matiec_src`). The same
+harness drives it; only the paths change:
+
+```sh
+git clone --depth 1 https://github.com/thiagoralves/OpenPLC_v3 openplc
+(cd openplc/utils/matiec_src && autoreconf -i && ./configure && make)
+python3 -I harness/matiec/run.py --iec2c openplc/utils/matiec_src/iec2c \
+    --matiec-lib openplc/utils/matiec_src/lib conformance
 ```
 
 ## Running against RuSTy

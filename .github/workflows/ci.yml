@@ -20,6 +20,7 @@ concurrency:
 env:
   IRONPLC_SHA: 5ea0610a0620dd84e5864c96ecb805001d88bc4d
   MATIEC_SHA: 3a41303bcb4e50403417bc39c63f88981d7d961e
+  OPENPLC_SHA: b5d41356dab4aeadca0dd7ca64ba542f870b595d
   RUSTY_SHA: e911ee5e0bce0ba60086ff5269d74090a27c32d6
 
 jobs:
@@ -126,6 +127,45 @@ jobs:
         with:
           name: matiec-run
           path: ${{ runner.temp }}/matiec-run.txt
+          if-no-files-found: ignore
+
+  openplc:
+    name: OpenPLC matiec fork (vs evidence)
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install build dependencies
+        run: sudo apt-get update -q && sudo apt-get install -yq flex bison autoconf automake
+
+      - uses: actions/cache@v4
+        id: openplc-cache
+        with:
+          path: ${{ runner.temp }}/openplc
+          key: openplc-matiec-${{ env.OPENPLC_SHA }}
+
+      - name: Fetch OpenPLC_v3 at pinned commit (utils/matiec_src only) and build its iec2c
+        if: steps.openplc-cache.outputs.cache-hit != 'true'
+        run: |
+          git init -q "$RUNNER_TEMP/openplc"
+          cd "$RUNNER_TEMP/openplc"
+          git sparse-checkout init --cone
+          git sparse-checkout set utils/matiec_src
+          git fetch -q --depth 1 https://github.com/thiagoralves/OpenPLC_v3 "$OPENPLC_SHA"
+          git checkout -q FETCH_HEAD
+          cd utils/matiec_src && autoreconf -i && ./configure && make -j"$(nproc)"
+
+      - name: Run suite and compare with notes/evidence/openplc-run.txt
+        run: |
+          .github/scripts/check-evidence.sh notes/evidence/openplc-run.txt -- \
+            python3 -I harness/matiec/run.py --iec2c "$RUNNER_TEMP/openplc/utils/matiec_src/iec2c" \
+              --matiec-lib "$RUNNER_TEMP/openplc/utils/matiec_src/lib" --record conformance
+
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: openplc-run
+          path: ${{ runner.temp }}/openplc-run.txt
           if-no-files-found: ignore
 
   rusty:

@@ -11,6 +11,10 @@ different runtime. For each test it
      (RES0__INST0.<NAME>.value), calls config_run__(tick) once, and prints
      the outputs in .trace record syntax,
   4. compiles with gcc against matiec's lib/C, runs it, and compares.
+     The input setter and output printer are appended to the resource's
+     generated .c, where the program instances and IEC types are in scope,
+     so the driver works unchanged on the older matiec fork bundled in
+     OpenPLC_v3 (--iec2c/--matiec-lib pointing at its utils/matiec_src).
      The driver also defines the `iec_lib_*` math entry points that lib/C
      declares and leaves to the runtime (Beremiz provides them normally).
 
@@ -55,7 +59,7 @@ DRIVER = r'''
 #include <string.h>
 #include <math.h>
 #include <stdarg.h>
-#include "iec_std_lib.h"
+#include <stddef.h>
 
 /* Math and C-library entry points that matiec's lib/C declares and expects
    the runtime (normally Beremiz's) to provide. */
@@ -74,28 +78,22 @@ double iec_lib_tan(double x) { return tan(x); }
 int iec_lib_snprintf(char *s, size_t n, const char *f, ...) {
     va_list ap; va_start(ap, f); int r = vsnprintf(s, n, f, ap); va_end(ap); return r;
 }
-#include "accessor.h"
-#include "POUS.h"
 
-TIME __CURRENT_TIME;
-%(externs)s
+/* The accessors (ACCESSORS below) are appended to the resource's .c file,
+   where the program instances and the IEC types are in scope; the driver
+   only needs their prototypes. */
 void config_init__(void);
 void config_run__(unsigned long tick);
+void conf_set_time_ms(long long ms);
+void set_input(const char *name, const char *text);
+void print_outputs(void);
 
 static jmp_buf trap_env;
 static void on_sigfpe(int sig) { (void)sig; longjmp(trap_env, 1); }
 
-static void print_time(TIME t) {
-    long long ms = (long long)t.tv_sec * 1000 + t.tv_nsec / 1000000;
-    printf("T#%%lldms", ms);
-}
-
-%(setters)s
-%(getters)s
-
 int main(void) {
     signal(SIGFPE, on_sigfpe);
-    __CURRENT_TIME.tv_sec = 0; __CURRENT_TIME.tv_nsec = 0;
+    conf_set_time_ms(0);
     config_init__();
     char line[4096];
     unsigned long cycle = 0;
@@ -112,8 +110,7 @@ int main(void) {
             set_input(tok, eq + 1);
         }
         long long t_ms = (long long)cycle * %(period)d;
-        __CURRENT_TIME.tv_sec = t_ms / 1000;
-        __CURRENT_TIME.tv_nsec = (int32_t)((t_ms %% 1000) * 1000000);
+        conf_set_time_ms(t_ms);
         if (setjmp(trap_env) == 0) {
             /* matiec counts ticks of the common tick time (gcd of the task
                intervals); the trace step must be a multiple of it */
@@ -132,6 +129,29 @@ int main(void) {
 }
 '''
 
+# Appended to the resource's generated .c, after its #include "POUS.c": the
+# clock the library reads, and the input setter and output printer, which
+# address the program instances and the globals by their C names.
+ACCESSORS = r'''
+
+/* ---- conformance harness accessors ---- */
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+TIME __CURRENT_TIME;
+void conf_set_time_ms(long long ms) {
+    __CURRENT_TIME.tv_sec = ms / 1000;
+    __CURRENT_TIME.tv_nsec = (int32_t)((ms %% 1000) * 1000000);
+}
+static void print_time(TIME t) {
+    long long ms = (long long)t.tv_sec * 1000 + t.tv_nsec / 1000000;
+    printf("T#%%lldms", ms);
+}
+%(externs)s
+%(setters)s
+%(getters)s
+'''
+
 
 def c_setters(inputs):
     """Generate set_input(name, text) for the declared inputs: (name, type, C lvalue)."""
@@ -148,7 +168,7 @@ def c_setters(inputs):
         else:
             cases.append(f'    if (!strcmp(name, "{name}")) {{ {lv} = ({TYPE_C[ty]})atoll(text); return; }}')
     body = "\n".join(cases)
-    return f'static void set_input(const char *name, const char *text) {{\n{body}\n    fprintf(stderr, "unknown input %s\\n", name); exit(2);\n}}'
+    return f'void set_input(const char *name, const char *text) {{\n{body}\n    fprintf(stderr, "unknown input %s\\n", name); exit(2);\n}}'
 
 
 def c_getters(outputs):
@@ -167,7 +187,7 @@ def c_getters(outputs):
         else:
             lines.append(f'    printf(" {name}=%lld", (long long){lv});')
     body = "\n".join(lines)
-    return f"static void print_outputs(void) {{\n{body}\n}}"
+    return f"void print_outputs(void) {{\n{body}\n}}"
 
 
 def declared_types(st_text, program):
@@ -234,7 +254,6 @@ def resolve_names(st_text, trace):
     out, externs = {}, []
     if conf is None:
         types = declared_types(st_text, trace.program)
-        externs.append(f"extern {trace.program.upper()}_data__ RES0__INST0;")
         for n in trace.inputs + trace.outputs:
             if n in types:
                 out[n] = (types[n], f"RES0__INST0.{n.upper()}.value")
@@ -249,7 +268,6 @@ def resolve_names(st_text, trace):
                 continue
             if inst not in prog_types:
                 prog_types[inst] = declared_types(st_text, ptype)
-                externs.append(f"extern {ptype.upper()}_data__ {R}__{inst.upper()};")
             if var in prog_types[inst]:
                 out[n] = (prog_types[inst][var], f"{R}__{inst.upper()}.{var.upper()}.value")
         elif n in conf["globals"]:
@@ -293,19 +311,27 @@ def run_test(st_path: Path, opts):
                            capture_output=True, text=True)
         if r.returncode != 0:
             return ("FAIL" if trace.status == Status.CONFORMANT else "DIFFERS"), ["iec2c failed to compile the program:\n" + r.stdout + r.stderr], []
-        m = re.search(r"__DECLARE_CONFIGURATION\(\w+,\s*(\d+)\)", (work / "GLOBALS.h").read_text())
+        # the common tick (ns): in GLOBALS.h on current matiec, in the
+        # configuration's .c on older forks (OpenPLC's has no GLOBALS.h)
+        globals_h = work / "GLOBALS.h"
+        m = re.search(r"__DECLARE_CONFIGURATION\(\w+,\s*(\d+)\)", globals_h.read_text()) if globals_h.exists() else None
+        if m is None:
+            m = re.search(r"common_ticktime__\s*=\s*(\d+)ULL", (work / conf_c).read_text())
         common_ms = int(m.group(1)) // 1000000 if m else trace.period_ms
         if common_ms == 0 or trace.period_ms % common_ms != 0:
             return "ERROR", [f"trace step {trace.period_ms} ms is not a multiple of the configuration's common tick {common_ms} ms"], []
-        driver = DRIVER % {
+        driver = DRIVER % {"period": trace.period_ms, "common": common_ms}
+        (work / "driver.c").write_text(driver)
+        accessors = ACCESSORS % {
             "externs": "\n".join(externs),
-            "period": trace.period_ms,
-            "common": common_ms,
             "setters": c_setters([(n, types[n], resolved[n][1]) for n in trace.inputs]),
             "getters": c_getters([(n, types[n], resolved[n][1]) for n in trace.outputs]),
         }
-        (work / "driver.c").write_text(driver)
-        r = subprocess.run(["gcc", "-O0", "-w", "-I", str(Path(opts.matiec_lib) / "C"), "-I", ".",
+        with (work / res_c).open("a") as f:
+            f.write(accessors)
+        # -include time.h: older forks' iec_std_lib.h (OpenPLC's) use time_t
+        # without including <time.h> themselves
+        r = subprocess.run(["gcc", "-O0", "-w", "-include", "time.h", "-I", str(Path(opts.matiec_lib) / "C"), "-I", ".",
                             "-o", "driver", "driver.c", conf_c, res_c, "-lm"],
                            cwd=work, capture_output=True, text=True)
         if r.returncode != 0:

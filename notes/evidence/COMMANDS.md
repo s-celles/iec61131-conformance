@@ -20,6 +20,12 @@ git clone --depth 1 https://github.com/beremiz/matiec scratch/matiec
 python3 -I harness/matiec/run.py --iec2c scratch/matiec/iec2c \
     --matiec-lib scratch/matiec/lib --record conformance > notes/evidence/matiec-run.txt
 
+# OpenPLC_v3 b5d4135 (its bundled matiec fork, utils/matiec_src; 2026-11-01)
+git clone --depth 1 https://github.com/thiagoralves/OpenPLC_v3 scratch/openplc
+(cd scratch/openplc/utils/matiec_src && autoreconf -i && ./configure && make -j4)
+python3 -I harness/matiec/run.py --iec2c scratch/openplc/utils/matiec_src/iec2c \
+    --matiec-lib scratch/openplc/utils/matiec_src/lib --record conformance > notes/evidence/openplc-run.txt
+
 # RuSTy e911ee5 (LLVM 21 from apt.llvm.org)
 curl -fsSL https://apt.llvm.org/llvm-snapshot.gpg.key | gpg --dearmor -o /etc/apt/trusted.gpg.d/llvm.gpg
 echo "deb https://apt.llvm.org/noble/ llvm-toolchain-noble-21 main" > /etc/apt/sources.list.d/llvm.list

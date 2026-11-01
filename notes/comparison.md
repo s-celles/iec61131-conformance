@@ -7,6 +7,7 @@ Date: 2026-10-31. Same 18 `.st` + `.trace` pairs, three runtimes.
 | runtime | version | how it was driven |
 |---|---|---|
 | IronPLC | commit `5ea0610`, workspace 0.251.0, `ironplcc compile` + `ironplc_vm` crate | `harness/ironplc` (Rust): `write_variable_raw` per cycle, `run_round(uptime_us)` with simulated time |
+| OpenPLC's matiec | OpenPLC_v3 commit `b5d4135`, `utils/matiec_src` (an older matiec snapshot), its `iec2c` and `lib` | `harness/matiec` with `--iec2c`/`--matiec-lib` pointing at the fork |
 | matiec (iec2c) | commit `3a41303` (2026-09-22), built from source with `./configure && make` after `apt-get install flex` | `harness/matiec/run.py`: `iec2c -I lib prog.st` on the test plus a generated `CONFIGURATION` (one task, `INTERVAL := T#<period>ms`), a generated C driver sets `__CURRENT_TIME` and the `RES0__INST0.<VAR>.value` fields, calls `config_run__(tick)` once per record |
 | RuSTy (plc) | commit `e911ee5` (2026-10-30), built with LLVM 21 from apt.llvm.org (`LLVM_SYS_211_PREFIX`, `LLVM_CONFIG`); stdlib built with `--features mock_time` | `harness/rusty/run.py`: the program is renamed `conf_prog`, ST accessor functions are appended, `plc -c` with the stdlib `.st` declarations as `-i` includes, a C driver calls `__mock_time_set_ns(cycle * period)` then the accessors. Note: in this build `TIME` is a 32-bit millisecond count (`ET` is `i32` in the IR) |
 
@@ -53,78 +54,79 @@ obvious next step and would only add coverage of Beremiz's task loop.
 Legend: PASS/FAIL for `status: conformant` traces; SAME/DIFFERS for
 `status: implementation-defined` traces, which record IronPLC's behaviour.
 
-| test | IronPLC | matiec | RuSTy | note |
-|---|---|---|---|---|
-| timers/ton | PASS | PASS | **FAIL** (cycle 4) | RuSTy raises Q one cycle late: Q = (elapsed > PT), not >= (other runtimes #1) |
-| timers/tof | **FAIL** (cycle 0) | PASS | **FAIL** (cycles 5, 12) | IronPLC starts an off-delay at power-up with IN never TRUE (findings #1); RuSTy drops Q one cycle late (other runtimes #1) |
-| timers/tp | **FAIL** (cycles 5, 10-18) | PASS | **FAIL** (cycles 4-8, 16) | IronPLC retriggers while IN stays TRUE, and keeps ET = PT after the pulse with IN FALSE (findings #2, #3); RuSTy's pulse is one cycle long and, after a pulse that ended with IN already FALSE, the block is dead until IN goes TRUE then FALSE again (other runtimes #2) |
-| edge/r_trig | PASS | PASS | PASS | |
-| edge/f_trig | PASS | **FAIL** (cycle 0) | PASS | matiec's F_TRIG has `M` initialised FALSE (ed.2 FDIS wording) so it reports a falling edge on the first evaluation with CLK = FALSE; the trace assumes ed.3's `M := TRUE` (findings #6, flagged as the suite's main uncertainty) |
-| edge/sr_rs | PASS | PASS | **FAIL** (compile) | RuSTy names the bistable inputs `SET1`/`RESET` and `SET`/`RESET1` instead of the standard `S1`/`R` and `S`/`R1` (ed.3 table 42), so a conformant program does not compile (other runtimes #3) |
-| edge/power_on_clk_true | PASS | PASS | PASS | R_TRIG fires on a first evaluation with CLK TRUE; F_TRIG's start-up ambiguity does not arise |
-| counters/ctu | PASS | **FAIL** (cycle 8) | PASS | matiec stops counting at CV = PV (`CV < PV`, ed.2 FDIS wording); the trace follows ed.3's `CV < PVmax` and counts to 4 (findings #7) |
-| counters/ctd | PASS | **FAIL** (cycle 10) | PASS | matiec stops counting down at CV = 0 (`CV > 0`, ed.2 FDIS wording); the trace follows ed.3's `CV > PVmin` and counts to -1 (same edition difference as ctu) |
-| counters/ctud | PASS | **FAIL** (cycles 18-20) | PASS | matiec stops at CV = 0 on the way down (cycle 18), so the later up-count lands on 1 instead of 0 (cycle 20). Priorities (R over LD over counting) and the cancelling of simultaneous edges agree on all runtimes |
-| counters/ctd_bounds | **FAIL** (cycles 3-6) | PASS | PASS | IronPLC wraps -32768 to 32767 on a CD edge (findings #9, ironplc#2332) |
-| counters/ctud_bounds | **FAIL** (cycles 3-8) | PASS | PASS | IronPLC wraps 32767 to -32768 on a CU edge (findings #9) |
-| control-flow/if_case | PASS | PASS | PASS | |
-| control-flow/for_exit | PASS | PASS | PASS | |
-| control-flow/while | PASS | PASS | PASS | |
-| control-flow/nested_exit | PASS | PASS | PASS | |
-| control-flow/case_expr | PASS | PASS | PASS | |
-| pou/function_call | PASS | PASS | PASS | |
-| pou/fb_two_instances | PASS | PASS | PASS | |
-| pou/fb_input_retention | PASS | PASS | PASS | |
-| pou/fb_input_defaults | PASS | PASS | PASS | |
-| pou/function_var_not_retained | PASS | PASS | PASS | |
-| pou/fb_var_temp | **FAIL** (compile) | PASS | PASS | IronPLC: VAR_TEMP in an FB is P9999 not implemented (findings #10, ironplc#1969) |
-| pou/fb_en_eno | **FAIL** (compile) | PASS | **FAIL** (compile) | IronPLC: `EN :=` in an FB invocation is a syntax error P0002 (findings #14, ironplc#2549); RuSTy: E048 "Could not resolve reference to EN" (other runtimes #5) |
-| ops/precedence | PASS | PASS | PASS | |
-| ops/std_functions | PASS | PASS | PASS | |
-| ops/std_functions_ext | **FAIL** (compile) | PASS | **FAIL** (compile) | IronPLC: MAX and MIN with three inputs are P4018 (findings #11, ironplc#2548, fix in PR #2551); RuSTy: formal argument names on a standard function (`LIMIT(MN := ..)`) are E048 "Could not resolve reference to MN" (other runtimes #4) |
-| ops/conversions | PASS | PASS | PASS | |
-| ops/time_arith | PASS | **ERROR** (build) | PASS | matiec emits `_____time_add`/`_____time_sub` for `+`/`-` on TIME (`print_binary_function` adds `___` to a name that already starts with `__`), a symbol that does not exist, so the program never builds (beremiz/matiec#40, fix in PR #45); with #40 fixed, `T#1h2m3s4ms` is still 1 ns short (beremiz/matiec#44) |
-| ops/literals | PASS | PASS | PASS | |
-| ops/bit_ops | PASS | PASS | PASS | |
-| data/array_internal | PASS | PASS | PASS | |
-| data/array_init | PASS | PASS | PASS | |
-| data/struct_internal | **FAIL** (compile) | PASS | PASS | IronPLC: assigning a structure to a structure-typed field (`r.tl := q`) is P9999 not implemented (findings #13, ironplc#2550) |
-| data/enum | PASS | PASS | PASS | |
-| ops/real_arith | PASS | PASS | PASS | binary32 arithmetic within the 1e-6 tolerance of SPEC.md |
-| ops/real_functions | PASS | PASS | PASS | SQRT ABS EXP LN SIN COS |
-| ops/real_power | PASS | PASS | PASS | EXPT and ** |
-| ops/real_conversions | **FAIL** (cycles 0, 1, 3, 4) | PASS | PASS | IronPLC truncates REAL_TO_INT and LREAL_TO_DINT instead of rounding to nearest (findings #16, ironplc#1813) |
-| ops/real_compare | PASS | PASS | PASS | |
-| ops/lreal_precision | PASS | PASS | **FAIL** (cycles 0-3, big) | binary64 within 1e-12; RuSTy evaluates the untyped literals of `1.0E15 + 1.0` as REAL before widening, giving 999999986991104 (other runtimes #6) |
-| strings/literals_escapes | PASS | PASS | PASS | |
-| strings/declared_length | PASS | **FAIL** (compile) | PASS | matiec: a `STRING[n]` variable is parsed but then "not declared in this scope" (stage3 visitors for `single_byte_string_var_declaration_c` are commented out; beremiz/matiec#42) |
-| strings/functions | PASS | **FAIL** (cycle 0) | PASS | matiec: `REPLACE(IN1, IN2, L, P)` copies only min(LEN(IN2), L) characters of IN2 (`__replace`, `iec_std_functions.h`), so with L = 1 'hYllo' instead of 'hYYllo' (beremiz/matiec#41, fix in PR #46) |
-| strings/compare | PASS | PASS | PASS | |
-| strings/concat_assign | PASS | PASS | PASS | |
-| config/globals_external | PASS | PASS | **ERROR** (configuration) | SPEC version 2; RuSTy's harness does not take configurations (RuSTy compiles one program) |
-| config/two_periods | **FAIL** (compile) | PASS | **ERROR** (configuration) | IronPLC: one program instance only (findings #18, ironplc#1613) |
-| config/priority_order | **FAIL** (compile) | **FAIL** (cycles 0-3) | **ERROR** (configuration) | matiec runs the tasks of a resource in declaration order, ignoring PRIORITY (`RES0_run__` in the generated res0.c; beremiz/matiec#43, fix in PR #48), so the reader sees g one step late |
-| config/global_exchange | **FAIL** (compile) | PASS | **ERROR** (configuration) | |
-| config/event_single | **FAIL** (compile) | PASS | **ERROR** (configuration) | IronPLC: P4047 SINGLE not supported (findings #18); matiec: an R_TRIG on the SINGLE input, one run per rising edge |
-| undefined/int_overflow | SAME | SAME | SAME | all three wrap in two's complement |
-| undefined/div_zero | SAME | SAME | SAME | IronPLC: VM trap "divide by zero"; matiec and RuSTy: native integer division, the process receives SIGFPE (the drivers report it as `trap`). All stop the scan; none computes `MOD`. matiec's `/` is a bare C division, so on AArch64 it returns 0 instead of trapping (beremiz/matiec#38, fix in PR #47); its `MOD` and `DIV()` are guarded |
-| undefined/eval_order | SAME | SAME | SAME | all three evaluate the left operand of `-` first |
-| undefined/for_bound_modified | SAME | SAME | SAME | all three re-read the final value on every iteration |
-| undefined/ctu_pv_zero | SAME | **DIFFERS** | SAME | IronPLC counts (CV = 1, 2) with Q always TRUE; matiec never counts because `CV < PV` is false at PV = 0, Q always TRUE. Same Q, different CV |
-| undefined/ton_pt_change | SAME | **DIFFERS** | **DIFFERS** | IronPLC and matiec raise Q as soon as PT drops below the elapsed time and keep Q TRUE when PT is later raised; but IronPLC's ET keeps climbing to the new PT (400..800 ms) while matiec freezes ET at the old PT (200 ms) once Q has risen. RuSTy is a third behaviour: Q is recomputed every cycle as elapsed > PT, so raising PT makes Q fall again (cycles 5 to 9) and it rises once more at 800 ms |
-| undefined/for_var_after_loop | SAME | SAME | SAME | all leave the control variable at the first value that failed the test (n + 1), or at its initial value when the body never ran |
-| undefined/timer_pt_zero | SAME | **DIFFERS** (cycle 0) | **DIFFERS** (cycle 0) | with PT = 0 IronPLC switches one cycle after the edge, matiec and RuSTy on the edge's cycle; the recorded cycle-0 difference is findings #1 (TOF at power-up), the rest agrees (findings #12) |
-| undefined/abs_int_min | SAME | SAME | SAME | ABS(-32768) and -(-32768) wrap to -32768 on all |
-| undefined/dint_to_int_overflow | SAME | SAME | SAME | out-of-range *_TO_* truncate in two's complement on all |
-| undefined/array_out_of_bounds | SAME | **DIFFERS** (cycle 2) | **DIFFERS** (cycle 2) | IronPLC traps ("array index out of bounds"); matiec and RuSTy have no check and read past the array, both give v=4 (findings #15) |
-| undefined/real_div_zero | SAME | SAME | SAME | inf, -inf, NaN on all, no trap (findings #17) |
-| undefined/real_to_int_ties | SAME | **DIFFERS** (cycles 1, 3) | **DIFFERS** (all ties) | three behaviours: IronPLC truncates (3.5 -> 3), matiec rounds half to even (3.5 -> 4, ed.2 2.5.1.5.1), RuSTy rounds half away from zero (2.5 -> 3, -2.5 -> -3) |
-| undefined/string_truncate | SAME | **DIFFERS** (compile) | SAME | IronPLC truncates to the declared length; matiec cannot declare `STRING[n]` (see declared_length) |
-| undefined/string_conversions | SAME | SAME | SAME | plain decimal, leading minus, on all |
-| undefined/tasks_same_priority | **DIFFERS** (compile) | SAME | **ERROR** (configuration) | records matiec (IronPLC cannot run two instances): declaration order |
+| test | IronPLC | matiec | OpenPLC's matiec | RuSTy | note |
+|---|---|---|---|---|---|
+| timers/ton | PASS | PASS | PASS | **FAIL** (cycle 4) | RuSTy raises Q one cycle late: Q = (elapsed > PT), not >= (other runtimes #1) |
+| timers/tof | **FAIL** (cycle 0) | PASS | PASS | **FAIL** (cycles 5, 12) | IronPLC starts an off-delay at power-up with IN never TRUE (findings #1); RuSTy drops Q one cycle late (other runtimes #1) |
+| timers/tp | **FAIL** (cycles 5, 10-18) | PASS | PASS | **FAIL** (cycles 4-8, 16) | IronPLC retriggers while IN stays TRUE, and keeps ET = PT after the pulse with IN FALSE (findings #2, #3); RuSTy's pulse is one cycle long and, after a pulse that ended with IN already FALSE, the block is dead until IN goes TRUE then FALSE again (other runtimes #2) |
+| edge/r_trig | PASS | PASS | PASS | PASS | |
+| edge/f_trig | PASS | **FAIL** (cycle 0) | PASS | PASS | matiec's F_TRIG has `M` initialised FALSE (ed.2 FDIS wording) so it reports a falling edge on the first evaluation with CLK = FALSE; the trace assumes ed.3's `M := TRUE` (findings #6, flagged as the suite's main uncertainty) |
+| edge/sr_rs | PASS | PASS | PASS | **FAIL** (compile) | RuSTy names the bistable inputs `SET1`/`RESET` and `SET`/`RESET1` instead of the standard `S1`/`R` and `S`/`R1` (ed.3 table 42), so a conformant program does not compile (other runtimes #3) |
+| edge/power_on_clk_true | PASS | PASS | PASS | PASS | R_TRIG fires on a first evaluation with CLK TRUE; F_TRIG's start-up ambiguity does not arise |
+| counters/ctu | PASS | **FAIL** (cycle 8) | **FAIL** (cycle 8) | PASS | matiec stops counting at CV = PV (`CV < PV`, ed.2 FDIS wording); the trace follows ed.3's `CV < PVmax` and counts to 4 (findings #7) |
+| counters/ctd | PASS | **FAIL** (cycle 10) | **FAIL** (cycle 10) | PASS | matiec stops counting down at CV = 0 (`CV > 0`, ed.2 FDIS wording); the trace follows ed.3's `CV > PVmin` and counts to -1 (same edition difference as ctu) |
+| counters/ctud | PASS | **FAIL** (cycles 18-20) | **FAIL** (cycles 18-20) | PASS | matiec stops at CV = 0 on the way down (cycle 18), so the later up-count lands on 1 instead of 0 (cycle 20). Priorities (R over LD over counting) and the cancelling of simultaneous edges agree on all runtimes |
+| counters/ctd_bounds | **FAIL** (cycles 3-6) | PASS | PASS | PASS | IronPLC wraps -32768 to 32767 on a CD edge (findings #9, ironplc#2332) |
+| counters/ctud_bounds | **FAIL** (cycles 3-8) | PASS | PASS | PASS | IronPLC wraps 32767 to -32768 on a CU edge (findings #9) |
+| control-flow/if_case | PASS | PASS | PASS | PASS | |
+| control-flow/for_exit | PASS | PASS | PASS | PASS | |
+| control-flow/while | PASS | PASS | PASS | PASS | |
+| control-flow/nested_exit | PASS | PASS | PASS | PASS | |
+| control-flow/case_expr | PASS | PASS | PASS | PASS | |
+| pou/function_call | PASS | PASS | PASS | PASS | |
+| pou/fb_two_instances | PASS | PASS | PASS | PASS | |
+| pou/fb_input_retention | PASS | PASS | PASS | PASS | |
+| pou/fb_input_defaults | PASS | PASS | PASS | PASS | |
+| pou/function_var_not_retained | PASS | PASS | PASS | PASS | |
+| pou/fb_var_temp | **FAIL** (compile) | PASS | PASS | PASS | IronPLC: VAR_TEMP in an FB is P9999 not implemented (findings #10, ironplc#1969) |
+| pou/fb_en_eno | **FAIL** (compile) | PASS | PASS | **FAIL** (compile) | IronPLC: `EN :=` in an FB invocation is a syntax error P0002 (findings #14, ironplc#2549); RuSTy: E048 "Could not resolve reference to EN" (other runtimes #5) |
+| ops/precedence | PASS | PASS | PASS | PASS | |
+| ops/std_functions | PASS | PASS | PASS | PASS | |
+| ops/std_functions_ext | **FAIL** (compile) | PASS | PASS | **FAIL** (compile) | IronPLC: MAX and MIN with three inputs are P4018 (findings #11, ironplc#2548, fix in PR #2551); RuSTy: formal argument names on a standard function (`LIMIT(MN := ..)`) are E048 "Could not resolve reference to MN" (other runtimes #4) |
+| ops/conversions | PASS | PASS | PASS | PASS | |
+| ops/time_arith | PASS | **ERROR** (build) | **FAIL** (cycles 0-3) | PASS | matiec emits `_____time_add`/`_____time_sub` for `+`/`-` on TIME (`print_binary_function` adds `___` to a name that already starts with `__`), a symbol that does not exist, so the program never builds (beremiz/matiec#40, fix in PR #45); with #40 fixed, `T#1h2m3s4ms` is still 1 ns short (beremiz/matiec#44) |
+| ops/literals | PASS | PASS | PASS | PASS | |
+| ops/bit_ops | PASS | PASS | PASS | PASS | |
+| data/array_internal | PASS | PASS | PASS | PASS | |
+| data/array_init | PASS | PASS | PASS | PASS | |
+| data/struct_internal | **FAIL** (compile) | PASS | PASS | PASS | IronPLC: assigning a structure to a structure-typed field (`r.tl := q`) is P9999 not implemented (findings #13, ironplc#2550) |
+| data/enum | PASS | PASS | PASS | PASS | |
+| ops/real_arith | PASS | PASS | PASS | PASS | binary32 arithmetic within the 1e-6 tolerance of SPEC.md |
+| ops/real_functions | PASS | PASS | PASS | PASS | SQRT ABS EXP LN SIN COS |
+| ops/real_power | PASS | PASS | PASS | PASS | EXPT and ** |
+| ops/real_conversions | **FAIL** (cycles 0, 1, 3, 4) | PASS | PASS | PASS | IronPLC truncates REAL_TO_INT and LREAL_TO_DINT instead of rounding to nearest (findings #16, ironplc#1813) |
+| ops/real_compare | PASS | PASS | PASS | PASS | |
+| ops/lreal_precision | PASS | PASS | PASS | **FAIL** (cycles 0-3, big) | binary64 within 1e-12; RuSTy evaluates the untyped literals of `1.0E15 + 1.0` as REAL before widening, giving 999999986991104 (other runtimes #6) |
+| strings/literals_escapes | PASS | PASS | PASS | PASS | |
+| strings/declared_length | PASS | **FAIL** (compile) | **FAIL** (compile) | PASS | matiec: a `STRING[n]` variable is parsed but then "not declared in this scope" (stage3 visitors for `single_byte_string_var_declaration_c` are commented out; beremiz/matiec#42) |
+| strings/functions | PASS | **FAIL** (cycle 0) | **FAIL** (cycles 0-3) | PASS | matiec: `REPLACE(IN1, IN2, L, P)` copies only min(LEN(IN2), L) characters of IN2 (`__replace`, `iec_std_functions.h`), so with L = 1 'hYllo' instead of 'hYYllo' (beremiz/matiec#41, fix in PR #46) |
+| strings/compare | PASS | PASS | **FAIL** (cycles 0-1) | PASS | |
+| strings/concat_assign | PASS | PASS | PASS | PASS | |
+| config/globals_external | PASS | PASS | PASS | **ERROR** (configuration) | SPEC version 2; RuSTy's harness does not take configurations (RuSTy compiles one program) |
+| config/two_periods | **FAIL** (compile) | PASS | PASS | **ERROR** (configuration) | IronPLC: one program instance only (findings #18, ironplc#1613) |
+| config/priority_order | **FAIL** (compile) | **FAIL** (cycles 0-3) | **FAIL** (cycles 0-3) | **ERROR** (configuration) | matiec runs the tasks of a resource in declaration order, ignoring PRIORITY (`RES0_run__` in the generated res0.c; beremiz/matiec#43, fix in PR #48), so the reader sees g one step late |
+| config/global_exchange | **FAIL** (compile) | PASS | PASS | **ERROR** (configuration) | |
+| config/event_single | **FAIL** (compile) | PASS | PASS | **ERROR** (configuration) | IronPLC: P4047 SINGLE not supported (findings #18); matiec: an R_TRIG on the SINGLE input, one run per rising edge |
+| undefined/int_overflow | SAME | SAME | SAME | SAME | all three wrap in two's complement |
+| undefined/div_zero | SAME | SAME | **DIFFERS** (cycle 2) | SAME | IronPLC: VM trap "divide by zero"; matiec and RuSTy: native integer division, the process receives SIGFPE (the drivers report it as `trap`). All stop the scan; none computes `MOD`. matiec's `/` is a bare C division, so on AArch64 it returns 0 instead of trapping (beremiz/matiec#38, fix in PR #47); its `MOD` and `DIV()` are guarded |
+| undefined/eval_order | SAME | SAME | SAME | SAME | all three evaluate the left operand of `-` first |
+| undefined/for_bound_modified | SAME | SAME | SAME | SAME | all three re-read the final value on every iteration |
+| undefined/ctu_pv_zero | SAME | **DIFFERS** | **DIFFERS** (cycles 1-3) | SAME | IronPLC counts (CV = 1, 2) with Q always TRUE; matiec never counts because `CV < PV` is false at PV = 0, Q always TRUE. Same Q, different CV |
+| undefined/ton_pt_change | SAME | **DIFFERS** | **DIFFERS** (cycles 5-11) | **DIFFERS** | IronPLC and matiec raise Q as soon as PT drops below the elapsed time and keep Q TRUE when PT is later raised; but IronPLC's ET keeps climbing to the new PT (400..800 ms) while matiec freezes ET at the old PT (200 ms) once Q has risen. RuSTy is a third behaviour: Q is recomputed every cycle as elapsed > PT, so raising PT makes Q fall again (cycles 5 to 9) and it rises once more at 800 ms |
+| undefined/for_var_after_loop | SAME | SAME | SAME | SAME | all leave the control variable at the first value that failed the test (n + 1), or at its initial value when the body never ran |
+| undefined/timer_pt_zero | SAME | **DIFFERS** (cycle 0) | **DIFFERS** (cycle 0) | **DIFFERS** (cycle 0) | with PT = 0 IronPLC switches one cycle after the edge, matiec and RuSTy on the edge's cycle; the recorded cycle-0 difference is findings #1 (TOF at power-up), the rest agrees (findings #12) |
+| undefined/abs_int_min | SAME | SAME | SAME | SAME | ABS(-32768) and -(-32768) wrap to -32768 on all |
+| undefined/dint_to_int_overflow | SAME | SAME | SAME | SAME | out-of-range *_TO_* truncate in two's complement on all |
+| undefined/array_out_of_bounds | SAME | **DIFFERS** (cycle 2) | **DIFFERS** (cycle 2) | **DIFFERS** (cycle 2) | IronPLC traps ("array index out of bounds"); matiec and RuSTy have no check and read past the array, both give v=4 (findings #15) |
+| undefined/real_div_zero | SAME | SAME | SAME | SAME | inf, -inf, NaN on all, no trap (findings #17) |
+| undefined/real_to_int_ties | SAME | **DIFFERS** (cycles 1, 3) | **DIFFERS** (cycles 1, 3) | **DIFFERS** (all ties) | three behaviours: IronPLC truncates (3.5 -> 3), matiec rounds half to even (3.5 -> 4, ed.2 2.5.1.5.1), RuSTy rounds half away from zero (2.5 -> 3, -2.5 -> -3) |
+| undefined/string_truncate | SAME | **DIFFERS** (compile) | **DIFFERS** (compile) | SAME | IronPLC truncates to the declared length; matiec cannot declare `STRING[n]` (see declared_length) |
+| undefined/string_conversions | SAME | SAME | SAME | SAME | plain decimal, leading minus, on all |
+| undefined/tasks_same_priority | **DIFFERS** (compile) | SAME | SAME | **ERROR** (configuration) | records matiec (IronPLC cannot run two instances): declaration order |
 
-Totals: IronPLC 38/51 conformant pass; matiec 43/51; RuSTy 39/51 (the five
-`config/` tests are outside RuSTy's harness). No test
+Totals: IronPLC 38/51 conformant pass; matiec 43/51; OpenPLC's matiec fork
+43/51 (a different 43, see below); RuSTy 39/51 (the five `config/` tests are
+outside RuSTy's harness). No test
 other than the six control-flow/POU/R_TRIG ones and the four "all SAME"
 corners has the same result on all three runtimes: the three disagree
 somewhere on tof, tp, f_trig, sr_rs, ctu, ctd, ctud, ctd_bounds, ctud_bounds,
@@ -152,6 +154,30 @@ Items 1, 2, 3 are IronPLC deviations from the standard's timing diagrams
 is matiec following the 2001 FDIS text rather than the published editions.
 Item 4 depends on which edition's `F_TRIG` body is taken as reference. Item
 6 is outside what the standard defines.
+
+## OpenPLC's matiec fork (OpenPLC_v3 `b5d4135`, `utils/matiec_src`)
+
+An older matiec snapshot; the same harness drives it. Where it differs from
+upstream matiec `3a41303`:
+
+1. **String comparison stops at the shorter length**: `__STR_CMP` is a
+   `memcmp` over `min(len1, len2)`, so `'ab' < 'abc'` and `'' < 'a'` are
+   FALSE (a prefix compares equal). Upstream compares the lengths after the
+   common part. (`strings/compare`)
+2. **`FIND` returns `LEN(IN1) + 1` when `IN2` is absent** instead of 0:
+   `FIND('hello', 'zz')` is 6. (`strings/functions`)
+3. **`F_TRIG` is the ed.3 reading**: `Q := NOT CLK AND M; M := CLK;` with `M`
+   initially FALSE, so no falling edge is reported on a first evaluation
+   with CLK FALSE; `edge/f_trig` passes here and fails on upstream, whose
+   body follows the FDIS 2001 text (`notes/findings.md` #6).
+4. **`+` and `-` on TIME build**: `print_binary_function()` has no `___`
+   prefix in this snapshot, so beremiz/matiec#40 is a later regression;
+   `ops/time_arith` then fails only on the 1 ns short literal (#44).
+5. **No `__POUS_INIT_ONLY__` guard**: `undefined/eval_order` builds with
+   clang here (beremiz/matiec#39 is also later).
+
+Shared with upstream: `REPLACE` (#41), `STRING[n]` (#42), task order (#43),
+counters saturating at PV / 0, rounding to even, the `/` operator unguarded.
 
 ## RuSTy deviations (commit `e911ee5`)
 
