@@ -97,8 +97,8 @@ Legend: PASS/FAIL for `status: conformant` traces; SAME/DIFFERS for
 | ops/real_compare | PASS | PASS | PASS | |
 | ops/lreal_precision | PASS | PASS | **FAIL** (cycles 0-3, big) | binary64 within 1e-12; RuSTy evaluates the untyped literals of `1.0E15 + 1.0` as REAL before widening, giving 999999986991104 (other runtimes #6) |
 | strings/literals_escapes | PASS | PASS | PASS | |
-| strings/declared_length | PASS | **FAIL** (compile) | PASS | matiec: a `STRING[n]` variable is parsed but then "not declared in this scope" (stage3 visitors for `single_byte_string_var_declaration_c` are commented out) |
-| strings/functions | PASS | **FAIL** (cycle 0) | PASS | matiec: `REPLACE(IN1, IN2, L, P)` copies only min(LEN(IN2), L) characters of IN2 (`__replace`, `iec_std_functions.h`), so with L = 1 'hYllo' instead of 'hYYllo' |
+| strings/declared_length | PASS | **FAIL** (compile) | PASS | matiec: a `STRING[n]` variable is parsed but then "not declared in this scope" (stage3 visitors for `single_byte_string_var_declaration_c` are commented out; beremiz/matiec#42) |
+| strings/functions | PASS | **FAIL** (cycle 0) | PASS | matiec: `REPLACE(IN1, IN2, L, P)` copies only min(LEN(IN2), L) characters of IN2 (`__replace`, `iec_std_functions.h`), so with L = 1 'hYllo' instead of 'hYYllo' (beremiz/matiec#41) |
 | strings/compare | PASS | PASS | PASS | |
 | strings/concat_assign | PASS | PASS | PASS | |
 | undefined/int_overflow | SAME | SAME | SAME | all three wrap in two's complement |
@@ -136,8 +136,8 @@ timer_pt_zero, array_out_of_bounds, real_to_int_ties and string_truncate.
 7. **Counters at the INT bounds**: IronPLC wraps (CTD at -32768 gives 32767, CTUD at 32767 gives -32768); matiec saturates.
 8. **`+` and `-` on TIME**: matiec's generated C does not build (`_____time_add`); IronPLC computes them.
 9. **Timers with PT = 0**: IronPLC switches one cycle after the input edge, matiec on the edge's own cycle.
-10. **`STRING[n]` declarations**: matiec rejects them after parsing ("not declared in this scope"); IronPLC and RuSTy accept them.
-11. **`REPLACE` with L shorter than IN2**: matiec inserts only L characters of IN2; IronPLC inserts all of IN2 as table 34 says.
+10. **`STRING[n]` declarations**: matiec rejects them after parsing ("not declared in this scope", beremiz/matiec#42); IronPLC and RuSTy accept them.
+11. **`REPLACE` with L shorter than IN2**: matiec inserts only L characters of IN2 (beremiz/matiec#41); IronPLC inserts all of IN2 as table 34 says.
 
 Items 1, 2, 3 are IronPLC deviations from the standard's timing diagrams
 (matiec's `lib/timer.txt` reproduces those diagrams in its comments). Item 5
