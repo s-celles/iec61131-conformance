@@ -38,7 +38,9 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from tracefmt import Status, Value, parse_trace  # noqa: E402
 
-TYPE_C = {"BOOL": "BOOL", "INT": "INT", "DINT": "DINT", "UINT": "UINT", "TIME": "TIME"}
+TYPE_C = {"BOOL": "BOOL", "INT": "INT", "DINT": "DINT", "UINT": "UINT", "TIME": "TIME",
+          "BYTE": "BYTE", "WORD": "WORD", "DWORD": "DWORD"}
+HEX_WIDTH = {"BYTE": 2, "WORD": 4, "DWORD": 8}
 
 DRIVER = r'''
 #include <stdio.h>
@@ -113,6 +115,8 @@ def c_setters(inputs):
             cases.append(f'    if (!strcmp(name, "{name}")) {{ RES0__INST0.{cname}.value = !strcmp(text, "TRUE"); return; }}')
         elif ty == "TIME":
             cases.append(f'    if (!strcmp(name, "{name}")) {{ long long ms = atoll(text + 2); RES0__INST0.{cname}.value.tv_sec = ms / 1000; RES0__INST0.{cname}.value.tv_nsec = (int32_t)((ms % 1000) * 1000000); return; }}')
+        elif ty in HEX_WIDTH:
+            cases.append(f'    if (!strcmp(name, "{name}")) {{ RES0__INST0.{cname}.value = ({TYPE_C[ty]})strtoull(text + 3, NULL, 16); return; }}')
         else:
             cases.append(f'    if (!strcmp(name, "{name}")) {{ RES0__INST0.{cname}.value = ({TYPE_C[ty]})atoll(text); return; }}')
     body = "\n".join(cases)
@@ -127,6 +131,8 @@ def c_getters(outputs):
             lines.append(f'    printf(" {name}=%s", RES0__INST0.{cname}.value ? "TRUE" : "FALSE");')
         elif ty == "TIME":
             lines.append(f'    printf(" {name}="); print_time(RES0__INST0.{cname}.value);')
+        elif ty in HEX_WIDTH:
+            lines.append(f'    printf(" {name}=16#%0{HEX_WIDTH[ty]}llX", (unsigned long long)RES0__INST0.{cname}.value);')
         else:
             lines.append(f'    printf(" {name}=%lld", (long long)RES0__INST0.{cname}.value);')
     body = "\n".join(lines)

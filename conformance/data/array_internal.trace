@@ -1,0 +1,18 @@
+# Arrays (ed.3 6.4.4.3 / ed.2 2.3.3.1): elements are addressed by an
+# integer expression within the declared subrange, which may start below
+# 0; elements are initialised to the default value of the element type (0)
+# and retain their values across cycles (program VAR).
+#   arr[0..4]: written at idx each cycle, summed; neg[-2..2] written at
+#   idx - 2, its two ends read back.
+period_ms: 100
+program: main
+inputs: idx val
+outputs: sum at_idx lo hi
+status: conformant
+reference: IEC 61131-3 ed.3 6.4.4.3 (array data types), 7.3.1 (array element access)
+---
+0 idx=0 val=10  => sum=10  at_idx=10  lo=10 hi=0
+1 idx=4 val=-3  => sum=7   at_idx=-3  lo=10 hi=-3
+2 idx=2 val=100 => sum=107 at_idx=100 lo=10 hi=-3
+3 idx=0 val=1   => sum=98  at_idx=1   lo=1  hi=-3
+4 idx=4 val=0   => sum=101 at_idx=0   lo=1  hi=0

@@ -49,7 +49,7 @@ cycle.
 Names are IEC identifiers and are matched case-insensitively. All named
 variables must be declared in the program's `VAR`, `VAR_INPUT` or
 `VAR_OUTPUT` section with one of the types `BOOL`, `INT`, `DINT`, `UINT`,
-`TIME` (version 1 scope).
+`TIME`, `BYTE`, `WORD`, `DWORD` (version 1 scope).
 
 ### Records
 
@@ -83,11 +83,16 @@ variables must be declared in the program's `VAR`, `VAR_INPUT` or
 | `BOOL` | `TRUE` or `FALSE` | `q=TRUE` |
 | `INT`, `DINT`, `UINT` | optional sign and decimal digits | `x=-32768`, `n=65535` |
 | `TIME` | `T#<n>ms`, non-negative integer milliseconds only | `et=T#1500ms` |
+| `BYTE`, `WORD`, `DWORD` | `16#` and exactly 2, 4 or 8 upper-case hex digits | `w=16#00FF`, `d=16#DEADBEEF` |
 
-No other literal forms are allowed (no `T#1.5s`, no `16#`, no `INT#`), so a
-parser is a split on whitespace, a split on the first `=`, and three cases.
-This is the rendering `ironplcvm run --dump-vars` produces, so a dump can be
-compared to a record by string equality.
+No other literal forms are allowed (no `T#1.5s`, no `16#` on integers, no
+`INT#`), so a parser is a split on whitespace, a split on the first `=`, and
+four cases. This is the rendering `ironplcvm run --dump-vars` produces, so a
+dump can be compared to a record by string equality.
+
+Arrays, structures and enumerations may be used inside the program; the
+harness only reads and writes scalars of the types above, so expose what is
+to be checked through scalar program variables.
 
 ## Semantics the harness must implement
 
@@ -120,6 +125,7 @@ header-line = key ":" SP *VCHAR LF
 sep      = "---" LF
 record   = cycle *( SP assign ) SP "=>" ( *( SP assign ) / SP "trap" ) LF
 assign   = name "=" value
-value    = "TRUE" / "FALSE" / ["-"] 1*DIGIT / "T#" 1*DIGIT "ms" / "?"
+value    = "TRUE" / "FALSE" / ["-"] 1*DIGIT / "T#" 1*DIGIT "ms"
+         / "16#" ( 2HEXDIG / 4HEXDIG / 8HEXDIG ) / "?"
 comment  = "#" *VCHAR LF
 ```

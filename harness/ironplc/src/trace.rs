@@ -12,6 +12,8 @@ pub enum Value {
     Int(i64),
     /// Milliseconds.
     Time(i64),
+    /// Bit string `16#..` with 2, 4 or 8 hex digits (BYTE, WORD, DWORD).
+    Bits { v: u64, digits: usize },
     /// `?`: not checked.
     Any,
 }
@@ -36,6 +38,15 @@ impl Value {
                 .map_err(|_| format!("bad TIME literal: {s}"))?;
             return Ok(Value::Time(ms));
         }
+        if let Some(hex) = s.strip_prefix("16#") {
+            if !matches!(hex.len(), 2 | 4 | 8) || hex.chars().any(|c| c.is_ascii_lowercase()) {
+                return Err(format!(
+                    "bit string literal must be 16# and 2, 4 or 8 upper-case hex digits: {s}"
+                ));
+            }
+            let v = u64::from_str_radix(hex, 16).map_err(|_| format!("bad bit string: {s}"))?;
+            return Ok(Value::Bits { v, digits: hex.len() });
+        }
         s.parse::<i64>()
             .map(Value::Int)
             .map_err(|_| format!("bad value: {s}"))
@@ -49,6 +60,7 @@ impl fmt::Display for Value {
             Value::Bool(false) => write!(f, "FALSE"),
             Value::Int(i) => write!(f, "{i}"),
             Value::Time(ms) => write!(f, "T#{ms}ms"),
+            Value::Bits { v, digits } => write!(f, "16#{v:0width$X}", width = digits),
             Value::Any => write!(f, "?"),
         }
     }

@@ -1,0 +1,18 @@
+# EN / ENO on a function block (ed.3 6.6.1.7 table 20 / ed.2 2.5.1.2
+# figure 10): when EN is FALSE at invocation, the body is not executed and
+# ENO is set FALSE; when EN is TRUE the body runs and ENO is TRUE unless
+# the body or an error sets it FALSE. The FB's own state (total) is kept
+# while it is disabled.
+period_ms: 100
+program: main
+inputs: run_it inc
+outputs: total done
+status: conformant
+reference: IEC 61131-3 ed.3 6.6.1.7 (EN and ENO)
+---
+0 run_it=TRUE inc=5   => total=5  done=TRUE
+1 run_it=FALSE         => total=5  done=FALSE
+2 inc=100             => total=5  done=FALSE
+3 run_it=TRUE          => total=105 done=TRUE
+4 inc=-5              => total=100 done=TRUE
+5 run_it=FALSE         => total=100 done=FALSE

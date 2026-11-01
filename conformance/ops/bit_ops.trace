@@ -1,0 +1,31 @@
+# Bit string operations (ed.3 tables 32 and 33 / ed.2 tables 25 and 26):
+#   SHL(IN, N): IN shifted left by N bits, zero-filled on the right;
+#   SHR(IN, N): shifted right, zero-filled on the left;
+#   ROL/ROR(IN, N): rotated left/right by N bits, within the width of IN;
+#   AND OR XOR NOT: bitwise.
+# N = 0 leaves the value unchanged; a shift by the full width gives 0 and a
+# rotation by the full width gives the value back (cycle 4, WORD).
+#
+# cycle 0: F0.3C -> AND 30, OR FC, XOR CC, NOT F0 = 0F
+#   1234 <<4 = 2340, >>4 = 0123, rol4 = 2341, ror4 = 4123
+#   80000001 <<4 = 00000010, >>4 = 08000000, rol4 = 00000018, ror4 = 18000000
+# cycle 1: AA.55 -> 00, FF, FF, NOT AA = 55
+#   8001 <<1 = 0002, >>1 = 4000, rol1 = 0003, ror1 = C000
+#   00000001 <<1 = 2, >>1 = 0, rol1 = 2, ror1 = 80000000
+# cycle 2: n = 0, everything unchanged; FF.00 -> 00, FF, FF, NOT FF = 00
+# cycle 3: n = 15: 0001 <<15 = 8000, >>15 = 0000, rol15 = 8000, ror15 = 0002
+#   80000000 <<15 = 00000000, >>15 = 00010000, rol15 = 00004000, ror15 = 00010000
+# cycle 4: n = 16: WORD shifts give 0000, rotations give 1234 back;
+#   12345678 <<16 = 56780000, >>16 = 00001234, rol16 = ror16 = 56781234
+period_ms: 100
+program: main
+inputs: b m w d n
+outputs: o_and o_or o_xor o_not w_shl w_shr w_rol w_ror d_shl d_shr d_rol d_ror
+status: conformant
+reference: IEC 61131-3 ed.3 6.6.2.5.2 table 32 (SHL SHR ROL ROR), table 33 (AND OR XOR NOT)
+---
+0 b=16#F0 m=16#3C w=16#1234 d=16#80000001 n=4  => o_and=16#30 o_or=16#FC o_xor=16#CC o_not=16#0F w_shl=16#2340 w_shr=16#0123 w_rol=16#2341 w_ror=16#4123 d_shl=16#00000010 d_shr=16#08000000 d_rol=16#00000018 d_ror=16#18000000
+1 b=16#AA m=16#55 w=16#8001 d=16#00000001 n=1  => o_and=16#00 o_or=16#FF o_xor=16#FF o_not=16#55 w_shl=16#0002 w_shr=16#4000 w_rol=16#0003 w_ror=16#C000 d_shl=16#00000002 d_shr=16#00000000 d_rol=16#00000002 d_ror=16#80000000
+2 b=16#FF m=16#00 w=16#FFFF d=16#FFFFFFFF n=0  => o_and=16#00 o_or=16#FF o_xor=16#FF o_not=16#00 w_shl=16#FFFF w_shr=16#FFFF w_rol=16#FFFF w_ror=16#FFFF d_shl=16#FFFFFFFF d_shr=16#FFFFFFFF d_rol=16#FFFFFFFF d_ror=16#FFFFFFFF
+3 b=16#0F m=16#0F w=16#0001 d=16#80000000 n=15 => o_and=16#0F o_or=16#0F o_xor=16#00 o_not=16#F0 w_shl=16#8000 w_shr=16#0000 w_rol=16#8000 w_ror=16#0002 d_shl=16#00000000 d_shr=16#00010000 d_rol=16#00004000 d_ror=16#00010000
+4 b=16#00 m=16#00 w=16#1234 d=16#12345678 n=16 => o_and=16#00 o_or=16#00 o_xor=16#00 o_not=16#FF w_shl=16#0000 w_shr=16#0000 w_rol=16#1234 w_ror=16#1234 d_shl=16#56780000 d_shr=16#00001234 d_rol=16#56781234 d_ror=16#56781234

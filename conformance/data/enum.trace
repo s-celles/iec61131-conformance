@@ -1,0 +1,17 @@
+# Enumerated data types (ed.3 6.4.4.1 / ed.2 2.3.3.1): the default initial
+# value of an enumerated variable is the first value of the type (RED);
+# values can be assigned, compared for equality, and used as CASE labels.
+#   cycle 0: pick = -1 leaves c at its initial RED; prev = RED too.
+period_ms: 100
+program: main
+inputs: pick
+outputs: code is_green same
+status: conformant
+reference: IEC 61131-3 ed.3 6.4.4.1 (enumerated data types), 6.4.4.4 (default initial value), 7.3.3.3.3 (CASE)
+---
+0 pick=-1 => code=1 is_green=FALSE same=TRUE
+1 pick=1  => code=2 is_green=TRUE  same=FALSE
+2 pick=1  => code=2 is_green=TRUE  same=TRUE
+3 pick=2  => code=3 is_green=FALSE same=FALSE
+4 pick=0  => code=1 is_green=FALSE same=FALSE
+5 pick=7  => code=1 is_green=FALSE same=TRUE

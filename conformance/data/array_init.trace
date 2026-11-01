@@ -1,0 +1,14 @@
+# Array initial values (ed.3 6.4.4.4 table 14? / ed.2 2.3.3.1 table 14,
+# "array initialisation"): a bracketed list of values, a repetition
+# `n(value)`, and the element type's default (0, FALSE) when none is given.
+#   7 + 8 + 9 = 24; 4 * 5 = 20; 0 + 0 = 0; TRUE AND NOT FALSE AND TRUE.
+# No inputs; two cycles show the values are stable.
+period_ms: 100
+program: main
+inputs:
+outputs: s_list s_rep z f
+status: conformant
+reference: IEC 61131-3 ed.3 6.4.4.4 (initial values of arrays)
+---
+0 => s_list=24 s_rep=20 z=0 f=TRUE
+1 => s_list=24 s_rep=20 z=0 f=TRUE

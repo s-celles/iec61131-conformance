@@ -78,12 +78,18 @@ Legend: PASS/FAIL for `status: conformant` traces; SAME/DIFFERS for
 | pou/fb_input_defaults | PASS | PASS | PASS | |
 | pou/function_var_not_retained | PASS | PASS | PASS | |
 | pou/fb_var_temp | **FAIL** (compile) | PASS | PASS | IronPLC: VAR_TEMP in an FB is P9999 not implemented (findings #10, ironplc#1969) |
+| pou/fb_en_eno | **FAIL** (compile) | PASS | RUSTY_fb_en_eno | IronPLC: `EN :=` in an FB invocation is a syntax error P0002 (findings #14) |
 | ops/precedence | PASS | PASS | PASS | |
 | ops/std_functions | PASS | PASS | PASS | |
 | ops/std_functions_ext | **FAIL** (compile) | PASS | **FAIL** (compile) | IronPLC: MAX and MIN with three inputs are P4018 (findings #11, ironplc#2548); RuSTy: formal argument names on a standard function (`LIMIT(MN := ..)`) are E048 "Could not resolve reference to MN" (other runtimes #4) |
 | ops/conversions | PASS | PASS | PASS | |
 | ops/time_arith | PASS | **ERROR** (build) | PASS | matiec emits `_____time_add`/`_____time_sub` for `+`/`-` on TIME (`print_binary_function` adds `___` to a name that already starts with `__`), a symbol that does not exist, so the program never builds (beremiz/matiec#40) |
 | ops/literals | PASS | PASS | PASS | |
+| ops/bit_ops | PASS | PASS | RUSTY_bit_ops | |
+| data/array_internal | PASS | PASS | RUSTY_array_internal | |
+| data/array_init | PASS | PASS | RUSTY_array_init | |
+| data/struct_internal | **FAIL** (compile) | PASS | RUSTY_struct_internal | IronPLC: assigning a structure to a structure-typed field (`r.tl := q`) is P9999 not implemented (findings #13) |
+| data/enum | PASS | PASS | RUSTY_enum | |
 | undefined/int_overflow | SAME | SAME | SAME | all three wrap in two's complement |
 | undefined/div_zero | SAME | SAME | SAME | IronPLC: VM trap "divide by zero"; matiec and RuSTy: native integer division, the process receives SIGFPE (the drivers report it as `trap`). All stop the scan; none computes `MOD`. matiec's `/` is a bare C division, so on AArch64 it returns 0 instead of trapping (beremiz/matiec#38); its `MOD` and `DIV()` are guarded |
 | undefined/eval_order | SAME | SAME | SAME | all three evaluate the left operand of `-` first |
@@ -94,13 +100,14 @@ Legend: PASS/FAIL for `status: conformant` traces; SAME/DIFFERS for
 | undefined/timer_pt_zero | SAME | **DIFFERS** (cycle 0) | **DIFFERS** (cycle 0) | with PT = 0 IronPLC switches one cycle after the edge, matiec and RuSTy on the edge's cycle; the recorded cycle-0 difference is findings #1 (TOF at power-up), the rest agrees (findings #12) |
 | undefined/abs_int_min | SAME | SAME | SAME | ABS(-32768) and -(-32768) wrap to -32768 on all |
 | undefined/dint_to_int_overflow | SAME | SAME | SAME | out-of-range *_TO_* truncate in two's complement on all |
+| undefined/array_out_of_bounds | SAME | **DIFFERS** (cycle 2) | RUSTY_array_out_of_bounds | IronPLC traps ("array index out of bounds"); matiec has no check and reads past the array (findings #15) |
 
-Totals: IronPLC 23/29 conformant pass; matiec 24/29; RuSTy 24/29. No test
+Totals: IronPLC 27/35 conformant pass; matiec 30/35; RuSTy RUSTY_TOTAL/35. No test
 other than the six control-flow/POU/R_TRIG ones and the four "all SAME"
 corners has the same result on all three runtimes: the three disagree
 somewhere on tof, tp, f_trig, sr_rs, ctu, ctd, ctud, ctd_bounds, ctud_bounds,
-fb_var_temp, std_functions_ext, time_arith, ctu_pv_zero, ton_pt_change and
-timer_pt_zero.
+fb_var_temp, fb_en_eno, struct_internal, std_functions_ext, time_arith,
+ctu_pv_zero, ton_pt_change, timer_pt_zero and array_out_of_bounds.
 
 ## Where the two runtimes disagree with each other, in one line each
 

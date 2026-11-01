@@ -94,6 +94,9 @@ fn encode(entry: &VarNameEntry, v: &Value) -> Result<u64, String> {
         }
         (iec_type_tag::UINT, Value::Int(i)) if (0..=65535).contains(i) => Ok(*i as u64),
         (iec_type_tag::TIME, Value::Time(ms)) if (0..=i32::MAX as i64).contains(ms) => Ok(*ms as u64),
+        (iec_type_tag::BYTE, Value::Bits { v, digits: 2 }) => Ok(*v),
+        (iec_type_tag::WORD, Value::Bits { v, digits: 4 }) => Ok(*v),
+        (iec_type_tag::DWORD, Value::Bits { v, digits: 8 }) => Ok(*v),
         _ => Err(format!(
             "cannot store {v} into {} : {} (type tag {tag})",
             entry.name, entry.type_name

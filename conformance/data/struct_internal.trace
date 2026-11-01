@@ -1,0 +1,17 @@
+# Structures (ed.3 6.4.4.2 / ed.2 2.3.3.1): members are accessed with
+# `.`, a structure may be assigned as a whole (the value is copied, so a
+# later write to the source does not change the copy), and a structure
+# member may itself be a structure.
+#   q = (a, b) after the copy, p.x reset to 0 afterwards; r.br - r.tl = (a, b)
+#   so area = a * b.
+period_ms: 100
+program: main
+inputs: a b
+outputs: qx qy px area
+status: conformant
+reference: IEC 61131-3 ed.3 6.4.4.2 (structured data types), 7.3.2.1 (assignment of structured variables)
+---
+0 a=3 b=4     => qx=3 qy=4 px=0 area=12
+1 a=-2 b=5    => qx=-2 qy=5 px=0 area=-10
+2 a=0 b=0     => qx=0 qy=0 px=0 area=0
+3 a=100 b=100 => qx=100 qy=100 px=0 area=10000

@@ -1,0 +1,17 @@
+# Array index out of range. Implementation-defined: ed.3 annex E / ed.2
+# annex E list "array index out of range" among the errors whose detection
+# and handling are implementer-specific (a runtime error, a clamped
+# access, or no check at all).
+# The records are what IronPLC does. Cycles 0 and 1 are the in-range
+# sanity check; the out-of-range read is placed last because it may stop
+# the program.
+period_ms: 100
+program: main
+inputs: idx
+outputs: v ok
+status: implementation-defined
+reference: IEC 61131-3 ed.3 annex E (array index out of range)
+---
+0 idx=2 => v=20 ok=TRUE
+1 idx=3 => v=30 ok=TRUE
+2 idx=4 => trap

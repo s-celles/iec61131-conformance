@@ -134,6 +134,31 @@ FAIL    conformance/counters/ctud.st
 9 cu=FALSE r=TRUE => qu=FALSE qd=TRUE cv=0
 10 r=FALSE => qu=FALSE qd=TRUE cv=0
 PASS    conformance/counters/ctud_bounds.st
+### conformance/data/array_init.st
+0 => s_list=24 s_rep=20 z=0 f=TRUE
+1 => s_list=24 s_rep=20 z=0 f=TRUE
+PASS    conformance/data/array_init.st
+### conformance/data/array_internal.st
+0 idx=0 val=10 => sum=10 at_idx=10 lo=10 hi=0
+1 idx=4 val=-3 => sum=7 at_idx=-3 lo=10 hi=-3
+2 idx=2 val=100 => sum=107 at_idx=100 lo=10 hi=-3
+3 idx=0 val=1 => sum=98 at_idx=1 lo=1 hi=-3
+4 idx=4 val=0 => sum=101 at_idx=0 lo=1 hi=0
+PASS    conformance/data/array_internal.st
+### conformance/data/enum.st
+0 pick=-1 => code=1 is_green=FALSE same=TRUE
+1 pick=1 => code=2 is_green=TRUE same=FALSE
+2 pick=1 => code=2 is_green=TRUE same=TRUE
+3 pick=2 => code=3 is_green=FALSE same=FALSE
+4 pick=0 => code=1 is_green=FALSE same=FALSE
+5 pick=7 => code=1 is_green=FALSE same=TRUE
+PASS    conformance/data/enum.st
+### conformance/data/struct_internal.st
+0 a=3 b=4 => qx=3 qy=4 px=0 area=12
+1 a=-2 b=5 => qx=-2 qy=5 px=0 area=-10
+2 a=0 b=0 => qx=0 qy=0 px=0 area=0
+3 a=100 b=100 => qx=100 qy=100 px=0 area=10000
+PASS    conformance/data/struct_internal.st
 ### conformance/edge/f_trig.st
 0 clk=FALSE => q=TRUE
 1 clk=TRUE => q=FALSE
@@ -179,6 +204,13 @@ PASS    conformance/edge/r_trig.st
 9 s=TRUE => q_sr=TRUE q_rs=TRUE
 10 r=TRUE => q_sr=TRUE q_rs=FALSE
 PASS    conformance/edge/sr_rs.st
+### conformance/ops/bit_ops.st
+0 b=16#F0 m=16#3C w=16#1234 d=16#80000001 n=4 => o_and=16#30 o_or=16#FC o_xor=16#CC o_not=16#0F w_shl=16#2340 w_shr=16#0123 w_rol=16#2341 w_ror=16#4123 d_shl=16#00000010 d_shr=16#08000000 d_rol=16#00000018 d_ror=16#18000000
+1 b=16#AA m=16#55 w=16#8001 d=16#00000001 n=1 => o_and=16#00 o_or=16#FF o_xor=16#FF o_not=16#55 w_shl=16#0002 w_shr=16#4000 w_rol=16#0003 w_ror=16#C000 d_shl=16#00000002 d_shr=16#00000000 d_rol=16#00000002 d_ror=16#80000000
+2 b=16#FF m=16#00 w=16#FFFF d=16#FFFFFFFF n=0 => o_and=16#00 o_or=16#FF o_xor=16#FF o_not=16#00 w_shl=16#FFFF w_shr=16#FFFF w_rol=16#FFFF w_ror=16#FFFF d_shl=16#FFFFFFFF d_shr=16#FFFFFFFF d_rol=16#FFFFFFFF d_ror=16#FFFFFFFF
+3 b=16#0F m=16#0F w=16#0001 d=16#80000000 n=15 => o_and=16#0F o_or=16#0F o_xor=16#00 o_not=16#F0 w_shl=16#8000 w_shr=16#0000 w_rol=16#8000 w_ror=16#0002 d_shl=16#00000000 d_shr=16#00010000 d_rol=16#00004000 d_ror=16#00010000
+4 b=16#00 m=16#00 w=16#1234 d=16#12345678 n=16 => o_and=16#00 o_or=16#00 o_xor=16#00 o_not=16#FF w_shl=16#0000 w_shr=16#0000 w_rol=16#1234 w_ror=16#1234 d_shl=16#56780000 d_shr=16#00001234 d_rol=16#56781234 d_ror=16#56781234
+PASS    conformance/ops/bit_ops.st
 ### conformance/ops/conversions.st
 0 i=100 ip=100 d=-1000 dp=1000 u=30000 ub=30000 => i2d=100 i2u=100 d2i=-1000 d2u=1000 u2i=30000 u2d=30000
 1 i=0 ip=0 d=0 dp=0 u=0 ub=0 => i2d=0 i2u=0 d2i=0 d2u=0 u2i=0 u2d=0
@@ -226,6 +258,14 @@ POUS.c:34:28: error: incompatible types when assigning to type ‘IEC_TIME’ {a
   215 |         if (!(prefix name.flags & __IEC_FORCE_FLAG)) prefix name.value suffix = new_value
       |                                                                                 ^~~~~~~~~
 
+### conformance/pou/fb_en_eno.st
+0 run_it=TRUE inc=5 => total=5 done=TRUE
+1 run_it=FALSE => total=5 done=FALSE
+2 inc=100 => total=5 done=FALSE
+3 run_it=TRUE => total=105 done=TRUE
+4 inc=-5 => total=100 done=TRUE
+5 run_it=FALSE => total=100 done=FALSE
+PASS    conformance/pou/fb_en_eno.st
 ### conformance/pou/fb_input_defaults.st
 0 => total=11 untouched=7 base=6
 1 => total=12 untouched=7 base=7
@@ -327,6 +367,12 @@ PASS    conformance/timers/tp.st
 0 x=-7 d=-7 => ax=7 nx=7 ad=7 nd=7
 1 x=-32768 d=-2147483648 => ax=-32768 nx=-32768 ad=-2147483648 nd=-2147483648
 SAME    conformance/undefined/abs_int_min.st
+### conformance/undefined/array_out_of_bounds.st
+0 idx=2 => v=20 ok=TRUE
+1 idx=3 => v=30 ok=TRUE
+2 idx=4 => v=4 ok=TRUE
+DIFFERS conformance/undefined/array_out_of_bounds.st
+        cycle 2 (trace line 17): expected a trap, got v=4 ok=TRUE
 ### conformance/undefined/ctu_pv_zero.st
 0 cu=FALSE r=FALSE => q=TRUE cv=0
 1 cu=TRUE => q=TRUE cv=0
@@ -407,5 +453,5 @@ DIFFERS conformance/undefined/ton_pt_change.st
         cycle 10 (trace line 36): et expected T#800ms, got T#200ms
         cycle 11 (trace line 37): et expected T#800ms, got T#200ms
 
-39 tests: 24 pass, 4 fail, 7 same, 3 differs, 1 error
+46 tests: 30 pass, 4 fail, 7 same, 4 differs, 1 error
 exit 1

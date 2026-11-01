@@ -11,8 +11,9 @@ class Status(Enum):
 
 @dataclass(frozen=True)
 class Value:
-    kind: str  # bool | int | time | any
+    kind: str  # bool | int | time | bits | any
     v: int = 0
+    width: int = 0  # bits: number of hex digits (2 BYTE, 4 WORD, 8 DWORD)
 
     @staticmethod
     def parse(s: str) -> "Value":
@@ -26,6 +27,11 @@ class Value:
             if not s.endswith("ms"):
                 raise ValueError(f"TIME literal must be T#<n>ms: {s}")
             return Value("time", int(s[2:-2]))
+        if s.startswith("16#"):
+            digits = s[3:]
+            if len(digits) not in (2, 4, 8) or digits != digits.upper():
+                raise ValueError(f"bit string literal must be 16# and 2, 4 or 8 upper-case hex digits: {s}")
+            return Value("bits", int(digits, 16), len(digits))
         return Value("int", int(s))
 
     def __str__(self) -> str:
@@ -33,6 +39,8 @@ class Value:
             return "TRUE" if self.v else "FALSE"
         if self.kind == "time":
             return f"T#{self.v}ms"
+        if self.kind == "bits":
+            return f"16#{self.v:0{self.width}X}"
         if self.kind == "any":
             return "?"
         return str(self.v)

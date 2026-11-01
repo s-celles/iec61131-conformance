@@ -41,7 +41,11 @@ C_TYPES = {
     "DINT": "int",
     "UINT": "unsigned short",
     "TIME": "int",  # RuSTy TIME is a 32-bit millisecond count in this build (see IR: ET is i32)
+    "BYTE": "unsigned char",
+    "WORD": "unsigned short",
+    "DWORD": "unsigned int",
 }
+HEX_WIDTH = {"BYTE": 2, "WORD": 4, "DWORD": 8}
 
 DRIVER = r'''
 #include <stdio.h>
@@ -97,7 +101,8 @@ int main(void) {
 
 
 def st_literal(ty):
-    return {"BOOL": "BOOL", "INT": "INT", "DINT": "DINT", "UINT": "UINT", "TIME": "TIME"}[ty]
+    return {"BOOL": "BOOL", "INT": "INT", "DINT": "DINT", "UINT": "UINT", "TIME": "TIME",
+            "BYTE": "BYTE", "WORD": "WORD", "DWORD": "DWORD"}[ty]
 
 
 def accessors_st(inputs, outputs):
@@ -130,6 +135,8 @@ def c_setters(inputs):
             cases.append(f'    if (!strcmp(name, "{n}")) {{ __set_{n}(!strcmp(text, "TRUE")); return; }}')
         elif ty == "TIME":
             cases.append(f'    if (!strcmp(name, "{n}")) {{ __set_{n}((int)atoll(text + 2)); return; }}')
+        elif ty in HEX_WIDTH:
+            cases.append(f'    if (!strcmp(name, "{n}")) {{ __set_{n}(({C_TYPES[ty]})strtoull(text + 3, NULL, 16)); return; }}')
         else:
             cases.append(f'    if (!strcmp(name, "{n}")) {{ __set_{n}(({C_TYPES[ty]})atoll(text)); return; }}')
     body = "\n".join(cases)
@@ -143,6 +150,8 @@ def c_getters(outputs):
             lines.append(f'    printf(" {n}=%s", __get_{n}() ? "TRUE" : "FALSE");')
         elif ty == "TIME":
             lines.append(f'    printf(" {n}=T#%dms", __get_{n}());')
+        elif ty in HEX_WIDTH:
+            lines.append(f'    printf(" {n}=16#%0{HEX_WIDTH[ty]}llX", (unsigned long long)__get_{n}());')
         else:
             lines.append(f'    printf(" {n}=%lld", (long long)__get_{n}());')
     body = "\n".join(lines)

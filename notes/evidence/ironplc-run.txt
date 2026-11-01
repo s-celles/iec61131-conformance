@@ -140,6 +140,38 @@ FAIL    conformance/counters/ctud_bounds.st
         cycle 7 (trace line 24): qu expected FALSE, got TRUE
         cycle 7 (trace line 24): cv expected 32766, got -32768
         cycle 8 (trace line 25): cv expected 32767, got -32767
+### conformance/data/array_init.st
+0 => s_list=24 s_rep=20 z=0 f=TRUE
+1 => s_list=24 s_rep=20 z=0 f=TRUE
+PASS    conformance/data/array_init.st
+### conformance/data/array_internal.st
+0 idx=0 val=10 => sum=10 at_idx=10 lo=10 hi=0
+1 idx=4 val=-3 => sum=7 at_idx=-3 lo=10 hi=-3
+2 idx=2 val=100 => sum=107 at_idx=100 lo=10 hi=-3
+3 idx=0 val=1 => sum=98 at_idx=1 lo=1 hi=-3
+4 idx=4 val=0 => sum=101 at_idx=0 lo=1 hi=0
+PASS    conformance/data/array_internal.st
+### conformance/data/enum.st
+0 pick=-1 => code=1 is_green=FALSE same=TRUE
+1 pick=1 => code=2 is_green=TRUE same=FALSE
+2 pick=1 => code=2 is_green=TRUE same=TRUE
+3 pick=2 => code=3 is_green=FALSE same=FALSE
+4 pick=0 => code=1 is_green=FALSE same=FALSE
+5 pick=7 => code=1 is_green=FALSE same=TRUE
+PASS    conformance/data/enum.st
+### conformance/data/struct_internal.st
+FAIL    conformance/data/struct_internal.st
+        ironplcc failed to compile the program:
+[0m[1m[38;5;9merror[P9999][0m[1m: Capability is not implemented (yet!)[0m
+   [0m[36m┌─[0m <root>/conformance/data/struct_internal.st:37:8
+   [0m[36m│[0m
+[0m[36m37[0m [0m[36m│[0m   r.tl [0m[31m:=[0m q;
+   [0m[36m│[0m        [0m[31m^^[0m [0m[31mStatement code generation does not support yet[0m
+   [0m[36m│[0m
+   [0m[36m=[0m Learn more: https://www.ironplc.com/reference/compiler/problems/P9999.html?version=0.251.0&channel=cli&file=codegen/src/body/mod.rs&line=66
+
+Error: "Compile failed with 1 problem(s)"
+
 ### conformance/edge/f_trig.st
 0 clk=FALSE => q=FALSE
 1 clk=TRUE => q=FALSE
@@ -184,6 +216,13 @@ PASS    conformance/edge/r_trig.st
 9 s=TRUE => q_sr=TRUE q_rs=TRUE
 10 r=TRUE => q_sr=TRUE q_rs=FALSE
 PASS    conformance/edge/sr_rs.st
+### conformance/ops/bit_ops.st
+0 b=16#F0 m=16#3C w=16#1234 d=16#80000001 n=4 => o_and=16#30 o_or=16#FC o_xor=16#CC o_not=16#0F w_shl=16#2340 w_shr=16#0123 w_rol=16#2341 w_ror=16#4123 d_shl=16#00000010 d_shr=16#08000000 d_rol=16#00000018 d_ror=16#18000000
+1 b=16#AA m=16#55 w=16#8001 d=16#00000001 n=1 => o_and=16#00 o_or=16#FF o_xor=16#FF o_not=16#55 w_shl=16#0002 w_shr=16#4000 w_rol=16#0003 w_ror=16#C000 d_shl=16#00000002 d_shr=16#00000000 d_rol=16#00000002 d_ror=16#80000000
+2 b=16#FF m=16#00 w=16#FFFF d=16#FFFFFFFF n=0 => o_and=16#00 o_or=16#FF o_xor=16#FF o_not=16#00 w_shl=16#FFFF w_shr=16#FFFF w_rol=16#FFFF w_ror=16#FFFF d_shl=16#FFFFFFFF d_shr=16#FFFFFFFF d_rol=16#FFFFFFFF d_ror=16#FFFFFFFF
+3 b=16#0F m=16#0F w=16#0001 d=16#80000000 n=15 => o_and=16#0F o_or=16#0F o_xor=16#00 o_not=16#F0 w_shl=16#8000 w_shr=16#0000 w_rol=16#8000 w_ror=16#0002 d_shl=16#00000000 d_shr=16#00010000 d_rol=16#00004000 d_ror=16#00010000
+4 b=16#00 m=16#00 w=16#1234 d=16#12345678 n=16 => o_and=16#00 o_or=16#00 o_xor=16#00 o_not=16#FF w_shl=16#0000 w_shr=16#0000 w_rol=16#1234 w_ror=16#1234 d_shl=16#56780000 d_shr=16#00001234 d_rol=16#56781234 d_ror=16#56781234
+PASS    conformance/ops/bit_ops.st
 ### conformance/ops/conversions.st
 0 i=100 ip=100 d=-1000 dp=1000 u=30000 ub=30000 => i2d=100 i2u=100 d2i=-1000 d2u=1000 u2i=30000 u2d=30000
 1 i=0 ip=0 d=0 dp=0 u=0 ub=0 => i2d=0 i2u=0 d2i=0 d2u=0 u2i=0 u2d=0
@@ -234,6 +273,19 @@ Error: "Compile failed with 2 problem(s)"
 2 t1=T#100ms t2=T#100ms => sum=T#200ms diff=T#0ms is_lt=FALSE is_gt=FALSE is_le=TRUE is_eq=TRUE lit1=T#90000ms lit2=T#3723004ms lit3=T#1500ms lit4=T#500ms lit5=T#172800000ms
 3 t1=T#3600000ms t2=T#1ms => sum=T#3600001ms diff=T#3599999ms is_lt=FALSE is_gt=TRUE is_le=FALSE is_eq=FALSE lit1=T#90000ms lit2=T#3723004ms lit3=T#1500ms lit4=T#500ms lit5=T#172800000ms
 PASS    conformance/ops/time_arith.st
+### conformance/pou/fb_en_eno.st
+FAIL    conformance/pou/fb_en_eno.st
+        ironplcc failed to compile the program:
+[0m[1m[38;5;9merror[P0002][0m[1m: Syntax error[0m
+   [0m[36m┌─[0m <root>/conformance/pou/fb_en_eno.st:25:5
+   [0m[36m│[0m
+[0m[36m25[0m [0m[36m│[0m   c([0m[31mEN[0m := run_it, inc := inc);
+   [0m[36m│[0m     [0m[31m^^[0m [0m[31mExpected "..." (double byte string) | %[IQM]([XBWDL])?([0-9](\.[0-9])*) (direct address) | ' ' (space) | '\t' (tab) | '(' | '(* ... *)' (comment) | ')' | '+' | '-' | '...' (single byte string) | 'AND' | '&' | 'BOOL' | 'BYTE' | 'DATE' | 'D' | 'DATE_AND_TIME' | 'DT' | 'DINT' | 'DWORD' | 'FALSE' | 'F_EDGE' | 'INT' | 'LDATE' | 'LDATE_AND_TIME' | 'LDT' | 'LINT' | 'LREAL' | 'LTIME' | 'LTIME_OF_DAY' | 'LTOD' | 'LWORD' | 'MOD' | 'NOT' | 'NULL' | 'ON' | 'OR' | 'REAL' | 'REF' | 'R_EDGE' | 'SINT' | 'STEP' | 'STRING' | 'SUPER' | 'THIS' | 'TIME' | 'TIME_OF_DAY' | 'TOD' | 'TRUE' | 'UDINT' | 'UINT' | 'ULINT' | 'USINT' | 'WORD' | 'WSTRING' | 'XOR' | '\n' (new line) | '{ ... }' (pragma) | (fixed point) | (floating point) | (identifier) | 16#[0-9A-F][0-9A-F_]* (hexadecimal bit string) | 2#[0-1][0-1]* (binary bit string) | 8#[0-7][0-7]* (octal bit string) | D | T | [0-9][0-9_]* (integer). Found text 'EN' that matched token 'EN'[0m
+   [0m[36m│[0m
+   [0m[36m=[0m Learn more: https://www.ironplc.com/reference/compiler/problems/P0002.html?version=0.251.0&channel=cli
+
+Error: "Compile failed with 1 problem(s)"
+
 ### conformance/pou/fb_input_defaults.st
 0 => total=11 untouched=7 base=6
 1 => total=12 untouched=7 base=7
@@ -360,6 +412,11 @@ FAIL    conformance/timers/tp.st
 0 x=-7 d=-7 => ax=7 nx=7 ad=7 nd=7
 1 x=-32768 d=-2147483648 => ax=-32768 nx=-32768 ad=-2147483648 nd=-2147483648
 SAME    conformance/undefined/abs_int_min.st (implementation-defined)
+### conformance/undefined/array_out_of_bounds.st
+0 idx=2 => v=20 ok=TRUE
+1 idx=3 => v=30 ok=TRUE
+2 idx=4 => trap   # array index out of bounds: index 4 for array variable 3 with 4 elements
+SAME    conformance/undefined/array_out_of_bounds.st (implementation-defined)
 ### conformance/undefined/ctu_pv_zero.st
 0 cu=FALSE r=FALSE => q=TRUE cv=0
 1 cu=TRUE => q=TRUE cv=1
@@ -429,5 +486,5 @@ SAME    conformance/undefined/timer_pt_zero.st (implementation-defined)
 12 in=FALSE => q=FALSE et=T#0ms
 SAME    conformance/undefined/ton_pt_change.st (implementation-defined)
 
-39 tests: 23 pass, 6 fail, 10 same, 0 differs, 0 error
+46 tests: 27 pass, 8 fail, 11 same, 0 differs, 0 error
 exit 1

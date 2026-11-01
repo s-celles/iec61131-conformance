@@ -168,3 +168,30 @@ Reported: https://github.com/ironplc/ironplc/issues/2548
   diagrams at the limit PT = 0 would switch on the edge's own cycle, which
   is what matiec does (the only difference between the two, apart from
   item 1 at power-up). Recorded as implementation-defined.
+
+## 13. Assigning a structure to a structure-typed field is not implemented
+
+- Reproducer: `conformance/data/struct_internal.st` line 37, `r.tl := q;`
+  with `r : RECT` whose field `tl : POINT`: `P9999 Statement code
+  generation does not support yet`. The whole-variable copy `q := p;` on
+  line 33 of the same program is accepted, so it is the nested target that
+  is missing. Neighbouring open issues: ironplc#1471 (array-of-struct
+  element), #2331 (structure output of an FB), #2523 (structure input
+  field read).
+
+## 14. `EN :=` in a function block invocation is a syntax error
+
+- Reproducer: `conformance/pou/fb_en_eno.st` line 25, `c(EN := run_it,
+  inc := inc);`: `P0002 Syntax error ... Found text 'EN' that matched
+  token 'EN'`. The parser reserves `EN` (correct: an input named `en` is
+  rejected too) but does not accept it as the implicit input of ed.3
+  6.6.1.7 table 20; `c.ENO` is not reached. matiec executes the body only
+  while EN is TRUE and reports ENO as the table says.
+
+## 15. (Not a defect) Array index out of range is a trap
+
+- Reproducer: `conformance/undefined/array_out_of_bounds.st`, cycle 2:
+  trap `array index out of bounds: index 4 for array variable 3 with 4
+  elements`, the scan stops. matiec performs no check and reads whatever
+  follows the array (`v=4`). Both are permitted (annex E); recorded as
+  implementation-defined with IronPLC's trap.
