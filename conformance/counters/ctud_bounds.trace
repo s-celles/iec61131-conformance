@@ -1,0 +1,27 @@
+# CTUD at the upper bound of INT, PV = 32767, period 100 ms.
+#
+# Derivation: the CTUD body (ed.3 table 44, see ctud.trace) counts up only
+# while CV < PVmax; the FDIS 2001 body only while CV < PV. With PV = PVmax
+# = 32767 the two conditions coincide, so unlike ctu.trace and ctud.trace
+# this trace holds under both editions: a rising edge of CU at CV = 32767
+# leaves CV unchanged (cycles 3, 5) instead of wrapping to -32768. Counting
+# down and the reset are unaffected.
+period_ms: 100
+program: main
+inputs: cu cd r ld
+outputs: qu qd cv
+status: conformant
+reference: IEC 61131-3 ed.3 6.6.3.5.3 table 44 (CTUD body, CV < PVmax)
+---
+0  cu=FALSE cd=FALSE r=FALSE ld=FALSE => qu=FALSE qd=TRUE  cv=0
+1  ld=TRUE                            => qu=TRUE  qd=FALSE cv=32767
+2  ld=FALSE                           => qu=TRUE  qd=FALSE cv=32767
+# rising edge of CU at the bound: no change, no wrap
+3  cu=TRUE                            => qu=TRUE  qd=FALSE cv=32767
+4  cu=FALSE                           => qu=TRUE  qd=FALSE cv=32767
+5  cu=TRUE                            => qu=TRUE  qd=FALSE cv=32767
+6  cu=FALSE cd=TRUE                   => qu=FALSE qd=FALSE cv=32766
+7  cd=FALSE                           => qu=FALSE qd=FALSE cv=32766
+8  cu=TRUE                            => qu=TRUE  qd=FALSE cv=32767
+9  cu=FALSE r=TRUE                    => qu=FALSE qd=TRUE  cv=0
+10 r=FALSE                            => qu=FALSE qd=TRUE  cv=0

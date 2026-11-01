@@ -1,0 +1,39 @@
+# Operator precedence (ed.3 table 71 / ed.2 table 55), highest first:
+#   ( )  >  function call  >  **  >  unary - + NOT  >  * / MOD  >  + -
+#   >  < > <= >=  >  = <>  >  AND &  >  XOR  >  OR
+# Operators of the same level associate left to right. Integer division
+# truncates toward zero and MOD takes the sign of the dividend (table 30,
+# as checked by undefined/div_zero cycles 0 and 1).
+#
+# cycle 0: a=7 b=2 c=3 p=T q=F r=T
+#   e1 = 7 + 6 = 13; e2 = 27; e3 = 7-2-3 = 2; e4 = (7/2)*3 = 9;
+#   e5 = (-7) MOD 2 = -1; e6 = (7 MOD 2)*3 = 3; e7 = 7 - (-2) = 9
+#   l1 = T OR (F AND T) = T; l2 = (T XOR F) OR T = T; l3 = (NOT T) AND F = F;
+#   l4 = (7<2) AND (2<3) = F; l5 = (9 = 3) = F; l6 = ((NOT T) = F) = T
+# cycle 1: a=-9 b=4 c=-2 p=F q=T r=F
+#   e1 = -9 + (-8) = -17; e2 = (-5)*(-2) = 10; e3 = -9-4+2 = -11;
+#   e4 = (-9/4)*(-2) = (-2)*(-2) = 4; e5 = 9 MOD 4 = 1;
+#   e6 = (-9 MOD 4)*(-2) = (-1)*(-2) = 2; e7 = -9 + 4 = -5
+#   l1 = F OR (T AND F) = F; l2 = (F XOR T) OR F = T; l3 = T AND T = T;
+#   l4 = (-9<4) AND (4<-2) = F; l5 = (-5 = -2) = F; l6 = (T = T) = T
+# cycle 2: a=1 b=2 c=3 p=T q=T r=T
+#   e1 = 7; e2 = 9; e3 = -4; e4 = (1/2)*3 = 0; e5 = -1 MOD 2 = -1;
+#   e6 = (1 MOD 2)*3 = 3; e7 = 3
+#   l1 = T; l2 = (T XOR T) OR T = T; l3 = F AND T = F; l4 = T AND T = T;
+#   l5 = (3 = 3) = T; l6 = (F = T) = F
+# cycle 3: a=5 b=3 c=1 p=F q=F r=F
+#   e1 = 8; e2 = 8; e3 = 1; e4 = (5/3)*1 = 1; e5 = (-5) MOD 3 = -2;
+#   e6 = (5 MOD 3)*1 = 2; e7 = 8
+#   l1 = F; l2 = F; l3 = T AND F = F; l4 = (5<3) AND .. = F;
+#   l5 = (8 = 1) = F; l6 = (T = F) = F
+period_ms: 100
+program: main
+inputs: a b c p q r
+outputs: e1 e2 e3 e4 e5 e6 e7 l1 l2 l3 l4 l5 l6
+status: conformant
+reference: IEC 61131-3 ed.3 7.3.1 table 71 (operator precedence), 6.6.2.5.1 table 30 (MOD)
+---
+0 a=7 b=2 c=3 p=TRUE q=FALSE r=TRUE    => e1=13 e2=27 e3=2 e4=9 e5=-1 e6=3 e7=9 l1=TRUE l2=TRUE l3=FALSE l4=FALSE l5=FALSE l6=TRUE
+1 a=-9 b=4 c=-2 p=FALSE q=TRUE r=FALSE => e1=-17 e2=10 e3=-11 e4=4 e5=1 e6=2 e7=-5 l1=FALSE l2=TRUE l3=TRUE l4=FALSE l5=FALSE l6=TRUE
+2 a=1 b=2 c=3 p=TRUE q=TRUE r=TRUE     => e1=7 e2=9 e3=-4 e4=0 e5=-1 e6=3 e7=3 l1=TRUE l2=TRUE l3=FALSE l4=TRUE l5=TRUE l6=FALSE
+3 a=5 b=3 c=1 p=FALSE q=FALSE r=FALSE  => e1=8 e2=8 e3=1 e4=1 e5=-2 e6=2 e7=8 l1=FALSE l2=FALSE l3=FALSE l4=FALSE l5=FALSE l6=FALSE

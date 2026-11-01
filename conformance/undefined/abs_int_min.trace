@@ -1,0 +1,15 @@
+# ABS(-32768) and -(-32768) in INT, and the DINT equivalents.
+# Implementation-defined: the result 32768 is not representable in INT, so
+# this is a range overflow, listed in ed.3 annex E / ed.2 annex E as an
+# error whose handling is implementer-specific (compare int_overflow).
+# The records are what IronPLC does: two's-complement wrap, the value is
+# unchanged. Cycle 0 is the in-range sanity check.
+period_ms: 100
+program: main
+inputs: x d
+outputs: ax nx ad nd
+status: implementation-defined
+reference: IEC 61131-3 ed.3 annex E (range overflow is implementer-specific)
+---
+0 x=-7 d=-7                    => ax=7 nx=7 ad=7 nd=7
+1 x=-32768 d=-2147483648       => ax=-32768 nx=-32768 ad=-2147483648 nd=-2147483648

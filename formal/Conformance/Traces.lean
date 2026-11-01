@@ -251,6 +251,72 @@ def ctdExpected : List (Option Bool × Option Int) :=
    (some false, some 3),
    (some false, some 2)]
 
+/-- conformance/edge/power_on_clk_true.trace: (time ms, inputs) per cycle. -/
+def powerOnInputs : List (Nat × (Bool)) :=
+  [(0, true),
+   (100, true),
+   (200, false),
+   (300, false),
+   (400, true),
+   (500, false)]
+
+/-- conformance/edge/power_on_clk_true.trace: expected outputs per cycle (`none` = `?`). -/
+def powerOnExpected : List (Option Bool × Option Bool) :=
+  [(some true, some false),
+   (some false, some false),
+   (some false, some true),
+   (some false, some false),
+   (some true, some false),
+   (some false, some true)]
+
+/-- conformance/counters/ctd_bounds.trace: (time ms, inputs) per cycle. -/
+def ctdBoundsInputs : List (Nat × (Bool × Bool)) :=
+  [(0, (false, false)),
+   (100, (false, true)),
+   (200, (false, false)),
+   (300, (true, false)),
+   (400, (false, false)),
+   (500, (true, false)),
+   (600, (false, false))]
+
+/-- conformance/counters/ctd_bounds.trace: expected outputs per cycle (`none` = `?`). -/
+def ctdBoundsExpected : List (Option Bool × Option Int) :=
+  [(some true, some 0),
+   (some true, some (-32768)),
+   (some true, some (-32768)),
+   (some true, some (-32768)),
+   (some true, some (-32768)),
+   (some true, some (-32768)),
+   (some true, some (-32768))]
+
+/-- conformance/counters/ctud_bounds.trace: (time ms, inputs) per cycle. -/
+def ctudBoundsInputs : List (Nat × (Bool × Bool × Bool × Bool)) :=
+  [(0, (false, false, false, false)),
+   (100, (false, false, false, true)),
+   (200, (false, false, false, false)),
+   (300, (true, false, false, false)),
+   (400, (false, false, false, false)),
+   (500, (true, false, false, false)),
+   (600, (false, true, false, false)),
+   (700, (false, false, false, false)),
+   (800, (true, false, false, false)),
+   (900, (false, false, true, false)),
+   (1000, (false, false, false, false))]
+
+/-- conformance/counters/ctud_bounds.trace: expected outputs per cycle (`none` = `?`). -/
+def ctudBoundsExpected : List (Option Bool × Option Bool × Option Int) :=
+  [(some false, some true, some 0),
+   (some true, some false, some 32767),
+   (some true, some false, some 32767),
+   (some true, some false, some 32767),
+   (some true, some false, some 32767),
+   (some true, some false, some 32767),
+   (some false, some false, some 32766),
+   (some false, some false, some 32766),
+   (some true, some false, some 32767),
+   (some false, some true, some 0),
+   (some false, some true, some 0)]
+
 /-- conformance/counters/ctud.trace: (time ms, inputs) per cycle. -/
 def ctudInputs : List (Nat × (Bool × Bool × Bool × Bool)) :=
   [(0, (false, false, false, false)),

@@ -1,0 +1,17 @@
+# FUNCTION_BLOCK VAR_TEMP is not retained between calls.
+#
+# Derivation: ed.3 6.5.2.2 table 19 (ed.2 2.4.3 table 16b): VAR_TEMP
+# declares temporary variables, initialised at each invocation of the POU.
+# Hence y = x on every cycle; a retained t would give the running sum
+# instead (3, 7, 7, 2).
+period_ms: 100
+program: main
+inputs: x
+outputs: y
+status: conformant
+reference: IEC 61131-3 ed.3 6.5.2.2 table 19 (VAR_TEMP)
+---
+0 x=3  => y=3
+1 x=4  => y=4
+2 x=0  => y=0
+3 x=-5 => y=-5

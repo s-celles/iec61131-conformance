@@ -1,0 +1,18 @@
+# FOR control variable after the loop. Implementation-defined: ed.3
+# 7.3.3.4.2 (ed.2 2.6.5.2) states that the value of the control variable
+# after the loop terminates is implementation-dependent (and that it shall
+# not be modified inside the loop; for_bound_modified covers the bound).
+# sum is defined and checked; i_after records what IronPLC does: the
+# control variable holds the first value that failed the test (n + 1), and
+# with n < 1 the loop body never runs and i holds the initial value 1.
+period_ms: 100
+program: main
+inputs: n
+outputs: i_after sum
+status: implementation-defined
+reference: IEC 61131-3 ed.3 7.3.3.4.2 (FOR statement)
+---
+0 n=3  => i_after=4 sum=6
+1 n=0  => i_after=1 sum=0
+2 n=1  => i_after=2 sum=1
+3 n=-2 => i_after=1 sum=0

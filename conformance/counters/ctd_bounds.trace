@@ -1,0 +1,22 @@
+# CTD at the lower bound of INT, PV = -32768, period 100 ms.
+#
+# Derivation: the CTD body (ed.3 table 44, see ctd.trace) counts down only
+# while CV > PVmin; the FDIS 2001 body only while CV > 0. At CV = -32768
+# both conditions are false, so this trace holds under both editions: a
+# rising edge of CD leaves CV at -32768 (cycles 3, 5) instead of wrapping
+# to 32767. Q = (CV <= 0) is TRUE throughout.
+period_ms: 100
+program: main
+inputs: cd ld
+outputs: q cv
+status: conformant
+reference: IEC 61131-3 ed.3 6.6.3.5.3 table 44 (CTD body, CV > PVmin)
+---
+0 cd=FALSE ld=FALSE => q=TRUE cv=0
+1 ld=TRUE          => q=TRUE cv=-32768
+2 ld=FALSE         => q=TRUE cv=-32768
+# rising edge of CD at the bound: no change, no wrap
+3 cd=TRUE          => q=TRUE cv=-32768
+4 cd=FALSE         => q=TRUE cv=-32768
+5 cd=TRUE          => q=TRUE cv=-32768
+6 cd=FALSE         => q=TRUE cv=-32768

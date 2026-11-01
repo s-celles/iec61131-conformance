@@ -1,0 +1,28 @@
+# Timers with PT = 0, period 100 ms. Implementation-defined: the timing
+# diagrams (ed.3 table 46) assume PT > 0. Reading them at the limit:
+#   TON: Q rises as soon as the elapsed time reaches PT, i.e. on the cycle
+#        of the rising edge (Q = IN);
+#   TOF: Q falls as soon as t - t_fall >= PT, i.e. on the cycle of the
+#        falling edge (Q = IN);
+#   TP:  a pulse of length 0: Q is TRUE for no time at all, or for the
+#        cycle of the rising edge, depending on when the end test is made.
+# The records are what IronPLC does: every timer makes its end-of-time test
+# only while already timing, so with PT = 0 each output switches one cycle
+# after its input edge (TON Q rises on the cycle after IN rises, TOF Q
+# falls on the cycle after IN falls) and TP gives a one-cycle pulse. TOF Q
+# is also TRUE at power-up, which is findings #1 / ironplc#2545 and not a
+# PT = 0 effect.
+period_ms: 100
+program: main
+inputs: in
+outputs: q_ton et_ton q_tof et_tof q_tp et_tp
+status: implementation-defined
+reference: IEC 61131-3 ed.3 6.6.3.5.4 table 46 (timer diagrams, PT > 0 assumed)
+---
+0 in=FALSE => q_ton=FALSE et_ton=T#0ms q_tof=TRUE  et_tof=T#0ms q_tp=FALSE et_tp=T#0ms
+1 in=TRUE  => q_ton=FALSE et_ton=T#0ms q_tof=TRUE  et_tof=T#0ms q_tp=TRUE  et_tp=T#0ms
+2          => q_ton=TRUE  et_ton=T#0ms q_tof=TRUE  et_tof=T#0ms q_tp=FALSE et_tp=T#0ms
+3 in=FALSE => q_ton=FALSE et_ton=T#0ms q_tof=TRUE  et_tof=T#0ms q_tp=FALSE et_tp=T#0ms
+4          => q_ton=FALSE et_ton=T#0ms q_tof=FALSE et_tof=T#0ms q_tp=FALSE et_tp=T#0ms
+5 in=TRUE  => q_ton=FALSE et_ton=T#0ms q_tof=TRUE  et_tof=T#0ms q_tp=TRUE  et_tp=T#0ms
+6 in=FALSE => q_ton=FALSE et_ton=T#0ms q_tof=TRUE  et_tof=T#0ms q_tp=FALSE et_tp=T#0ms

@@ -1,0 +1,15 @@
+# Extensible functions (ed.3 6.6.1.7.3: ADD, MUL, MAX, MIN accept more than
+# two inputs) and formal argument names of standard functions (tables 30
+# and 31 give MN/IN/MX for LIMIT and G/IN0/IN1 for SEL).
+# Records keep b <= c for LIMIT and products within INT.
+period_ms: 100
+program: main
+inputs: a b c g
+outputs: max3 min3 add3 mul3 lim selv
+status: conformant
+reference: IEC 61131-3 ed.3 6.6.1.7.3 (extensible functions), 7.2.3.1 (formal invocation), tables 30 and 31
+---
+0 a=1 b=2 c=3 g=FALSE    => max3=3 min3=1 add3=6 mul3=6 lim=2 selv=1
+1 a=-7 b=-7 c=10 g=TRUE  => max3=10 min3=-7 add3=-4 mul3=490 lim=-7 selv=-7
+2 a=100 b=-100 c=2 g=FALSE => max3=100 min3=-100 add3=2 mul3=-20000 lim=2 selv=100
+3 a=0 b=0 c=0 g=TRUE     => max3=0 min3=0 add3=0 mul3=0 lim=0 selv=0

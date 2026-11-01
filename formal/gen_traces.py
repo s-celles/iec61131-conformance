@@ -45,6 +45,14 @@ TESTS = {
                      lambda o: f"({opt(b, o['q'])}, {opt(n, o['cv'])})"),
     "counters/ctd": ("ctd", ["cd", "ld"], lambda i: f"({b(i['cd'])}, {b(i['ld'])})", ["q", "cv"],
                      lambda o: f"({opt(b, o['q'])}, {opt(z, o['cv'])})"),
+    "edge/power_on_clk_true": ("powerOn", ["clk"], lambda i: b(i["clk"]), ["qr", "qf"],
+                               lambda o: f"({opt(b, o['qr'])}, {opt(b, o['qf'])})"),
+    "counters/ctd_bounds": ("ctdBounds", ["cd", "ld"], lambda i: f"({b(i['cd'])}, {b(i['ld'])})",
+                            ["q", "cv"], lambda o: f"({opt(b, o['q'])}, {opt(z, o['cv'])})"),
+    "counters/ctud_bounds": ("ctudBounds", ["cu", "cd", "r", "ld"],
+                             lambda i: f"({b(i['cu'])}, {b(i['cd'])}, {b(i['r'])}, {b(i['ld'])})",
+                             ["qu", "qd", "cv"],
+                             lambda o: f"({opt(b, o['qu'])}, {opt(b, o['qd'])}, {opt(z, o['cv'])})"),
     "counters/ctud": ("ctud", ["cu", "cd", "r", "ld"],
                       lambda i: f"({b(i['cu'])}, {b(i['cd'])}, {b(i['r'])}, {b(i['ld'])})",
                       ["qu", "qd", "cv"],
@@ -53,12 +61,16 @@ TESTS = {
 
 INPUT_TYPES = {"ton": "Bool", "tof": "Bool", "tp": "Bool", "rTrig": "Bool", "fTrig": "Bool",
                "srRs": "Bool × Bool", "ctu": "Bool × Bool", "ctd": "Bool × Bool",
-               "ctud": "Bool × Bool × Bool × Bool"}
+               "ctud": "Bool × Bool × Bool × Bool", "powerOn": "Bool",
+               "ctdBounds": "Bool × Bool", "ctudBounds": "Bool × Bool × Bool × Bool"}
 OUTPUT_TYPES = {"ton": "Option Bool × Option Nat", "tof": "Option Bool × Option Nat",
                 "tp": "Option Bool × Option Nat", "rTrig": "Option Bool", "fTrig": "Option Bool",
                 "srRs": "Option Bool × Option Bool", "ctu": "Option Bool × Option Nat",
                 "ctd": "Option Bool × Option Int",
-                "ctud": "Option Bool × Option Bool × Option Int"}
+                "ctud": "Option Bool × Option Bool × Option Int",
+                "powerOn": "Option Bool × Option Bool",
+                "ctdBounds": "Option Bool × Option Int",
+                "ctudBounds": "Option Bool × Option Bool × Option Int"}
 
 
 def initial_inputs(trace, st_text):

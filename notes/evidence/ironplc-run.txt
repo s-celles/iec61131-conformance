@@ -1,3 +1,15 @@
+### conformance/control-flow/case_expr.st
+0 x=5 => branch=11 neg=FALSE cnt=0
+1 x=-5 => branch=11 neg=TRUE cnt=1
+2 x=6 => branch=12 neg=FALSE cnt=1
+3 x=-6 => branch=12 neg=TRUE cnt=2
+4 x=7 => branch=13 neg=FALSE cnt=2
+5 x=-7 => branch=13 neg=TRUE cnt=3
+6 x=0 => branch=10 neg=FALSE cnt=4
+7 x=-10 => branch=12 neg=TRUE cnt=5
+8 x=-11 => branch=13 neg=FALSE cnt=5
+9 x=8 => branch=10 neg=FALSE cnt=5
+PASS    conformance/control-flow/case_expr.st
 ### conformance/control-flow/for_exit.st
 0 n=0 => sum=0 last=0 count=0 down_count=4 down_sum=22
 1 n=-2 => sum=0 last=0 count=0 down_count=4 down_sum=22
@@ -23,6 +35,14 @@ PASS    conformance/control-flow/for_exit.st
 10 x=-32768 => sign=-1 bucket=0
 11 x=32767 => sign=1 bucket=0
 PASS    conformance/control-flow/if_case.st
+### conformance/control-flow/nested_exit.st
+0 n=0 => outer=3 inner=0 w=6
+1 n=4 => outer=3 inner=12 w=6
+2 n=10 => outer=3 inner=30 w=6
+3 n=15 => outer=3 inner=30 w=6
+4 n=-3 => outer=3 inner=0 w=6
+5 n=1 => outer=3 inner=3 w=6
+PASS    conformance/control-flow/nested_exit.st
 ### conformance/control-flow/while.st
 0 n=0 => iters=0 acc=0 rep=1
 1 n=1 => iters=1 acc=1 rep=1
@@ -48,6 +68,19 @@ PASS    conformance/control-flow/while.st
 13 cd=FALSE => q=FALSE cv=3
 14 cd=TRUE => q=FALSE cv=2
 PASS    conformance/counters/ctd.st
+### conformance/counters/ctd_bounds.st
+0 cd=FALSE ld=FALSE => q=TRUE cv=0
+1 ld=TRUE => q=TRUE cv=-32768
+2 ld=FALSE => q=TRUE cv=-32768
+3 cd=TRUE => q=TRUE cv=32767
+4 cd=FALSE => q=TRUE cv=32767
+5 cd=TRUE => q=TRUE cv=32766
+6 cd=FALSE => q=TRUE cv=32766
+FAIL    conformance/counters/ctd_bounds.st
+        cycle 3 (trace line 19): cv expected -32768, got 32767
+        cycle 4 (trace line 20): cv expected -32768, got 32767
+        cycle 5 (trace line 21): cv expected -32768, got 32766
+        cycle 6 (trace line 22): cv expected -32768, got 32766
 ### conformance/counters/ctu.st
 0 cu=FALSE r=FALSE => q=FALSE cv=0
 1 cu=TRUE => q=FALSE cv=1
@@ -86,6 +119,27 @@ PASS    conformance/counters/ctu.st
 19 cd=FALSE => qu=FALSE qd=TRUE cv=-1
 20 cu=TRUE => qu=FALSE qd=TRUE cv=0
 PASS    conformance/counters/ctud.st
+### conformance/counters/ctud_bounds.st
+0 cu=FALSE cd=FALSE r=FALSE ld=FALSE => qu=FALSE qd=TRUE cv=0
+1 ld=TRUE => qu=TRUE qd=FALSE cv=32767
+2 ld=FALSE => qu=TRUE qd=FALSE cv=32767
+3 cu=TRUE => qu=TRUE qd=FALSE cv=-32768
+4 cu=FALSE => qu=TRUE qd=FALSE cv=-32768
+5 cu=TRUE => qu=TRUE qd=FALSE cv=-32767
+6 cu=FALSE cd=TRUE => qu=TRUE qd=FALSE cv=-32768
+7 cd=FALSE => qu=TRUE qd=FALSE cv=-32768
+8 cu=TRUE => qu=TRUE qd=FALSE cv=-32767
+9 cu=FALSE r=TRUE => qu=FALSE qd=TRUE cv=0
+10 r=FALSE => qu=FALSE qd=TRUE cv=0
+FAIL    conformance/counters/ctud_bounds.st
+        cycle 3 (trace line 20): cv expected 32767, got -32768
+        cycle 4 (trace line 21): cv expected 32767, got -32768
+        cycle 5 (trace line 22): cv expected 32767, got -32767
+        cycle 6 (trace line 23): qu expected FALSE, got TRUE
+        cycle 6 (trace line 23): cv expected 32766, got -32768
+        cycle 7 (trace line 24): qu expected FALSE, got TRUE
+        cycle 7 (trace line 24): cv expected 32766, got -32768
+        cycle 8 (trace line 25): cv expected 32767, got -32767
 ### conformance/edge/f_trig.st
 0 clk=FALSE => q=FALSE
 1 clk=TRUE => q=FALSE
@@ -98,6 +152,14 @@ PASS    conformance/counters/ctud.st
 8 clk=FALSE => q=TRUE
 9 clk=FALSE => q=FALSE
 PASS    conformance/edge/f_trig.st
+### conformance/edge/power_on_clk_true.st
+0 clk=TRUE => qr=TRUE qf=FALSE
+1 => qr=FALSE qf=FALSE
+2 clk=FALSE => qr=FALSE qf=TRUE
+3 => qr=FALSE qf=FALSE
+4 clk=TRUE => qr=TRUE qf=FALSE
+5 clk=FALSE => qr=FALSE qf=TRUE
+PASS    conformance/edge/power_on_clk_true.st
 ### conformance/edge/r_trig.st
 0 clk=FALSE => q=FALSE
 1 clk=TRUE => q=TRUE
@@ -122,6 +184,74 @@ PASS    conformance/edge/r_trig.st
 9 s=TRUE => q_sr=TRUE q_rs=TRUE
 10 r=TRUE => q_sr=TRUE q_rs=FALSE
 PASS    conformance/edge/sr_rs.st
+### conformance/ops/conversions.st
+0 i=100 ip=100 d=-1000 dp=1000 u=30000 ub=30000 => i2d=100 i2u=100 d2i=-1000 d2u=1000 u2i=30000 u2d=30000
+1 i=0 ip=0 d=0 dp=0 u=0 ub=0 => i2d=0 i2u=0 d2i=0 d2u=0 u2i=0 u2d=0
+2 i=-32768 ip=32767 d=32767 dp=65535 u=32767 ub=1 => i2d=-32768 i2u=32767 d2i=32767 d2u=65535 u2i=32767 u2d=1
+3 i=-1 ip=1 d=-32768 dp=0 u=0 ub=65535 => i2d=-1 i2u=1 d2i=-32768 d2u=0 u2i=0 u2d=65535
+PASS    conformance/ops/conversions.st
+### conformance/ops/literals.st
+0 => hex=255 bin=170 oct=15 under=1000000 typed=-5 neg=-16 tu=65535 dh=2147483647
+1 => hex=255 bin=170 oct=15 under=1000000 typed=-5 neg=-16 tu=65535 dh=2147483647
+PASS    conformance/ops/literals.st
+### conformance/ops/precedence.st
+0 a=7 b=2 c=3 p=TRUE q=FALSE r=TRUE => e1=13 e2=27 e3=2 e4=9 e5=-1 e6=3 e7=9 l1=TRUE l2=TRUE l3=FALSE l4=FALSE l5=FALSE l6=TRUE
+1 a=-9 b=4 c=-2 p=FALSE q=TRUE r=FALSE => e1=-17 e2=10 e3=-11 e4=4 e5=1 e6=2 e7=-5 l1=FALSE l2=TRUE l3=TRUE l4=FALSE l5=FALSE l6=TRUE
+2 a=1 b=2 c=3 p=TRUE q=TRUE r=TRUE => e1=7 e2=9 e3=-4 e4=0 e5=-1 e6=3 e7=3 l1=TRUE l2=TRUE l3=FALSE l4=TRUE l5=TRUE l6=FALSE
+3 a=5 b=3 c=1 p=FALSE q=FALSE r=FALSE => e1=8 e2=8 e3=1 e4=1 e5=-2 e6=2 e7=8 l1=FALSE l2=FALSE l3=FALSE l4=FALSE l5=FALSE l6=FALSE
+PASS    conformance/ops/precedence.st
+### conformance/ops/std_functions.st
+0 a=-5 b=3 c=9 k=0 g=FALSE da=-100000 db=7 => o_abs=5 o_min=-5 o_max=3 o_limit=3 o_sel=-5 o_mux=-5 d_abs=100000 d_min=-100000
+1 a=12 b=-4 c=20 k=1 g=TRUE da=2147483647 db=-2147483648 => o_abs=12 o_min=-4 o_max=12 o_limit=12 o_sel=-4 o_mux=-4 d_abs=2147483647 d_min=-2147483648
+2 a=0 b=0 c=0 k=2 g=FALSE da=0 db=0 => o_abs=0 o_min=0 o_max=0 o_limit=0 o_sel=0 o_mux=0 d_abs=0 d_min=0
+3 a=30000 b=-30000 c=100 k=2 g=TRUE da=-1 db=1 => o_abs=30000 o_min=-30000 o_max=30000 o_limit=100 o_sel=-30000 o_mux=100 d_abs=1 d_min=-1
+4 a=-32767 b=-32767 c=-32767 k=0 g=FALSE da=5 db=5 => o_abs=32767 o_min=-32767 o_max=-32767 o_limit=-32767 o_sel=-32767 o_mux=-32767 d_abs=5 d_min=5
+PASS    conformance/ops/std_functions.st
+### conformance/ops/std_functions_ext.st
+FAIL    conformance/ops/std_functions_ext.st
+        ironplcc failed to compile the program:
+[0m[1m[38;5;9merror[P4018][0m[1m: Function call has wrong number of arguments (function=MAX, expected=2, actual=3)[0m
+   [0m[36m┌─[0m /Users/scelles/git/github/s-celles/iec61131-conformance/conformance/ops/std_functions_ext.st:18:11
+   [0m[36m│[0m
+[0m[36m18[0m [0m[36m│[0m   max3 := [0m[31mMAX[0m(a, b, c);
+   [0m[36m│[0m           [0m[31m^^^[0m [0m[31mFunction call[0m
+   [0m[36m│[0m
+   [0m[36m=[0m Learn more: https://www.ironplc.com/reference/compiler/problems/P4018.html?version=0.251.0&channel=cli
+
+[0m[1m[38;5;9merror[P4018][0m[1m: Function call has wrong number of arguments (function=MIN, expected=2, actual=3)[0m
+   [0m[36m┌─[0m /Users/scelles/git/github/s-celles/iec61131-conformance/conformance/ops/std_functions_ext.st:19:11
+   [0m[36m│[0m
+[0m[36m19[0m [0m[36m│[0m   min3 := [0m[31mMIN[0m(a, b, c);
+   [0m[36m│[0m           [0m[31m^^^[0m [0m[31mFunction call[0m
+   [0m[36m│[0m
+   [0m[36m=[0m Learn more: https://www.ironplc.com/reference/compiler/problems/P4018.html?version=0.251.0&channel=cli
+
+Error: "Compile failed with 2 problem(s)"
+
+### conformance/ops/time_arith.st
+0 t1=T#1500ms t2=T#500ms => sum=T#2000ms diff=T#1000ms is_lt=FALSE is_gt=TRUE is_le=FALSE is_eq=FALSE lit1=T#90000ms lit2=T#3723004ms lit3=T#1500ms lit4=T#500ms lit5=T#172800000ms
+1 t1=T#0ms t2=T#0ms => sum=T#0ms diff=T#0ms is_lt=FALSE is_gt=FALSE is_le=TRUE is_eq=TRUE lit1=T#90000ms lit2=T#3723004ms lit3=T#1500ms lit4=T#500ms lit5=T#172800000ms
+2 t1=T#100ms t2=T#100ms => sum=T#200ms diff=T#0ms is_lt=FALSE is_gt=FALSE is_le=TRUE is_eq=TRUE lit1=T#90000ms lit2=T#3723004ms lit3=T#1500ms lit4=T#500ms lit5=T#172800000ms
+3 t1=T#3600000ms t2=T#1ms => sum=T#3600001ms diff=T#3599999ms is_lt=FALSE is_gt=TRUE is_le=FALSE is_eq=FALSE lit1=T#90000ms lit2=T#3723004ms lit3=T#1500ms lit4=T#500ms lit5=T#172800000ms
+PASS    conformance/ops/time_arith.st
+### conformance/pou/fb_input_defaults.st
+0 => total=11 untouched=7 base=6
+1 => total=12 untouched=7 base=7
+2 => total=13 untouched=7 base=8
+PASS    conformance/pou/fb_input_defaults.st
+### conformance/pou/fb_input_retention.st
+0 set_inc=TRUE new_inc=1 set_enable=TRUE new_enable=TRUE => total=1
+1 set_inc=FALSE set_enable=FALSE => total=2
+2 set_inc=TRUE new_inc=5 => total=7
+3 set_inc=FALSE => total=12
+4 set_enable=TRUE new_enable=FALSE => total=12
+5 set_enable=FALSE => total=12
+6 set_inc=TRUE new_inc=-2 => total=12
+7 set_inc=FALSE set_enable=TRUE new_enable=TRUE => total=10
+8 set_enable=FALSE => total=8
+9 set_inc=TRUE set_enable=TRUE new_inc=100 new_enable=TRUE => total=108
+10 set_inc=FALSE set_enable=FALSE => total=208
+PASS    conformance/pou/fb_input_retention.st
 ### conformance/pou/fb_two_instances.st
 0 enable_a=TRUE inc_a=5 enable_b=FALSE inc_b=100 => tot_a=5 tot_b=0 calls_a=1 calls_b=1
 1 => tot_a=10 tot_b=0 calls_a=2 calls_b=2
@@ -132,6 +262,19 @@ PASS    conformance/edge/sr_rs.st
 6 inc_b=-300 => tot_a=-1985 tot_b=300 calls_a=7 calls_b=7
 7 enable_b=TRUE => tot_a=-2985 tot_b=0 calls_a=8 calls_b=8
 PASS    conformance/pou/fb_two_instances.st
+### conformance/pou/fb_var_temp.st
+FAIL    conformance/pou/fb_var_temp.st
+        ironplcc failed to compile the program:
+[0m[1m[38;5;9merror[P9999][0m[1m: Capability is not implemented (yet!)[0m
+   [0m[36m┌─[0m /Users/scelles/git/github/s-celles/iec61131-conformance/conformance/pou/fb_var_temp.st:11:5
+   [0m[36m│[0m
+[0m[36m11[0m [0m[36m│[0m     [0m[31mt[0m : INT;
+   [0m[36m│[0m     [0m[31m^[0m [0m[31mStarting value code generation does not support yet[0m
+   [0m[36m│[0m
+   [0m[36m=[0m Learn more: https://www.ironplc.com/reference/compiler/problems/P9999.html?version=0.251.0&channel=cli&file=codegen/src/body/mod.rs&line=80
+
+Error: "Compile failed with 1 problem(s)"
+
 ### conformance/pou/function_call.st
 0 x=5 d=1 => y=5 e=11
 1 x=50 d=-4 => y=10 e=96
@@ -140,6 +283,12 @@ PASS    conformance/pou/fb_two_instances.st
 4 x=200 d=-200 => y=10 e=0
 5 x=0 d=2147483647 => y=0 e=2147483647
 PASS    conformance/pou/function_call.st
+### conformance/pou/function_var_not_retained.st
+0 x=3 => f=3
+1 x=4 => f=4
+2 x=0 => f=0
+3 x=-5 => f=-5
+PASS    conformance/pou/function_var_not_retained.st
 ### conformance/timers/tof.st
 0 in=FALSE => q=TRUE et=T#0ms
 1 in=TRUE => q=TRUE et=T#0ms
@@ -207,6 +356,10 @@ FAIL    conformance/timers/tp.st
         cycle 17 (trace line 45): q expected FALSE, got TRUE
         cycle 17 (trace line 45): et expected T#300ms, got T#200ms
         cycle 18 (trace line 46): et expected T#0ms, got T#300ms
+### conformance/undefined/abs_int_min.st
+0 x=-7 d=-7 => ax=7 nx=7 ad=7 nd=7
+1 x=-32768 d=-2147483648 => ax=-32768 nx=-32768 ad=-2147483648 nd=-2147483648
+SAME    conformance/undefined/abs_int_min.st (implementation-defined)
 ### conformance/undefined/ctu_pv_zero.st
 0 cu=FALSE r=FALSE => q=TRUE cv=0
 1 cu=TRUE => q=TRUE cv=1
@@ -215,6 +368,13 @@ FAIL    conformance/timers/tp.st
 4 r=TRUE => q=TRUE cv=0
 5 r=FALSE cu=FALSE => q=TRUE cv=0
 SAME    conformance/undefined/ctu_pv_zero.st (implementation-defined)
+### conformance/undefined/dint_to_int_overflow.st
+0 d=100 i=100 u=100 => d2i=100 d2u=100 i2u=100 u2i=100
+1 d=40000 i=-1 u=65535 => d2i=-25536 d2u=40000 i2u=65535 u2i=-1
+2 d=-40000 i=-32768 u=32768 => d2i=25536 d2u=25536 i2u=32768 u2i=-32768
+3 d=2147483647 i=32767 u=0 => d2i=-1 d2u=65535 i2u=32767 u2i=0
+4 d=65541 i=0 u=40000 => d2i=5 d2u=5 i2u=0 u2i=-25536
+SAME    conformance/undefined/dint_to_int_overflow.st (implementation-defined)
 ### conformance/undefined/div_zero.st
 0 a=7 b=2 => q=3 m=1
 1 a=-7 b=2 => q=-3 m=-1
@@ -230,6 +390,12 @@ SAME    conformance/undefined/eval_order.st (implementation-defined)
 1 start_n=0 => count=0 n_after=0
 2 start_n=10 => count=50 n_after=60
 SAME    conformance/undefined/for_bound_modified.st (implementation-defined)
+### conformance/undefined/for_var_after_loop.st
+0 n=3 => i_after=4 sum=6
+1 n=0 => i_after=1 sum=0
+2 n=1 => i_after=2 sum=1
+3 n=-2 => i_after=1 sum=0
+SAME    conformance/undefined/for_var_after_loop.st (implementation-defined)
 ### conformance/undefined/int_overflow.st
 0 a=1 b=2 => s=3 d=-1
 1 a=32767 b=1 => s=-32768 d=32766
@@ -238,6 +404,15 @@ SAME    conformance/undefined/for_bound_modified.st (implementation-defined)
 4 a=32767 b=32767 => s=-2 d=0
 5 a=-32768 b=-32768 => s=0 d=0
 SAME    conformance/undefined/int_overflow.st (implementation-defined)
+### conformance/undefined/timer_pt_zero.st
+0 in=FALSE => q_ton=FALSE et_ton=T#0ms q_tof=TRUE et_tof=T#0ms q_tp=FALSE et_tp=T#0ms
+1 in=TRUE => q_ton=FALSE et_ton=T#0ms q_tof=TRUE et_tof=T#0ms q_tp=TRUE et_tp=T#0ms
+2 => q_ton=TRUE et_ton=T#0ms q_tof=TRUE et_tof=T#0ms q_tp=FALSE et_tp=T#0ms
+3 in=FALSE => q_ton=FALSE et_ton=T#0ms q_tof=TRUE et_tof=T#0ms q_tp=FALSE et_tp=T#0ms
+4 => q_ton=FALSE et_ton=T#0ms q_tof=FALSE et_tof=T#0ms q_tp=FALSE et_tp=T#0ms
+5 in=TRUE => q_ton=FALSE et_ton=T#0ms q_tof=TRUE et_tof=T#0ms q_tp=TRUE et_tp=T#0ms
+6 in=FALSE => q_ton=FALSE et_ton=T#0ms q_tof=TRUE et_tof=T#0ms q_tp=FALSE et_tp=T#0ms
+SAME    conformance/undefined/timer_pt_zero.st (implementation-defined)
 ### conformance/undefined/ton_pt_change.st
 0 in=FALSE pt=T#500ms => q=FALSE et=T#0ms
 1 in=TRUE => q=FALSE et=T#0ms
@@ -254,5 +429,5 @@ SAME    conformance/undefined/int_overflow.st (implementation-defined)
 12 in=FALSE => q=FALSE et=T#0ms
 SAME    conformance/undefined/ton_pt_change.st (implementation-defined)
 
-20 tests: 12 pass, 2 fail, 6 same, 0 differs, 0 error
+39 tests: 23 pass, 6 fail, 10 same, 0 differs, 0 error
 exit 1

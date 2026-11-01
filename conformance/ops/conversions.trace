@@ -1,0 +1,15 @@
+# *_TO_* conversions between integer types (ed.3 6.6.2.5.1 table 22 /
+# ed.2 table 22): the value is preserved when it is representable in the
+# target type. Every record keeps every source in the target's range; the
+# out-of-range cases are in undefined/dint_to_int_overflow.
+period_ms: 100
+program: main
+inputs: i ip d dp u ub
+outputs: i2d i2u d2i d2u u2i u2d
+status: conformant
+reference: IEC 61131-3 ed.3 6.6.2.5.1 table 22 (typed conversion functions)
+---
+0 i=100 ip=100 d=-1000 dp=1000 u=30000 ub=30000      => i2d=100 i2u=100 d2i=-1000 d2u=1000 u2i=30000 u2d=30000
+1 i=0 ip=0 d=0 dp=0 u=0 ub=0                         => i2d=0 i2u=0 d2i=0 d2u=0 u2i=0 u2d=0
+2 i=-32768 ip=32767 d=32767 dp=65535 u=32767 ub=1    => i2d=-32768 i2u=32767 d2i=32767 d2u=65535 u2i=32767 u2d=1
+3 i=-1 ip=1 d=-32768 dp=0 u=0 ub=65535               => i2d=-1 i2u=1 d2i=-32768 d2u=0 u2i=0 u2d=65535

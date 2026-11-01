@@ -1,0 +1,19 @@
+# ABS, MIN, MAX, LIMIT, SEL, MUX (ed.3 tables 29 and 31 / ed.2 tables 24
+# and 26), positional arguments.
+#   ABS(x) = |x|; MIN/MAX the smaller/larger; LIMIT(MN, IN, MX) =
+#   MIN(MAX(IN, MN), MX); SEL(G, IN0, IN1) = IN0 if G is FALSE else IN1;
+#   MUX(K, IN0, IN1, IN2) = IN_K, K counted from 0.
+# Records keep b <= c (LIMIT with MN > MX is not defined) and avoid
+# ABS(-32768) (see undefined/abs_int_min).
+period_ms: 100
+program: main
+inputs: a b c k g da db
+outputs: o_abs o_min o_max o_limit o_sel o_mux d_abs d_min
+status: conformant
+reference: IEC 61131-3 ed.3 6.6.2.5.1 table 29 (ABS), 6.6.2.5.3 table 31 (MIN MAX LIMIT SEL MUX)
+---
+0 a=-5 b=3 c=9 k=0 g=FALSE da=-100000 db=7                 => o_abs=5 o_min=-5 o_max=3 o_limit=3 o_sel=-5 o_mux=-5 d_abs=100000 d_min=-100000
+1 a=12 b=-4 c=20 k=1 g=TRUE da=2147483647 db=-2147483648   => o_abs=12 o_min=-4 o_max=12 o_limit=12 o_sel=-4 o_mux=-4 d_abs=2147483647 d_min=-2147483648
+2 a=0 b=0 c=0 k=2 g=FALSE da=0 db=0                        => o_abs=0 o_min=0 o_max=0 o_limit=0 o_sel=0 o_mux=0 d_abs=0 d_min=0
+3 a=30000 b=-30000 c=100 k=2 g=TRUE da=-1 db=1             => o_abs=30000 o_min=-30000 o_max=30000 o_limit=100 o_sel=-30000 o_mux=100 d_abs=1 d_min=-1
+4 a=-32767 b=-32767 c=-32767 k=0 g=FALSE da=5 db=5         => o_abs=32767 o_min=-32767 o_max=-32767 o_limit=-32767 o_sel=-32767 o_mux=-32767 d_abs=5 d_min=5

@@ -1,0 +1,21 @@
+# EXIT in nested loops (ed.3 7.3.3.4.1 / ed.2 2.6.5.1: EXIT terminates the
+# innermost iteration statement in which it is located; execution
+# continues after that loop's END_).
+#   inner counts the j iterations before j > n, over 3 outer iterations:
+#   inner = 3 * min(max(n, 0), 10); outer is always 3 because EXIT does
+#   not leave the FOR i loop.
+#   w: each of the 2 outer iterations runs the WHILE until w is a multiple
+#   of 3, so w = 6 regardless of n.
+period_ms: 100
+program: main
+inputs: n
+outputs: outer inner w
+status: conformant
+reference: IEC 61131-3 ed.3 7.3.3.4.1 (EXIT statement)
+---
+0 n=0  => outer=3 inner=0  w=6
+1 n=4  => outer=3 inner=12 w=6
+2 n=10 => outer=3 inner=30 w=6
+3 n=15 => outer=3 inner=30 w=6
+4 n=-3 => outer=3 inner=0  w=6
+5 n=1  => outer=3 inner=3  w=6

@@ -1,0 +1,24 @@
+# R_TRIG and F_TRIG with CLK = TRUE from the first evaluation, period 100 ms.
+#
+# Derivation (ed.3 table 43 / ed.2 table 35 bodies):
+#   R_TRIG: Q := CLK AND NOT M; M := CLK;         with M initially FALSE
+#   F_TRIG: Q := NOT CLK AND NOT M; M := NOT CLK; with M initially TRUE
+#           (ed.3) or FALSE (FDIS 2001)
+# With CLK = TRUE on the first evaluation, R_TRIG reports a rising edge
+# (M was FALSE) and F_TRIG reports nothing whatever its initial M, since
+# NOT CLK is FALSE. From then on both are in a defined state, so this
+# trace holds under either edition, unlike edge/f_trig cycle 0.
+period_ms: 100
+program: main
+inputs: clk
+outputs: qr qf
+status: conformant
+reference: IEC 61131-3 ed.3 6.6.3.5.2 table 43 (R_TRIG, F_TRIG bodies)
+---
+# first evaluation with CLK TRUE: a rising edge, no falling edge
+0 clk=TRUE  => qr=TRUE  qf=FALSE
+1           => qr=FALSE qf=FALSE
+2 clk=FALSE => qr=FALSE qf=TRUE
+3           => qr=FALSE qf=FALSE
+4 clk=TRUE  => qr=TRUE  qf=FALSE
+5 clk=FALSE => qr=FALSE qf=TRUE

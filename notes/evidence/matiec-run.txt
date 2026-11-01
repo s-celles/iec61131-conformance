@@ -1,3 +1,15 @@
+### conformance/control-flow/case_expr.st
+0 x=5 => branch=11 neg=FALSE cnt=0
+1 x=-5 => branch=11 neg=TRUE cnt=1
+2 x=6 => branch=12 neg=FALSE cnt=1
+3 x=-6 => branch=12 neg=TRUE cnt=2
+4 x=7 => branch=13 neg=FALSE cnt=2
+5 x=-7 => branch=13 neg=TRUE cnt=3
+6 x=0 => branch=10 neg=FALSE cnt=4
+7 x=-10 => branch=12 neg=TRUE cnt=5
+8 x=-11 => branch=13 neg=FALSE cnt=5
+9 x=8 => branch=10 neg=FALSE cnt=5
+PASS    conformance/control-flow/case_expr.st
 ### conformance/control-flow/for_exit.st
 0 n=0 => sum=0 last=0 count=0 down_count=4 down_sum=22
 1 n=-2 => sum=0 last=0 count=0 down_count=4 down_sum=22
@@ -23,6 +35,14 @@ PASS    conformance/control-flow/for_exit.st
 10 x=-32768 => sign=-1 bucket=0
 11 x=32767 => sign=1 bucket=0
 PASS    conformance/control-flow/if_case.st
+### conformance/control-flow/nested_exit.st
+0 n=0 => outer=3 inner=0 w=6
+1 n=4 => outer=3 inner=12 w=6
+2 n=10 => outer=3 inner=30 w=6
+3 n=15 => outer=3 inner=30 w=6
+4 n=-3 => outer=3 inner=0 w=6
+5 n=1 => outer=3 inner=3 w=6
+PASS    conformance/control-flow/nested_exit.st
 ### conformance/control-flow/while.st
 0 n=0 => iters=0 acc=0 rep=1
 1 n=1 => iters=1 acc=1 rep=1
@@ -49,6 +69,15 @@ PASS    conformance/control-flow/while.st
 14 cd=TRUE => q=FALSE cv=2
 FAIL    conformance/counters/ctd.st
         cycle 10 (trace line 36): cv expected -1, got 0
+### conformance/counters/ctd_bounds.st
+0 cd=FALSE ld=FALSE => q=TRUE cv=0
+1 ld=TRUE => q=TRUE cv=-32768
+2 ld=FALSE => q=TRUE cv=-32768
+3 cd=TRUE => q=TRUE cv=-32768
+4 cd=FALSE => q=TRUE cv=-32768
+5 cd=TRUE => q=TRUE cv=-32768
+6 cd=FALSE => q=TRUE cv=-32768
+PASS    conformance/counters/ctd_bounds.st
 ### conformance/counters/ctu.st
 0 cu=FALSE r=FALSE => q=FALSE cv=0
 1 cu=TRUE => q=FALSE cv=1
@@ -92,6 +121,19 @@ FAIL    conformance/counters/ctud.st
         cycle 19 (trace line 55): cv expected -1, got 0
         cycle 20 (trace line 57): qd expected TRUE, got FALSE
         cycle 20 (trace line 57): cv expected 0, got 1
+### conformance/counters/ctud_bounds.st
+0 cu=FALSE cd=FALSE r=FALSE ld=FALSE => qu=FALSE qd=TRUE cv=0
+1 ld=TRUE => qu=TRUE qd=FALSE cv=32767
+2 ld=FALSE => qu=TRUE qd=FALSE cv=32767
+3 cu=TRUE => qu=TRUE qd=FALSE cv=32767
+4 cu=FALSE => qu=TRUE qd=FALSE cv=32767
+5 cu=TRUE => qu=TRUE qd=FALSE cv=32767
+6 cu=FALSE cd=TRUE => qu=FALSE qd=FALSE cv=32766
+7 cd=FALSE => qu=FALSE qd=FALSE cv=32766
+8 cu=TRUE => qu=TRUE qd=FALSE cv=32767
+9 cu=FALSE r=TRUE => qu=FALSE qd=TRUE cv=0
+10 r=FALSE => qu=FALSE qd=TRUE cv=0
+PASS    conformance/counters/ctud_bounds.st
 ### conformance/edge/f_trig.st
 0 clk=FALSE => q=TRUE
 1 clk=TRUE => q=FALSE
@@ -105,6 +147,14 @@ FAIL    conformance/counters/ctud.st
 9 clk=FALSE => q=FALSE
 FAIL    conformance/edge/f_trig.st
         cycle 0 (trace line 17): q expected FALSE, got TRUE
+### conformance/edge/power_on_clk_true.st
+0 clk=TRUE => qr=TRUE qf=FALSE
+1 => qr=FALSE qf=FALSE
+2 clk=FALSE => qr=FALSE qf=TRUE
+3 => qr=FALSE qf=FALSE
+4 clk=TRUE => qr=TRUE qf=FALSE
+5 clk=FALSE => qr=FALSE qf=TRUE
+PASS    conformance/edge/power_on_clk_true.st
 ### conformance/edge/r_trig.st
 0 clk=FALSE => q=FALSE
 1 clk=TRUE => q=TRUE
@@ -129,6 +179,83 @@ PASS    conformance/edge/r_trig.st
 9 s=TRUE => q_sr=TRUE q_rs=TRUE
 10 r=TRUE => q_sr=TRUE q_rs=FALSE
 PASS    conformance/edge/sr_rs.st
+### conformance/ops/conversions.st
+0 i=100 ip=100 d=-1000 dp=1000 u=30000 ub=30000 => i2d=100 i2u=100 d2i=-1000 d2u=1000 u2i=30000 u2d=30000
+1 i=0 ip=0 d=0 dp=0 u=0 ub=0 => i2d=0 i2u=0 d2i=0 d2u=0 u2i=0 u2d=0
+2 i=-32768 ip=32767 d=32767 dp=65535 u=32767 ub=1 => i2d=-32768 i2u=32767 d2i=32767 d2u=65535 u2i=32767 u2d=1
+3 i=-1 ip=1 d=-32768 dp=0 u=0 ub=65535 => i2d=-1 i2u=1 d2i=-32768 d2u=0 u2i=0 u2d=65535
+PASS    conformance/ops/conversions.st
+### conformance/ops/literals.st
+0 => hex=255 bin=170 oct=15 under=1000000 typed=-5 neg=-16 tu=65535 dh=2147483647
+1 => hex=255 bin=170 oct=15 under=1000000 typed=-5 neg=-16 tu=65535 dh=2147483647
+PASS    conformance/ops/literals.st
+### conformance/ops/precedence.st
+0 a=7 b=2 c=3 p=TRUE q=FALSE r=TRUE => e1=13 e2=27 e3=2 e4=9 e5=-1 e6=3 e7=9 l1=TRUE l2=TRUE l3=FALSE l4=FALSE l5=FALSE l6=TRUE
+1 a=-9 b=4 c=-2 p=FALSE q=TRUE r=FALSE => e1=-17 e2=10 e3=-11 e4=4 e5=1 e6=2 e7=-5 l1=FALSE l2=TRUE l3=TRUE l4=FALSE l5=FALSE l6=TRUE
+2 a=1 b=2 c=3 p=TRUE q=TRUE r=TRUE => e1=7 e2=9 e3=-4 e4=0 e5=-1 e6=3 e7=3 l1=TRUE l2=TRUE l3=FALSE l4=TRUE l5=TRUE l6=FALSE
+3 a=5 b=3 c=1 p=FALSE q=FALSE r=FALSE => e1=8 e2=8 e3=1 e4=1 e5=-2 e6=2 e7=8 l1=FALSE l2=FALSE l3=FALSE l4=FALSE l5=FALSE l6=FALSE
+PASS    conformance/ops/precedence.st
+### conformance/ops/std_functions.st
+0 a=-5 b=3 c=9 k=0 g=FALSE da=-100000 db=7 => o_abs=5 o_min=-5 o_max=3 o_limit=3 o_sel=-5 o_mux=-5 d_abs=100000 d_min=-100000
+1 a=12 b=-4 c=20 k=1 g=TRUE da=2147483647 db=-2147483648 => o_abs=12 o_min=-4 o_max=12 o_limit=12 o_sel=-4 o_mux=-4 d_abs=2147483647 d_min=-2147483648
+2 a=0 b=0 c=0 k=2 g=FALSE da=0 db=0 => o_abs=0 o_min=0 o_max=0 o_limit=0 o_sel=0 o_mux=0 d_abs=0 d_min=0
+3 a=30000 b=-30000 c=100 k=2 g=TRUE da=-1 db=1 => o_abs=30000 o_min=-30000 o_max=30000 o_limit=100 o_sel=-30000 o_mux=100 d_abs=1 d_min=-1
+4 a=-32767 b=-32767 c=-32767 k=0 g=FALSE da=5 db=5 => o_abs=32767 o_min=-32767 o_max=-32767 o_limit=-32767 o_sel=-32767 o_mux=-32767 d_abs=5 d_min=5
+PASS    conformance/ops/std_functions.st
+### conformance/ops/std_functions_ext.st
+0 a=1 b=2 c=3 g=FALSE => max3=3 min3=1 add3=6 mul3=6 lim=2 selv=1
+1 a=-7 b=-7 c=10 g=TRUE => max3=10 min3=-7 add3=-4 mul3=490 lim=-7 selv=-7
+2 a=100 b=-100 c=2 g=FALSE => max3=100 min3=-100 add3=2 mul3=-20000 lim=2 selv=100
+3 a=0 b=0 c=0 g=TRUE => max3=0 min3=0 add3=0 mul3=0 lim=0 selv=0
+PASS    conformance/ops/std_functions_ext.st
+### conformance/ops/time_arith.st
+ERROR   conformance/ops/time_arith.st
+        gcc failed:
+In file included from res0.c:18:
+./POUS.c:33:27: error: call to undeclared function '_____time_add'; ISO C99 and later do not support implicit function declarations [-Wimplicit-function-declaration]
+   33 |   __SET_VAR(data__->,SUM,,_____time_add(__GET_VAR(data__->T1,), __GET_VAR(data__->T2,)));
+      |                           ^
+./POUS.c:33:27: note: did you mean '__time_add'?
+/Users/scelles/git/github/s-celles/scratch/matiec/lib/C/iec_std_lib.h:388:20: note: '__time_add' declared here
+  388 | static inline TIME __time_add(TIME IN1, TIME IN2){
+      |                    ^
+In file included from res0.c:18:
+./POUS.c:33:3: error: assigning to 'IEC_TIME' (aka 'IEC_TIMESPEC') from incompatible type 'int'
+   33 |   __SET_VAR(data__->,SUM,,_____time_add(__GET_VAR(data__->T1,), __GET_VAR(data__->T2,)));
+      |   ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/Users/scelles/git/github/s-celles/scratch/matiec/lib/C/accessor.h:215:72: note: expanded from macro '__SET_VAR'
+  215 |         if (!(prefix name.flags & __IEC_FORCE_FLAG)) prefix name.value suffix = new_value
+      |                                                                               ^ ~~~~~~~~~
+In file included from res0.c:18:
+./POUS.c:34:28: error: call to undeclared function '_____time_sub'; ISO C99 and later do not support implicit function declarations [-Wimplicit-function-declaration]
+   34 |   __SET_VAR(data__->,DIFF,,_____time_sub(__GET_VAR(data__->T1,), __GET_VAR(data__->T2,)));
+      |                            ^
+./POUS.c:34:3: error: assigning to 'IEC_TIME' (aka 'IEC_TIMESPEC') from incompatible type 'int'
+   34 |   __SET_VAR(data__->,DIFF,,_____time_sub(__GET_VAR(data__->T1,), __GET_VAR(data__->T2,)));
+      |   ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/Users/scelles/git/github/s-celles/scratch/matiec/lib/C/accessor.h:215:72: note: expanded from macro '__SET_VAR'
+  215 |         if (!(prefix name.flags & __IEC_FORCE_FLAG)) prefix name.value suffix = new_value
+      |                                                                               ^ ~~~~~~~~~
+4 errors generated.
+
+### conformance/pou/fb_input_defaults.st
+0 => total=11 untouched=7 base=6
+1 => total=12 untouched=7 base=7
+2 => total=13 untouched=7 base=8
+PASS    conformance/pou/fb_input_defaults.st
+### conformance/pou/fb_input_retention.st
+0 set_inc=TRUE new_inc=1 set_enable=TRUE new_enable=TRUE => total=1
+1 set_inc=FALSE set_enable=FALSE => total=2
+2 set_inc=TRUE new_inc=5 => total=7
+3 set_inc=FALSE => total=12
+4 set_enable=TRUE new_enable=FALSE => total=12
+5 set_enable=FALSE => total=12
+6 set_inc=TRUE new_inc=-2 => total=12
+7 set_inc=FALSE set_enable=TRUE new_enable=TRUE => total=10
+8 set_enable=FALSE => total=8
+9 set_inc=TRUE set_enable=TRUE new_inc=100 new_enable=TRUE => total=108
+10 set_inc=FALSE set_enable=FALSE => total=208
+PASS    conformance/pou/fb_input_retention.st
 ### conformance/pou/fb_two_instances.st
 0 enable_a=TRUE inc_a=5 enable_b=FALSE inc_b=100 => tot_a=5 tot_b=0 calls_a=1 calls_b=1
 1 => tot_a=10 tot_b=0 calls_a=2 calls_b=2
@@ -139,6 +266,12 @@ PASS    conformance/edge/sr_rs.st
 6 inc_b=-300 => tot_a=-1985 tot_b=300 calls_a=7 calls_b=7
 7 enable_b=TRUE => tot_a=-2985 tot_b=0 calls_a=8 calls_b=8
 PASS    conformance/pou/fb_two_instances.st
+### conformance/pou/fb_var_temp.st
+0 x=3 => y=3
+1 x=4 => y=4
+2 x=0 => y=0
+3 x=-5 => y=-5
+PASS    conformance/pou/fb_var_temp.st
 ### conformance/pou/function_call.st
 0 x=5 d=1 => y=5 e=11
 1 x=50 d=-4 => y=10 e=96
@@ -147,6 +280,12 @@ PASS    conformance/pou/fb_two_instances.st
 4 x=200 d=-200 => y=10 e=0
 5 x=0 d=2147483647 => y=0 e=2147483647
 PASS    conformance/pou/function_call.st
+### conformance/pou/function_var_not_retained.st
+0 x=3 => f=3
+1 x=4 => f=4
+2 x=0 => f=0
+3 x=-5 => f=-5
+PASS    conformance/pou/function_var_not_retained.st
 ### conformance/timers/tof.st
 0 in=FALSE => q=FALSE et=T#0ms
 1 in=TRUE => q=TRUE et=T#0ms
@@ -196,6 +335,10 @@ PASS    conformance/timers/ton.st
 17 => q=FALSE et=T#300ms
 18 in=FALSE => q=FALSE et=T#0ms
 PASS    conformance/timers/tp.st
+### conformance/undefined/abs_int_min.st
+0 x=-7 d=-7 => ax=7 nx=7 ad=7 nd=7
+1 x=-32768 d=-2147483648 => ax=-32768 nx=-32768 ad=-2147483648 nd=-2147483648
+SAME    conformance/undefined/abs_int_min.st
 ### conformance/undefined/ctu_pv_zero.st
 0 cu=FALSE r=FALSE => q=TRUE cv=0
 1 cu=TRUE => q=TRUE cv=0
@@ -207,6 +350,13 @@ DIFFERS conformance/undefined/ctu_pv_zero.st
         cycle 1 (trace line 22): cv expected 1, got 0
         cycle 2 (trace line 23): cv expected 1, got 0
         cycle 3 (trace line 24): cv expected 2, got 0
+### conformance/undefined/dint_to_int_overflow.st
+0 d=100 i=100 u=100 => d2i=100 d2u=100 i2u=100 u2i=100
+1 d=40000 i=-1 u=65535 => d2i=-25536 d2u=40000 i2u=65535 u2i=-1
+2 d=-40000 i=-32768 u=32768 => d2i=25536 d2u=25536 i2u=32768 u2i=-32768
+3 d=2147483647 i=32767 u=0 => d2i=-1 d2u=65535 i2u=32767 u2i=0
+4 d=65541 i=0 u=40000 => d2i=5 d2u=5 i2u=0 u2i=-25536
+SAME    conformance/undefined/dint_to_int_overflow.st
 ### conformance/undefined/div_zero.st
 0 a=7 b=2 => q=3 m=1
 1 a=-7 b=2 => q=-3 m=-1
@@ -222,6 +372,12 @@ SAME    conformance/undefined/eval_order.st
 1 start_n=0 => count=0 n_after=0
 2 start_n=10 => count=50 n_after=60
 SAME    conformance/undefined/for_bound_modified.st
+### conformance/undefined/for_var_after_loop.st
+0 n=3 => i_after=4 sum=6
+1 n=0 => i_after=1 sum=0
+2 n=1 => i_after=2 sum=1
+3 n=-2 => i_after=1 sum=0
+SAME    conformance/undefined/for_var_after_loop.st
 ### conformance/undefined/int_overflow.st
 0 a=1 b=2 => s=3 d=-1
 1 a=32767 b=1 => s=-32768 d=32766
@@ -230,6 +386,16 @@ SAME    conformance/undefined/for_bound_modified.st
 4 a=32767 b=32767 => s=-2 d=0
 5 a=-32768 b=-32768 => s=0 d=0
 SAME    conformance/undefined/int_overflow.st
+### conformance/undefined/timer_pt_zero.st
+0 in=FALSE => q_ton=FALSE et_ton=T#0ms q_tof=FALSE et_tof=T#0ms q_tp=FALSE et_tp=T#0ms
+1 in=TRUE => q_ton=FALSE et_ton=T#0ms q_tof=TRUE et_tof=T#0ms q_tp=TRUE et_tp=T#0ms
+2 => q_ton=TRUE et_ton=T#0ms q_tof=TRUE et_tof=T#0ms q_tp=FALSE et_tp=T#0ms
+3 in=FALSE => q_ton=FALSE et_ton=T#0ms q_tof=TRUE et_tof=T#0ms q_tp=FALSE et_tp=T#0ms
+4 => q_ton=FALSE et_ton=T#0ms q_tof=FALSE et_tof=T#0ms q_tp=FALSE et_tp=T#0ms
+5 in=TRUE => q_ton=FALSE et_ton=T#0ms q_tof=TRUE et_tof=T#0ms q_tp=TRUE et_tp=T#0ms
+6 in=FALSE => q_ton=FALSE et_ton=T#0ms q_tof=TRUE et_tof=T#0ms q_tp=FALSE et_tp=T#0ms
+DIFFERS conformance/undefined/timer_pt_zero.st
+        cycle 0 (trace line 22): q_tof expected TRUE, got FALSE
 ### conformance/undefined/ton_pt_change.st
 0 in=FALSE pt=T#500ms => q=FALSE et=T#0ms
 1 in=TRUE => q=FALSE et=T#0ms
@@ -253,5 +419,5 @@ DIFFERS conformance/undefined/ton_pt_change.st
         cycle 10 (trace line 36): et expected T#800ms, got T#200ms
         cycle 11 (trace line 37): et expected T#800ms, got T#200ms
 
-20 tests: 10 pass, 4 fail, 4 same, 2 differs, 0 error
+39 tests: 24 pass, 4 fail, 7 same, 3 differs, 1 error
 exit 1

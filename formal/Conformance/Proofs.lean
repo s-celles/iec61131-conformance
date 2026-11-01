@@ -73,6 +73,23 @@ theorem ctd_trace_fdis : conforms (CTD .pv 3) ctdInputs ctdExpected = false := b
 theorem ctud_trace_ed3 : conforms (CTUD .pvMax 2) ctudInputs ctudExpected = true := by decide
 theorem ctud_trace_fdis : conforms (CTUD .pv 2) ctudInputs ctudExpected = false := by decide
 
+/-- At the INT bounds the two editions' conditions coincide (`CV < PVmax`
+with PV = PVmax, `CV > PVmin` with PV = PVmin), so these traces hold under
+both. IronPLC wraps instead (`findings.md`). -/
+theorem ctud_bounds_trace_ed3 : conforms (CTUD .pvMax 32767) ctudBoundsInputs ctudBoundsExpected = true := by decide
+theorem ctud_bounds_trace_fdis : conforms (CTUD .pv 32767) ctudBoundsInputs ctudBoundsExpected = true := by decide
+theorem ctd_bounds_trace_ed3 : conforms (CTD .pvMax (-32768)) ctdBoundsInputs ctdBoundsExpected = true := by decide
+theorem ctd_bounds_trace_fdis : conforms (CTD .pv (-32768)) ctdBoundsInputs ctdBoundsExpected = true := by decide
+
+/-- Edge detectors started with CLK = TRUE: R_TRIG fires once, and F_TRIG's
+output no longer depends on its initial M, so the trace holds under both
+editions (unlike `edge/f_trig` cycle 0). -/
+def powerOnExpectedR : List (Option Bool) := powerOnExpected.map (·.1)
+def powerOnExpectedF : List (Option Bool) := powerOnExpected.map (·.2)
+theorem power_on_r_trig_trace : conforms R_TRIG powerOnInputs powerOnExpectedR = true := by decide
+theorem power_on_f_trig_trace_ed3 : conforms (F_TRIG true) powerOnInputs powerOnExpectedF = true := by decide
+theorem power_on_f_trig_trace_fdis : conforms (F_TRIG false) powerOnInputs powerOnExpectedF = true := by decide
+
 /-! ## 2. Properties of the models
 
 These are the properties the differential run showed one runtime violating

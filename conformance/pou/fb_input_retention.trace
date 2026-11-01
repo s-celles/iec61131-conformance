@@ -1,0 +1,27 @@
+# FB inputs keep their value across calls that do not pass them.
+#
+# Derivation (ed.3 6.6.3.2 / ed.2 2.5.2.1: an FB instance's inputs and
+# internal variables are retained from one invocation to the next; an
+# invocation assigns only the inputs it names). `a()` with no arguments
+# evaluates the body with inc and enable as last assigned.
+period_ms: 100
+program: main
+inputs: new_inc set_inc new_enable set_enable
+outputs: total
+status: conformant
+reference: IEC 61131-3 ed.3 6.6.3.2 (function block instance state), 7.3.2.3 (invocation with formal parameters)
+---
+0  set_inc=TRUE new_inc=1 set_enable=TRUE new_enable=TRUE => total=1
+# a(): both inputs retained
+1  set_inc=FALSE set_enable=FALSE                        => total=2
+2  set_inc=TRUE new_inc=5                                => total=7
+3  set_inc=FALSE                                         => total=12
+# only enable passed: inc stays 5
+4  set_enable=TRUE new_enable=FALSE                      => total=12
+5  set_enable=FALSE                                      => total=12
+# only inc passed: enable stays FALSE
+6  set_inc=TRUE new_inc=-2                               => total=12
+7  set_inc=FALSE set_enable=TRUE new_enable=TRUE         => total=10
+8  set_enable=FALSE                                      => total=8
+9  set_inc=TRUE set_enable=TRUE new_inc=100 new_enable=TRUE => total=108
+10 set_inc=FALSE set_enable=FALSE                        => total=208

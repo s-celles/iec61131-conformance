@@ -1,0 +1,15 @@
+# Integer literals (ed.3 6.3.2 table 5 / ed.2 2.2.1 table 2): decimal,
+# 2#, 8#, 16# bases, single underscores between digits, optional type
+# prefix `Type#`, and a unary minus applied to a literal.
+#   16#FF = 255; 2#1010_1010 = 170; 8#17 = 15; 1_000_000; INT#-5;
+#   -16#10 = -16; UINT#65535; DINT#16#7FFF_FFFF = 2147483647.
+# No inputs; the values are constant, two cycles show they are stable.
+period_ms: 100
+program: main
+inputs:
+outputs: hex bin oct under typed neg tu dh
+status: conformant
+reference: IEC 61131-3 ed.3 6.3.2 table 5 (numeric literals)
+---
+0 => hex=255 bin=170 oct=15 under=1000000 typed=-5 neg=-16 tu=65535 dh=2147483647
+1 => hex=255 bin=170 oct=15 under=1000000 typed=-5 neg=-16 tu=65535 dh=2147483647

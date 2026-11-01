@@ -1,0 +1,18 @@
+# Out-of-range typed conversions. Implementation-defined: ed.3 6.6.2.5.1
+# table 22 defines *_TO_* only for values representable in the target
+# type; a conversion that is not is a range error (annex E), handled in an
+# implementer-specific way (saturate, wrap, error).
+# The records are what IronPLC does: truncation to the target width in
+# two's complement (wrap). Cycle 0 is the in-range sanity check.
+period_ms: 100
+program: main
+inputs: d i u
+outputs: d2i d2u i2u u2i
+status: implementation-defined
+reference: IEC 61131-3 ed.3 6.6.2.5.1 table 22, annex E
+---
+0 d=100 i=100 u=100              => d2i=100 d2u=100 i2u=100 u2i=100
+1 d=40000 i=-1 u=65535           => d2i=-25536 d2u=40000 i2u=65535 u2i=-1
+2 d=-40000 i=-32768 u=32768      => d2i=25536 d2u=25536 i2u=32768 u2i=-32768
+3 d=2147483647 i=32767 u=0       => d2i=-1 d2u=65535 i2u=32767 u2i=0
+4 d=65541 i=0 u=40000            => d2i=5 d2u=5 i2u=0 u2i=-25536

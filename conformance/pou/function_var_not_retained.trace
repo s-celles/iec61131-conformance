@@ -1,0 +1,17 @@
+# FUNCTION VAR is not retained between calls.
+#
+# Derivation: ed.3 6.6.2.1 (ed.2 2.5.1): a function has no internal state,
+# so an invocation with the same arguments yields the same result; its VAR
+# variables are initialised at each invocation. Hence f = x on every
+# cycle; a retained n would give the running sum instead (3, 7, 7, 2).
+period_ms: 100
+program: main
+inputs: x
+outputs: f
+status: conformant
+reference: IEC 61131-3 ed.3 6.6.2.1 (functions have no internal state)
+---
+0 x=3  => f=3
+1 x=4  => f=4
+2 x=0  => f=0
+3 x=-5 => f=-5

@@ -1,0 +1,19 @@
+# TIME arithmetic and literals.
+#   + and - on two TIME values (ed.3 table 30 ADD/SUB on TIME, ed.2 table
+#   30 ADD_TIME/SUB_TIME); comparison functions apply to TIME (table 28).
+#   Duration literals (ed.3 6.3.4 / ed.2 2.2.3.1): units d, h, m, s, ms
+#   may be combined in decreasing order, the last may carry a decimal
+#   fraction, the prefix is T# or TIME#.
+#   T#1m30s = 90 000 ms; T#1h2m3s4ms = 3 723 004 ms; T#1.5s = 1500 ms;
+#   TIME#500ms = 500 ms; T#2d = 172 800 000 ms.
+period_ms: 100
+program: main
+inputs: t1 t2
+outputs: sum diff is_lt is_gt is_le is_eq lit1 lit2 lit3 lit4 lit5
+status: conformant
+reference: IEC 61131-3 ed.3 6.3.4 (duration literals), 6.6.2.5.1 tables 28 and 30 (comparison, ADD/SUB on TIME)
+---
+0 t1=T#1500ms t2=T#500ms   => sum=T#2000ms diff=T#1000ms is_lt=FALSE is_gt=TRUE is_le=FALSE is_eq=FALSE lit1=T#90000ms lit2=T#3723004ms lit3=T#1500ms lit4=T#500ms lit5=T#172800000ms
+1 t1=T#0ms t2=T#0ms        => sum=T#0ms diff=T#0ms is_lt=FALSE is_gt=FALSE is_le=TRUE is_eq=TRUE lit1=T#90000ms lit2=T#3723004ms lit3=T#1500ms lit4=T#500ms lit5=T#172800000ms
+2 t1=T#100ms t2=T#100ms    => sum=T#200ms diff=T#0ms is_lt=FALSE is_gt=FALSE is_le=TRUE is_eq=TRUE lit1=T#90000ms lit2=T#3723004ms lit3=T#1500ms lit4=T#500ms lit5=T#172800000ms
+3 t1=T#3600000ms t2=T#1ms  => sum=T#3600001ms diff=T#3599999ms is_lt=FALSE is_gt=TRUE is_le=FALSE is_eq=FALSE lit1=T#90000ms lit2=T#3723004ms lit3=T#1500ms lit4=T#500ms lit5=T#172800000ms

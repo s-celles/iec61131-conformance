@@ -1,0 +1,19 @@
+# Declared initial values of FB variables and of a program output.
+#
+# Derivation (ed.3 6.4.4.4 / ed.2 2.4.3.2: a variable declaration may give
+# an initial value, which the variable holds when the POU instance is
+# started; without one, the default initial value of the type, 0/FALSE).
+# The FB is created with inc = 1, enable = TRUE, total = 10, untouched = 7;
+# the first call makes total 11 and never writes untouched. The program's
+# own output base starts at 5 and is incremented each cycle.
+# No inputs: the program runs on its initial state alone.
+period_ms: 100
+program: main
+inputs:
+outputs: total untouched base
+status: conformant
+reference: IEC 61131-3 ed.3 6.4.4.4 (initial values), 6.6.3.2 (FB instance initialisation)
+---
+0 => total=11 untouched=7 base=6
+1 => total=12 untouched=7 base=7
+2 => total=13 untouched=7 base=8
