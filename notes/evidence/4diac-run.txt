@@ -167,13 +167,16 @@ PASS    conformance/ops/date_time.st
 ERROR   conformance/ops/limit_inverted.st
         c++ failed:
         In file included from <tmpdir>/exported/FB_CONFORMANCE_OPS_LIMIT_INVERTED/src/FB_CONFORMANCE_OPS_LIMIT_INVERTED_fbt.cpp:17:
-        <forte>/core/include/forte/iec61131_functions/func_LIMIT.h:35:21: error: use of undeclared identifier 'func_MAX'
+        <forte>/core/include/forte/iec61131_functions/func_LIMIT.h: In instantiation of ‘forte::mpl::get_castable_type_t<typename forte::mpl::get_castable_type<T, U>::type, V> forte::func_LIMIT(const T&, const U&, const V&) [with T = CIEC_INT; U = CIEC_INT; V = CIEC_INT; mpl::get_castable_type_t<typename mpl::get_castable_type<T, U>::type, V> = CIEC_INT; typename mpl::get_castable_type<T, U>::type = CIEC_INT]’:
+        FB_CONFORMANCE_OPS_LIMIT_INVERTED.fbt:2:23:   required from here
+        <forte>/core/include/forte/iec61131_functions/func_LIMIT.h:35:29: error: ‘func_MAX’ was not declared in this scope
            35 |     return func_MIN(func_MAX(static_cast<tImplicitType>(paIN), static_cast<tImplicitType>(paMN)),
-              |                     ^
-        FB_CONFORMANCE_OPS_LIMIT_INVERTED.fbt:2:13: note: in instantiation of function template specialization 'forte::func_LIMIT<forte::CIEC_INT, forte::CIEC_INT, forte::CIEC_INT>' requested here
-            2 |     var_l = func_LIMIT(var_mn, var_x, var_mx);
-              |             ^
-        1 error generated.
+              |                     ~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+        <forte>/core/include/forte/iec61131_functions/func_LIMIT.h:35:20: error: ‘func_MIN’ was not declared in this scope
+           35 |     return func_MIN(func_MAX(static_cast<tImplicitType>(paIN), static_cast<tImplicitType>(paMN)),
+              |            ~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+           36 |                     static_cast<tImplicitType>(paMX));
+              |                     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         
 ### conformance/ops/literals.st
 0 => hex=255 bin=170 oct=15 under=1000000 typed=-5 neg=-16 tu=65535 dh=2147483647
@@ -235,18 +238,18 @@ PASS    conformance/ops/shl_width.st
 ### conformance/ops/std_functions.st
 ERROR   conformance/ops/std_functions.st
         c++ failed:
-        <tmpdir>/exported/FB_CONFORMANCE_OPS_STD_FUNCTIONS/src/FB_CONFORMANCE_OPS_STD_FUNCTIONS_fbt.cpp:22:10: fatal error: 'forte/iec61131_functions/func_MUX.h' file not found
+        <tmpdir>/exported/FB_CONFORMANCE_OPS_STD_FUNCTIONS/src/FB_CONFORMANCE_OPS_STD_FUNCTIONS_fbt.cpp:22:10: fatal error: forte/iec61131_functions/func_MUX.h: No such file or directory
            22 | #include "forte/iec61131_functions/func_MUX.h"
               |          ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-        1 error generated.
+        compilation terminated.
         
 ### conformance/ops/std_functions_expr.st
 ERROR   conformance/ops/std_functions_expr.st
         c++ failed:
-        <tmpdir>/exported/FB_CONFORMANCE_OPS_STD_FUNCTIONS_EXPR/src/FB_CONFORMANCE_OPS_STD_FUNCTIONS_EXPR_fbt.cpp:23:10: fatal error: 'forte/iec61131_functions/func_MUX.h' file not found
+        <tmpdir>/exported/FB_CONFORMANCE_OPS_STD_FUNCTIONS_EXPR/src/FB_CONFORMANCE_OPS_STD_FUNCTIONS_EXPR_fbt.cpp:23:10: fatal error: forte/iec61131_functions/func_MUX.h: No such file or directory
            23 | #include "forte/iec61131_functions/func_MUX.h"
               |          ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-        1 error generated.
+        compilation terminated.
         
 ### conformance/ops/std_functions_ext.st
 FAIL    conformance/ops/std_functions_ext.st
@@ -258,7 +261,7 @@ FAIL    conformance/ops/std_functions_ext.st
         [fordiac.exportProjectFBs] FB_CONFORMANCE_OPS_STD_FUNCTIONS_EXT: FB_CONFORMANCE_OPS_STD_FUNCTIONS_EXT at 7: The parameter G is undefined for the callable SEL
         [fordiac.exportProjectFBs] FB_CONFORMANCE_OPS_STD_FUNCTIONS_EXT: FB_CONFORMANCE_OPS_STD_FUNCTIONS_EXT at 6: Attempting to call standard function LIMIT with formal arguments
         [fordiac.exportProjectFBs] FB_CONFORMANCE_OPS_STD_FUNCTIONS_EXT: FB_CONFORMANCE_OPS_STD_FUNCTIONS_EXT at 7: Attempting to call standard function SEL with formal arguments
-        !ENTRY org.eclipse.osgi 4 0 2026-11-01 19:20:22.116
+        !ENTRY org.eclipse.osgi 4 0 2026-11-01 18:38:59.704
         !MESSAGE Application error
         !STACK 1
         at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(Unknown Source)
@@ -269,7 +272,7 @@ FAIL    conformance/ops/time_arith.st
         [fordiac.exportProjectFBs] L/FB_CONFORMANCE_OPS_TIME_ARITH/FB_CONFORMANCE_OPS_TIME_ARITH.fbt
         [fordiac.exportProjectFBs] FB_CONFORMANCE_OPS_TIME_ARITH: FB_CONFORMANCE_OPS_TIME_ARITH at 10: mismatched input '1' expecting RULE_TIME_VALUE
         [fordiac.exportProjectFBs] FB_CONFORMANCE_OPS_TIME_ARITH: FB_CONFORMANCE_OPS_TIME_ARITH at 10: no viable alternative at input '5s'
-        !ENTRY org.eclipse.osgi 4 0 2026-11-01 19:20:28.898
+        !ENTRY org.eclipse.osgi 4 0 2026-11-01 18:39:07.538
         !MESSAGE Application error
         !STACK 1
         at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(Unknown Source)
@@ -281,10 +284,10 @@ FAIL    conformance/ops/time_arith.st
 ### conformance/ops/time_functions.st
 ERROR   conformance/ops/time_functions.st
         c++ failed:
-        <tmpdir>/exported/FB_CONFORMANCE_OPS_TIME_FUNCTIONS/src/FB_CONFORMANCE_OPS_TIME_FUNCTIONS_fbt.cpp:23:10: fatal error: 'forte/iec61131_functions/func_MUX.h' file not found
+        <tmpdir>/exported/FB_CONFORMANCE_OPS_TIME_FUNCTIONS/src/FB_CONFORMANCE_OPS_TIME_FUNCTIONS_fbt.cpp:23:10: fatal error: forte/iec61131_functions/func_MUX.h: No such file or directory
            23 | #include "forte/iec61131_functions/func_MUX.h"
               |          ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-        1 error generated.
+        compilation terminated.
         
 ### conformance/ops/time_mul.st
 FAIL    conformance/ops/time_mul.st
@@ -293,7 +296,7 @@ FAIL    conformance/ops/time_mul.st
         [fordiac.exportProjectFBs] FB_CONFORMANCE_OPS_TIME_MUL: FB_CONFORMANCE_OPS_TIME_MUL at 2: mismatched input '*' expecting '#'
         [fordiac.exportProjectFBs] FB_CONFORMANCE_OPS_TIME_MUL: FB_CONFORMANCE_OPS_TIME_MUL at 5: mismatched input '*' expecting '#'
         [fordiac.exportProjectFBs] FB_CONFORMANCE_OPS_TIME_MUL: FB_CONFORMANCE_OPS_TIME_MUL at 5: mismatched input '=' expecting '#'
-        !ENTRY org.eclipse.osgi 4 0 2026-11-01 19:20:42.296
+        !ENTRY org.eclipse.osgi 4 0 2026-11-01 18:39:23.091
         !MESSAGE Application error
         !STACK 1
         at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(Unknown Source)
@@ -308,7 +311,7 @@ FAIL    conformance/ops/trunc.st
         [fordiac.exportProjectFBs] FB_CONFORMANCE_OPS_TRUNC: FB_CONFORMANCE_OPS_TRUNC at 2: mismatched input ':=' expecting '#'
         [fordiac.exportProjectFBs] FB_CONFORMANCE_OPS_TRUNC: FB_CONFORMANCE_OPS_TRUNC at 2: The callable TRUNC(REAL) is undefined
         [fordiac.exportProjectFBs] FB_CONFORMANCE_OPS_TRUNC: FB_CONFORMANCE_OPS_TRUNC at 2: Not possible to assign a value to the left side of this assignment
-        !ENTRY org.eclipse.osgi 4 0 2026-11-01 19:20:49.032
+        !ENTRY org.eclipse.osgi 4 0 2026-11-01 18:39:30.778
         !MESSAGE Application error
         !STACK 1
         at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(Unknown Source)
@@ -483,7 +486,7 @@ DIFFERS conformance/undefined/string_conversions.st
         [fordiac.exportProjectFBs] FB_CONFORMANCE_UNDEFINED_STRING_CONVERSIONS: FB_CONFORMANCE_UNDEFINED_STRING_CONVERSIONS at 2: The callable INT_TO_STRING(INT) is undefined
         [fordiac.exportProjectFBs] FB_CONFORMANCE_UNDEFINED_STRING_CONVERSIONS: FB_CONFORMANCE_UNDEFINED_STRING_CONVERSIONS at 3: The callable STRING_TO_INT(STRING) is undefined
         [fordiac.exportProjectFBs] FB_CONFORMANCE_UNDEFINED_STRING_CONVERSIONS: FB_CONFORMANCE_UNDEFINED_STRING_CONVERSIONS at 4: The callable DINT_TO_STRING(DINT) is undefined
-        !ENTRY org.eclipse.osgi 4 0 2026-11-01 19:22:58.587
+        !ENTRY org.eclipse.osgi 4 0 2026-11-01 18:41:50.531
         !MESSAGE Application error
         !STACK 1
         at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(Unknown Source)

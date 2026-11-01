@@ -353,8 +353,8 @@ scope: 29 of 33 conformant tests pass. What differs:
     evaluated once (3 iterations where IronPLC re-reads it, 50),
     real-to-integer ties round away from zero (as STruC++ and RuSTy).
 
-Not in CI yet: the IDE is a 300 MB Eclipse product and FORTE a CMake
-build; the evidence file was recorded on macOS arm64 (`COMMANDS.md`).
+In CI (`fourdiac` job): the IDE's Linux package and a cached FORTE build,
+under `xvfb-run`; the evidence file is that run's output.
 
 ## RuSTy deviations (commit `e911ee5`)
 

@@ -42,17 +42,17 @@ export LLVM_SYS_211_PREFIX=/usr/lib/llvm-21 LLVM_CONFIG=/usr/lib/llvm-21/bin/llv
 python3 -I harness/rusty/run.py --plc scratch/rusty/target/release/plc \
     --rusty-src scratch/rusty --record conformance > notes/evidence/rusty-run.txt
 
-# 4diac IDE 3.3.0 + FORTE 3.3.0 (2026-11-01; recorded on macOS arm64, not in CI)
-curl -L -o 4diac-ide.dmg "https://download.eclipse.org/4diac/releases/3.3/4diac-ide/4diac-ide_3.3.0-macosx.cocoa.aarch64.dmg"
-# (mount, copy 4diac-ide.app to scratch/4diac/app/)
+# 4diac IDE 3.3.0 + FORTE 3.3.0 (2026-11-01; CI: ubuntu-24.04, xvfb-run)
+curl -fsSL -o 4diac-ide.tar.gz "https://download.eclipse.org/4diac/releases/3.3/4diac-ide/4diac-ide_3.3.0-linux.gtk.x86_64.tar.gz"
+mkdir -p scratch/4diac-ide && tar -xzf 4diac-ide.tar.gz -C scratch/4diac-ide --strip-components=1
+# (on macOS: the .dmg of the same directory, --ide pointing at 4diac-ide.app)
 git clone -b 3.3.0 https://github.com/eclipse-4diac/4diac-forte scratch/4diac-forte
 cmake -S scratch/4diac-forte -B scratch/4diac-forte/build -DFORTE_ARCHITECTURE=Posix \
     -DFORTE_BUILD_EXECUTABLE=OFF -DBUILD_SHARED_LIBS=ON -DCMAKE_BUILD_TYPE=Release \
     -DFORTE_MODULE_IEC61131=ON -DFORTE_MODULE_CONVERT=ON -DFORTE_MODULE_UTILS=ON \
     -DFORTE_COM_ETH=OFF -DFORTE_COM_FBDK=OFF -DFORTE_COM_LOCAL=ON && cmake --build scratch/4diac-forte/build -j8
-python3 -I harness/4diac/run.py --ide scratch/4diac/app/4diac-ide.app --forte-src scratch/4diac-forte \
+xvfb-run -a python3 -I harness/4diac/run.py --ide scratch/4diac-ide --forte-src scratch/4diac-forte \
     --forte-build scratch/4diac-forte/build --record conformance > notes/evidence/4diac-run.txt
-# (temporary directories and the FORTE path masked as <tmpdir>/ and <forte>/)
 
 # Lean 4.35.0 (elan)
 curl -sSfL https://github.com/leanprover/elan/releases/latest/download/elan-x86_64-unknown-linux-gnu.tar.gz | tar xz

@@ -143,9 +143,8 @@ located variables.
   to refresh the results table of `notes/comparison.md` (checked by CI).
 - `rusty`: same, on pull requests, weekly and on `workflow_dispatch` (needs
   LLVM 21 and a full RuSTy build; skipped on plain pushes to `main`).
-- `4diac`: not run in CI yet (a 300 MB Eclipse product plus a FORTE build);
-  `notes/evidence/4diac-run.txt` was recorded locally on macOS arm64, see
-  `notes/evidence/COMMANDS.md`.
+- `fourdiac`: the 4diac IDE 3.3.0 Linux package and FORTE 3.3.0 built as
+  shared libraries, both cached; the IDE runs under `xvfb-run`.
 
 To bump a runtime, update its SHA in the workflow `env` and the evidence
 file together.
