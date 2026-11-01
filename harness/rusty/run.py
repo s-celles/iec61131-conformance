@@ -44,8 +44,11 @@ C_TYPES = {
     "BYTE": "unsigned char",
     "WORD": "unsigned short",
     "DWORD": "unsigned int",
+    "REAL": "float",
+    "LREAL": "double",
 }
 HEX_WIDTH = {"BYTE": 2, "WORD": 4, "DWORD": 8}
+REAL_FMT = {"REAL": "%.9g", "LREAL": "%.17g"}
 
 DRIVER = r'''
 #include <stdio.h>
@@ -102,7 +105,7 @@ int main(void) {
 
 def st_literal(ty):
     return {"BOOL": "BOOL", "INT": "INT", "DINT": "DINT", "UINT": "UINT", "TIME": "TIME",
-            "BYTE": "BYTE", "WORD": "WORD", "DWORD": "DWORD"}[ty]
+            "BYTE": "BYTE", "WORD": "WORD", "DWORD": "DWORD", "REAL": "REAL", "LREAL": "LREAL"}[ty]
 
 
 def accessors_st(inputs, outputs):
@@ -137,6 +140,8 @@ def c_setters(inputs):
             cases.append(f'    if (!strcmp(name, "{n}")) {{ __set_{n}((int)atoll(text + 2)); return; }}')
         elif ty in HEX_WIDTH:
             cases.append(f'    if (!strcmp(name, "{n}")) {{ __set_{n}(({C_TYPES[ty]})strtoull(text + 3, NULL, 16)); return; }}')
+        elif ty in REAL_FMT:
+            cases.append(f'    if (!strcmp(name, "{n}")) {{ __set_{n}(({C_TYPES[ty]})strtod(text, NULL)); return; }}')
         else:
             cases.append(f'    if (!strcmp(name, "{n}")) {{ __set_{n}(({C_TYPES[ty]})atoll(text)); return; }}')
     body = "\n".join(cases)
@@ -152,6 +157,8 @@ def c_getters(outputs):
             lines.append(f'    printf(" {n}=T#%dms", __get_{n}());')
         elif ty in HEX_WIDTH:
             lines.append(f'    printf(" {n}=16#%0{HEX_WIDTH[ty]}llX", (unsigned long long)__get_{n}());')
+        elif ty in REAL_FMT:
+            lines.append(f'    printf(" {n}={REAL_FMT[ty]}", (double)__get_{n}());')
         else:
             lines.append(f'    printf(" {n}=%lld", (long long)__get_{n}());')
     body = "\n".join(lines)
@@ -243,7 +250,7 @@ def run_test(st_path: Path, opts):
         for name, value in rec.expected:
             if value.kind == "any":
                 continue
-            if actual.get(name) != str(value):
+            if not value.matches(actual.get(name), types[name]):
                 problems.append(f"cycle {rec.cycle} (trace line {rec.line}): {name} expected {value}, got {actual.get(name)}")
     if trace.status == Status.CONFORMANT:
         return ("PASS" if not problems else "FAIL"), problems, recorded

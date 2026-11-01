@@ -1,0 +1,16 @@
+# REAL division by zero. Implementation-defined: ed.3 annex E / ed.2 annex
+# E list division by zero among the errors with implementer-specific
+# handling; a runtime following IEC 60559 returns +inf, -inf and NaN
+# without stopping. The records are what IronPLC does.
+period_ms: 100
+program: main
+inputs: x y
+outputs: q
+status: implementation-defined
+reference: IEC 61131-3 ed.3 annex E (division by zero)
+---
+0 x=1.0 y=2.0  => q=0.5
+1 x=1.0 y=0.0  => q=inf
+2 x=-1.0 y=0.0 => q=-inf
+3 x=0.0 y=0.0  => q=nan
+4 x=1.0 y=2.0  => q=0.5

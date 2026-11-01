@@ -1,0 +1,17 @@
+# REAL (binary32) arithmetic, ed.3 table 30 / ed.2 table 24, and real
+# literals (ed.3 6.3.2 table 5: a decimal point, an optional exponent, an
+# optional `REAL#` prefix). Values compared within 1e-6 relative (SPEC.md),
+# which absorbs binary32 rounding (0.1 + 0.2 is 0.3000000119 in binary32).
+# Records keep y <> 0 (see undefined/real_div_zero).
+period_ms: 100
+program: main
+inputs: x y
+outputs: sum diff prod quot neg lit1 lit2 lit3
+status: conformant
+reference: IEC 61131-3 ed.3 6.6.2.5.1 table 30 (arithmetic), 6.3.2 table 5 (real literals)
+---
+0 x=1.5 y=0.25        => sum=1.75 diff=1.25 prod=0.375 quot=6.0 neg=-1.5 lit1=1000.0 lit2=1.5 lit3=-0.025
+1 x=1.0 y=3.0         => sum=4.0 diff=-2.0 prod=3.0 quot=0.3333333 neg=-1.0 lit1=1000.0 lit2=1.5 lit3=-0.025
+2 x=0.1 y=0.2         => sum=0.3 diff=-0.1 prod=0.02 quot=0.5 neg=-0.1 lit1=1000.0 lit2=1.5 lit3=-0.025
+3 x=1.0E10 y=1.0E10   => sum=2.0E10 diff=0.0 prod=1.0E20 quot=1.0 neg=-1.0E10 lit1=1000.0 lit2=1.5 lit3=-0.025
+4 x=-2.5 y=4.0        => sum=1.5 diff=-6.5 prod=-10.0 quot=-0.625 neg=2.5 lit1=1000.0 lit2=1.5 lit3=-0.025

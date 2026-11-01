@@ -90,6 +90,12 @@ Legend: PASS/FAIL for `status: conformant` traces; SAME/DIFFERS for
 | data/array_init | PASS | PASS | PASS | |
 | data/struct_internal | **FAIL** (compile) | PASS | PASS | IronPLC: assigning a structure to a structure-typed field (`r.tl := q`) is P9999 not implemented (findings #13, ironplc#2550) |
 | data/enum | PASS | PASS | PASS | |
+| ops/real_arith | PASS | PASS | RUSTY_real_arith | binary32 arithmetic within the 1e-6 tolerance of SPEC.md |
+| ops/real_functions | PASS | PASS | RUSTY_real_functions | SQRT ABS EXP LN SIN COS |
+| ops/real_power | PASS | PASS | RUSTY_real_power | EXPT and ** |
+| ops/real_conversions | **FAIL** (cycles 0, 1, 3, 4) | PASS | RUSTY_real_conversions | IronPLC truncates REAL_TO_INT and LREAL_TO_DINT instead of rounding to nearest (findings #16, ironplc#1813) |
+| ops/real_compare | PASS | PASS | RUSTY_real_compare | |
+| ops/lreal_precision | PASS | PASS | RUSTY_lreal_precision | binary64 within 1e-12 |
 | undefined/int_overflow | SAME | SAME | SAME | all three wrap in two's complement |
 | undefined/div_zero | SAME | SAME | SAME | IronPLC: VM trap "divide by zero"; matiec and RuSTy: native integer division, the process receives SIGFPE (the drivers report it as `trap`). All stop the scan; none computes `MOD`. matiec's `/` is a bare C division, so on AArch64 it returns 0 instead of trapping (beremiz/matiec#38); its `MOD` and `DIV()` are guarded |
 | undefined/eval_order | SAME | SAME | SAME | all three evaluate the left operand of `-` first |
@@ -101,13 +107,16 @@ Legend: PASS/FAIL for `status: conformant` traces; SAME/DIFFERS for
 | undefined/abs_int_min | SAME | SAME | SAME | ABS(-32768) and -(-32768) wrap to -32768 on all |
 | undefined/dint_to_int_overflow | SAME | SAME | SAME | out-of-range *_TO_* truncate in two's complement on all |
 | undefined/array_out_of_bounds | SAME | **DIFFERS** (cycle 2) | **DIFFERS** (cycle 2) | IronPLC traps ("array index out of bounds"); matiec and RuSTy have no check and read past the array, both give v=4 (findings #15) |
+| undefined/real_div_zero | SAME | SAME | RUSTY_real_div_zero | inf, -inf, NaN on all, no trap (findings #17) |
+| undefined/real_to_int_ties | SAME | **DIFFERS** (cycles 1, 3) | RUSTY_real_to_int_ties | IronPLC truncates (3.5 -> 3); matiec rounds half to even (3.5 -> 4, ed.2 2.5.1.5.1) |
 
-Totals: IronPLC 27/35 conformant pass; matiec 30/35; RuSTy 29/35. No test
+Totals: IronPLC 32/41 conformant pass; matiec 36/41; RuSTy RUSTY_TOTAL/41. No test
 other than the six control-flow/POU/R_TRIG ones and the four "all SAME"
 corners has the same result on all three runtimes: the three disagree
 somewhere on tof, tp, f_trig, sr_rs, ctu, ctd, ctud, ctd_bounds, ctud_bounds,
 fb_var_temp, fb_en_eno, struct_internal, std_functions_ext, time_arith,
-ctu_pv_zero, ton_pt_change, timer_pt_zero and array_out_of_bounds.
+real_conversions, ctu_pv_zero, ton_pt_change, timer_pt_zero,
+array_out_of_bounds and real_to_int_ties.
 
 ## Where the two runtimes disagree with each other, in one line each
 

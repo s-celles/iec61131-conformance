@@ -1,0 +1,19 @@
+# Typed conversions between integer and real types (ed.3 6.6.2.5.1 table
+# 22 / ed.2 2.5.1.5.1 table 22). Integer to real is exact for these values
+# (|value| < 2^24 for REAL). Real to integer rounds to the nearest integer;
+# the records avoid .5 fractions, whose rounding direction is the subject
+# of undefined/real_to_int_ties: 2.25 -> 2, -2.75 -> -3, 0.125 -> 0,
+# 2.75 -> 3, -0.75 -> -1, 123456.75 -> 123457, -1.25 -> -1,
+# -123456.125 -> -123456.
+period_ms: 100
+program: main
+inputs: i d u x l
+outputs: i2r d2l u2r r2i r2l l2r l2d
+status: conformant
+reference: IEC 61131-3 ed.3 6.6.2.5.1 table 22 (typed conversions, real to integer rounds to nearest)
+---
+0 i=7 d=-100000 u=65535 x=2.25 l=123456.75        => i2r=7.0 d2l=-100000.0 u2r=65535.0 r2i=2 r2l=2.25 l2r=123456.75 l2d=123457
+1 i=-32768 d=2147483647 u=0 x=-2.75 l=-1.25       => i2r=-32768.0 d2l=2147483647.0 u2r=0.0 r2i=-3 r2l=-2.75 l2r=-1.25 l2d=-1
+2 i=0 d=0 u=1 x=0.125 l=1.0E6                     => i2r=0.0 d2l=0.0 u2r=1.0 r2i=0 r2l=0.125 l2r=1000000.0 l2d=1000000
+3 i=100 d=-1 u=40000 x=2.75 l=2.75                => i2r=100.0 d2l=-1.0 u2r=40000.0 r2i=3 r2l=2.75 l2r=2.75 l2d=3
+4 i=1 d=1 u=2 x=-0.75 l=-123456.125               => i2r=1.0 d2l=1.0 u2r=2.0 r2i=-1 r2l=-0.75 l2r=-123456.125 l2d=-123456

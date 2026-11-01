@@ -7,7 +7,7 @@ Text runtimes: plain `.st` programs paired with plain-text expected
 input/output traces, one record per scan cycle. Dedicated to the public
 domain under CC0 1.0 (see `LICENSE`).
 
-Status: 46 tests, run against IronPLC and matiec (and RuSTy,
+Status: 54 tests, run against IronPLC and matiec (and RuSTy,
 see `notes/comparison.md`), with a Lean 4 model of the function block
 semantics that the expected traces are proved to follow from.
 
@@ -24,6 +24,9 @@ conformance/
   ops/         precedence std_functions         operators, ABS MIN MAX LIMIT SEL MUX
                std_functions_ext conversions    extensible/formal calls, *_TO_*
                time_arith literals bit_ops      TIME + - < =, literals, SHL SHR ROL ROR AND OR XOR NOT
+               real_arith real_functions        REAL + - * /, SQRT ABS EXP LN SIN COS
+               real_power real_conversions      EXPT and **, INT/DINT/UINT <-> REAL/LREAL
+               real_compare lreal_precision     comparisons, binary64 at full precision
   data/        array_internal array_init        arrays (negative bounds, initialisers)
                struct_internal enum             structures (copy, nesting), enumerations
   control-flow/ if_case for_exit while          IF/CASE, FOR+EXIT, WHILE/REPEAT
@@ -36,7 +39,7 @@ conformance/
                for_bound_modified ctu_pv_zero   corners the standard leaves open
                for_var_after_loop timer_pt_zero
                abs_int_min dint_to_int_overflow
-               array_out_of_bounds
+               array_out_of_bounds real_div_zero real_to_int_ties
 harness/
   ironplc/     Rust: drives the ironplc_vm crate with simulated time
   matiec/      Python: iec2c + generated C driver with simulated time
@@ -49,18 +52,18 @@ notes/
   evidence/         full harness outputs
 ```
 
-Each test is `<name>.st` + `<name>.trace`. Thirty-five tests under the first
+Each test is `<name>.st` + `<name>.trace`. Forty-one tests under the first
 seven categories are `status: conformant`: their expected values were derived
 by hand from the standard's function block bodies and timing diagrams, and
 the derivation is written as a comment at the top of each `.trace` file.
-The eleven tests under `undefined/` are `status: implementation-defined`: the
+The thirteen tests under `undefined/` are `status: implementation-defined`: the
 trace records what IronPLC actually does, and the comment states what the
 standard says or leaves open; a mismatch on another runtime is a documented
 difference, not a failure.
 
-Scope: BOOL, INT, DINT, UINT, TIME, BYTE, WORD, DWORD at the program
-interface (arrays, structures and enumerations inside the program); one
-program, one cyclic task; no located variables, no REAL, no strings.
+Scope: BOOL, INT, DINT, UINT, TIME, BYTE, WORD, DWORD, REAL, LREAL at the
+program interface (arrays, structures and enumerations inside the program);
+one program, one cyclic task; no located variables, no strings.
 
 ## Continuous integration
 

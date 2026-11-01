@@ -11,6 +11,8 @@ different runtime. For each test it
      (RES0__INST0.<NAME>.value), calls config_run__(tick) once, and prints
      the outputs in .trace record syntax,
   4. compiles with gcc against matiec's lib/C, runs it, and compares.
+     The driver also defines the `iec_lib_*` math entry points that lib/C
+     declares and leaves to the runtime (Beremiz provides them normally).
 
 Usage:
   run.py --iec2c PATH --matiec-lib PATH [--record] DIR_OR_FILE...
@@ -39,7 +41,8 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 from tracefmt import Status, Value, parse_trace  # noqa: E402
 
 TYPE_C = {"BOOL": "BOOL", "INT": "INT", "DINT": "DINT", "UINT": "UINT", "TIME": "TIME",
-          "BYTE": "BYTE", "WORD": "WORD", "DWORD": "DWORD"}
+          "BYTE": "BYTE", "WORD": "WORD", "DWORD": "DWORD", "REAL": "REAL", "LREAL": "LREAL"}
+REAL_FMT = {"REAL": "%.9g", "LREAL": "%.17g"}
 HEX_WIDTH = {"BYTE": 2, "WORD": 4, "DWORD": 8}
 
 DRIVER = r'''
@@ -48,7 +51,27 @@ DRIVER = r'''
 #include <signal.h>
 #include <setjmp.h>
 #include <string.h>
+#include <math.h>
+#include <stdarg.h>
 #include "iec_std_lib.h"
+
+/* Math and C-library entry points that matiec's lib/C declares and expects
+   the runtime (normally Beremiz's) to provide. */
+double iec_lib_acos(double x) { return acos(x); }
+double iec_lib_asin(double x) { return asin(x); }
+double iec_lib_atan(double x) { return atan(x); }
+double iec_lib_cos(double x) { return cos(x); }
+double iec_lib_exp(double x) { return exp(x); }
+double iec_lib_fmod(double x, double y) { return fmod(x, y); }
+double iec_lib_log(double x) { return log(x); }
+double iec_lib_log10(double x) { return log10(x); }
+double iec_lib_pow(double x, double y) { return pow(x, y); }
+double iec_lib_sin(double x) { return sin(x); }
+double iec_lib_sqrt(double x) { return sqrt(x); }
+double iec_lib_tan(double x) { return tan(x); }
+int iec_lib_snprintf(char *s, size_t n, const char *f, ...) {
+    va_list ap; va_start(ap, f); int r = vsnprintf(s, n, f, ap); va_end(ap); return r;
+}
 #include "accessor.h"
 #include "POUS.h"
 
@@ -117,6 +140,8 @@ def c_setters(inputs):
             cases.append(f'    if (!strcmp(name, "{name}")) {{ long long ms = atoll(text + 2); RES0__INST0.{cname}.value.tv_sec = ms / 1000; RES0__INST0.{cname}.value.tv_nsec = (int32_t)((ms % 1000) * 1000000); return; }}')
         elif ty in HEX_WIDTH:
             cases.append(f'    if (!strcmp(name, "{name}")) {{ RES0__INST0.{cname}.value = ({TYPE_C[ty]})strtoull(text + 3, NULL, 16); return; }}')
+        elif ty in REAL_FMT:
+            cases.append(f'    if (!strcmp(name, "{name}")) {{ RES0__INST0.{cname}.value = ({TYPE_C[ty]})strtod(text, NULL); return; }}')
         else:
             cases.append(f'    if (!strcmp(name, "{name}")) {{ RES0__INST0.{cname}.value = ({TYPE_C[ty]})atoll(text); return; }}')
     body = "\n".join(cases)
@@ -133,6 +158,8 @@ def c_getters(outputs):
             lines.append(f'    printf(" {name}="); print_time(RES0__INST0.{cname}.value);')
         elif ty in HEX_WIDTH:
             lines.append(f'    printf(" {name}=16#%0{HEX_WIDTH[ty]}llX", (unsigned long long)RES0__INST0.{cname}.value);')
+        elif ty in REAL_FMT:
+            lines.append(f'    printf(" {name}={REAL_FMT[ty]}", (double)RES0__INST0.{cname}.value);')
         else:
             lines.append(f'    printf(" {name}=%lld", (long long)RES0__INST0.{cname}.value);')
     body = "\n".join(lines)
@@ -228,7 +255,7 @@ def run_test(st_path: Path, opts):
         for name, value in rec.expected:
             if value.kind == "any":
                 continue
-            if actual.get(name) != str(value):
+            if not value.matches(actual.get(name), types[name]):
                 problems.append(f"cycle {rec.cycle} (trace line {rec.line}): {name} expected {value}, got {actual.get(name)}")
     if trace.status == Status.CONFORMANT:
         return ("PASS" if not problems else "FAIL"), problems, recorded

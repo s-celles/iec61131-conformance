@@ -1,0 +1,14 @@
+# Comparison functions on ANY_REAL (ed.3 table 28 / ed.2 table 23). Equal
+# inputs are given as the same literal, so they are the same binary value
+# whatever the rounding; 1.0 and 1.0000000001 differ in LREAL.
+period_ms: 100
+program: main
+inputs: x y a b
+outputs: r_lt r_eq r_ge l_lt l_eq l_ne
+status: conformant
+reference: IEC 61131-3 ed.3 6.6.2.5.1 table 28 (comparison functions)
+---
+0 x=1.5 y=2.5 a=0.1 b=0.1                 => r_lt=TRUE  r_eq=FALSE r_ge=FALSE l_lt=FALSE l_eq=TRUE  l_ne=FALSE
+1 x=2.5 y=2.5 a=1.0E-300 b=0.0            => r_lt=FALSE r_eq=TRUE  r_ge=TRUE  l_lt=FALSE l_eq=FALSE l_ne=TRUE
+2 x=-1.0E-5 y=0.0 a=-5.0 b=-5.0           => r_lt=TRUE  r_eq=FALSE r_ge=FALSE l_lt=FALSE l_eq=TRUE  l_ne=FALSE
+3 x=3.0 y=-3.0 a=1.0 b=1.0000000001       => r_lt=FALSE r_eq=FALSE r_ge=TRUE  l_lt=TRUE  l_eq=FALSE l_ne=TRUE

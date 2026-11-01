@@ -1,0 +1,22 @@
+# Numerical functions on ANY_REAL (ed.3 table 29 / ed.2 table 24): SQRT,
+# ABS, EXP, LN, SIN, COS. Expected values are the exact results rounded to
+# 7 significant digits; binary32 evaluation lands within the 1e-6 relative
+# tolerance of SPEC.md. SQRT and LN are applied to |x| so that negative x
+# stays in their domain.
+#   x = 4:    sqrt 2, exp 54.59815, ln 1.386294, sin -0.7568025, cos -0.6536436
+#   x = 1:    exp e = 2.718282, ln 0, sin 0.841471, cos 0.5403023
+#   x = 2.25: sqrt 1.5, exp 9.487736, ln 0.8109302, sin 0.7780732, cos -0.6281736
+#   x = -3:   sqrt 1.732051, exp 0.04978707, ln 1.098612, sin -0.14112, cos -0.9899925
+#   x = 0.5:  sqrt 0.7071068, exp 1.648721, ln -0.6931472, sin 0.4794255, cos 0.8775826
+period_ms: 100
+program: main
+inputs: x
+outputs: o_sqrt o_abs o_exp o_ln o_sin o_cos
+status: conformant
+reference: IEC 61131-3 ed.3 6.6.2.5.1 table 29 (numerical functions)
+---
+0 x=4.0  => o_sqrt=2.0 o_abs=4.0 o_exp=54.59815 o_ln=1.386294 o_sin=-0.7568025 o_cos=-0.6536436
+1 x=1.0  => o_sqrt=1.0 o_abs=1.0 o_exp=2.718282 o_ln=0.0 o_sin=0.841471 o_cos=0.5403023
+2 x=2.25 => o_sqrt=1.5 o_abs=2.25 o_exp=9.487736 o_ln=0.8109302 o_sin=0.7780732 o_cos=-0.6281736
+3 x=-3.0 => o_sqrt=1.732051 o_abs=3.0 o_exp=0.04978707 o_ln=1.098612 o_sin=-0.14112 o_cos=-0.9899925
+4 x=0.5  => o_sqrt=0.7071068 o_abs=0.5 o_exp=1.648721 o_ln=-0.6931472 o_sin=0.4794255 o_cos=0.8775826

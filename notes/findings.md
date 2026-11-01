@@ -199,3 +199,20 @@ Reported: https://github.com/ironplc/ironplc/issues/2549
   elements`, the scan stops. matiec performs no check and reads whatever
   follows the array (`v=4`). Both are permitted (annex E); recorded as
   implementation-defined with IronPLC's trap.
+
+## 16. REAL_TO_INT and LREAL_TO_DINT truncate toward zero
+
+- Reproducer: `conformance/ops/real_conversions.st`: 2.75 -> 2, -2.75 -> -2,
+  -0.75 -> 0, 123456.75 -> 123456 (expected 3, -3, -1, 123457).
+- Expected: ed.3 table 22 (ed.2 2.5.1.5.1): conversion from a real type to
+  an integer type rounds to the nearest integer. matiec rounds (and, on
+  ties, to the even integer, `__real_round` in `lib/C/iec_std_lib.h`).
+- Known: ironplc#1813 (open). `undefined/real_to_int_ties` records the
+  truncating behaviour on .5 values.
+
+## 17. (Not a defect) REAL division by zero gives inf / -inf / NaN
+
+- Reproducer: `conformance/undefined/real_div_zero.st`: 1.0/0.0 = inf,
+  -1.0/0.0 = -inf, 0.0/0.0 = NaN, no trap, the scan continues (unlike the
+  integer division trap of item 8). matiec does the same (IEC 60559
+  through C). Recorded as implementation-defined.

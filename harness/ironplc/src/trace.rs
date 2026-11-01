@@ -6,7 +6,7 @@
 use std::collections::BTreeMap;
 use std::fmt;
 
-#[derive(Clone, Debug, PartialEq, Eq)]
+#[derive(Clone, Debug, PartialEq)]
 pub enum Value {
     Bool(bool),
     Int(i64),
@@ -14,6 +14,9 @@ pub enum Value {
     Time(i64),
     /// Bit string `16#..` with 2, 4 or 8 hex digits (BYTE, WORD, DWORD).
     Bits { v: u64, digits: usize },
+    /// REAL / LREAL: a decimal with a `.` and optional exponent, or
+    /// `inf`, `-inf`, `nan`; `text` is the literal as written.
+    Real { v: f64, text: String },
     /// `?`: not checked.
     Any,
 }
@@ -38,6 +41,14 @@ impl Value {
                 .map_err(|_| format!("bad TIME literal: {s}"))?;
             return Ok(Value::Time(ms));
         }
+        if s == "inf" || s == "-inf" || s == "nan" {
+            let v = if s == "nan" { f64::NAN } else if s == "inf" { f64::INFINITY } else { f64::NEG_INFINITY };
+            return Ok(Value::Real { v, text: s.to_string() });
+        }
+        if is_real_literal(s) {
+            let v: f64 = s.parse().map_err(|_| format!("bad real: {s}"))?;
+            return Ok(Value::Real { v, text: s.to_string() });
+        }
         if let Some(hex) = s.strip_prefix("16#") {
             if !matches!(hex.len(), 2 | 4 | 8) || hex.chars().any(|c| c.is_ascii_lowercase()) {
                 return Err(format!(
@@ -53,6 +64,44 @@ impl Value {
     }
 }
 
+/// `-?[0-9]+\.[0-9]+([eE][-+]?[0-9]+)?`
+fn is_real_literal(s: &str) -> bool {
+    let s = s.strip_prefix('-').unwrap_or(s);
+    let (mant, exp) = match s.find(|c| c == 'e' || c == 'E') {
+        Some(i) => (&s[..i], Some(&s[i + 1..])),
+        None => (s, None),
+    };
+    let Some((int, frac)) = mant.split_once('.') else { return false };
+    let digits = |t: &str| !t.is_empty() && t.bytes().all(|b| b.is_ascii_digit());
+    digits(int)
+        && digits(frac)
+        && exp.map_or(true, |e| digits(e.strip_prefix(['+', '-']).unwrap_or(e)))
+}
+
+impl Value {
+    /// SPEC.md comparison: REAL/LREAL numerically within a relative
+    /// tolerance (floored at 1.0), everything else by text.
+    pub fn matches(&self, got: &str, lreal: bool) -> bool {
+        match self {
+            Value::Any => true,
+            Value::Real { v: e, .. } => {
+                let Ok(a) = got.to_ascii_lowercase().replace("-nan", "nan").parse::<f64>() else {
+                    return false;
+                };
+                if e.is_nan() || a.is_nan() {
+                    return e.is_nan() && a.is_nan();
+                }
+                if e.is_infinite() || a.is_infinite() {
+                    return a == *e;
+                }
+                let tol = if lreal { 1e-12 } else { 1e-6 };
+                (a - e).abs() <= tol * e.abs().max(1.0)
+            }
+            other => got == other.to_string(),
+        }
+    }
+}
+
 impl fmt::Display for Value {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         match self {
@@ -61,12 +110,13 @@ impl fmt::Display for Value {
             Value::Int(i) => write!(f, "{i}"),
             Value::Time(ms) => write!(f, "T#{ms}ms"),
             Value::Bits { v, digits } => write!(f, "16#{v:0width$X}", width = digits),
+            Value::Real { text, .. } => write!(f, "{text}"),
             Value::Any => write!(f, "?"),
         }
     }
 }
 
-#[derive(Clone, Debug, PartialEq, Eq)]
+#[derive(Clone, Debug, PartialEq)]
 pub enum Expected {
     Outputs(Vec<(String, Value)>),
     Trap,

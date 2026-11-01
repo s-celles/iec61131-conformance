@@ -1,0 +1,15 @@
+# EXPT(IN1, IN2) = IN1 ** IN2 with IN1 ANY_REAL and IN2 ANY_NUM (ed.3 table
+# 30 / ed.2 table 24, "exponentiation"); ** is the operator form (table 71).
+#   2^10 = 1024; (-1.5)^3 = -3.375; 10^-2 = 0.01; 1^0 = 1; 0.5^4 = 0.0625.
+period_ms: 100
+program: main
+inputs: x n
+outputs: o_expt o_pow2
+status: conformant
+reference: IEC 61131-3 ed.3 6.6.2.5.1 table 30 (EXPT), 7.3.1 table 71 (**)
+---
+0 x=2.0 n=10  => o_expt=1024.0 o_pow2=4.0
+1 x=-1.5 n=3  => o_expt=-3.375 o_pow2=2.25
+2 x=10.0 n=-2 => o_expt=0.01 o_pow2=100.0
+3 x=1.0 n=0   => o_expt=1.0 o_pow2=1.0
+4 x=0.5 n=4   => o_expt=0.0625 o_pow2=0.25

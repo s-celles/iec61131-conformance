@@ -1,4 +1,6 @@
 """Parser for the .trace format of SPEC.md (Python port of harness/ironplc/src/trace.rs)."""
+import math
+import re
 from dataclasses import dataclass, field
 from enum import Enum
 from typing import List, Optional, Tuple, Union
@@ -9,11 +11,16 @@ class Status(Enum):
     IMPLEMENTATION_DEFINED = "implementation-defined"
 
 
+REAL_RE = re.compile(r"^-?[0-9]+\.[0-9]+([eE][-+]?[0-9]+)?$")
+REAL_TOL = {"REAL": 1e-6, "LREAL": 1e-12}
+
+
 @dataclass(frozen=True)
 class Value:
-    kind: str  # bool | int | time | bits | any
+    kind: str  # bool | int | time | bits | real | any
     v: int = 0
     width: int = 0  # bits: number of hex digits (2 BYTE, 4 WORD, 8 DWORD)
+    text: str = ""  # real: the literal as written, printed back verbatim
 
     @staticmethod
     def parse(s: str) -> "Value":
@@ -27,6 +34,8 @@ class Value:
             if not s.endswith("ms"):
                 raise ValueError(f"TIME literal must be T#<n>ms: {s}")
             return Value("time", int(s[2:-2]))
+        if REAL_RE.match(s) or s in ("inf", "-inf", "nan"):
+            return Value("real", float(s), 0, s)
         if s.startswith("16#"):
             digits = s[3:]
             if len(digits) not in (2, 4, 8) or digits != digits.upper():
@@ -41,9 +50,29 @@ class Value:
             return f"T#{self.v}ms"
         if self.kind == "bits":
             return f"16#{self.v:0{self.width}X}"
+        if self.kind == "real":
+            return self.text
         if self.kind == "any":
             return "?"
         return str(self.v)
+
+    def matches(self, actual_text, ty):
+        """SPEC.md comparison: REAL/LREAL numerically within a relative
+        tolerance (floored at 1.0), everything else by text."""
+        if self.kind == "any":
+            return True
+        if self.kind != "real":
+            return actual_text == str(self)
+        try:
+            a = float(actual_text.replace("-nan", "nan"))
+        except (TypeError, ValueError):
+            return False
+        e = self.v
+        if math.isnan(e) or math.isnan(a):
+            return math.isnan(e) and math.isnan(a)
+        if math.isinf(e) or math.isinf(a):
+            return e == a
+        return abs(a - e) <= REAL_TOL[ty] * max(abs(e), 1.0)
 
 
 @dataclass

@@ -1,0 +1,18 @@
+# LREAL (binary64) arithmetic, ed.3 table 30. Expected values are the
+# binary64 results written with 17 significant digits; the 1e-12 relative
+# tolerance of SPEC.md leaves room for one rounding of the last place only,
+# so a runtime that computes LREAL in binary32 fails here.
+#   0.1 + 0.2 = 0.30000000000000004; 1/3 = 0.3333333333333333;
+#   sqrt(0.1) = 0.31622776601683794; sqrt(2) = 1.4142135623730951;
+#   1e16 + 1 = 1e16 (the ulp of 1e16 is 2); 1e15 + 1 = 1000000000000001.
+period_ms: 100
+program: main
+inputs: a b
+outputs: sum quot prod sq big
+status: conformant
+reference: IEC 61131-3 ed.3 6.6.2.5.1 table 30 (arithmetic), 6.4.4.1 (LREAL is binary64)
+---
+0 a=0.1 b=0.2       => sum=0.30000000000000004 quot=0.5 prod=0.020000000000000004 sq=0.31622776601683794 big=1000000000000001.0
+1 a=1.0 b=3.0       => sum=4.0 quot=0.3333333333333333 prod=3.0 sq=1.0 big=1000000000000001.0
+2 a=2.0 b=1.0E300   => sum=1.0E300 quot=2.0E-300 prod=2.0E300 sq=1.4142135623730951 big=1000000000000001.0
+3 a=1.0E16 b=1.0    => sum=1.0E16 quot=1.0E16 prod=1.0E16 sq=100000000.0 big=1000000000000001.0

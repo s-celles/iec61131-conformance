@@ -97,6 +97,8 @@ fn encode(entry: &VarNameEntry, v: &Value) -> Result<u64, String> {
         (iec_type_tag::BYTE, Value::Bits { v, digits: 2 }) => Ok(*v),
         (iec_type_tag::WORD, Value::Bits { v, digits: 4 }) => Ok(*v),
         (iec_type_tag::DWORD, Value::Bits { v, digits: 8 }) => Ok(*v),
+        (iec_type_tag::REAL, Value::Real { v, .. }) => Ok((*v as f32).to_bits() as u64),
+        (iec_type_tag::LREAL, Value::Real { v, .. }) => Ok(v.to_bits()),
         _ => Err(format!(
             "cannot store {v} into {} : {} (type tag {tag})",
             entry.name, entry.type_name
@@ -267,7 +269,10 @@ fn run_test(st: &Path, opts: &Options) -> Outcome {
                                 continue;
                             }
                             let got = &actual.iter().find(|(n, _)| n == name).unwrap().1;
-                            if *got != value.to_string() {
+                            let lreal = outputs
+                                .iter()
+                                .any(|e| e.name.eq_ignore_ascii_case(name) && e.iec_type_tag == iec_type_tag::LREAL);
+                            if !value.matches(got, lreal) {
                                 problems.push(format!(
                                     "cycle {} (trace line {}): {name} expected {value}, got {got}",
                                     rec.cycle, rec.line
