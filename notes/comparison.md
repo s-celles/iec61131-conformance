@@ -155,22 +155,22 @@ Item 4 depends on which edition's `F_TRIG` body is taken as reference. Item
 
 ## RuSTy deviations (commit `e911ee5`)
 
-RuSTy is not the subject of this suite, but the run produced three clear
-results worth reporting upstream to PLC-lang/rusty, each with a reproducer
+RuSTy is not the subject of this suite, but the runs produced six clear
+results, reported upstream to PLC-lang/rusty (#2032 to #2037), each with a reproducer
 in `conformance/` and the output in `notes/evidence/rusty-run.txt`:
 
-1. **Timers are one cycle late**: `libs/stdlib/src/timers.rs`,
+1. **Timers are one cycle late** (PLC-lang/rusty#2032): `libs/stdlib/src/timers.rs`,
    `is_in_preset_range` tests `elapsed <= PT`, so TON's Q rises, TOF's Q
    falls and TP's pulse ends when the elapsed time *exceeds* PT, one cycle
    after ET has reached PT. The standard's diagrams (and matiec's
    `START_TIME + PT <= CURRENT_TIME`) switch at equality.
-2. **TP dies after a pulse that ends with IN already FALSE** (`timers/tp`,
+2. **TP dies after a pulse that ends with IN already FALSE** (PLC-lang/rusty#2033) (`timers/tp`,
    cycles 6 to 11): `run_tp` only resets the block on a falling edge of IN
    seen *after* the pulse has expired. If IN fell during the pulse, no edge
    is seen afterwards, `is_running` stays TRUE, ET stays at PT, and a later
    rising edge of IN is ignored (`q=FALSE` at cycle 6 where a new pulse is
    due). The block recovers only after IN goes TRUE and FALSE again.
-3. **SR/RS input names** are `SET1`/`RESET` and `SET`/`RESET1`
+3. **SR/RS input names** (PLC-lang/rusty#2034) are `SET1`/`RESET` and `SET`/`RESET1`
    (`libs/stdlib/iec61131-st/bistable_functionblocks.st`), so programs
    written with the standard's `S1`/`R` and `S`/`R1` (ed.3 table 42) fail to
    compile with `E048 Could not resolve reference to S1`.
@@ -179,8 +179,8 @@ Also observed, not a deviation: `TIME` is 32-bit milliseconds in this
 build (so `T#500ms` in a trace is the integer 500 in the generated code),
 which is why the driver passes milliseconds rather than nanoseconds.
 
-4. **Formal argument names on standard functions**: `LIMIT(MN := b, IN := a, MX := c)` and `SEL(G := g, IN0 := a, IN1 := b)` are rejected (E089 invalid call parameters, E048 could not resolve reference to MN), although table 31 names those parameters and 7.2.3.1 allows formal invocation of any function. The positional forms in `ops/std_functions` compile and pass. (`ops/std_functions_ext`)
+4. **Formal argument names on standard functions** (PLC-lang/rusty#2035, LIMIT declares MIN/MAX): `LIMIT(MN := b, IN := a, MX := c)` and `SEL(G := g, IN0 := a, IN1 := b)` are rejected (E089 invalid call parameters, E048 could not resolve reference to MN), although table 31 names those parameters and 7.2.3.1 allows formal invocation of any function. The positional forms in `ops/std_functions` compile and pass. (`ops/std_functions_ext`)
 
-5. **EN/ENO on a function block invocation**: `c(EN := run_it, inc := inc)` is rejected (E089 invalid call parameters, E048 could not resolve reference to EN), so the implicit EN input of ed.3 6.6.1.7 table 20 is not available on function blocks. (`pou/fb_en_eno`)
+5. **EN/ENO on a function block invocation** (PLC-lang/rusty#2036): `c(EN := run_it, inc := inc)` is rejected (E089 invalid call parameters, E048 could not resolve reference to EN), so the implicit EN input of ed.3 6.6.1.7 table 20 is not available on function blocks. (`pou/fb_en_eno`)
 
-6. **Untyped real literals are REAL**: in `big := 1.0E15 + 1.0` with `big : LREAL`, the sum is computed in binary32 and then widened, so `big` is 999999986991104 instead of 1000000000000001. ed.3 6.3.2 leaves the type of an untyped literal to its context; an `LREAL#` prefix would avoid it. (`ops/lreal_precision`)
+6. **Untyped real literals are REAL** (PLC-lang/rusty#2037): in `big := 1.0E15 + 1.0` with `big : LREAL`, the sum is computed in binary32 and then widened, so `big` is 999999986991104 instead of 1000000000000001. ed.3 6.3.2 leaves the type of an untyped literal to its context; an `LREAL#` prefix would avoid it. (`ops/lreal_precision`)
