@@ -146,8 +146,11 @@ hand. CI checks the table is in sync with the evidence.
 | undefined/subrange_out_of_range | SAME | SAME | SAME | SAME | SAME | records IronPLC: stored unchecked; same on all that run it |
 | ops/limit_inverted | PASS | **FAIL** (cycles 0-1, 5) | **FAIL** (cycles 0-1, 5) | **FAIL** (cycles 1, 5) | **FAIL** (cycles 1, 5) | LIMIT with MN > MX follows MIN(MAX(IN, MN), MX): IronPLC only; matiec (matiec #14, beremiz/matiec#50), its fork (fork #9), STruC++ (STruC++ #13) and RuSTy (RuSTy #8, PLC-lang/rusty#2040) test MN first and return it. Found by tools/fuzz |
 | ops/std_functions_expr | PASS | PASS | PASS | **ERROR** (build) | PASS | MUX, SEL and NOT on expressions: STruC++ does not compile MUX with expression inputs nor NOT of an AND of comparisons (STruC++ #11, #12, STruCpp#262, #263); the others agree. Found by tools/fuzz |
+| ops/bit_expr_operands | PASS | PASS | PASS | PASS | PASS | NOT, SHL, ROL, ROR on bit-string expressions: all agree. Found by tools/fuzz |
+| ops/bit_literals | **FAIL** (compile) | PASS | PASS | PASS | PASS | untyped 16# literals as BYTE/WORD values: IronPLC types them ANY_INT and rejects every use (findings #26, ironplc#2554); the others accept them. Found by tools/fuzz |
+| ops/shl_width | **FAIL** (cycles 0-4) | PASS | PASS | PASS | PASS | SHL truncates to its input's width: IronPLC shifts in a 32-bit slot and masks only at the store, so SHR/OR of a SHL result sees the lost bits (findings #25, ironplc#2553); the others agree. Found by tools/fuzz |
 
-Totals (83 tests, 65 with `status: conformant`): conformant tests passed, IronPLC 46/65; matiec 54/65; OpenPLC's matiec 54/65; STruC++ 50/65; RuSTy 51/65. 38 of the 83 tests have the same result on all five runtimes.
+Totals (86 tests, 68 with `status: conformant`): conformant tests passed, IronPLC 47/68; matiec 57/68; OpenPLC's matiec 57/68; STruC++ 53/68; RuSTy 54/68. 39 of the 86 tests have the same result on all five runtimes.
 
 <!-- results:end -->
 

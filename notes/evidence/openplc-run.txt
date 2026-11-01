@@ -289,6 +289,18 @@ PASS    conformance/edge/r_trig.st
 9 s=TRUE => q_sr=TRUE q_rs=TRUE
 10 r=TRUE => q_sr=TRUE q_rs=FALSE
 PASS    conformance/edge/sr_rs.st
+### conformance/ops/bit_expr_operands.st
+0 a=16#3C b=16#0F w=16#1234 n=0 => n_xor=16#CC n_and=16#FFCB s_or=16#3F r_xor=16#33 r_w=16#EDCB same=TRUE
+1 a=16#F0 b=16#F0 w=16#0000 n=4 => n_xor=16#FF n_and=16#FFFF s_or=16#00 r_xor=16#FF r_w=16#FFFF same=TRUE
+2 a=16#81 b=16#01 w=16#00FF n=1 => n_xor=16#7F n_and=16#FF00 s_or=16#02 r_xor=16#1D r_w=16#7F80 same=TRUE
+3 a=16#A5 b=16#5A w=16#8001 n=7 => n_xor=16#00 n_and=16#FFFE s_or=16#80 r_xor=16#55 r_w=16#FCFF same=TRUE
+PASS    conformance/ops/bit_expr_operands.st
+### conformance/ops/bit_literals.st
+0 b=16#3C w=16#1255 n=0 => ob=16#A5 ow=16#8001 b_and=16#0C w_or=16#FF55 b_xor=16#C3 w_shl=16#0001 lo55=TRUE tw=FALSE
+1 b=16#F0 w=16#1234 n=4 => ob=16#A5 ow=16#8001 b_and=16#00 w_or=16#FF34 b_xor=16#0F w_shl=16#0010 lo55=FALSE tw=TRUE
+2 b=16#FF w=16#0055 n=15 => ob=16#A5 ow=16#8001 b_and=16#0F w_or=16#FF55 b_xor=16#00 w_shl=16#8000 lo55=TRUE tw=FALSE
+3 b=16#00 w=16#FFFF n=1 => ob=16#A5 ow=16#8001 b_and=16#00 w_or=16#FFFF b_xor=16#FF w_shl=16#0002 lo55=FALSE tw=FALSE
+PASS    conformance/ops/bit_literals.st
 ### conformance/ops/bit_ops.st
 0 b=16#F0 m=16#3C w=16#1234 d=16#80000001 n=4 => o_and=16#30 o_or=16#FC o_xor=16#CC o_not=16#0F w_shl=16#2340 w_shr=16#0123 w_rol=16#2341 w_ror=16#4123 d_shl=16#00000010 d_shr=16#08000000 d_rol=16#00000018 d_ror=16#18000000
 1 b=16#AA m=16#55 w=16#8001 d=16#00000001 n=1 => o_and=16#00 o_or=16#FF o_xor=16#FF o_not=16#55 w_shl=16#0002 w_shr=16#4000 w_rol=16#0003 w_ror=16#C000 d_shl=16#00000002 d_shr=16#00000000 d_rol=16#00000002 d_ror=16#80000000
@@ -367,6 +379,13 @@ PASS    conformance/ops/real_functions.st
 3 x=1.0 n=0 => o_expt=1 o_pow2=1
 4 x=0.5 n=4 => o_expt=0.0625 o_pow2=0.25
 PASS    conformance/ops/real_power.st
+### conformance/ops/shl_width.st
+0 b=16#44 w=16#67CB => b_back=16#00 b_rol=16#04 w_back=16#00B0 w_ror=16#00CB b_or=16#44
+1 b=16#77 w=16#444A => b_back=16#08 b_rol=16#07 w_back=16#00A0 w_ror=16#004A b_or=16#4C
+2 b=16#E9 w=16#F0E8 => b_back=16#08 b_rol=16#09 w_back=16#0080 w_ror=16#00E8 b_or=16#4C
+3 b=16#FF w=16#FFFF => b_back=16#08 b_rol=16#0F w_back=16#00F0 w_ror=16#00FF b_or=16#4C
+4 b=16#00 w=16#0010 => b_back=16#00 b_rol=16#00 w_back=16#0000 w_ror=16#0010 b_or=16#44
+PASS    conformance/ops/shl_width.st
 ### conformance/ops/std_functions.st
 0 a=-5 b=3 c=9 k=0 g=FALSE da=-100000 db=7 => o_abs=5 o_min=-5 o_max=3 o_limit=3 o_sel=-5 o_mux=-5 d_abs=100000 d_min=-100000
 1 a=12 b=-4 c=20 k=1 g=TRUE da=2147483647 db=-2147483648 => o_abs=12 o_min=-4 o_max=12 o_limit=12 o_sel=-4 o_mux=-4 d_abs=2147483647 d_min=-2147483648
@@ -730,5 +749,5 @@ DIFFERS conformance/undefined/ton_pt_change.st
         cycle 10 (trace line 36): et expected T#800ms, got T#200ms
         cycle 11 (trace line 37): et expected T#800ms, got T#200ms
 
-83 tests: 54 pass, 11 fail, 11 same, 7 differs, 0 error
+86 tests: 57 pass, 11 fail, 11 same, 7 differs, 0 error
 exit 1
