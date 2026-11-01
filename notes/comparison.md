@@ -97,8 +97,8 @@ hand. CI checks the table is in sync with the evidence.
 | ops/bit_ops | PASS | PASS | PASS | PASS | PASS | PASS |  |
 | data/array_internal | PASS | PASS | PASS | PASS | PASS | PASS |  |
 | data/array_init | PASS | PASS | PASS | PASS | PASS | PASS |  |
-| data/struct_internal | **FAIL** (compile) | PASS | PASS | PASS | PASS | **ERROR** (see evidence) | IronPLC: assigning a structure to a structure-typed field (`r.tl := q`) is P9999 not implemented (findings #13, ironplc#2550) |
-| data/enum | PASS | PASS | PASS | PASS | PASS | **ERROR** (see evidence) |  |
+| data/struct_internal | **FAIL** (compile) | PASS | PASS | PASS | PASS | PASS | IronPLC: assigning a structure to a structure-typed field (`r.tl := q`) is P9999 not implemented (findings #13, ironplc#2550) |
+| data/enum | PASS | PASS | PASS | PASS | PASS | **FAIL** (see evidence) | 4diac: the forte_ng exporter rejects enumerated data types (4diac item 10) |
 | ops/real_arith | PASS | PASS | PASS | PASS | PASS | PASS | binary32 arithmetic within the 1e-6 tolerance of SPEC.md |
 | ops/real_functions | PASS | PASS | PASS | PASS | PASS | PASS | SQRT ABS EXP LN SIN COS |
 | ops/real_power | PASS | PASS | PASS | PASS | PASS | PASS | EXPT and ** |
@@ -135,7 +135,7 @@ hand. CI checks the table is in sync with the evidence.
 | control-flow/for_step | PASS | PASS | PASS | PASS | PASS | PASS | negative BY, overshooting BY, empty range: all agree |
 | control-flow/return | PASS | PASS | PASS | PASS | PASS | **ERROR** (see evidence) | RETURN in an FB and in a function, on all |
 | data/array_2d | **FAIL** (compile) | PASS | **FAIL** (compile) | PASS | PASS | **ERROR** (see evidence) | two-dimensional array and array of a named array type with a nested initialiser: IronPLC rejects the nested initialiser (findings #22), the OpenPLC fork crashes on it (fork #6) |
-| data/array_of_struct | **FAIL** (compile) | PASS | **FAIL** (compile) | PASS | PASS | **ERROR** (see evidence) | structure initialisers inside an array initialiser: IronPLC (findings #22) and the OpenPLC fork (fork #7) reject the syntax |
+| data/array_of_struct | **FAIL** (compile) | PASS | **FAIL** (compile) | PASS | PASS | PASS | structure initialisers inside an array initialiser: IronPLC (findings #22) and the OpenPLC fork (fork #7) reject the syntax |
 | data/defaults | PASS | PASS | PASS | **FAIL** (cycles 0-1) | **FAIL** (cycles 0-1) | **ERROR** (see evidence) | default initial values: STruC++ (STruC++ #9, STruCpp#260) and RuSTy (RuSTy #7, PLC-lang/rusty#2039) start a subrange at 0 instead of its lower limit; everything else agrees |
 | ops/date_time | PASS | **ERROR** (build) | PASS | **FAIL** (compile) | PASS | PASS | IronPLC and the OpenPLC fork compute all of table 30; upstream matiec does not build (`_____time_sub`, beremiz/matiec#40); STruC++ types `TOD - TOD` as TOD (STruC++ #8, STruCpp#259) |
 | ops/trunc | PASS | PASS | PASS | PASS | PASS | **FAIL** (see evidence) | TRUNC toward zero on all |
@@ -153,7 +153,7 @@ hand. CI checks the table is in sync with the evidence.
 | ops/time_functions | **FAIL** (compile) | **ERROR** (build) | PASS | PASS | PASS | **ERROR** (see evidence) | MIN/MAX/LIMIT/SEL/MUX/LT on TIME: IronPLC rejects MIN, MAX and LIMIT on TIME (findings #27, ironplc#2555); upstream matiec does not build the `a + b` (#40); the fork, STruC++ and RuSTy agree. Found by tools/fuzz |
 | ops/time_mul | PASS | **ERROR** (build) | **FAIL** (cycles 0-4) | PASS | PASS | **FAIL** (see evidence) | TIME * n with large products: matiec's __time_mul overflows a 32-bit int (matiec #15, beremiz/matiec#51; upstream does not build TIME arithmetic, #40, the fork shows it, fork #10); IronPLC, STruC++ and RuSTy agree. Found by tools/fuzz |
 
-Totals (88 tests, 70 with `status: conformant`): conformant tests passed, IronPLC 48/70; matiec 57/70; OpenPLC's matiec 58/70; STruC++ 55/70; RuSTy 56/70; 4diac 29/70. 25 of the 88 tests have the same result on all six runtimes.
+Totals (88 tests, 70 with `status: conformant`): conformant tests passed, IronPLC 48/70; matiec 57/70; OpenPLC's matiec 58/70; STruC++ 55/70; RuSTy 56/70; 4diac 31/70. 25 of the 88 tests have the same result on all six runtimes.
 
 <!-- results:end -->
 

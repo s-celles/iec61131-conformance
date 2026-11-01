@@ -98,7 +98,7 @@ ERROR   conformance/counters/ctud_bounds.st
         type CTUD is outside this harness's scope
 ### conformance/data/array_2d.st
 ERROR   conformance/data/array_2d.st
-        TYPE is outside this harness's scope (one PROGRAM over elementary types)
+        TYPE ROW: ARRAY[0..2] OF INT; is not a 4diac data type (only STRUCT and enumerations are)
 ### conformance/data/array_init.st
 0 => s_list=24 s_rep=20 z=0 f=TRUE
 1 => s_list=24 s_rep=20 z=0 f=TRUE
@@ -111,17 +111,35 @@ PASS    conformance/data/array_init.st
 4 idx=4 val=0 => sum=101 at_idx=0 lo=1 hi=0
 PASS    conformance/data/array_internal.st
 ### conformance/data/array_of_struct.st
-ERROR   conformance/data/array_of_struct.st
-        TYPE is outside this harness's scope (one PROGRAM over elementary types)
+0 k=1 => sum_x=7 sum_y=60 px=3 copy_y=30
+1 k=0 => sum_x=7 sum_y=60 px=3 copy_y=30
+2 k=5 => sum_x=12 sum_y=60 px=8 copy_y=30
+3 k=-8 => sum_x=4 sum_y=60 px=0 copy_y=30
+PASS    conformance/data/array_of_struct.st
 ### conformance/data/defaults.st
 ERROR   conformance/data/defaults.st
-        TYPE is outside this harness's scope (one PROGRAM over elementary types)
+        TYPE SMALL: INT (5..10); is not a 4diac data type (only STRUCT and enumerations are)
 ### conformance/data/enum.st
-ERROR   conformance/data/enum.st
-        TYPE is outside this harness's scope (one PROGRAM over elementary types)
+FAIL    conformance/data/enum.st
+        4diac IDE failed to export the FB:
+        [fordiac.exportProjectFBs] L/FB_CONFORMANCE_DATA_ENUM/FB_CONFORMANCE_DATA_ENUM.fbt
+        [fordiac.exportProjectFBs] FB_CONFORMANCE_DATA_ENUM: FB_CONFORMANCE_DATA_ENUM at 4: The variable RED is undefined
+        [fordiac.exportProjectFBs] FB_CONFORMANCE_DATA_ENUM: FB_CONFORMANCE_DATA_ENUM at 5: The variable GREEN is undefined
+        [fordiac.exportProjectFBs] FB_CONFORMANCE_DATA_ENUM: FB_CONFORMANCE_DATA_ENUM at 6: The variable BLUE is undefined
+        [fordiac.exportProjectFBs] FB_CONFORMANCE_DATA_ENUM: FB_CONFORMANCE_DATA_ENUM at 9: The variable RED is undefined
+        [fordiac.exportProjectFBs] FB_CONFORMANCE_DATA_ENUM: FB_CONFORMANCE_DATA_ENUM at 10: The variable GREEN is undefined
+        [fordiac.exportProjectFBs] FB_CONFORMANCE_DATA_ENUM: FB_CONFORMANCE_DATA_ENUM at 11: The variable BLUE is undefined
+        [fordiac.exportProjectFBs] FB_CONFORMANCE_DATA_ENUM: FB_CONFORMANCE_DATA_ENUM at 13: The variable GREEN is undefined
+        Caused by: <tmpdir>/export.xml:4: Could not export without errors
+        ... 15 more
+        Root exception:
+        <tmpdir>/export.xml:4: Could not export without errors
 ### conformance/data/struct_internal.st
-ERROR   conformance/data/struct_internal.st
-        TYPE is outside this harness's scope (one PROGRAM over elementary types)
+0 a=3 b=4 => qx=3 qy=4 px=0 area=12
+1 a=-2 b=5 => qx=-2 qy=5 px=0 area=-10
+2 a=0 b=0 => qx=0 qy=0 px=0 area=0
+3 a=100 b=100 => qx=100 qy=100 px=0 area=10000
+PASS    conformance/data/struct_internal.st
 ### conformance/edge/f_trig.st
 ERROR   conformance/edge/f_trig.st
         type F_TRIG is outside this harness's scope
@@ -261,26 +279,22 @@ FAIL    conformance/ops/std_functions_ext.st
         [fordiac.exportProjectFBs] FB_CONFORMANCE_OPS_STD_FUNCTIONS_EXT: FB_CONFORMANCE_OPS_STD_FUNCTIONS_EXT at 7: The parameter G is undefined for the callable SEL
         [fordiac.exportProjectFBs] FB_CONFORMANCE_OPS_STD_FUNCTIONS_EXT: FB_CONFORMANCE_OPS_STD_FUNCTIONS_EXT at 6: Attempting to call standard function LIMIT with formal arguments
         [fordiac.exportProjectFBs] FB_CONFORMANCE_OPS_STD_FUNCTIONS_EXT: FB_CONFORMANCE_OPS_STD_FUNCTIONS_EXT at 7: Attempting to call standard function SEL with formal arguments
-        !ENTRY org.eclipse.osgi 4 0 <timestamp>
-        !MESSAGE Application error
-        !STACK 1
-        at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(Unknown Source)
-        at java.base/java.lang.reflect.Method.invoke(Unknown Source)
+        Caused by: <tmpdir>/export.xml:4: Could not export without errors
+        ... 15 more
+        Root exception:
+        <tmpdir>/export.xml:4: Could not export without errors
+        !MESSAGE The workspace will exit with unsaved changes in this session.
 ### conformance/ops/time_arith.st
 FAIL    conformance/ops/time_arith.st
         4diac IDE failed to export the FB:
         [fordiac.exportProjectFBs] L/FB_CONFORMANCE_OPS_TIME_ARITH/FB_CONFORMANCE_OPS_TIME_ARITH.fbt
         [fordiac.exportProjectFBs] FB_CONFORMANCE_OPS_TIME_ARITH: FB_CONFORMANCE_OPS_TIME_ARITH at 10: mismatched input '1' expecting RULE_TIME_VALUE
         [fordiac.exportProjectFBs] FB_CONFORMANCE_OPS_TIME_ARITH: FB_CONFORMANCE_OPS_TIME_ARITH at 10: no viable alternative at input '5s'
-        !ENTRY org.eclipse.osgi 4 0 <timestamp>
-        !MESSAGE Application error
-        !STACK 1
-        at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(Unknown Source)
-        at java.base/java.lang.reflect.Method.invoke(Unknown Source)
-        at org.eclipse.ant.core.AntRunner.run(AntRunner.java:506)
-        at org.eclipse.ant.core.AntRunner.start(AntRunner.java:603)
-        at org.eclipse.equinox.internal.app.EclipseAppHandle.run(EclipseAppHandle.java:219)
-        at org.eclipse.core.runtime.internal.adaptor.EclipseAppLauncher.runApplication(EclipseAppLauncher.java:149)
+        Caused by: <tmpdir>/export.xml:4: Could not export without errors
+        ... 15 more
+        Root exception:
+        <tmpdir>/export.xml:4: Could not export without errors
+        !MESSAGE The workspace will exit with unsaved changes in this session.
 ### conformance/ops/time_functions.st
 ERROR   conformance/ops/time_functions.st
         c++ failed:
@@ -296,14 +310,11 @@ FAIL    conformance/ops/time_mul.st
         [fordiac.exportProjectFBs] FB_CONFORMANCE_OPS_TIME_MUL: FB_CONFORMANCE_OPS_TIME_MUL at 2: mismatched input '*' expecting '#'
         [fordiac.exportProjectFBs] FB_CONFORMANCE_OPS_TIME_MUL: FB_CONFORMANCE_OPS_TIME_MUL at 5: mismatched input '*' expecting '#'
         [fordiac.exportProjectFBs] FB_CONFORMANCE_OPS_TIME_MUL: FB_CONFORMANCE_OPS_TIME_MUL at 5: mismatched input '=' expecting '#'
-        !ENTRY org.eclipse.osgi 4 0 <timestamp>
-        !MESSAGE Application error
-        !STACK 1
-        at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(Unknown Source)
-        at java.base/java.lang.reflect.Method.invoke(Unknown Source)
-        at org.eclipse.ant.core.AntRunner.run(AntRunner.java:506)
-        at org.eclipse.ant.core.AntRunner.start(AntRunner.java:603)
-        at org.eclipse.equinox.internal.app.EclipseAppHandle.run(EclipseAppHandle.java:219)
+        Caused by: <tmpdir>/export.xml:4: Could not export without errors
+        ... 15 more
+        Root exception:
+        <tmpdir>/export.xml:4: Could not export without errors
+        !MESSAGE The workspace will exit with unsaved changes in this session.
 ### conformance/ops/trunc.st
 FAIL    conformance/ops/trunc.st
         4diac IDE failed to export the FB:
@@ -311,14 +322,11 @@ FAIL    conformance/ops/trunc.st
         [fordiac.exportProjectFBs] FB_CONFORMANCE_OPS_TRUNC: FB_CONFORMANCE_OPS_TRUNC at 2: mismatched input ':=' expecting '#'
         [fordiac.exportProjectFBs] FB_CONFORMANCE_OPS_TRUNC: FB_CONFORMANCE_OPS_TRUNC at 2: The callable TRUNC(REAL) is undefined
         [fordiac.exportProjectFBs] FB_CONFORMANCE_OPS_TRUNC: FB_CONFORMANCE_OPS_TRUNC at 2: Not possible to assign a value to the left side of this assignment
-        !ENTRY org.eclipse.osgi 4 0 <timestamp>
-        !MESSAGE Application error
-        !STACK 1
-        at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(Unknown Source)
-        at java.base/java.lang.reflect.Method.invoke(Unknown Source)
-        at org.eclipse.ant.core.AntRunner.run(AntRunner.java:506)
-        at org.eclipse.ant.core.AntRunner.start(AntRunner.java:603)
-        at org.eclipse.equinox.internal.app.EclipseAppHandle.run(EclipseAppHandle.java:219)
+        Caused by: <tmpdir>/export.xml:4: Could not export without errors
+        ... 15 more
+        Root exception:
+        <tmpdir>/export.xml:4: Could not export without errors
+        !MESSAGE The workspace will exit with unsaved changes in this session.
 ### conformance/pou/fb_en_eno.st
 ERROR   conformance/pou/fb_en_eno.st
         FUNCTION_BLOCK is outside this harness's scope (one PROGRAM over elementary types)
@@ -383,7 +391,7 @@ PASS    conformance/strings/compare.st
 PASS    conformance/strings/concat_assign.st
 ### conformance/strings/declared_length.st
 ERROR   conformance/strings/declared_length.st
-        TYPE is outside this harness's scope (one PROGRAM over elementary types)
+        TYPE S5: STRING[5]; is not a 4diac data type (only STRUCT and enumerations are)
 ### conformance/strings/functions.st
 0 n=1 => o_len=5 o_concat='abcd' o_left='h' o_right='o' o_mid='e' o_insert='hXXello' o_delete='hllo' o_replace='hYYllo' o_find=3 o_find0=0
 1 n=2 => o_len=5 o_concat='abcd' o_left='he' o_right='lo' o_mid='el' o_insert='heXXllo' o_delete='hlo' o_replace='hYYlo' o_find=3 o_find0=0
@@ -486,20 +494,17 @@ DIFFERS conformance/undefined/string_conversions.st
         [fordiac.exportProjectFBs] FB_CONFORMANCE_UNDEFINED_STRING_CONVERSIONS: FB_CONFORMANCE_UNDEFINED_STRING_CONVERSIONS at 2: The callable INT_TO_STRING(INT) is undefined
         [fordiac.exportProjectFBs] FB_CONFORMANCE_UNDEFINED_STRING_CONVERSIONS: FB_CONFORMANCE_UNDEFINED_STRING_CONVERSIONS at 3: The callable STRING_TO_INT(STRING) is undefined
         [fordiac.exportProjectFBs] FB_CONFORMANCE_UNDEFINED_STRING_CONVERSIONS: FB_CONFORMANCE_UNDEFINED_STRING_CONVERSIONS at 4: The callable DINT_TO_STRING(DINT) is undefined
-        !ENTRY org.eclipse.osgi 4 0 <timestamp>
-        !MESSAGE Application error
-        !STACK 1
-        at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(Unknown Source)
-        at java.base/java.lang.reflect.Method.invoke(Unknown Source)
-        at org.eclipse.ant.core.AntRunner.run(AntRunner.java:506)
-        at org.eclipse.ant.core.AntRunner.start(AntRunner.java:603)
-        at org.eclipse.equinox.internal.app.EclipseAppHandle.run(EclipseAppHandle.java:219)
+        Caused by: <tmpdir>/export.xml:4: Could not export without errors
+        ... 15 more
+        Root exception:
+        <tmpdir>/export.xml:4: Could not export without errors
+        !MESSAGE The workspace will exit with unsaved changes in this session.
 ### conformance/undefined/string_truncate.st
 ERROR   conformance/undefined/string_truncate.st
         STRING[n] is not a 4diac type
 ### conformance/undefined/subrange_out_of_range.st
 ERROR   conformance/undefined/subrange_out_of_range.st
-        TYPE is outside this harness's scope (one PROGRAM over elementary types)
+        TYPE SMALL: INT (5..10); is not a 4diac data type (only STRUCT and enumerations are)
 ### conformance/undefined/tasks_same_priority.st
 ERROR   conformance/undefined/tasks_same_priority.st
         CONFIGURATION is outside this harness's scope (one PROGRAM over elementary types)
@@ -510,5 +515,5 @@ ERROR   conformance/undefined/timer_pt_zero.st
 ERROR   conformance/undefined/ton_pt_change.st
         type TON is outside this harness's scope
 
-88 tests: 29 pass, 6 fail, 4 same, 6 differs, 43 error
+88 tests: 31 pass, 7 fail, 4 same, 6 differs, 40 error
 exit 1
