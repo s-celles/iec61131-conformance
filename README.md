@@ -57,7 +57,8 @@ harness/
 formal/        Lean 4: executable FB semantics, trace theorems, properties
 notes/
   ironplcvm-io.md   how ironplcvm can (and cannot) be driven from outside
-  comparison.md     differential results between the runtimes
+  comparison.md     differential results between the runtimes (table generated
+                    from evidence/ by harness/summarize.py)
   findings.md       IronPLC behaviours that differ from the standard/others
   evidence/         full harness outputs
 ```
@@ -92,7 +93,8 @@ located variables.
   to fail some conformant tests (`notes/findings.md`), so the harness exit
   status is not the gate; what must not change silently is the recorded
   result. If a change to a test or harness alters it, regenerate the
-  evidence file in the same commit.
+  evidence file in the same commit and run `python3 -I harness/summarize.py`
+  to refresh the results table of `notes/comparison.md` (checked by CI).
 - `rusty`: same, on pull requests, weekly and on `workflow_dispatch` (needs
   LLVM 21 and a full RuSTy build; skipped on plain pushes to `main`).
 

@@ -37,6 +37,9 @@ jobs:
           git diff --exit-code -- formal/Conformance/Traces.lean \
             || { echo "::error file=formal/Conformance/Traces.lean::out of date, run python3 -I formal/gen_traces.py"; exit 1; }
 
+      - name: Results table in notes/comparison.md is in sync with notes/evidence
+        run: python3 -I harness/summarize.py --check
+
       - name: Install elan
         run: |
           curl -sSfL https://raw.githubusercontent.com/leanprover/elan/master/elan-init.sh \

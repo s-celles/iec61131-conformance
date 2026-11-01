@@ -25,6 +25,9 @@
   `.github/workflows/ci.yml`. CI diffs the live output against it. A change
   that alters a runtime's result must update the evidence file in the same
   commit; a runtime bump must update the SHA and the evidence together.
+- After editing any evidence file, run `python3 -I harness/summarize.py`: it
+  regenerates the results table and totals of `notes/comparison.md` (the
+  `note` column is hand-written and kept); CI checks they are in sync.
 - Run Python harness scripts with `python3 -I`.
 
 ## Layout
