@@ -447,6 +447,50 @@ POUS.c:34:28: error: incompatible types when assigning to type ‘IEC_TIME’ {a
   215 |         if (!(prefix name.flags & __IEC_FORCE_FLAG)) prefix name.value suffix = new_value
       |                                                                                 ^~~~~~~~~
 
+### conformance/ops/time_functions.st
+ERROR   conformance/ops/time_functions.st
+        gcc failed:
+In file included from res0.c:18:
+POUS.c: In function ‘MAIN_body__’:
+POUS.c:54:3: error: conversion to non-scalar type requested
+   54 |   __SET_VAR(data__->,PICK,,___MUX__TIME__INT__TIME(
+      |   ^~~~~~~~~
+
+### conformance/ops/time_mul.st
+ERROR   conformance/ops/time_mul.st
+        gcc failed:
+In file included from res0.c:12:
+POUS.c: In function ‘MAIN_body__’:
+POUS.c:26:25: error: incompatible types when assigning to type ‘IEC_TIME’ {aka ‘IEC_TIMESPEC’} from type ‘int’
+   26 |   __SET_VAR(data__->,P,,_____time_mul(__GET_VAR(data__->T,), __GET_VAR(data__->N,)));
+      |                         ^~~~~~~~~~~~~
+<tmp>/matiec/lib/C/accessor.h:215:81: note: in definition of macro ‘__SET_VAR’
+  215 |         if (!(prefix name.flags & __IEC_FORCE_FLAG)) prefix name.value suffix = new_value
+      |                                                                                 ^~~~~~~~~
+POUS.c:27:26: error: incompatible types when assigning to type ‘IEC_TIME’ {aka ‘IEC_TIMESPEC’} from type ‘int’
+   27 |   __SET_VAR(data__->,P4,,_____time_mul(__time_to_timespec(1, 700, 0, 0, 0, 0), __ULINT_LITERAL(4)));
+      |                          ^~~~~~~~~~~~~
+<tmp>/matiec/lib/C/accessor.h:215:81: note: in definition of macro ‘__SET_VAR’
+  215 |         if (!(prefix name.flags & __IEC_FORCE_FLAG)) prefix name.value suffix = new_value
+      |                                                                                 ^~~~~~~~~
+POUS.c:28:27: error: incompatible types when assigning to type ‘IEC_TIME’ {aka ‘IEC_TIMESPEC’} from type ‘int’
+   28 |   __SET_VAR(data__->,P44,,_____time_mul(__time_to_timespec(1, 487, 71, 0, 0, 0), __ULINT_LITERAL(44)));
+      |                           ^~~~~~~~~~~~~
+<tmp>/matiec/lib/C/accessor.h:215:81: note: in definition of macro ‘__SET_VAR’
+  215 |         if (!(prefix name.flags & __IEC_FORCE_FLAG)) prefix name.value suffix = new_value
+      |                                                                                 ^~~~~~~~~
+POUS.c:29:70: error: incompatible type for argument 4 of ‘___EQ_TIME’
+   29 |   __SET_VAR(data__->,BACK,,___EQ_TIME(__BOOL_LITERAL(TRUE), NULL, 2, _____time_sub(_____time_mul(__GET_VAR(data__->T,), __GET_VAR(data__->N,)), __GET_VAR(data__->T,)), _____time_mul(__GET_VAR(data__->T,), (__GET_VAR(data__->N,) - __INT_LITERAL(1)))));
+      |                                                                      ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+      |                                                                      |
+      |                                                                      int
+<tmp>/matiec/lib/C/accessor.h:215:81: note: in definition of macro ‘__SET_VAR’
+  215 |         if (!(prefix name.flags & __IEC_FORCE_FLAG)) prefix name.value suffix = new_value
+      |                                                                                 ^~~~~~~~~
+In file included from <tmp>/matiec/lib/C/iec_std_lib.h:848,
+                 from res0.c:6:
+<tmp>/matiec/lib/C/iec_std_functions.h:1076:72: note: expected ‘TIME’ {aka ‘IEC_TIMESPEC’} but argument is of type ‘int’
+ 1076 | static inline BOOL ___##fname(EN_ENO_PARAMS UINT 
 ### conformance/ops/trunc.st
 0 r=3.7 => t=3
 1 r=-3.7 => t=-3
@@ -778,5 +822,5 @@ DIFFERS conformance/undefined/ton_pt_change.st
         cycle 10 (trace line 36): et expected T#800ms, got T#200ms
         cycle 11 (trace line 37): et expected T#800ms, got T#200ms
 
-86 tests: 57 pass, 9 fail, 11 same, 7 differs, 2 error
+88 tests: 57 pass, 9 fail, 11 same, 7 differs, 4 error
 exit 1

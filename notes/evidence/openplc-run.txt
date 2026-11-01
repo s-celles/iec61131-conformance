@@ -411,6 +411,33 @@ PASS    conformance/ops/std_functions_ext.st
 2 t1=T#100ms t2=T#100ms => sum=T#200ms diff=T#0ms is_lt=FALSE is_gt=FALSE is_le=TRUE is_eq=TRUE lit1=T#90000ms lit2=T#3723004ms lit3=T#1500ms lit4=T#500ms lit5=T#172800000ms
 3 t1=T#3600000ms t2=T#1ms => sum=T#3600001ms diff=T#3599999ms is_lt=FALSE is_gt=TRUE is_le=FALSE is_eq=FALSE lit1=T#90000ms lit2=T#3723004ms lit3=T#1500ms lit4=T#500ms lit5=T#172800000ms
 PASS    conformance/ops/time_arith.st
+### conformance/ops/time_functions.st
+0 a=T#2000ms b=T#500ms k=0 => lo=T#500ms hi=T#2000ms clamp=T#2000ms big=T#2000ms pick=T#2000ms less=FALSE
+1 a=T#50ms b=T#3000ms k=1 => lo=T#50ms hi=T#3000ms clamp=T#100ms big=T#3000ms pick=T#3000ms less=TRUE
+2 a=T#9000ms b=T#9000ms k=2 => lo=T#9000ms hi=T#9000ms clamp=T#5000ms big=T#9000ms pick=T#18000ms less=FALSE
+3 a=T#0ms b=T#1ms k=2 => lo=T#0ms hi=T#1000ms clamp=T#100ms big=T#1ms pick=T#1ms less=TRUE
+PASS    conformance/ops/time_functions.st
+### conformance/ops/time_mul.st
+0 t=T#1500ms n=2 => p=T#3000ms p4=T#-2147ms p44=T#3121852ms back=TRUE
+1 t=T#999ms n=3 => p=T#-2147ms p4=T#-2147ms p44=T#3121852ms back=FALSE
+2 t=T#71487ms n=44 => p=T#3121852ms p4=T#-2147ms p44=T#3121852ms back=FALSE
+3 t=T#250ms n=1 => p=T#250ms p4=T#-2147ms p44=T#3121852ms back=TRUE
+4 t=T#0ms n=7 => p=T#0ms p4=T#-2147ms p44=T#3121852ms back=TRUE
+FAIL    conformance/ops/time_mul.st
+        cycle 0 (trace line 23): p4 expected T#2800ms, got T#-2147ms
+        cycle 0 (trace line 23): p44 expected T#3145428ms, got T#3121852ms
+        cycle 1 (trace line 24): p expected T#2997ms, got T#-2147ms
+        cycle 1 (trace line 24): p4 expected T#2800ms, got T#-2147ms
+        cycle 1 (trace line 24): p44 expected T#3145428ms, got T#3121852ms
+        cycle 1 (trace line 24): back expected TRUE, got FALSE
+        cycle 2 (trace line 25): p expected T#3145428ms, got T#3121852ms
+        cycle 2 (trace line 25): p4 expected T#2800ms, got T#-2147ms
+        cycle 2 (trace line 25): p44 expected T#3145428ms, got T#3121852ms
+        cycle 2 (trace line 25): back expected TRUE, got FALSE
+        cycle 3 (trace line 26): p4 expected T#2800ms, got T#-2147ms
+        cycle 3 (trace line 26): p44 expected T#3145428ms, got T#3121852ms
+        cycle 4 (trace line 27): p4 expected T#2800ms, got T#-2147ms
+        cycle 4 (trace line 27): p44 expected T#3145428ms, got T#3121852ms
 ### conformance/ops/trunc.st
 0 r=3.7 => t=3
 1 r=-3.7 => t=-3
@@ -749,5 +776,5 @@ DIFFERS conformance/undefined/ton_pt_change.st
         cycle 10 (trace line 36): et expected T#800ms, got T#200ms
         cycle 11 (trace line 37): et expected T#800ms, got T#200ms
 
-86 tests: 57 pass, 11 fail, 11 same, 7 differs, 0 error
+88 tests: 58 pass, 12 fail, 11 same, 7 differs, 0 error
 exit 1

@@ -551,6 +551,82 @@ Error: "Compile failed with 2 problem(s)"
 2 t1=T#100ms t2=T#100ms => sum=T#200ms diff=T#0ms is_lt=FALSE is_gt=FALSE is_le=TRUE is_eq=TRUE lit1=T#90000ms lit2=T#3723004ms lit3=T#1500ms lit4=T#500ms lit5=T#172800000ms
 3 t1=T#3600000ms t2=T#1ms => sum=T#3600001ms diff=T#3599999ms is_lt=FALSE is_gt=TRUE is_le=FALSE is_eq=FALSE lit1=T#90000ms lit2=T#3723004ms lit3=T#1500ms lit4=T#500ms lit5=T#172800000ms
 PASS    conformance/ops/time_arith.st
+### conformance/ops/time_functions.st
+FAIL    conformance/ops/time_functions.st
+        ironplcc failed to compile the program:
+error[P4018]: Function call has wrong number of arguments (function=MAX, expected=2, actual=3)
+   ┌─ <root>/conformance/ops/time_functions.st:21:10
+   │
+21 │   hi  := MAX(a, b, T#1s);
+   │          ^^^ Function call
+   │
+   = Learn more: https://www.ironplc.com/reference/compiler/problems/P4018.html?version=0.251.0&channel=cli
+
+error[P4026]: Function call argument type does not match parameter type (function=MIN, parameter=IN1, expected=ANY_NUM, actual=time)
+   ┌─ <root>/conformance/ops/time_functions.st:20:10
+   │
+20 │   lo  := MIN(a, b);
+   │          ^^^ Function call
+   │
+   = Learn more: https://www.ironplc.com/reference/compiler/problems/P4026.html?version=0.251.0&channel=cli
+
+error[P4026]: Function call argument type does not match parameter type (function=MIN, parameter=IN2, expected=ANY_NUM, actual=time)
+   ┌─ <root>/conformance/ops/time_functions.st:20:10
+   │
+20 │   lo  := MIN(a, b);
+   │          ^^^ Function call
+   │
+   = Learn more: https://www.ironplc.com/reference/compiler/problems/P4026.html?version=0.251.0&channel=cli
+
+error[P4026]: Function call argument type does not match parameter type (function=MAX, parameter=IN1, expected=ANY_NUM, actual=time)
+   ┌─ <root>/conformance/ops/time_functions.st:21:10
+   │
+21 │   hi  := MAX(a, b, T#1s);
+   │          ^^^ Function call
+   │
+   = Learn more: https://www.ironplc.com/reference/compiler/problems/P4026.html?version=0.251.0&channel=cli
+
+error[P4026]: Function call argument type does not match parameter type (function=MAX, parameter=IN2, expected=ANY_NUM, actual=time)
+   ┌─ <root>/conformance/ops/time_functions.st:21:10
+   │
+21 │   hi  := MAX(a, b, T#1s);
+   │          ^^^ Function call
+   │
+   = Learn more: https://www.ironplc.com/reference/compiler/problems/P4026.html?version=0.251.0&channel=cli
+
+error[P4026]: Function call argument type does not match parameter type (function=LIMIT, parameter=MN, expected=ANY_NUM, actual=time)
+   ┌─ <root>/conformance/ops/time_functions.st:22:12
+   │
+22 │   clamp := LIMIT(T#100ms, a, T#5s);
+   │            ^^^^^ Function call
+   │
+   = Learn more: https://www.ironplc.com/reference/compiler/problems/P4026.html?version=0.251.0&channel=cli
+
+error[P4026]: Function call argument type does not match parameter type (function=LIMIT, parameter=IN, expected=ANY_NUM, actual=time)
+   ┌─ <root>/conformance/ops/time_functions.st:22:12
+   │
+22 │   clamp := LIMIT(T#100ms, a, T#5s);
+   │            ^^^^^ Function call
+   │
+   = Learn more: https://www.ironplc.com/reference/compiler/problems/P4026.html?version=0.251.0&channel=cli
+
+error[P4026]: Function call argument type does not match parameter type (function=LIMIT, parameter=MX, expected=ANY_NUM, actual=time)
+   ┌─ <root>/conformance/ops/time_functions.st:22:12
+   │
+22 │   clamp := LIMIT(T#100ms, a, T#5s);
+   │            ^^^^^ Function call
+   │
+   = Learn more: https://www.ironplc.com/reference/compiler/problems/P4026.html?version=0.251.0&channel=cli
+
+Error: "Compile failed with 8 problem(s)"
+
+### conformance/ops/time_mul.st
+0 t=T#1500ms n=2 => p=T#3000ms p4=T#2800ms p44=T#3145428ms back=TRUE
+1 t=T#999ms n=3 => p=T#2997ms p4=T#2800ms p44=T#3145428ms back=TRUE
+2 t=T#71487ms n=44 => p=T#3145428ms p4=T#2800ms p44=T#3145428ms back=TRUE
+3 t=T#250ms n=1 => p=T#250ms p4=T#2800ms p44=T#3145428ms back=TRUE
+4 t=T#0ms n=7 => p=T#0ms p4=T#2800ms p44=T#3145428ms back=TRUE
+PASS    conformance/ops/time_mul.st
 ### conformance/ops/trunc.st
 0 r=3.7 => t=3
 1 r=-3.7 => t=-3
@@ -909,5 +985,5 @@ SAME    conformance/undefined/timer_pt_zero.st (implementation-defined)
 12 in=FALSE => q=FALSE et=T#0ms
 SAME    conformance/undefined/ton_pt_change.st (implementation-defined)
 
-86 tests: 47 pass, 21 fail, 17 same, 1 differs, 0 error
+88 tests: 48 pass, 22 fail, 17 same, 1 differs, 0 error
 exit 1

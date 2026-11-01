@@ -149,8 +149,10 @@ hand. CI checks the table is in sync with the evidence.
 | ops/bit_expr_operands | PASS | PASS | PASS | PASS | PASS | NOT, SHL, ROL, ROR on bit-string expressions: all agree. Found by tools/fuzz |
 | ops/bit_literals | **FAIL** (compile) | PASS | PASS | PASS | PASS | untyped 16# literals as BYTE/WORD values: IronPLC types them ANY_INT and rejects every use (findings #26, ironplc#2554); the others accept them. Found by tools/fuzz |
 | ops/shl_width | **FAIL** (cycles 0-4) | PASS | PASS | PASS | PASS | SHL truncates to its input's width: IronPLC shifts in a 32-bit slot and masks only at the store, so SHR/OR of a SHL result sees the lost bits (findings #25, ironplc#2553); the others agree. Found by tools/fuzz |
+| ops/time_functions | **FAIL** (compile) | **ERROR** (build) | PASS | PASS | PASS | MIN/MAX/LIMIT/SEL/MUX/LT on TIME: IronPLC rejects MIN, MAX and LIMIT on TIME (findings #27, ironplc#2555); upstream matiec does not build the `a + b` (#40); the fork, STruC++ and RuSTy agree. Found by tools/fuzz |
+| ops/time_mul | PASS | **ERROR** (build) | **FAIL** (cycles 0-4) | PASS | PASS | TIME * n with large products: matiec's __time_mul overflows a 32-bit int (matiec #15, beremiz/matiec#51; upstream does not build TIME arithmetic, #40, the fork shows it, fork #10); IronPLC, STruC++ and RuSTy agree. Found by tools/fuzz |
 
-Totals (86 tests, 68 with `status: conformant`): conformant tests passed, IronPLC 47/68; matiec 57/68; OpenPLC's matiec 57/68; STruC++ 53/68; RuSTy 54/68. 39 of the 86 tests have the same result on all five runtimes.
+Totals (88 tests, 70 with `status: conformant`): conformant tests passed, IronPLC 48/70; matiec 57/70; OpenPLC's matiec 58/70; STruC++ 55/70; RuSTy 56/70. 39 of the 88 tests have the same result on all five runtimes.
 
 <!-- results:end -->
 
