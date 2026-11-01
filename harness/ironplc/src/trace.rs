@@ -306,7 +306,8 @@ pub fn parse(text: &str) -> Result<Trace, String> {
     if period_ms == 0 {
         return Err("header: period_ms must be positive".into());
     }
-    let program = get("program")?;
+    // optional since SPEC.md version 2 (the .st may carry a CONFIGURATION)
+    let program = get("program").unwrap_or_default();
     let inputs: Vec<String> = get("inputs")?
         .split_whitespace()
         .map(|s| s.to_ascii_lowercase())

@@ -208,6 +208,8 @@ def declared_types(st_text, program):
 def run_test(st_path: Path, opts):
     trace = parse_trace(st_path.with_suffix(".trace").read_text())
     st_text = st_path.read_text()
+    if re.search(r"\bCONFIGURATION\b", re.sub(r"\(\*.*?\*\)", "", st_text, flags=re.S), re.I):
+        return "ERROR", ["the .st has a CONFIGURATION (SPEC.md version 2); RuSTy compiles a single program and this harness does not schedule tasks"], []
     types = declared_types(st_text, trace.program)
     for n in trace.inputs + trace.outputs:
         if types.get(n, "").startswith("STRING"):

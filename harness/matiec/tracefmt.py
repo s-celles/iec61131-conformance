@@ -220,4 +220,4 @@ def parse_trace(text: str) -> Trace:
             for o in outputs:
                 if sum(1 for n, _ in r.expected if n == o) != 1:
                     raise ValueError(f"line {r.line}: output '{o}' must appear exactly once")
-    return Trace(period_ms, header["program"], inputs, outputs, status, header.get("reference"), records)
+    return Trace(period_ms, header.get("program", ""), inputs, outputs, status, header.get("reference"), records)

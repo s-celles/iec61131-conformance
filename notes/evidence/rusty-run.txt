@@ -1,3 +1,18 @@
+### conformance/config/event_single.st
+ERROR   conformance/config/event_single.st
+        the .st has a CONFIGURATION (SPEC.md version 2); RuSTy compiles a single program and this harness does not schedule tasks
+### conformance/config/global_exchange.st
+ERROR   conformance/config/global_exchange.st
+        the .st has a CONFIGURATION (SPEC.md version 2); RuSTy compiles a single program and this harness does not schedule tasks
+### conformance/config/globals_external.st
+ERROR   conformance/config/globals_external.st
+        the .st has a CONFIGURATION (SPEC.md version 2); RuSTy compiles a single program and this harness does not schedule tasks
+### conformance/config/priority_order.st
+ERROR   conformance/config/priority_order.st
+        the .st has a CONFIGURATION (SPEC.md version 2); RuSTy compiles a single program and this harness does not schedule tasks
+### conformance/config/two_periods.st
+ERROR   conformance/config/two_periods.st
+        the .st has a CONFIGURATION (SPEC.md version 2); RuSTy compiles a single program and this harness does not schedule tasks
 ### conformance/control-flow/case_expr.st
 0 x=5 => branch=11 neg=FALSE cnt=0
 1 x=-5 => branch=11 neg=TRUE cnt=1
@@ -556,6 +571,9 @@ SAME    conformance/undefined/string_conversions.st
 0 => s3='abc' n3=3 c2='ab' n2=2
 1 => s3='abc' n3=3 c2='ab' n2=2
 SAME    conformance/undefined/string_truncate.st
+### conformance/undefined/tasks_same_priority.st
+ERROR   conformance/undefined/tasks_same_priority.st
+        the .st has a CONFIGURATION (SPEC.md version 2); RuSTy compiles a single program and this harness does not schedule tasks
 ### conformance/undefined/timer_pt_zero.st
 0 in=FALSE => q_ton=FALSE et_ton=T#0ms q_tof=FALSE et_tof=T#0ms q_tp=FALSE et_tp=T#0ms
 1 in=TRUE => q_ton=FALSE et_ton=T#0ms q_tof=TRUE et_tof=T#0ms q_tp=TRUE et_tp=T#0ms
@@ -588,5 +606,5 @@ DIFFERS conformance/undefined/ton_pt_change.st
         cycle 8 (trace line 34): q expected TRUE, got FALSE
         cycle 9 (trace line 35): q expected TRUE, got FALSE
 
-61 tests: 39 pass, 7 fail, 11 same, 4 differs, 0 error
+67 tests: 39 pass, 7 fail, 11 same, 4 differs, 6 error
 exit 1

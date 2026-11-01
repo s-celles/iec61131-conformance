@@ -1,3 +1,77 @@
+### conformance/config/event_single.st
+FAIL    conformance/config/event_single.st
+        ironplcc failed to compile the program:
+[0m[1m[38;5;9merror[P9999][0m[1m: Capability is not implemented (yet!)[0m
+  [0m[36m┌─[0m <root>/conformance/config/event_single.st:9:9
+  [0m[36m│[0m
+[0m[36m2[0m [0m[36m│[0m PROGRAM on_event
+  [0m[36m│[0m         [0m[36m--------[0m [0m[36m1st PROGRAM declaration[0m
+  [0m[36m·[0m
+[0m[36m9[0m [0m[36m│[0m PROGRAM [0m[31mticker[0m
+  [0m[36m│[0m         [0m[31m^^^^^^[0m [0m[31m2nd PROGRAM declaration; the compiler currently runs only one PROGRAM[0m
+  [0m[36m│[0m
+  [0m[36m=[0m Compile a single PROGRAM for now. Support for more than one PROGRAM is tracked in https://github.com/ironplc/ironplc/issues/1613
+  [0m[36m=[0m Learn more: https://www.ironplc.com/reference/compiler/problems/P9999.html?version=0.251.0&channel=cli&file=/Users/scelles/.rustup/toolchains/stable-aarch64-apple-darwin/lib/rustlib/src/rust/library/core/src/ops/function.rs&line=250
+
+Error: "Compile failed with 1 problem(s)"
+
+### conformance/config/global_exchange.st
+FAIL    conformance/config/global_exchange.st
+        ironplcc failed to compile the program:
+[0m[1m[38;5;9merror[P9999][0m[1m: Capability is not implemented (yet!)[0m
+   [0m[36m┌─[0m <root>/conformance/config/global_exchange.st:12:9
+   [0m[36m│[0m
+[0m[36m 5[0m [0m[36m│[0m PROGRAM producer
+   [0m[36m│[0m         [0m[36m--------[0m [0m[36m1st PROGRAM declaration[0m
+   [0m[36m·[0m
+[0m[36m12[0m [0m[36m│[0m PROGRAM [0m[31mconsumer[0m
+   [0m[36m│[0m         [0m[31m^^^^^^^^[0m [0m[31m2nd PROGRAM declaration; the compiler currently runs only one PROGRAM[0m
+   [0m[36m│[0m
+   [0m[36m=[0m Compile a single PROGRAM for now. Support for more than one PROGRAM is tracked in https://github.com/ironplc/ironplc/issues/1613
+   [0m[36m=[0m Learn more: https://www.ironplc.com/reference/compiler/problems/P9999.html?version=0.251.0&channel=cli&file=/Users/scelles/.rustup/toolchains/stable-aarch64-apple-darwin/lib/rustlib/src/rust/library/core/src/ops/function.rs&line=250
+
+Error: "Compile failed with 1 problem(s)"
+
+### conformance/config/globals_external.st
+0 g_in=5 => g_cnt=1 g_sum=1005 p0.n=1
+1 g_in=-3 => g_cnt=2 g_sum=1002 p0.n=2
+2 => g_cnt=3 g_sum=999 p0.n=3
+3 g_in=0 => g_cnt=4 g_sum=999 p0.n=4
+PASS    conformance/config/globals_external.st
+### conformance/config/priority_order.st
+FAIL    conformance/config/priority_order.st
+        ironplcc failed to compile the program:
+[0m[1m[38;5;9merror[P9999][0m[1m: Capability is not implemented (yet!)[0m
+   [0m[36m┌─[0m <root>/conformance/config/priority_order.st:14:9
+   [0m[36m│[0m
+[0m[36m 4[0m [0m[36m│[0m PROGRAM reader
+   [0m[36m│[0m         [0m[36m------[0m [0m[36m1st PROGRAM declaration[0m
+   [0m[36m·[0m
+[0m[36m14[0m [0m[36m│[0m PROGRAM [0m[31mwriter[0m
+   [0m[36m│[0m         [0m[31m^^^^^^[0m [0m[31m2nd PROGRAM declaration; the compiler currently runs only one PROGRAM[0m
+   [0m[36m│[0m
+   [0m[36m=[0m Compile a single PROGRAM for now. Support for more than one PROGRAM is tracked in https://github.com/ironplc/ironplc/issues/1613
+   [0m[36m=[0m Learn more: https://www.ironplc.com/reference/compiler/problems/P9999.html?version=0.251.0&channel=cli&file=/Users/scelles/.rustup/toolchains/stable-aarch64-apple-darwin/lib/rustlib/src/rust/library/core/src/ops/function.rs&line=250
+
+Error: "Compile failed with 1 problem(s)"
+
+### conformance/config/two_periods.st
+FAIL    conformance/config/two_periods.st
+        ironplcc failed to compile the program:
+[0m[1m[38;5;9merror[P9999][0m[1m: Capability is not implemented (yet!)[0m
+  [0m[36m┌─[0m <root>/conformance/config/two_periods.st:9:9
+  [0m[36m│[0m
+[0m[36m2[0m [0m[36m│[0m PROGRAM fast
+  [0m[36m│[0m         [0m[36m----[0m [0m[36m1st PROGRAM declaration[0m
+  [0m[36m·[0m
+[0m[36m9[0m [0m[36m│[0m PROGRAM [0m[31mslow[0m
+  [0m[36m│[0m         [0m[31m^^^^[0m [0m[31m2nd PROGRAM declaration; the compiler currently runs only one PROGRAM[0m
+  [0m[36m│[0m
+  [0m[36m=[0m Compile a single PROGRAM for now. Support for more than one PROGRAM is tracked in https://github.com/ironplc/ironplc/issues/1613
+  [0m[36m=[0m Learn more: https://www.ironplc.com/reference/compiler/problems/P9999.html?version=0.251.0&channel=cli&file=/Users/scelles/.rustup/toolchains/stable-aarch64-apple-darwin/lib/rustlib/src/rust/library/core/src/ops/function.rs&line=250
+
+Error: "Compile failed with 1 problem(s)"
+
 ### conformance/control-flow/case_expr.st
 0 x=5 => branch=11 neg=FALSE cnt=0
 1 x=-5 => branch=11 neg=TRUE cnt=1
@@ -553,6 +627,23 @@ SAME    conformance/undefined/string_conversions.st (implementation-defined)
 0 => s3='abc' n3=3 c2='ab' n2=2
 1 => s3='abc' n3=3 c2='ab' n2=2
 SAME    conformance/undefined/string_truncate.st (implementation-defined)
+### conformance/undefined/tasks_same_priority.st
+DIFFERS conformance/undefined/tasks_same_priority.st (implementation-defined)
+        ironplcc failed to compile the program:
+[0m[1m[38;5;9merror[P9999][0m[1m: Capability is not implemented (yet!)[0m
+   [0m[36m┌─[0m <root>/conformance/undefined/tasks_same_priority.st:10:9
+   [0m[36m│[0m
+[0m[36m 3[0m [0m[36m│[0m PROGRAM mark_a
+   [0m[36m│[0m         [0m[36m------[0m [0m[36m1st PROGRAM declaration[0m
+   [0m[36m·[0m
+[0m[36m10[0m [0m[36m│[0m PROGRAM [0m[31mmark_b[0m
+   [0m[36m│[0m         [0m[31m^^^^^^[0m [0m[31m2nd PROGRAM declaration; the compiler currently runs only one PROGRAM[0m
+   [0m[36m│[0m
+   [0m[36m=[0m Compile a single PROGRAM for now. Support for more than one PROGRAM is tracked in https://github.com/ironplc/ironplc/issues/1613
+   [0m[36m=[0m Learn more: https://www.ironplc.com/reference/compiler/problems/P9999.html?version=0.251.0&channel=cli&file=/Users/scelles/.rustup/toolchains/stable-aarch64-apple-darwin/lib/rustlib/src/rust/library/core/src/ops/function.rs&line=250
+
+Error: "Compile failed with 1 problem(s)"
+
 ### conformance/undefined/timer_pt_zero.st
 0 in=FALSE => q_ton=FALSE et_ton=T#0ms q_tof=TRUE et_tof=T#0ms q_tp=FALSE et_tp=T#0ms
 1 in=TRUE => q_ton=FALSE et_ton=T#0ms q_tof=TRUE et_tof=T#0ms q_tp=TRUE et_tp=T#0ms
@@ -578,5 +669,5 @@ SAME    conformance/undefined/timer_pt_zero.st (implementation-defined)
 12 in=FALSE => q=FALSE et=T#0ms
 SAME    conformance/undefined/ton_pt_change.st (implementation-defined)
 
-61 tests: 37 pass, 9 fail, 15 same, 0 differs, 0 error
+67 tests: 38 pass, 13 fail, 15 same, 1 differs, 0 error
 exit 1

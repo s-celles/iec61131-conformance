@@ -195,9 +195,14 @@ fn run_test(st: &Path, opts: &Options) -> Outcome {
         Some(d) => d,
         None => return Outcome::Error("container has no debug section".into()),
     };
+    // `program_variable` finds program and global variables alike. A
+    // SPEC.md version 2 name `inst.var` is looked up as `var`: IronPLC
+    // runs a single program instance (ironplc#1613), so there is no
+    // ambiguity to resolve.
     let resolve = |name: &str| -> Result<VarNameEntry, String> {
+        let bare = name.rsplit('.').next().unwrap_or(name);
         debug
-            .program_variable(name)
+            .program_variable(bare)
             .cloned()
             .ok_or_else(|| format!("program declares no variable '{name}'"))
     };
@@ -266,12 +271,15 @@ fn run_test(st: &Path, opts: &Options) -> Outcome {
                         rec.cycle
                     ));
                 }
+                // keyed by the trace's own output names (`inst.var` in a
+                // version 2 trace resolves to the bare `var` entry)
                 let actual: Vec<(String, String)> = outputs
                     .iter()
-                    .map(|e| {
+                    .zip(trace.outputs.iter())
+                    .map(|(e, trace_name)| {
                         let raw = running.read_variable_raw(e.var_index).unwrap_or(0);
                         (
-                            e.name.to_ascii_lowercase(),
+                            trace_name.to_ascii_lowercase(),
                             render(&renderer, debug, e, raw, running.data_region()),
                         )
                     })
@@ -291,7 +299,8 @@ fn run_test(st: &Path, opts: &Options) -> Outcome {
                             let got = &actual.iter().find(|(n, _)| n == name).unwrap().1;
                             let lreal = outputs
                                 .iter()
-                                .any(|e| e.name.eq_ignore_ascii_case(name) && e.iec_type_tag == iec_type_tag::LREAL);
+                                .zip(trace.outputs.iter())
+                                .any(|(e, tn)| tn.eq_ignore_ascii_case(name) && e.iec_type_tag == iec_type_tag::LREAL);
                             if !value.matches(got, lreal) {
                                 problems.push(format!(
                                     "cycle {} (trace line {}): {name} expected {value}, got {got}",

@@ -1,0 +1,18 @@
+# SINGLE task (ed.3 6.8.2 table 62: a rising edge of the SINGLE input
+# triggers one execution of the task's programs). The event program runs
+# once per rising edge of trig, however long trig stays TRUE; the periodic
+# program runs every step regardless.
+period_ms: 100
+inputs: trig
+outputs: ev_n tick_n
+status: conformant
+reference: IEC 61131-3 ed.3 6.8.2 (TASK SINGLE)
+---
+0 trig=FALSE => ev_n=0 tick_n=1
+1 trig=TRUE  => ev_n=1 tick_n=2
+# trig held: no second execution
+2            => ev_n=1 tick_n=3
+3 trig=FALSE => ev_n=1 tick_n=4
+4 trig=TRUE  => ev_n=2 tick_n=5
+5 trig=FALSE => ev_n=2 tick_n=6
+6 trig=TRUE  => ev_n=3 tick_n=7

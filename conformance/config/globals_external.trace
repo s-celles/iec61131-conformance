@@ -1,0 +1,15 @@
+# VAR_GLOBAL in a CONFIGURATION, VAR_EXTERNAL in the program (ed.3 6.5.2
+# table 19, 6.8.2 configuration elements): the program reads and writes
+# the configuration's variables; a global's declared initial value applies
+# (g_sum starts at 1000); an unwritten input keeps its value (cycle 2).
+# Version 2 trace: no `program:`, names are globals or `instance.variable`.
+period_ms: 100
+inputs: g_in
+outputs: g_cnt g_sum p0.n
+status: conformant
+reference: IEC 61131-3 ed.3 6.5.2 (VAR_GLOBAL, VAR_EXTERNAL), 6.8.2 (configuration, resource, task, program instance)
+---
+0 g_in=5  => g_cnt=1 g_sum=1005 p0.n=1
+1 g_in=-3 => g_cnt=2 g_sum=1002 p0.n=2
+2         => g_cnt=3 g_sum=999  p0.n=3
+3 g_in=0  => g_cnt=4 g_sum=999  p0.n=4

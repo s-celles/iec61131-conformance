@@ -216,3 +216,17 @@ Reported: https://github.com/ironplc/ironplc/issues/2549
   -1.0/0.0 = -inf, 0.0/0.0 = NaN, no trap, the scan continues (unlike the
   integer division trap of item 8). matiec does the same (IEC 60559
   through C). Recorded as implementation-defined.
+
+## 18. (Limitation) One program instance, no SINGLE task
+
+- Reproducers: every `conformance/config/` test but `globals_external`:
+  `P9999 ... the compiler currently runs only one PROGRAM` (two program
+  declarations or two instances of one program), tracked in ironplc#1613;
+  `config/event_single.st`: `P4047 Task SINGLE parameter is not
+  supported`.
+- So the SPEC version 2 traces run on IronPLC only when the configuration
+  has a single instance on a periodic task (`globals_external` passes:
+  VAR_GLOBAL with an initial value, VAR_EXTERNAL reads and writes, task
+  interval honoured by `run_round`). The VM itself schedules tasks in
+  priority order (`vm.rs`, `run_round`), so #1613 is the only gap for
+  `two_periods`, `priority_order` and `global_exchange`.

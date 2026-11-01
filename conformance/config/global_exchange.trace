@@ -1,0 +1,16 @@
+# Two intervals and one global (ed.3 6.8.2): the producer (200 ms,
+# priority 0) runs at even steps before the consumer (100 ms, priority 1),
+# so ack follows cmd in the same step and changes counts one change per
+# producer run.
+period_ms: 100
+inputs:
+outputs: cmd p_cons.ack p_cons.changes
+status: conformant
+reference: IEC 61131-3 ed.3 6.8.2 (TASK INTERVAL and PRIORITY), 6.5.2 (VAR_GLOBAL)
+---
+0 => cmd=1 p_cons.ack=1 p_cons.changes=1
+1 => cmd=1 p_cons.ack=1 p_cons.changes=1
+2 => cmd=2 p_cons.ack=2 p_cons.changes=2
+3 => cmd=2 p_cons.ack=2 p_cons.changes=2
+4 => cmd=3 p_cons.ack=3 p_cons.changes=3
+5 => cmd=3 p_cons.ack=3 p_cons.changes=3

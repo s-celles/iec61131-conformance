@@ -7,7 +7,7 @@ Text runtimes: plain `.st` programs paired with plain-text expected
 input/output traces, one record per scan cycle. Dedicated to the public
 domain under CC0 1.0 (see `LICENSE`).
 
-Status: 61 tests, run against IronPLC and matiec (and RuSTy,
+Status: 67 tests, run against IronPLC and matiec (and RuSTy,
 see `notes/comparison.md`), with a Lean 4 model of the function block
 semantics that the expected traces are proved to follow from.
 
@@ -31,6 +31,9 @@ conformance/
                struct_internal enum             structures (copy, nesting), enumerations
   strings/     literals_escapes declared_length STRING literals and $ escapes, STRING[n]
                functions compare concat_assign  LEN CONCAT LEFT RIGHT MID INSERT DELETE REPLACE FIND, < =, copies
+  config/      globals_external                 VAR_GLOBAL / VAR_EXTERNAL (SPEC version 2: the .st has
+               two_periods priority_order       its CONFIGURATION); task intervals, PRIORITY order,
+               global_exchange event_single     producer/consumer through a global, SINGLE task
   control-flow/ if_case for_exit while          IF/CASE, FOR+EXIT, WHILE/REPEAT
                nested_exit case_expr            EXIT in nested loops, CASE on an expression
   pou/         function_call fb_two_instances   functions, FB instances
@@ -43,6 +46,7 @@ conformance/
                abs_int_min dint_to_int_overflow
                array_out_of_bounds real_div_zero real_to_int_ties
                string_truncate string_conversions
+               tasks_same_priority
 harness/
   ironplc/     Rust: drives the ironplc_vm crate with simulated time
   matiec/      Python: iec2c + generated C driver with simulated time
@@ -55,18 +59,20 @@ notes/
   evidence/         full harness outputs
 ```
 
-Each test is `<name>.st` + `<name>.trace`. Forty-six tests under the first
-eight categories are `status: conformant`: their expected values were derived
+Each test is `<name>.st` + `<name>.trace`. Fifty-one tests under the first
+nine categories are `status: conformant`: their expected values were derived
 by hand from the standard's function block bodies and timing diagrams, and
 the derivation is written as a comment at the top of each `.trace` file.
-The fifteen tests under `undefined/` are `status: implementation-defined`: the
+The sixteen tests under `undefined/` are `status: implementation-defined`: the
 trace records what IronPLC actually does, and the comment states what the
 standard says or leaves open; a mismatch on another runtime is a documented
 difference, not a failure.
 
 Scope: BOOL, INT, DINT, UINT, TIME, BYTE, WORD, DWORD, REAL, LREAL at the
 program interface, STRING as an output (arrays, structures and enumerations
-inside the program); one program, one cyclic task; no located variables.
+inside the program); one program on one cyclic task, or (SPEC version 2,
+`config/`) a CONFIGURATION with several tasks and program instances; no
+located variables.
 
 ## Continuous integration
 

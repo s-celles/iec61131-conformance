@@ -101,6 +101,11 @@ Legend: PASS/FAIL for `status: conformant` traces; SAME/DIFFERS for
 | strings/functions | PASS | **FAIL** (cycle 0) | PASS | matiec: `REPLACE(IN1, IN2, L, P)` copies only min(LEN(IN2), L) characters of IN2 (`__replace`, `iec_std_functions.h`), so with L = 1 'hYllo' instead of 'hYYllo' (beremiz/matiec#41) |
 | strings/compare | PASS | PASS | PASS | |
 | strings/concat_assign | PASS | PASS | PASS | |
+| config/globals_external | PASS | PASS | **ERROR** (configuration) | SPEC version 2; RuSTy's harness does not take configurations (RuSTy compiles one program) |
+| config/two_periods | **FAIL** (compile) | PASS | **ERROR** (configuration) | IronPLC: one program instance only (findings #18, ironplc#1613) |
+| config/priority_order | **FAIL** (compile) | **FAIL** (cycles 0-3) | **ERROR** (configuration) | matiec runs the tasks of a resource in declaration order, ignoring PRIORITY (`RES0_run__` in the generated res0.c), so the reader sees g one step late |
+| config/global_exchange | **FAIL** (compile) | PASS | **ERROR** (configuration) | |
+| config/event_single | **FAIL** (compile) | PASS | **ERROR** (configuration) | IronPLC: P4047 SINGLE not supported (findings #18); matiec: an R_TRIG on the SINGLE input, one run per rising edge |
 | undefined/int_overflow | SAME | SAME | SAME | all three wrap in two's complement |
 | undefined/div_zero | SAME | SAME | SAME | IronPLC: VM trap "divide by zero"; matiec and RuSTy: native integer division, the process receives SIGFPE (the drivers report it as `trap`). All stop the scan; none computes `MOD`. matiec's `/` is a bare C division, so on AArch64 it returns 0 instead of trapping (beremiz/matiec#38); its `MOD` and `DIV()` are guarded |
 | undefined/eval_order | SAME | SAME | SAME | all three evaluate the left operand of `-` first |
@@ -116,8 +121,10 @@ Legend: PASS/FAIL for `status: conformant` traces; SAME/DIFFERS for
 | undefined/real_to_int_ties | SAME | **DIFFERS** (cycles 1, 3) | **DIFFERS** (all ties) | three behaviours: IronPLC truncates (3.5 -> 3), matiec rounds half to even (3.5 -> 4, ed.2 2.5.1.5.1), RuSTy rounds half away from zero (2.5 -> 3, -2.5 -> -3) |
 | undefined/string_truncate | SAME | **DIFFERS** (compile) | SAME | IronPLC truncates to the declared length; matiec cannot declare `STRING[n]` (see declared_length) |
 | undefined/string_conversions | SAME | SAME | SAME | plain decimal, leading minus, on all |
+| undefined/tasks_same_priority | **DIFFERS** (compile) | SAME | **ERROR** (configuration) | records matiec (IronPLC cannot run two instances): declaration order |
 
-Totals: IronPLC 37/46 conformant pass; matiec 39/46; RuSTy 39/46. No test
+Totals: IronPLC 38/51 conformant pass; matiec 43/51; RuSTy 39/51 (the five
+`config/` tests are outside RuSTy's harness). No test
 other than the six control-flow/POU/R_TRIG ones and the four "all SAME"
 corners has the same result on all three runtimes: the three disagree
 somewhere on tof, tp, f_trig, sr_rs, ctu, ctd, ctud, ctd_bounds, ctud_bounds,
@@ -138,6 +145,7 @@ timer_pt_zero, array_out_of_bounds, real_to_int_ties and string_truncate.
 9. **Timers with PT = 0**: IronPLC switches one cycle after the input edge, matiec on the edge's own cycle.
 10. **`STRING[n]` declarations**: matiec rejects them after parsing ("not declared in this scope", beremiz/matiec#42); IronPLC and RuSTy accept them.
 11. **`REPLACE` with L shorter than IN2**: matiec inserts only L characters of IN2 (beremiz/matiec#41); IronPLC inserts all of IN2 as table 34 says.
+12. **Task priority**: matiec runs the tasks of a resource in declaration order and ignores PRIORITY; IronPLC's VM orders by priority but compiles a single instance, so the comparison is between matiec and the standard's text here.
 
 Items 1, 2, 3 are IronPLC deviations from the standard's timing diagrams
 (matiec's `lib/timer.txt` reproduces those diagrams in its comments). Item 5

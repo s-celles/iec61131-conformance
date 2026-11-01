@@ -1,4 +1,4 @@
-# Trace format specification (version 1)
+# Trace format specification (version 1, with the version 2 additions)
 
 A conformance test is a pair of files with the same stem:
 
@@ -40,7 +40,7 @@ cycle.
 | key | required | meaning |
 |---|---|---|
 | `period_ms` | yes | cycle period in milliseconds (positive integer). Cycle `n` starts at PLC time `t = n * period_ms`. |
-| `program` | yes | name of the `PROGRAM` in the `.st` file (the entry point, one instance). |
+| `program` | version 1 | name of the `PROGRAM` in the `.st` file (the entry point, one instance). Omitted in version 2, where the `.st` has a `CONFIGURATION`. |
 | `inputs` | yes | space-separated names of the program-scope variables the harness writes. May be empty. |
 | `outputs` | yes | space-separated names of the program-scope variables the harness reads and compares. |
 | `status` | no | `conformant` (default): the expected values follow from the standard. `implementation-defined`: the expected values are what one named runtime does; a mismatch is a **difference**, not a failure. |
@@ -135,6 +135,43 @@ to be checked through scalar program variables.
   outputs instead (`et := timer.ET;` or `ET => et`).
 - Timing inside a cycle: every input is visible for the whole cycle, every
   output is sampled once at the end.
+
+## Version 2: configurations and tasks
+
+A `.st` may carry its own `CONFIGURATION` (one `RESOURCE`, `TASK`s,
+`PROGRAM ... WITH ... : ...` instances, `VAR_GLOBAL`). Then:
+
+- the harness appends nothing: the configuration is the test;
+- `program:` is omitted;
+- `period_ms` is the **simulation step**: inputs are applied and outputs
+  sampled every `period_ms`, and the step must be a multiple of the
+  configuration's common tick (the greatest common divisor of the task
+  intervals), normally equal to it;
+- `inputs` and `outputs` name `VAR_GLOBAL` variables (unqualified) or
+  program-instance variables as `instance.variable`, `instance` being the
+  name given in `PROGRAM instance WITH ...`; programs reach globals through
+  `VAR_EXTERNAL`.
+
+Semantics a runtime is expected to show at step `t = n * period_ms`:
+
+1. every periodic task whose `INTERVAL` divides `t` is due, the first time
+   at `t = 0`; a `SINGLE` task is due when its Boolean input has risen since
+   the previous step;
+2. due tasks execute one after the other in order of `PRIORITY`, 0 first
+   (the non-preemptive scheduling of IEC 61131-3 ed.3 6.8.2); a task sees
+   the globals as left by the tasks that ran before it in the same step;
+3. inputs are visible to every task of the step; outputs are sampled after
+   the last task of the step.
+
+The order of two tasks of equal priority due at the same step is not
+defined by the standard: a trace that depends on it is
+`implementation-defined`.
+
+Runtime coverage: IronPLC compiles a single program instance and no
+`SINGLE` task (ironplc#1613, P4047), so only one-instance configurations
+run there (a `inst.var` name is resolved as `var`); the RuSTy harness
+reports a configuration as an error, since RuSTy compiles one program and
+scheduling it from the harness would test the harness, not RuSTy.
 
 ## Grammar (ABNF-ish)
 

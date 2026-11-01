@@ -1,0 +1,16 @@
+# Task priority (ed.3 6.8.2: PRIORITY 0 is the highest; table 62,
+# non-preemptive scheduling: among the tasks ready at the same time, the
+# one with the highest priority is executed first). The writer (priority
+# 0) runs before the reader (priority 1) in every step, so the reader sees
+# the value written in the same step: seen = g. A runtime that runs tasks
+# in declaration order would show seen one step behind (0, 10, 20, ...).
+period_ms: 100
+inputs:
+outputs: g p_reader.seen
+status: conformant
+reference: IEC 61131-3 ed.3 6.8.2 (TASK PRIORITY, non-preemptive scheduling)
+---
+0 => g=10 p_reader.seen=10
+1 => g=20 p_reader.seen=20
+2 => g=30 p_reader.seen=30
+3 => g=40 p_reader.seen=40

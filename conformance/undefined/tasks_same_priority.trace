@@ -1,0 +1,16 @@
+# Order of two tasks of equal priority due at the same step.
+# Implementation-defined: ed.3 6.8.2 ranks ready tasks by priority and
+# says nothing about ties. marks reads 12 when A ran first, 21 when B did.
+# IronPLC cannot run two program instances (ironplc#1613), so the records
+# are what matiec does: declaration order, A then B, every step.
+period_ms: 100
+inputs:
+outputs: marks
+status: implementation-defined
+reference: IEC 61131-3 ed.3 6.8.2 (TASK PRIORITY; ties not specified)
+---
+0 => marks=12
+1 => marks=1212
+2 => marks=121212
+3 => marks=12121212
+4 => marks=1212121212

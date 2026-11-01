@@ -78,7 +78,7 @@ int iec_lib_snprintf(char *s, size_t n, const char *f, ...) {
 #include "POUS.h"
 
 TIME __CURRENT_TIME;
-extern %(prog)s_data__ RES0__INST0;
+%(externs)s
 void config_init__(void);
 void config_run__(unsigned long tick);
 
@@ -115,7 +115,9 @@ int main(void) {
         __CURRENT_TIME.tv_sec = t_ms / 1000;
         __CURRENT_TIME.tv_nsec = (int32_t)((t_ms %% 1000) * 1000000);
         if (setjmp(trap_env) == 0) {
-            config_run__(cycle);
+            /* matiec counts ticks of the common tick time (gcd of the task
+               intervals); the trace step must be a multiple of it */
+            if (t_ms %% %(common)d == 0) config_run__((unsigned long)(t_ms / %(common)d));
         } else {
             printf("%%lu => trap   # SIGFPE\n", cycle);
             fflush(stdout);
@@ -132,40 +134,38 @@ int main(void) {
 
 
 def c_setters(inputs):
-    """Generate set_input(name, text) for the declared inputs."""
+    """Generate set_input(name, text) for the declared inputs: (name, type, C lvalue)."""
     cases = []
-    for name, ty in inputs:
-        cname = name.upper()
+    for name, ty, lv in inputs:
         if ty == "BOOL":
-            cases.append(f'    if (!strcmp(name, "{name}")) {{ RES0__INST0.{cname}.value = !strcmp(text, "TRUE"); return; }}')
+            cases.append(f'    if (!strcmp(name, "{name}")) {{ {lv} = !strcmp(text, "TRUE"); return; }}')
         elif ty == "TIME":
-            cases.append(f'    if (!strcmp(name, "{name}")) {{ long long ms = atoll(text + 2); RES0__INST0.{cname}.value.tv_sec = ms / 1000; RES0__INST0.{cname}.value.tv_nsec = (int32_t)((ms % 1000) * 1000000); return; }}')
+            cases.append(f'    if (!strcmp(name, "{name}")) {{ long long ms = atoll(text + 2); {lv}.tv_sec = ms / 1000; {lv}.tv_nsec = (int32_t)((ms % 1000) * 1000000); return; }}')
         elif ty in HEX_WIDTH:
-            cases.append(f'    if (!strcmp(name, "{name}")) {{ RES0__INST0.{cname}.value = ({TYPE_C[ty]})strtoull(text + 3, NULL, 16); return; }}')
+            cases.append(f'    if (!strcmp(name, "{name}")) {{ {lv} = ({TYPE_C[ty]})strtoull(text + 3, NULL, 16); return; }}')
         elif ty in REAL_FMT:
-            cases.append(f'    if (!strcmp(name, "{name}")) {{ RES0__INST0.{cname}.value = ({TYPE_C[ty]})strtod(text, NULL); return; }}')
+            cases.append(f'    if (!strcmp(name, "{name}")) {{ {lv} = ({TYPE_C[ty]})strtod(text, NULL); return; }}')
         else:
-            cases.append(f'    if (!strcmp(name, "{name}")) {{ RES0__INST0.{cname}.value = ({TYPE_C[ty]})atoll(text); return; }}')
+            cases.append(f'    if (!strcmp(name, "{name}")) {{ {lv} = ({TYPE_C[ty]})atoll(text); return; }}')
     body = "\n".join(cases)
     return f'static void set_input(const char *name, const char *text) {{\n{body}\n    fprintf(stderr, "unknown input %s\\n", name); exit(2);\n}}'
 
 
 def c_getters(outputs):
     lines = []
-    for name, ty in outputs:
-        cname = name.upper()
+    for name, ty, lv in outputs:
         if ty == "BOOL":
-            lines.append(f'    printf(" {name}=%s", RES0__INST0.{cname}.value ? "TRUE" : "FALSE");')
+            lines.append(f'    printf(" {name}=%s", {lv} ? "TRUE" : "FALSE");')
         elif ty == "TIME":
-            lines.append(f'    printf(" {name}="); print_time(RES0__INST0.{cname}.value);')
+            lines.append(f'    printf(" {name}="); print_time({lv});')
         elif ty in HEX_WIDTH:
-            lines.append(f'    printf(" {name}=16#%0{HEX_WIDTH[ty]}llX", (unsigned long long)RES0__INST0.{cname}.value);')
+            lines.append(f'    printf(" {name}=16#%0{HEX_WIDTH[ty]}llX", (unsigned long long){lv});')
         elif ty in REAL_FMT:
-            lines.append(f'    printf(" {name}={REAL_FMT[ty]}", (double)RES0__INST0.{cname}.value);')
+            lines.append(f'    printf(" {name}={REAL_FMT[ty]}", (double){lv});')
         elif ty.startswith("STRING"):
-            lines.append(f'    printf(" {name}=#"); for (int i = 0; i < RES0__INST0.{cname}.value.len; i++) printf("%02X", (unsigned)RES0__INST0.{cname}.value.body[i]);')
+            lines.append(f'    printf(" {name}=#"); for (int i = 0; i < {lv}.len; i++) printf("%02X", (unsigned){lv}.body[i]);')
         else:
-            lines.append(f'    printf(" {name}=%lld", (long long)RES0__INST0.{cname}.value);')
+            lines.append(f'    printf(" {name}=%lld", (long long){lv});')
     body = "\n".join(lines)
     return f"static void print_outputs(void) {{\n{body}\n}}"
 
@@ -198,13 +198,76 @@ def declared_types(st_text, program):
     return types
 
 
+def parse_configuration(st_text):
+    """SPEC.md version 2: a CONFIGURATION in the .st. Returns None or a dict
+    with the configuration and resource names, the program instances
+    (name -> program type) and the VAR_GLOBAL types."""
+    text = re.sub(r"\(\*.*?\*\)", "", st_text, flags=re.S)
+    m = re.search(r"\bCONFIGURATION\s+(\w+)(.*?)END_CONFIGURATION", text, re.S | re.I)
+    if not m:
+        return None
+    conf, body = m.group(1), m.group(2)
+    r = re.search(r"\bRESOURCE\s+(\w+)\s+ON\b", body, re.I)
+    res = r.group(1) if r else None
+    instances = {i.group(1).lower(): i.group(3)
+                 for i in re.finditer(r"\bPROGRAM\s+(\w+)\s+WITH\s+(\w+)\s*:\s*(\w+)\s*;", body, re.I)}
+    globals_ = {}
+    for g in re.finditer(r"VAR_GLOBAL\b(.*?)END_VAR", body, re.S | re.I):
+        for decl in g.group(1).split(";"):
+            if ":" not in decl:
+                continue
+            names, ty = decl.split(":", 1)
+            ty = ty.split(":=")[0].strip().upper()
+            for n in names.split(","):
+                n = n.strip().lower()
+                if n:
+                    globals_[n] = ty
+    return {"conf": conf, "res": res, "instances": instances, "globals": globals_}
+
+
+def resolve_names(st_text, trace):
+    """Trace names -> (type, C lvalue, extern declaration) for the driver.
+    Version 1: program variables of the single instance RES0__INST0.
+    Version 2: a global `g` is <CONF>__G.value, an instance variable
+    `inst.v` is <RES>__<INST>.V.value."""
+    conf = parse_configuration(st_text)
+    out, externs = {}, []
+    if conf is None:
+        types = declared_types(st_text, trace.program)
+        externs.append(f"extern {trace.program.upper()}_data__ RES0__INST0;")
+        for n in trace.inputs + trace.outputs:
+            if n in types:
+                out[n] = (types[n], f"RES0__INST0.{n.upper()}.value")
+        return conf, out, externs
+    C, R = conf["conf"].upper(), (conf["res"] or "").upper()
+    prog_types = {}
+    for n in trace.inputs + trace.outputs:
+        if "." in n:
+            inst, var = n.split(".", 1)
+            ptype = conf["instances"].get(inst)
+            if ptype is None:
+                continue
+            if inst not in prog_types:
+                prog_types[inst] = declared_types(st_text, ptype)
+                externs.append(f"extern {ptype.upper()}_data__ {R}__{inst.upper()};")
+            if var in prog_types[inst]:
+                out[n] = (prog_types[inst][var], f"{R}__{inst.upper()}.{var.upper()}.value")
+        elif n in conf["globals"]:
+            ty = conf["globals"][n]
+            cty = "STRING" if ty.startswith("STRING") else ty
+            externs.append(f"extern __IEC_{cty}_t {C}__{n.upper()};")
+            out[n] = (ty, f"{C}__{n.upper()}.value")
+    return conf, out, externs
+
+
 def run_test(st_path: Path, opts):
     trace = parse_trace((st_path.with_suffix(".trace")).read_text())
     st_text = st_path.read_text()
-    types = declared_types(st_text, trace.program)
+    conf, resolved, externs = resolve_names(st_text, trace)
+    types = {n: t for n, (t, _) in resolved.items()}
     for n in trace.inputs + trace.outputs:
         if n not in types:
-            return "ERROR", [f"variable {n} not declared in PROGRAM {trace.program}"], []
+            return "ERROR", [f"variable {n} not declared (program {trace.program or '-'}, or not a global / instance.var of the configuration)"], []
         if types[n].startswith("STRING"):
             if n in trace.inputs:
                 return "ERROR", [f"variable {n}: STRING inputs are not supported (SPEC.md)"], []
@@ -214,26 +277,36 @@ def run_test(st_path: Path, opts):
 
     work = Path(tempfile.mkdtemp(prefix="matiec-" + st_path.stem + "-"))
     try:
-        src = st_text + (
-            "\n\nCONFIGURATION config\n  RESOURCE res0 ON PLC\n"
-            f"    TASK t0(INTERVAL := T#{trace.period_ms}ms, PRIORITY := 0);\n"
-            f"    PROGRAM inst0 WITH t0 : {trace.program};\n"
-            "  END_RESOURCE\nEND_CONFIGURATION\n"
-        )
+        if conf is None:
+            src = st_text + (
+                "\n\nCONFIGURATION config\n  RESOURCE res0 ON PLC\n"
+                f"    TASK t0(INTERVAL := T#{trace.period_ms}ms, PRIORITY := 0);\n"
+                f"    PROGRAM inst0 WITH t0 : {trace.program};\n"
+                "  END_RESOURCE\nEND_CONFIGURATION\n"
+            )
+            conf_c, res_c = "config.c", "res0.c"
+        else:
+            src = st_text
+            conf_c, res_c = conf["conf"].lower() + ".c", (conf["res"] or "res0").lower() + ".c"
         (work / "prog.st").write_text(src)
         r = subprocess.run([opts.iec2c, "-I", opts.matiec_lib, "prog.st"], cwd=work,
                            capture_output=True, text=True)
         if r.returncode != 0:
             return ("FAIL" if trace.status == Status.CONFORMANT else "DIFFERS"), ["iec2c failed to compile the program:\n" + r.stdout + r.stderr], []
+        m = re.search(r"__DECLARE_CONFIGURATION\(\w+,\s*(\d+)\)", (work / "GLOBALS.h").read_text())
+        common_ms = int(m.group(1)) // 1000000 if m else trace.period_ms
+        if common_ms == 0 or trace.period_ms % common_ms != 0:
+            return "ERROR", [f"trace step {trace.period_ms} ms is not a multiple of the configuration's common tick {common_ms} ms"], []
         driver = DRIVER % {
-            "prog": trace.program.upper(),
+            "externs": "\n".join(externs),
             "period": trace.period_ms,
-            "setters": c_setters([(n, types[n]) for n in trace.inputs]),
-            "getters": c_getters([(n, types[n]) for n in trace.outputs]),
+            "common": common_ms,
+            "setters": c_setters([(n, types[n], resolved[n][1]) for n in trace.inputs]),
+            "getters": c_getters([(n, types[n], resolved[n][1]) for n in trace.outputs]),
         }
         (work / "driver.c").write_text(driver)
         r = subprocess.run(["gcc", "-O0", "-w", "-I", str(Path(opts.matiec_lib) / "C"), "-I", ".",
-                            "-o", "driver", "driver.c", "config.c", "res0.c", "-lm"],
+                            "-o", "driver", "driver.c", conf_c, res_c, "-lm"],
                            cwd=work, capture_output=True, text=True)
         if r.returncode != 0:
             return "ERROR", ["gcc failed:\n" + r.stderr[:3000]], []
