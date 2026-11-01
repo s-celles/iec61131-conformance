@@ -164,6 +164,7 @@ Totals (81 tests, 63 with `status: conformant`): conformant tests passed, IronPL
 11. **`REPLACE` with L shorter than IN2**: matiec inserts only L characters of IN2 (beremiz/matiec#41); IronPLC inserts all of IN2 as table 34 says.
 12. **Task priority**: matiec runs the tasks of a resource in declaration order and ignores PRIORITY (beremiz/matiec#43); IronPLC's VM orders by priority but compiles a single instance, so the comparison is between matiec and the standard's text here.
 13. **Functions with VAR_OUTPUT or VAR_IN_OUT call an undeclared function** (beremiz/matiec#49): for such a function matiec emits a per-call `static inline` wrapper (`__MAIN_DIVMOD1`) outside the `#ifndef __POUS_INIT_ONLY__` guard, while the function's prototype is inside it; `config.c` includes `POUS.c` with that macro defined, so the wrapper calls `___DIVMOD` before any declaration (`pou/function_var_output`, `pou/fb_in_out` (`SWAP`), `undefined/short_circuit`). With gcc 13 (CI) that is a warning and the three tests run correctly; with clang, or gcc 14 where implicit declarations are errors, the build fails, as with beremiz/matiec#39. The OpenPLC fork has no guard.
+14. **`LIMIT` with MN > MX returns MN**: matiec's `LIMIT` tests `IN <= MN` first, so `LIMIT(5, 3, 1)` is 5 where the standard's formula `MIN(MAX(IN, MN), MX)` (ed.3 table 32) gives 1; IronPLC follows the formula (`ops/limit_inverted`, found by `tools/fuzz`; the suite's other LIMIT tests keep MN <= MX). The OpenPLC fork and STruC++ (item 13) do the same, RuSTy did (PLC-lang/rusty#2037).
 
 Items 1, 2, 3 are IronPLC deviations from the standard's timing diagrams
 (matiec's `lib/timer.txt` reproduces those diagrams in its comments). Item 5
@@ -208,6 +209,8 @@ upstream matiec `3a41303`:
    IronPLC record): the generated C uses `&&` / `||`, so the right operand's
    function is not called when the left one decides; upstream matiec does
    the same.
+9. **`LIMIT` with MN > MX returns MN**, as upstream (item 14;
+   `ops/limit_inverted`).
 
 Shared with upstream: `REPLACE` (#41), `STRING[n]` (#42), task order (#43),
 counters saturating at PV / 0, rounding to even, the `/` operator unguarded.
@@ -275,6 +278,20 @@ as matiec's do. The failures are in the front end and the string codegen:
 10. **No `CONTINUE`** (STruCpp#261, ed.3 7.3.3.4.2): "Unexpected identifier `CONTINUE`
    after `THEN`" (`control-flow/continue`). `METHOD` is supported
    (`pou/fb_method` passes).
+11. **`MUX` with expression inputs does not compile**: `MUX(k, a + b, a * 2, MAX(a, b))`
+    is emitted as is, and C++ integer promotion makes `A + B` an `int` while
+    `MAX(A, B)` is an `IEC_INT`, so the `MUX(IEC_INT k, T in0, T in1, ...)`
+    template cannot deduce `T` ("no matching function for call to 'MUX'",
+    `ops/std_functions_expr`; `ops/std_functions` with variable inputs
+    passes). Found by `tools/fuzz`, where it hit a third of the programs.
+12. **`NOT` of an AND/OR/XOR of comparisons does not compile**:
+    `NOT ((a < b) AND (b < 10))` becomes `NOT((A < B) & (B < 10))`, whose
+    operand is an `int` (`bool & bool`), which the `NOT` template refuses;
+    `NOT (a = b)` and `NOT (p XOR q)` on BOOL variables compile
+    (`ops/std_functions_expr`).
+13. **`LIMIT` with MN > MX returns MN** (`IN < MN ? MN : ...`), like matiec
+    item 14 (`ops/limit_inverted`); `LIMIT(0, 0, -16)` is -16 here where
+    matiec gives 0 (`IN <= MN`).
 
 ## RuSTy deviations (commit `e911ee5`)
 

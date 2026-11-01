@@ -1,0 +1,26 @@
+cff-version: 1.2.0
+message: "If you use this test suite, please cite it as below."
+title: "IEC 61131-3 conformance traces: an open, runtime-agnostic test suite for Structured Text runtimes"
+type: software
+authors:
+  - family-names: Celles
+    given-names: Sébastien
+    email: s.celles@gmail.com
+repository-code: "https://github.com/s-celles/iec61131-conformance"
+license: CC0-1.0
+keywords:
+  - IEC 61131-3
+  - Structured Text
+  - PLC
+  - conformance testing
+  - differential testing
+  - Lean 4
+abstract: >-
+  Plain Structured Text programs paired with plain-text expected input/output
+  traces, one record per scan cycle, derived by hand from the text of IEC
+  61131-3 (editions 2 and 3), with harnesses for IronPLC, matiec, OpenPLC's
+  matiec fork, STruC++ and RuSTy, recorded differential results, and a Lean 4
+  model of the standard function blocks from which the expected traces are
+  proved to follow.
+date-released: 2026-11-01
+version: 0.1.0

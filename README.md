@@ -7,10 +7,42 @@ Text runtimes: plain `.st` programs paired with plain-text expected
 input/output traces, one record per scan cycle. Dedicated to the public
 domain under CC0 1.0 (see `LICENSE`).
 
-Status: 81 tests, run against IronPLC, matiec, OpenPLC's matiec fork, STruC++
+Status: 83 tests, run against IronPLC, matiec, OpenPLC's matiec fork, STruC++
 (and RuSTy,
 see `notes/comparison.md`), with a Lean 4 model of the function block
 semantics that the expected traces are proved to follow from.
+
+## Method, and what the results do and do not mean
+
+- The expected values of a `status: conformant` trace are derived by hand
+  from the text of IEC 61131-3 (edition 2, 2003, and edition 3, 2013:
+  the function block bodies and timing diagrams of its tables, the formulas
+  of its standard functions, the semantics clauses of ST). Each `.trace`
+  states the derivation and the clause it rests on. That is one reading of
+  the standard by one author; it is not a certification, and neither IEC
+  nor PLCopen is involved. Where the two editions differ (`F_TRIG` at
+  start-up, counters at `PV` and 0) the trace says which edition it follows
+  and the notes say which runtimes follow the other.
+- The suite was written with AI assistance (Claude Code; the commits say
+  `Assisted-by: AI`). Every derivation was checked against the standard's
+  text by the author, but an error in a trace is possible: a runtime that
+  fails a trace is a claim to verify against the cited clause, not a
+  verdict. If you read a clause differently, open an issue with the clause.
+- `status: implementation-defined` traces record what one runtime (IronPLC)
+  does on a corner the standard leaves open. They carry no normative weight;
+  `SAME`/`DIFFERS` only says whether another runtime made the same choice.
+- The results are for the runtime commits pinned in `.github/workflows/ci.yml`
+  and say nothing about later versions. They are not a ranking: the
+  runtimes target different editions and scopes, and some failures are
+  missing features rather than wrong answers (the notes distinguish them).
+- The harnesses are simulated-clock drivers written here, not the projects'
+  own tooling. A result marked `ERROR` is a limit of the harness or of the
+  build, not of the runtime; a `FAIL` on a construct the harness cannot
+  express would be an error in this suite, and is what the notes are for.
+- `tools/fuzz` generates programs whose expected trace comes from a small
+  reference evaluator rather than from the text; those traces are never
+  committed. A divergence found there becomes a test only after a hand
+  derivation like the others.
 
 ## Layout
 
@@ -29,6 +61,7 @@ conformance/
                real_power real_conversions      EXPT and **, INT/DINT/UINT <-> REAL/LREAL
                real_compare lreal_precision     comparisons, binary64 at full precision
                date_time trunc                  DATE/TOD/DT arithmetic and conversions, TRUNC
+               limit_inverted std_functions_expr LIMIT with MN > MX, MUX/SEL/NOT on expressions (from tools/fuzz)
   data/        array_internal array_init        arrays (negative bounds, initialisers)
                struct_internal enum             structures (copy, nesting), enumerations
                array_2d array_of_struct         2-D array, array of a named array type, array of structures
@@ -62,6 +95,7 @@ harness/
   strucpp/     Python: strucpp (ST -> C++) + generated C++ driver with simulated time
   rusty/       Python: plc (RuSTy) + mock-time stdlib + C driver
 formal/        Lean 4: executable FB semantics, trace theorems, properties
+tools/fuzz/    differential fuzzing: random well-defined programs + driver (not CI)
 notes/
   ironplcvm-io.md   how ironplcvm can (and cannot) be driven from outside
   comparison.md     differential results between the runtimes (table generated
@@ -70,7 +104,7 @@ notes/
   evidence/         full harness outputs
 ```
 
-Each test is `<name>.st` + `<name>.trace`. Sixty-three tests under the first
+Each test is `<name>.st` + `<name>.trace`. Sixty-five tests under the first
 nine categories are `status: conformant`: their expected values were derived
 by hand from the standard's function block bodies and timing diagrams, and
 the derivation is written as a comment at the top of each `.trace` file.
@@ -204,3 +238,44 @@ there (`F_TRIG` initial `M := TRUE` per ed.3, discrete-time evaluation at
    text leaves open, and must be justified.
 3. Run it on at least two runtimes before calling it conformant. If they
    disagree, the comment should say which one the trace follows and why.
+
+## Adding a runtime
+
+A harness is a program that, for each test, compiles the `.st`, then for
+each record of the `.trace` writes the inputs, runs exactly one cycle at
+the simulated time `cycle * period_ms` (the runtime's clock must be
+replaceable: timers read it), reads the outputs and compares them with the
+expected values under the rules of `SPEC.md` (REAL tolerance, STRING
+escapes, `trap`). The four harnesses here (`harness/`, Rust and Python)
+are the models; `harness/strucpp/run.py` is the shortest. To fit the rest
+of the repository, a harness should:
+
+- print one verdict line per test, `PASS`/`FAIL` for `conformant` traces
+  and `SAME`/`DIFFERS` for `implementation-defined` ones, `ERROR` when the
+  test could not be run, followed by detail lines of the form
+  `cycle N (trace line L): name expected X, got Y` (or the compiler's
+  output), and a final `N tests: ...` summary: `harness/summarize.py`
+  reads exactly that;
+- offer `--record`, which prints the actual outputs in trace syntax so a
+  new `implementation-defined` trace can be filled;
+- be driven by a CI job that builds the runtime at a pinned commit, runs
+  the suite through `.github/scripts/check-evidence.sh` and uploads the
+  output; the recorded output goes to `notes/evidence/<runtime>-run.txt`
+  (from Linux, since C runtimes differ by platform), the commands to
+  `notes/evidence/COMMANDS.md`, a column to `harness/summarize.py`'s
+  `RUNTIMES`, and a section of deviations to `notes/comparison.md`.
+
+## Differential fuzzing
+
+`tools/fuzz/gen.py` generates small, well-defined ST programs (INT and
+BOOL, IF/CASE/FOR, the operators and standard functions whose meaning the
+standard fixes completely) with the expected trace from a reference
+evaluator; `tools/fuzz/run.py` runs them through the local harnesses and
+prints the divergences, keeping the programs for reduction. `--exclude`
+leaves out constructs with known upstream issues so that new ones show.
+This is a search tool, not part of the suite or of CI.
+
+## Citing
+
+`CITATION.cff` gives the citation metadata (CC0; archive and DOI through
+Zenodo once a release is tagged).

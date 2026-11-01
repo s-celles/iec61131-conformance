@@ -1,0 +1,24 @@
+# MUX, SEL and NOT with expression arguments.
+#
+# Derivation (ed.3 table 32 MUX "selects IN_K", SEL "IN0 if G = 0 else
+# IN1"; table 29/71: NOT applies to a BOOL value, a comparison yields a
+# BOOL, and NOT binds tighter than AND; ed.2 tables 27/28 and 55 say the
+# same): the arguments are ordinary expressions, so each one is evaluated
+# and the function applied to the values.
+# cycle 0: k=0 a=3 b=5 p=T q=F -> m = a+b = 8;  s: 3<5 is TRUE so IN1 = b-a = 2;
+#          n_eq = NOT F = T; n_xor = NOT (T XOR F) = F; n_cmp = (NOT T) AND F = F
+# cycle 1: k=1 a=3 b=5 p=T q=T -> m = 6;  s = 2;  T; NOT (T XOR T) = T; F AND T = F
+# cycle 2: k=2 a=7 b=5 p=F q=T -> m = MAX = 7; s: 7<5 is FALSE so IN0 = a-b = 2; T; NOT (F XOR T) = F; (NOT F) AND T = T
+# cycle 3: k=2 a=5 b=5 p=F q=F -> m = 5; s: F, 0; n_eq = NOT T = F; T; T AND F = F
+# n_and = NOT ((a < b) AND (b < 10)): cycles 0, 1: NOT (T AND T) = F; cycles 2, 3: a < b is F, so T
+period_ms: 100
+program: main
+inputs: k a b p q
+outputs: m s n_eq n_xor n_cmp n_and
+status: conformant
+reference: IEC 61131-3 ed.3 table 32 (MUX, SEL), table 71 (NOT, comparison); ed.2 tables 28, 55
+---
+0 k=0 a=3 b=5 p=TRUE q=FALSE => m=8 s=2 n_eq=TRUE n_xor=FALSE n_cmp=FALSE n_and=FALSE
+1 k=1 a=3 b=5 p=TRUE q=TRUE => m=6 s=2 n_eq=TRUE n_xor=TRUE n_cmp=FALSE n_and=FALSE
+2 k=2 a=7 b=5 p=FALSE q=TRUE => m=7 s=2 n_eq=TRUE n_xor=FALSE n_cmp=TRUE n_and=TRUE
+3 k=2 a=5 b=5 p=FALSE q=FALSE => m=5 s=0 n_eq=FALSE n_xor=TRUE n_cmp=FALSE n_and=TRUE
