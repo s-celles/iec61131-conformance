@@ -6,6 +6,7 @@ authors:
   - family-names: Celles
     given-names: Sébastien
     email: s.celles@gmail.com
+    orcid: "https://orcid.org/0000-0001-9987-4338"
 repository-code: "https://github.com/s-celles/iec61131-conformance"
 license: CC0-1.0
 keywords:
