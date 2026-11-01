@@ -17,6 +17,13 @@ Usage:
 
 Exit status: 0 when every conformant test passes, 1 otherwise, 2 on a
 harness error (iec2c or gcc failure is reported per test, not fatal).
+
+Platform note: the recorded evidence (notes/evidence/matiec-run.txt) is from
+Linux x86-64 with gcc, which is what CI runs. On macOS/arm64 two tests come
+out differently for reasons outside the suite: integer division by zero does
+not trap on AArch64 (undefined/div_zero reports values instead of a trap),
+and clang rejects the implicit function declaration iec2c emits for a user
+FUNCTION called before its definition (undefined/eval_order fails to build).
 """
 import argparse
 import os

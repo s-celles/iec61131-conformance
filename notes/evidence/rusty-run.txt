@@ -31,6 +31,23 @@ PASS    conformance/control-flow/if_case.st
 4 n=0 => iters=0 acc=0 rep=1
 5 n=1000 => iters=1000 acc=500500 rep=1000
 PASS    conformance/control-flow/while.st
+### conformance/counters/ctd.st
+0 cd=FALSE ld=FALSE => q=TRUE cv=0
+1 ld=TRUE => q=FALSE cv=3
+2 ld=FALSE => q=FALSE cv=3
+3 cd=TRUE => q=FALSE cv=2
+4 => q=FALSE cv=2
+5 cd=FALSE => q=FALSE cv=2
+6 cd=TRUE => q=FALSE cv=1
+7 cd=FALSE => q=FALSE cv=1
+8 cd=TRUE => q=TRUE cv=0
+9 cd=FALSE => q=TRUE cv=0
+10 cd=TRUE => q=TRUE cv=-1
+11 ld=TRUE => q=FALSE cv=3
+12 ld=FALSE => q=FALSE cv=3
+13 cd=FALSE => q=FALSE cv=3
+14 cd=TRUE => q=FALSE cv=2
+PASS    conformance/counters/ctd.st
 ### conformance/counters/ctu.st
 0 cu=FALSE r=FALSE => q=FALSE cv=0
 1 cu=TRUE => q=FALSE cv=1
@@ -46,6 +63,29 @@ PASS    conformance/control-flow/while.st
 11 cu=FALSE => q=FALSE cv=0
 12 cu=TRUE => q=FALSE cv=1
 PASS    conformance/counters/ctu.st
+### conformance/counters/ctud.st
+0 cu=FALSE cd=FALSE r=FALSE ld=FALSE => qu=FALSE qd=TRUE cv=0
+1 cu=TRUE => qu=FALSE qd=FALSE cv=1
+2 cu=FALSE => qu=FALSE qd=FALSE cv=1
+3 cu=TRUE => qu=TRUE qd=FALSE cv=2
+4 cu=FALSE => qu=TRUE qd=FALSE cv=2
+5 cd=TRUE => qu=FALSE qd=FALSE cv=1
+6 cd=FALSE => qu=FALSE qd=FALSE cv=1
+7 cu=TRUE cd=TRUE => qu=FALSE qd=FALSE cv=1
+8 cu=FALSE cd=FALSE => qu=FALSE qd=FALSE cv=1
+9 ld=TRUE cu=TRUE => qu=TRUE qd=FALSE cv=2
+10 ld=FALSE cu=FALSE => qu=TRUE qd=FALSE cv=2
+11 r=TRUE ld=TRUE => qu=FALSE qd=TRUE cv=0
+12 r=FALSE => qu=TRUE qd=FALSE cv=2
+13 ld=FALSE => qu=TRUE qd=FALSE cv=2
+14 cd=TRUE => qu=FALSE qd=FALSE cv=1
+15 cd=FALSE => qu=FALSE qd=FALSE cv=1
+16 cd=TRUE => qu=FALSE qd=TRUE cv=0
+17 cd=FALSE => qu=FALSE qd=TRUE cv=0
+18 cd=TRUE => qu=FALSE qd=TRUE cv=-1
+19 cd=FALSE => qu=FALSE qd=TRUE cv=-1
+20 cu=TRUE => qu=FALSE qd=TRUE cv=0
+PASS    conformance/counters/ctud.st
 ### conformance/edge/f_trig.st
 0 clk=FALSE => q=FALSE
 1 clk=TRUE => q=FALSE
@@ -73,25 +113,25 @@ PASS    conformance/edge/r_trig.st
 FAIL    conformance/edge/sr_rs.st
         plc failed to compile the program:
 [0m[1m[38;5;9merror[E089][0m[1m: Invalid call parameters[0m
-   [0m[34m┌─[0m /tmp/rusty-sr_rs-39akbfdy/prog.st:16:12
+   [0m[34m┌─[0m /tmp/rusty-sr_rs-9amvucy4/prog.st:16:12
    [0m[34m│[0m
 [0m[34m16[0m [0m[34m│[0m   latch_sr([0m[31mS1 := s[0m, R := r);
    [0m[34m│[0m            [0m[31m^^^^^^^[0m [0m[31mInvalid call parameters[0m
 
 [0m[1m[38;5;9merror[E048][0m[1m: Could not resolve reference to S1[0m
-   [0m[34m┌─[0m /tmp/rusty-sr_rs-39akbfdy/prog.st:16:12
+   [0m[34m┌─[0m /tmp/rusty-sr_rs-9amvucy4/prog.st:16:12
    [0m[34m│[0m
 [0m[34m16[0m [0m[34m│[0m   latch_sr([0m[31mS1[0m := s, R := r);
    [0m[34m│[0m            [0m[31m^^[0m [0m[31mCould not resolve reference to S1[0m
 
 [0m[1m[38;5;9merror[E089][0m[1m: Invalid call parameters[0m
-   [0m[34m┌─[0m /tmp/rusty-sr_rs-39akbfdy/prog.st:17:12
+   [0m[34m┌─[0m /tmp/rusty-sr_rs-9amvucy4/prog.st:17:12
    [0m[34m│[0m
 [0m[34m17[0m [0m[34m│[0m   latch_rs([0m[31mS := s[0m, R1 := r);
    [0m[34m│[0m            [0m[31m^^^^^^[0m [0m[31mInvalid call parameters[0m
 
 [0m[1m[38;5;9merror[E048][0m[1m: Could not resolve reference to S[0m
-   [0m[34m┌─[0m /tmp/rusty-sr_rs-39akbfdy/prog.st:17:12
+   [0m[34m┌─[0m /tmp/rusty-sr_rs-9amvucy4/prog.st:17:12
    [0m[34m│[0m
 [0m[34m17[0m [0m[34m│[0m   latch_rs([0m[31mS[0m := s, R1 := r);
    [0m[34m│[0m            [0m[31m^[0m [0m[31mCould not resolve reference to S[0m
@@ -231,5 +271,5 @@ DIFFERS conformance/undefined/ton_pt_change.st
         cycle 8 (trace line 34): q expected TRUE, got FALSE
         cycle 9 (trace line 35): q expected TRUE, got FALSE
 
-18 tests: 8 pass, 4 fail, 5 same, 1 differs, 0 error
+20 tests: 10 pass, 4 fail, 5 same, 1 differs, 0 error
 exit 1
