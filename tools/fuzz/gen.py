@@ -61,7 +61,7 @@ EXCLUDABLE = {
     "ext_minmax": "MIN/MAX with more than two inputs (ironplc#2548)",
     "literal_args": "a bare literal as a function argument (STruC++ template deduction)",
     "case_call": "a CASE selector that is not a plain variable (STruC++)",
-    "limit_inverted": "LIMIT with MN > MX: the operands are ordered (matiec, rusty#2037)",
+    "limit_inverted": "LIMIT with MN > MX: matiec, STruC++ and RuSTy return MN",
     "mux_expr": "MUX inputs that are expressions rather than variables (STruC++)",
     "not_expr": "NOT applied to anything but a variable (STruC++)",
 }

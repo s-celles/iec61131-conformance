@@ -330,6 +330,17 @@ POUS.c:40:31: error: incompatible types when assigning to type ‘IEC_TIME’ {a
   215 |         if (!(prefix name.flags & __IEC_FORCE_FLAG)) prefix name.value suffix = new_value
       |                                                                                 ^~~~~~~~~
 POUS.c:41:30: error: 
+### conformance/ops/limit_inverted.st
+0 mn=0 x=0 mx=-16 => l=0
+1 mn=5 x=3 mx=1 => l=5
+2 mn=5 x=7 mx=1 => l=1
+3 mn=5 x=10 mx=1 => l=1
+4 mn=1 x=3 mx=5 => l=3
+5 mn=-2 x=-9 mx=-5 => l=-2
+FAIL    conformance/ops/limit_inverted.st
+        cycle 0 (trace line 21): l expected -16, got 0
+        cycle 1 (trace line 22): l expected 1, got 5
+        cycle 5 (trace line 26): l expected -5, got -2
 ### conformance/ops/literals.st
 0 => hex=255 bin=170 oct=15 under=1000000 typed=-5 neg=-16 tu=65535 dh=2147483647
 1 => hex=255 bin=170 oct=15 under=1000000 typed=-5 neg=-16 tu=65535 dh=2147483647
@@ -387,6 +398,12 @@ PASS    conformance/ops/real_power.st
 3 a=30000 b=-30000 c=100 k=2 g=TRUE da=-1 db=1 => o_abs=30000 o_min=-30000 o_max=30000 o_limit=100 o_sel=-30000 o_mux=100 d_abs=1 d_min=-1
 4 a=-32767 b=-32767 c=-32767 k=0 g=FALSE da=5 db=5 => o_abs=32767 o_min=-32767 o_max=-32767 o_limit=-32767 o_sel=-32767 o_mux=-32767 d_abs=5 d_min=5
 PASS    conformance/ops/std_functions.st
+### conformance/ops/std_functions_expr.st
+0 k=0 a=3 b=5 p=TRUE q=FALSE => m=8 s=2 n_eq=TRUE n_xor=FALSE n_cmp=FALSE n_and=FALSE
+1 k=1 a=3 b=5 p=TRUE q=TRUE => m=6 s=2 n_eq=TRUE n_xor=TRUE n_cmp=FALSE n_and=FALSE
+2 k=2 a=7 b=5 p=FALSE q=TRUE => m=7 s=2 n_eq=TRUE n_xor=FALSE n_cmp=TRUE n_and=TRUE
+3 k=2 a=5 b=5 p=FALSE q=FALSE => m=5 s=0 n_eq=FALSE n_xor=TRUE n_cmp=FALSE n_and=TRUE
+PASS    conformance/ops/std_functions_expr.st
 ### conformance/ops/std_functions_ext.st
 0 a=1 b=2 c=3 g=FALSE => max3=3 min3=1 add3=6 mul3=6 lim=2 selv=1
 1 a=-7 b=-7 c=10 g=TRUE => max3=10 min3=-7 add3=-4 mul3=490 lim=-7 selv=-7
@@ -742,5 +759,5 @@ DIFFERS conformance/undefined/ton_pt_change.st
         cycle 10 (trace line 36): et expected T#800ms, got T#200ms
         cycle 11 (trace line 37): et expected T#800ms, got T#200ms
 
-81 tests: 53 pass, 8 fail, 11 same, 7 differs, 2 error
+83 tests: 54 pass, 9 fail, 11 same, 7 differs, 2 error
 exit 1

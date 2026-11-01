@@ -144,8 +144,10 @@ hand. CI checks the table is in sync with the evidence.
 | pou/function_var_output | PASS | PASS | PASS | PASS | PASS | function VAR_OUTPUT read with `=>`: all agree; upstream matiec builds it with an implicit-declaration warning (matiec #13) |
 | undefined/short_circuit | SAME | **DIFFERS** (cycles 0-2) | **DIFFERS** (cycles 0-2) | SAME | SAME | records IronPLC (full evaluation); both matiecs short-circuit (fork #8), STruC++ and RuSTy evaluate fully |
 | undefined/subrange_out_of_range | SAME | SAME | SAME | SAME | SAME | records IronPLC: stored unchecked; same on all that run it |
+| ops/limit_inverted | PASS | **FAIL** (cycles 0-1, 5) | **FAIL** (cycles 0-1, 5) | **FAIL** (cycles 1, 5) | **FAIL** (cycles 1, 5) | LIMIT with MN > MX follows MIN(MAX(IN, MN), MX): IronPLC only; matiec (matiec #14), its fork (fork #9), STruC++ (STruC++ #13) and RuSTy (RuSTy #8) test MN first and return it. Found by tools/fuzz |
+| ops/std_functions_expr | PASS | PASS | PASS | **ERROR** (build) | PASS | MUX, SEL and NOT on expressions: STruC++ does not compile MUX with expression inputs nor NOT of an AND of comparisons (STruC++ #11, #12); the others agree. Found by tools/fuzz |
 
-Totals (81 tests, 63 with `status: conformant`): conformant tests passed, IronPLC 44/63; matiec 53/63; OpenPLC's matiec 53/63; STruC++ 50/63; RuSTy 50/63. 38 of the 81 tests have the same result on all five runtimes.
+Totals (83 tests, 65 with `status: conformant`): conformant tests passed, IronPLC 46/65; matiec 54/65; OpenPLC's matiec 54/65; STruC++ 50/65; RuSTy 51/65. 38 of the 83 tests have the same result on all five runtimes.
 
 <!-- results:end -->
 
@@ -164,7 +166,7 @@ Totals (81 tests, 63 with `status: conformant`): conformant tests passed, IronPL
 11. **`REPLACE` with L shorter than IN2**: matiec inserts only L characters of IN2 (beremiz/matiec#41); IronPLC inserts all of IN2 as table 34 says.
 12. **Task priority**: matiec runs the tasks of a resource in declaration order and ignores PRIORITY (beremiz/matiec#43); IronPLC's VM orders by priority but compiles a single instance, so the comparison is between matiec and the standard's text here.
 13. **Functions with VAR_OUTPUT or VAR_IN_OUT call an undeclared function** (beremiz/matiec#49): for such a function matiec emits a per-call `static inline` wrapper (`__MAIN_DIVMOD1`) outside the `#ifndef __POUS_INIT_ONLY__` guard, while the function's prototype is inside it; `config.c` includes `POUS.c` with that macro defined, so the wrapper calls `___DIVMOD` before any declaration (`pou/function_var_output`, `pou/fb_in_out` (`SWAP`), `undefined/short_circuit`). With gcc 13 (CI) that is a warning and the three tests run correctly; with clang, or gcc 14 where implicit declarations are errors, the build fails, as with beremiz/matiec#39. The OpenPLC fork has no guard.
-14. **`LIMIT` with MN > MX returns MN**: matiec's `LIMIT` tests `IN <= MN` first, so `LIMIT(5, 3, 1)` is 5 where the standard's formula `MIN(MAX(IN, MN), MX)` (ed.3 table 32) gives 1; IronPLC follows the formula (`ops/limit_inverted`, found by `tools/fuzz`; the suite's other LIMIT tests keep MN <= MX). The OpenPLC fork and STruC++ (item 13) do the same, RuSTy did (PLC-lang/rusty#2037).
+14. **`LIMIT` with MN > MX returns MN**: matiec's `LIMIT` tests `IN <= MN` first, so `LIMIT(5, 3, 1)` is 5 where the standard's formula `MIN(MAX(IN, MN), MX)` (ed.3 table 32) gives 1; IronPLC follows the formula (`ops/limit_inverted`, found by `tools/fuzz`; the suite's other LIMIT tests keep MN <= MX). The OpenPLC fork (item 9), STruC++ (item 13) and RuSTy (item 8) do the same.
 
 Items 1, 2, 3 are IronPLC deviations from the standard's timing diagrams
 (matiec's `lib/timer.txt` reproduces those diagrams in its comments). Item 5
@@ -318,6 +320,9 @@ in `conformance/` and the output in `notes/evidence/rusty-run.txt`:
    (`data/defaults`, `SMALL : INT (5..10)` reads 0 where ed.3 6.4.4.4.3 gives
    5; IronPLC and both matiecs give 5, STruC++ also 0). Every other lot 4
    test passes on RuSTy, CONTINUE and METHOD included.
+8. **`LIMIT` with MN > MX returns MN** (`ops/limit_inverted`): the same
+   `MN` first order as matiec item 14 and STruC++ item 13, where the
+   standard's formula `MIN(MAX(IN, MN), MX)` gives MX.
 
 Also observed, not a deviation: `TIME` is 32-bit milliseconds in this
 build (so `T#500ms` in a trace is the integer 500 in the generated code),
