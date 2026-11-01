@@ -267,6 +267,8 @@ Reported: https://github.com/ironplc/ironplc/issues/2549
 
 ## 23. (Defect) An input omitted from a formal function call is an error
 
+- Reported: https://github.com/ironplc/ironplc/issues/2552
+
 - Reproducer: `pou/function_input_default.st`: `SCALE(x := x)` where `k` and
   `off` have initial values gives `P4018 Function call has wrong number of
   arguments (function=SCALE, expected=3, actual=1)`. Ed.3 6.6.1.7.1: in a
