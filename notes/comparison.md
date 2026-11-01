@@ -78,7 +78,7 @@ Legend: PASS/FAIL for `status: conformant` traces; SAME/DIFFERS for
 | pou/fb_input_defaults | PASS | PASS | PASS | |
 | pou/function_var_not_retained | PASS | PASS | PASS | |
 | pou/fb_var_temp | **FAIL** (compile) | PASS | PASS | IronPLC: VAR_TEMP in an FB is P9999 not implemented (findings #10, ironplc#1969) |
-| pou/fb_en_eno | **FAIL** (compile) | PASS | RUSTY_fb_en_eno | IronPLC: `EN :=` in an FB invocation is a syntax error P0002 (findings #14) |
+| pou/fb_en_eno | **FAIL** (compile) | PASS | RUSTY_fb_en_eno | IronPLC: `EN :=` in an FB invocation is a syntax error P0002 (findings #14, ironplc#2549) |
 | ops/precedence | PASS | PASS | PASS | |
 | ops/std_functions | PASS | PASS | PASS | |
 | ops/std_functions_ext | **FAIL** (compile) | PASS | **FAIL** (compile) | IronPLC: MAX and MIN with three inputs are P4018 (findings #11, ironplc#2548); RuSTy: formal argument names on a standard function (`LIMIT(MN := ..)`) are E048 "Could not resolve reference to MN" (other runtimes #4) |
@@ -88,7 +88,7 @@ Legend: PASS/FAIL for `status: conformant` traces; SAME/DIFFERS for
 | ops/bit_ops | PASS | PASS | RUSTY_bit_ops | |
 | data/array_internal | PASS | PASS | RUSTY_array_internal | |
 | data/array_init | PASS | PASS | RUSTY_array_init | |
-| data/struct_internal | **FAIL** (compile) | PASS | RUSTY_struct_internal | IronPLC: assigning a structure to a structure-typed field (`r.tl := q`) is P9999 not implemented (findings #13) |
+| data/struct_internal | **FAIL** (compile) | PASS | RUSTY_struct_internal | IronPLC: assigning a structure to a structure-typed field (`r.tl := q`) is P9999 not implemented (findings #13, ironplc#2550) |
 | data/enum | PASS | PASS | RUSTY_enum | |
 | undefined/int_overflow | SAME | SAME | SAME | all three wrap in two's complement |
 | undefined/div_zero | SAME | SAME | SAME | IronPLC: VM trap "divide by zero"; matiec and RuSTy: native integer division, the process receives SIGFPE (the drivers report it as `trap`). All stop the scan; none computes `MOD`. matiec's `/` is a bare C division, so on AArch64 it returns 0 instead of trapping (beremiz/matiec#38); its `MOD` and `DIV()` are guarded |

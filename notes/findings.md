@@ -171,6 +171,8 @@ Reported: https://github.com/ironplc/ironplc/issues/2548
 
 ## 13. Assigning a structure to a structure-typed field is not implemented
 
+Reported: https://github.com/ironplc/ironplc/issues/2550
+
 - Reproducer: `conformance/data/struct_internal.st` line 37, `r.tl := q;`
   with `r : RECT` whose field `tl : POINT`: `P9999 Statement code
   generation does not support yet`. The whole-variable copy `q := p;` on
@@ -180,6 +182,8 @@ Reported: https://github.com/ironplc/ironplc/issues/2548
   field read).
 
 ## 14. `EN :=` in a function block invocation is a syntax error
+
+Reported: https://github.com/ironplc/ironplc/issues/2549
 
 - Reproducer: `conformance/pou/fb_en_eno.st` line 25, `c(EN := run_it,
   inc := inc);`: `P0002 Syntax error ... Found text 'EN' that matched
