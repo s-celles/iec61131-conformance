@@ -124,3 +124,44 @@ Reported together with item 3: https://github.com/ironplc/ironplc/issues/2546
 - `EN` is reserved: an FB input named `en` is a syntax error (`P0002`). This
   is correct per the standard (EN/ENO are reserved), noted only because the
   first draft of `fb_two_instances.st` hit it.
+
+## 9. CTD and CTUD of INT wrap at the INT bounds instead of saturating
+
+- Reproducer: `conformance/counters/ctd_bounds.st` (LD with PV = -32768,
+  then a CD edge: CV = 32767) and `ctud_bounds.st` (LD with PV = 32767,
+  then a CU edge: CV = -32768, then -32767).
+- Expected: the ed.3 bodies count up only while `CV < PVmax` and down only
+  while `CV > PVmin`; at the bound CV is unchanged. At PV = PVmax (or PVmin)
+  the FDIS 2001 condition `CV < PV` (`CV > 0`) is false too, so both
+  editions agree and matiec and RuSTy pass.
+- This is ironplc#2332, closed on 2026-10-17 by the prefactoring PR #2346
+  ("Fixes #2332" in the description of the planned follow-up); the 16-bit
+  counting it describes is not in `5ea0610`, where `container/src/fb_type.rs`
+  still says `CTU` and `CTU_INT` count with the 32-bit id.
+
+## 10. VAR_TEMP in a function block does not compile
+
+- Reproducer: `conformance/pou/fb_var_temp.st`: `P9999 Capability is not
+  implemented (yet!) / Starting value code generation does not support
+  yet` on the `VAR_TEMP` declaration. The same semantics for a FUNCTION's
+  VAR section (`pou/function_var_not_retained`) compile and pass.
+- Known: ironplc#1969 (open).
+
+## 11. MAX and MIN accept only two inputs
+
+- Reproducer: `conformance/ops/std_functions_ext.st`: `P4018 Function call
+  has wrong number of arguments (function=MAX, expected=2, actual=3)`,
+  likewise MIN. In the same program `ADD(a, b, c)` and `MUL(a, b, c)` are
+  accepted, so this is the part of ed.3 6.6.1.7.3 (extensible functions,
+  table 31 lists MAX and MIN as extensible) that ironplc#1618 (closed) did
+  not cover.
+
+## 12. (Not a defect) Timers with PT = 0 switch one cycle after the edge
+
+- Reproducer: `conformance/undefined/timer_pt_zero.st`. Every timer makes
+  its end-of-time test only on a cycle where it is already timing, so with
+  PT = 0 TON's Q rises on the cycle after IN rises, TOF's Q falls on the
+  cycle after IN falls, and TP gives a one-cycle pulse. Reading the
+  diagrams at the limit PT = 0 would switch on the edge's own cycle, which
+  is what matiec does (the only difference between the two, apart from
+  item 1 at power-up). Recorded as implementation-defined.

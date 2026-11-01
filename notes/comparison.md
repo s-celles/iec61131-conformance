@@ -61,26 +61,46 @@ Legend: PASS/FAIL for `status: conformant` traces; SAME/DIFFERS for
 | edge/r_trig | PASS | PASS | PASS | |
 | edge/f_trig | PASS | **FAIL** (cycle 0) | PASS | matiec's F_TRIG has `M` initialised FALSE (ed.2 FDIS wording) so it reports a falling edge on the first evaluation with CLK = FALSE; the trace assumes ed.3's `M := TRUE` (findings #6, flagged as the suite's main uncertainty) |
 | edge/sr_rs | PASS | PASS | **FAIL** (compile) | RuSTy names the bistable inputs `SET1`/`RESET` and `SET`/`RESET1` instead of the standard `S1`/`R` and `S`/`R1` (ed.3 table 42), so a conformant program does not compile (other runtimes #3) |
+| edge/power_on_clk_true | PASS | PASS | RUSTY_power_on_clk_true | R_TRIG fires on a first evaluation with CLK TRUE; F_TRIG's start-up ambiguity does not arise |
 | counters/ctu | PASS | **FAIL** (cycle 8) | PASS | matiec stops counting at CV = PV (`CV < PV`, ed.2 FDIS wording); the trace follows ed.3's `CV < PVmax` and counts to 4 (findings #7) |
 | counters/ctd | PASS | **FAIL** (cycle 10) | PASS | matiec stops counting down at CV = 0 (`CV > 0`, ed.2 FDIS wording); the trace follows ed.3's `CV > PVmin` and counts to -1 (same edition difference as ctu) |
 | counters/ctud | PASS | **FAIL** (cycles 18-20) | PASS | matiec stops at CV = 0 on the way down (cycle 18), so the later up-count lands on 1 instead of 0 (cycle 20). Priorities (R over LD over counting) and the cancelling of simultaneous edges agree on all runtimes |
+| counters/ctd_bounds | **FAIL** (cycles 3-6) | PASS | RUSTY_ctd_bounds | IronPLC wraps -32768 to 32767 on a CD edge (findings #9, ironplc#2332) |
+| counters/ctud_bounds | **FAIL** (cycles 3-8) | PASS | RUSTY_ctud_bounds | IronPLC wraps 32767 to -32768 on a CU edge (findings #9) |
 | control-flow/if_case | PASS | PASS | PASS | |
 | control-flow/for_exit | PASS | PASS | PASS | |
 | control-flow/while | PASS | PASS | PASS | |
+| control-flow/nested_exit | PASS | PASS | RUSTY_nested_exit | |
+| control-flow/case_expr | PASS | PASS | RUSTY_case_expr | |
 | pou/function_call | PASS | PASS | PASS | |
 | pou/fb_two_instances | PASS | PASS | PASS | |
+| pou/fb_input_retention | PASS | PASS | RUSTY_fb_input_retention | |
+| pou/fb_input_defaults | PASS | PASS | RUSTY_fb_input_defaults | |
+| pou/function_var_not_retained | PASS | PASS | RUSTY_function_var_not_retained | |
+| pou/fb_var_temp | **FAIL** (compile) | PASS | RUSTY_fb_var_temp | IronPLC: VAR_TEMP in an FB is P9999 not implemented (findings #10, ironplc#1969) |
+| ops/precedence | PASS | PASS | RUSTY_precedence | |
+| ops/std_functions | PASS | PASS | RUSTY_std_functions | |
+| ops/std_functions_ext | **FAIL** (compile) | PASS | RUSTY_std_functions_ext | IronPLC: MAX and MIN with three inputs are P4018 (findings #11) |
+| ops/conversions | PASS | PASS | RUSTY_conversions | |
+| ops/time_arith | PASS | **ERROR** (build) | RUSTY_time_arith | matiec emits `_____time_add`/`_____time_sub` for `+`/`-` on TIME (`print_binary_function` adds `___` to a name that already starts with `__`), a symbol that does not exist, so the program never builds (to be reported upstream) |
+| ops/literals | PASS | PASS | RUSTY_literals | |
 | undefined/int_overflow | SAME | SAME | SAME | all three wrap in two's complement |
 | undefined/div_zero | SAME | SAME | SAME | IronPLC: VM trap "divide by zero"; matiec and RuSTy: native integer division, the process receives SIGFPE (the drivers report it as `trap`). All stop the scan; none computes `MOD`. matiec's `/` is a bare C division, so on AArch64 it returns 0 instead of trapping (beremiz/matiec#38); its `MOD` and `DIV()` are guarded |
 | undefined/eval_order | SAME | SAME | SAME | all three evaluate the left operand of `-` first |
 | undefined/for_bound_modified | SAME | SAME | SAME | all three re-read the final value on every iteration |
 | undefined/ctu_pv_zero | SAME | **DIFFERS** | SAME | IronPLC counts (CV = 1, 2) with Q always TRUE; matiec never counts because `CV < PV` is false at PV = 0, Q always TRUE. Same Q, different CV |
 | undefined/ton_pt_change | SAME | **DIFFERS** | **DIFFERS** | IronPLC and matiec raise Q as soon as PT drops below the elapsed time and keep Q TRUE when PT is later raised; but IronPLC's ET keeps climbing to the new PT (400..800 ms) while matiec freezes ET at the old PT (200 ms) once Q has risen. RuSTy is a third behaviour: Q is recomputed every cycle as elapsed > PT, so raising PT makes Q fall again (cycles 5 to 9) and it rises once more at 800 ms |
+| undefined/for_var_after_loop | SAME | SAME | RUSTY_for_var_after_loop | all leave the control variable at the first value that failed the test (n + 1), or at its initial value when the body never ran |
+| undefined/timer_pt_zero | SAME | **DIFFERS** (cycle 0) | RUSTY_timer_pt_zero | with PT = 0 IronPLC switches one cycle after the edge, matiec on the edge's cycle; the recorded cycle-0 difference is findings #1 (TOF at power-up), the rest agrees (findings #12) |
+| undefined/abs_int_min | SAME | SAME | RUSTY_abs_int_min | ABS(-32768) and -(-32768) wrap to -32768 on all |
+| undefined/dint_to_int_overflow | SAME | SAME | RUSTY_dint_to_int_overflow | out-of-range *_TO_* truncate in two's complement on all |
 
-Totals: IronPLC 12/14 conformant pass; matiec 10/14; RuSTy 10/14. No test
+Totals: IronPLC 23/29 conformant pass; matiec 24/29; RuSTy RUSTY_TOTAL/29. No test
 other than the six control-flow/POU/R_TRIG ones and the four "all SAME"
 corners has the same result on all three runtimes: the three disagree
-somewhere on tof, tp, f_trig, sr_rs, ctu, ctd, ctud, ctu_pv_zero and
-ton_pt_change.
+somewhere on tof, tp, f_trig, sr_rs, ctu, ctd, ctud, ctd_bounds, ctud_bounds,
+fb_var_temp, std_functions_ext, time_arith, ctu_pv_zero, ton_pt_change and
+timer_pt_zero.
 
 ## Where the two runtimes disagree with each other, in one line each
 
@@ -90,6 +110,9 @@ ton_pt_change.
 4. **F_TRIG first evaluation with CLK FALSE**: matiec Q = TRUE; IronPLC Q = FALSE.
 5. **CTU above PV, CTD/CTUD below 0**: IronPLC keeps counting to the INT bounds; matiec saturates at PV and at 0 (hence also no count at PV = 0).
 6. **TON ET after PT is raised past a Q that already rose**: IronPLC ET follows elapsed time up to the new PT; matiec holds the old PT.
+7. **Counters at the INT bounds**: IronPLC wraps (CTD at -32768 gives 32767, CTUD at 32767 gives -32768); matiec saturates.
+8. **`+` and `-` on TIME**: matiec's generated C does not build (`_____time_add`); IronPLC computes them.
+9. **Timers with PT = 0**: IronPLC switches one cycle after the input edge, matiec on the edge's own cycle.
 
 Items 1, 2, 3 are IronPLC deviations from the standard's timing diagrams
 (matiec's `lib/timer.txt` reproduces those diagrams in its comments). Item 5

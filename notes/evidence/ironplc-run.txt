@@ -211,7 +211,7 @@ PASS    conformance/ops/std_functions.st
 FAIL    conformance/ops/std_functions_ext.st
         ironplcc failed to compile the program:
 [0m[1m[38;5;9merror[P4018][0m[1m: Function call has wrong number of arguments (function=MAX, expected=2, actual=3)[0m
-   [0m[36m┌─[0m /Users/scelles/git/github/s-celles/iec61131-conformance/conformance/ops/std_functions_ext.st:18:11
+   [0m[36m┌─[0m <root>/conformance/ops/std_functions_ext.st:18:11
    [0m[36m│[0m
 [0m[36m18[0m [0m[36m│[0m   max3 := [0m[31mMAX[0m(a, b, c);
    [0m[36m│[0m           [0m[31m^^^[0m [0m[31mFunction call[0m
@@ -219,7 +219,7 @@ FAIL    conformance/ops/std_functions_ext.st
    [0m[36m=[0m Learn more: https://www.ironplc.com/reference/compiler/problems/P4018.html?version=0.251.0&channel=cli
 
 [0m[1m[38;5;9merror[P4018][0m[1m: Function call has wrong number of arguments (function=MIN, expected=2, actual=3)[0m
-   [0m[36m┌─[0m /Users/scelles/git/github/s-celles/iec61131-conformance/conformance/ops/std_functions_ext.st:19:11
+   [0m[36m┌─[0m <root>/conformance/ops/std_functions_ext.st:19:11
    [0m[36m│[0m
 [0m[36m19[0m [0m[36m│[0m   min3 := [0m[31mMIN[0m(a, b, c);
    [0m[36m│[0m           [0m[31m^^^[0m [0m[31mFunction call[0m
@@ -266,7 +266,7 @@ PASS    conformance/pou/fb_two_instances.st
 FAIL    conformance/pou/fb_var_temp.st
         ironplcc failed to compile the program:
 [0m[1m[38;5;9merror[P9999][0m[1m: Capability is not implemented (yet!)[0m
-   [0m[36m┌─[0m /Users/scelles/git/github/s-celles/iec61131-conformance/conformance/pou/fb_var_temp.st:11:5
+   [0m[36m┌─[0m <root>/conformance/pou/fb_var_temp.st:11:5
    [0m[36m│[0m
 [0m[36m11[0m [0m[36m│[0m     [0m[31mt[0m : INT;
    [0m[36m│[0m     [0m[31m^[0m [0m[31mStarting value code generation does not support yet[0m

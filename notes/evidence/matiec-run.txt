@@ -211,32 +211,20 @@ PASS    conformance/ops/std_functions_ext.st
 ### conformance/ops/time_arith.st
 ERROR   conformance/ops/time_arith.st
         gcc failed:
-In file included from res0.c:18:
-./POUS.c:33:27: error: call to undeclared function '_____time_add'; ISO C99 and later do not support implicit function declarations [-Wimplicit-function-declaration]
+In file included from res0.c:12:
+POUS.c: In function ‘MAIN_body__’:
+POUS.c:33:27: error: incompatible types when assigning to type ‘IEC_TIME’ {aka ‘IEC_TIMESPEC’} from type ‘int’
    33 |   __SET_VAR(data__->,SUM,,_____time_add(__GET_VAR(data__->T1,), __GET_VAR(data__->T2,)));
-      |                           ^
-./POUS.c:33:27: note: did you mean '__time_add'?
-/Users/scelles/git/github/s-celles/scratch/matiec/lib/C/iec_std_lib.h:388:20: note: '__time_add' declared here
-  388 | static inline TIME __time_add(TIME IN1, TIME IN2){
-      |                    ^
-In file included from res0.c:18:
-./POUS.c:33:3: error: assigning to 'IEC_TIME' (aka 'IEC_TIMESPEC') from incompatible type 'int'
-   33 |   __SET_VAR(data__->,SUM,,_____time_add(__GET_VAR(data__->T1,), __GET_VAR(data__->T2,)));
-      |   ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-/Users/scelles/git/github/s-celles/scratch/matiec/lib/C/accessor.h:215:72: note: expanded from macro '__SET_VAR'
+      |                           ^~~~~~~~~~~~~
+<tmp>/matiec/lib/C/accessor.h:215:81: note: in definition of macro ‘__SET_VAR’
   215 |         if (!(prefix name.flags & __IEC_FORCE_FLAG)) prefix name.value suffix = new_value
-      |                                                                               ^ ~~~~~~~~~
-In file included from res0.c:18:
-./POUS.c:34:28: error: call to undeclared function '_____time_sub'; ISO C99 and later do not support implicit function declarations [-Wimplicit-function-declaration]
+      |                                                                                 ^~~~~~~~~
+POUS.c:34:28: error: incompatible types when assigning to type ‘IEC_TIME’ {aka ‘IEC_TIMESPEC’} from type ‘int’
    34 |   __SET_VAR(data__->,DIFF,,_____time_sub(__GET_VAR(data__->T1,), __GET_VAR(data__->T2,)));
-      |                            ^
-./POUS.c:34:3: error: assigning to 'IEC_TIME' (aka 'IEC_TIMESPEC') from incompatible type 'int'
-   34 |   __SET_VAR(data__->,DIFF,,_____time_sub(__GET_VAR(data__->T1,), __GET_VAR(data__->T2,)));
-      |   ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-/Users/scelles/git/github/s-celles/scratch/matiec/lib/C/accessor.h:215:72: note: expanded from macro '__SET_VAR'
+      |                            ^~~~~~~~~~~~~
+<tmp>/matiec/lib/C/accessor.h:215:81: note: in definition of macro ‘__SET_VAR’
   215 |         if (!(prefix name.flags & __IEC_FORCE_FLAG)) prefix name.value suffix = new_value
-      |                                                                               ^ ~~~~~~~~~
-4 errors generated.
+      |                                                                                 ^~~~~~~~~
 
 ### conformance/pou/fb_input_defaults.st
 0 => total=11 untouched=7 base=6

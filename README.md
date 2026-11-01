@@ -7,7 +7,7 @@ Text runtimes: plain `.st` programs paired with plain-text expected
 input/output traces, one record per scan cycle. Dedicated to the public
 domain under CC0 1.0 (see `LICENSE`).
 
-Status: first cut, 20 tests, run against IronPLC and matiec (and RuSTy,
+Status: 39 tests, run against IronPLC and matiec (and RuSTy,
 see `notes/comparison.md`), with a Lean 4 model of the function block
 semantics that the expected traces are proved to follow from.
 
@@ -18,11 +18,21 @@ SPEC.md                   the .trace format (header + one record per cycle)
 conformance/
   timers/      ton tof tp                        TON, TOF, TP
   edge/        r_trig f_trig sr_rs              edge detectors and bistables
+               power_on_clk_true                 ... started with CLK TRUE
   counters/    ctu ctd ctud                     CTU, CTD, CTUD
+               ctd_bounds ctud_bounds           ... at the INT bounds
+  ops/         precedence std_functions         operators, ABS MIN MAX LIMIT SEL MUX
+               std_functions_ext conversions    extensible/formal calls, *_TO_*
+               time_arith literals              TIME + - < =, duration and integer literals
   control-flow/ if_case for_exit while          IF/CASE, FOR+EXIT, WHILE/REPEAT
+               nested_exit case_expr            EXIT in nested loops, CASE on an expression
   pou/         function_call fb_two_instances   functions, FB instances
+               fb_input_retention fb_input_defaults  FB inputs kept across calls, initial values
+               function_var_not_retained fb_var_temp FUNCTION VAR and VAR_TEMP are not retained
   undefined/   int_overflow div_zero eval_order ton_pt_change
                for_bound_modified ctu_pv_zero   corners the standard leaves open
+               for_var_after_loop timer_pt_zero
+               abs_int_min dint_to_int_overflow
 harness/
   ironplc/     Rust: drives the ironplc_vm crate with simulated time
   matiec/      Python: iec2c + generated C driver with simulated time
@@ -35,11 +45,11 @@ notes/
   evidence/         full harness outputs
 ```
 
-Each test is `<name>.st` + `<name>.trace`. Fourteen tests under the first
-five categories are `status: conformant`: their expected values were derived
+Each test is `<name>.st` + `<name>.trace`. Twenty-nine tests under the first
+six categories are `status: conformant`: their expected values were derived
 by hand from the standard's function block bodies and timing diagrams, and
 the derivation is written as a comment at the top of each `.trace` file.
-The six tests under `undefined/` are `status: implementation-defined`: the
+The ten tests under `undefined/` are `status: implementation-defined`: the
 trace records what IronPLC actually does, and the comment states what the
 standard says or leaves open; a mismatch on another runtime is a documented
 difference, not a failure.

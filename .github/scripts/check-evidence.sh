@@ -9,9 +9,11 @@
 # recorded results: any change to a .st/.trace/harness that alters the
 # outcome shows up as a diff and must come with an updated evidence file.
 #
-# Before diffing, both sides are normalised: ANSI colour codes are stripped
-# and per-run temporary directories (/tmp/rusty-<test>-XXXX/) are masked,
-# since compiler diagnostics quote them.
+# Before diffing, both sides are normalised: ANSI colour codes are stripped,
+# per-run temporary directories (/tmp/rusty-<test>-XXXX/) are masked, and
+# the suite's absolute root (which ironplcc quotes in diagnostics) is
+# replaced by <root>, and the runner's temp dir (where CI builds the
+# runtimes) by <tmp>, since compiler diagnostics quote them.
 #
 # Usage: check-evidence.sh EVIDENCE_FILE -- COMMAND...
 set -uo pipefail
@@ -23,7 +25,8 @@ echo "exit $?" >> "$out"
 name=$(basename "$evidence")
 cp "$out" "${RUNNER_TEMP:-/tmp}/$name"
 summary=$(grep -E '^[0-9]+ tests:' "$out" || echo "no summary line")
-normalise() { sed -E -e $'s/\x1b\\[[0-9;]*m//g' -e 's#/tmp/[A-Za-z0-9_.-]+/#<tmpdir>/#g' "$1"; }
+root=$(pwd -P)
+normalise() { sed -E -e $'s/\x1b\\[[0-9;]*m//g' -e 's#/tmp/[A-Za-z0-9_.-]+/#<tmpdir>/#g' -e "s#$root/#<root>/#g" -e "s#${RUNNER_TEMP:-/nonexistent}/#<tmp>/#g" "$1"; }
 if diff -u --label "$evidence" --label "harness output" <(normalise "$evidence") <(normalise "$out"); then
   echo "### $name: matches evidence — $summary" >> "${GITHUB_STEP_SUMMARY:-/dev/null}"
 else
