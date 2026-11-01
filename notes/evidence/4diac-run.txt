@@ -261,7 +261,7 @@ FAIL    conformance/ops/std_functions_ext.st
         [fordiac.exportProjectFBs] FB_CONFORMANCE_OPS_STD_FUNCTIONS_EXT: FB_CONFORMANCE_OPS_STD_FUNCTIONS_EXT at 7: The parameter G is undefined for the callable SEL
         [fordiac.exportProjectFBs] FB_CONFORMANCE_OPS_STD_FUNCTIONS_EXT: FB_CONFORMANCE_OPS_STD_FUNCTIONS_EXT at 6: Attempting to call standard function LIMIT with formal arguments
         [fordiac.exportProjectFBs] FB_CONFORMANCE_OPS_STD_FUNCTIONS_EXT: FB_CONFORMANCE_OPS_STD_FUNCTIONS_EXT at 7: Attempting to call standard function SEL with formal arguments
-        !ENTRY org.eclipse.osgi 4 0 2026-11-01 18:48:52.602
+        !ENTRY org.eclipse.osgi 4 0 <timestamp>
         !MESSAGE Application error
         !STACK 1
         at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(Unknown Source)
@@ -272,7 +272,7 @@ FAIL    conformance/ops/time_arith.st
         [fordiac.exportProjectFBs] L/FB_CONFORMANCE_OPS_TIME_ARITH/FB_CONFORMANCE_OPS_TIME_ARITH.fbt
         [fordiac.exportProjectFBs] FB_CONFORMANCE_OPS_TIME_ARITH: FB_CONFORMANCE_OPS_TIME_ARITH at 10: mismatched input '1' expecting RULE_TIME_VALUE
         [fordiac.exportProjectFBs] FB_CONFORMANCE_OPS_TIME_ARITH: FB_CONFORMANCE_OPS_TIME_ARITH at 10: no viable alternative at input '5s'
-        !ENTRY org.eclipse.osgi 4 0 2026-11-01 18:49:01.491
+        !ENTRY org.eclipse.osgi 4 0 <timestamp>
         !MESSAGE Application error
         !STACK 1
         at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(Unknown Source)
@@ -296,7 +296,7 @@ FAIL    conformance/ops/time_mul.st
         [fordiac.exportProjectFBs] FB_CONFORMANCE_OPS_TIME_MUL: FB_CONFORMANCE_OPS_TIME_MUL at 2: mismatched input '*' expecting '#'
         [fordiac.exportProjectFBs] FB_CONFORMANCE_OPS_TIME_MUL: FB_CONFORMANCE_OPS_TIME_MUL at 5: mismatched input '*' expecting '#'
         [fordiac.exportProjectFBs] FB_CONFORMANCE_OPS_TIME_MUL: FB_CONFORMANCE_OPS_TIME_MUL at 5: mismatched input '=' expecting '#'
-        !ENTRY org.eclipse.osgi 4 0 2026-11-01 18:49:19.331
+        !ENTRY org.eclipse.osgi 4 0 <timestamp>
         !MESSAGE Application error
         !STACK 1
         at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(Unknown Source)
@@ -311,7 +311,7 @@ FAIL    conformance/ops/trunc.st
         [fordiac.exportProjectFBs] FB_CONFORMANCE_OPS_TRUNC: FB_CONFORMANCE_OPS_TRUNC at 2: mismatched input ':=' expecting '#'
         [fordiac.exportProjectFBs] FB_CONFORMANCE_OPS_TRUNC: FB_CONFORMANCE_OPS_TRUNC at 2: The callable TRUNC(REAL) is undefined
         [fordiac.exportProjectFBs] FB_CONFORMANCE_OPS_TRUNC: FB_CONFORMANCE_OPS_TRUNC at 2: Not possible to assign a value to the left side of this assignment
-        !ENTRY org.eclipse.osgi 4 0 2026-11-01 18:49:28.256
+        !ENTRY org.eclipse.osgi 4 0 <timestamp>
         !MESSAGE Application error
         !STACK 1
         at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(Unknown Source)
@@ -486,7 +486,7 @@ DIFFERS conformance/undefined/string_conversions.st
         [fordiac.exportProjectFBs] FB_CONFORMANCE_UNDEFINED_STRING_CONVERSIONS: FB_CONFORMANCE_UNDEFINED_STRING_CONVERSIONS at 2: The callable INT_TO_STRING(INT) is undefined
         [fordiac.exportProjectFBs] FB_CONFORMANCE_UNDEFINED_STRING_CONVERSIONS: FB_CONFORMANCE_UNDEFINED_STRING_CONVERSIONS at 3: The callable STRING_TO_INT(STRING) is undefined
         [fordiac.exportProjectFBs] FB_CONFORMANCE_UNDEFINED_STRING_CONVERSIONS: FB_CONFORMANCE_UNDEFINED_STRING_CONVERSIONS at 4: The callable DINT_TO_STRING(DINT) is undefined
-        !ENTRY org.eclipse.osgi 4 0 2026-11-01 18:52:10.214
+        !ENTRY org.eclipse.osgi 4 0 <timestamp>
         !MESSAGE Application error
         !STACK 1
         at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(Unknown Source)
