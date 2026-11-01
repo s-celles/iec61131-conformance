@@ -281,5 +281,5 @@ Reported: https://github.com/ironplc/ironplc/issues/2549
   stored unchecked (20, -3); the default initial value is the lower limit
   (5, `data/defaults` passes).
 - `undefined/short_circuit`: `g AND f()` and `g OR f()` always call `f`
-  (full evaluation); OpenPLC's matiec fork short-circuits. Both are allowed
-  by ed.3 7.3.2.
+  (full evaluation), as do STruC++ and RuSTy; both matiecs short-circuit.
+  Both are allowed by ed.3 7.3.2.

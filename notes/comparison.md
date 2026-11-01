@@ -138,11 +138,11 @@ hand. CI checks the table is in sync with the evidence.
 | data/defaults | PASS | PASS | PASS | **FAIL** (cycles 0-1) | **FAIL** (cycles 0-1) | default initial values: STruC++ (STruC++ #9) and RuSTy (RuSTy #7) start a subrange at 0 instead of its lower limit; everything else agrees |
 | ops/date_time | PASS | **ERROR** (build) | PASS | **FAIL** (compile) | PASS | IronPLC and the OpenPLC fork compute all of table 30; upstream matiec does not build (`_____time_sub`, beremiz/matiec#40); STruC++ types `TOD - TOD` as TOD (STruC++ #8) |
 | ops/trunc | PASS | PASS | PASS | PASS | PASS | TRUNC toward zero on all |
-| pou/fb_in_out | **FAIL** (compile) | PASS | PASS | PASS | PASS | IronPLC does not lower VAR_IN_OUT of an FB (findings #21); upstream matiec does not build the function with VAR_IN_OUT (matiec #13) |
+| pou/fb_in_out | **FAIL** (compile) | PASS | PASS | PASS | PASS | IronPLC does not lower VAR_IN_OUT of an FB (findings #21); upstream matiec builds the function with VAR_IN_OUT only where an implicit declaration is not an error (matiec #13) |
 | pou/fb_method | **FAIL** (compile) | **FAIL** (compile) | **FAIL** (compile) | PASS | PASS | ed.3 METHOD: STruC++ only; IronPLC (findings #20) and both matiecs are ed.2 |
 | pou/function_input_default | **FAIL** (compile) | PASS | PASS | PASS | PASS | IronPLC requires every function input (P4018, findings #23); the others apply the initial value |
-| pou/function_var_output | PASS | PASS | PASS | PASS | PASS | function VAR_OUTPUT read with `=>`: upstream matiec does not build it (matiec #13) |
-| undefined/short_circuit | SAME | **DIFFERS** (cycles 0-2) | **DIFFERS** (cycles 0-2) | SAME | SAME | records IronPLC (full evaluation); the OpenPLC fork short-circuits (fork #8); upstream matiec does not build it (matiec #13) |
+| pou/function_var_output | PASS | PASS | PASS | PASS | PASS | function VAR_OUTPUT read with `=>`: all agree; upstream matiec builds it with an implicit-declaration warning (matiec #13) |
+| undefined/short_circuit | SAME | **DIFFERS** (cycles 0-2) | **DIFFERS** (cycles 0-2) | SAME | SAME | records IronPLC (full evaluation); both matiecs short-circuit (fork #8), STruC++ and RuSTy evaluate fully |
 | undefined/subrange_out_of_range | SAME | SAME | SAME | SAME | SAME | records IronPLC: stored unchecked; same on all that run it |
 
 Totals (81 tests, 63 with `status: conformant`): conformant tests passed, IronPLC 44/63; matiec 53/63; OpenPLC's matiec 53/63; STruC++ 50/63; RuSTy 50/63. 38 of the 81 tests have the same result on all five runtimes.
@@ -163,7 +163,7 @@ Totals (81 tests, 63 with `status: conformant`): conformant tests passed, IronPL
 10. **`STRING[n]` declarations**: matiec rejects them after parsing ("not declared in this scope", beremiz/matiec#42); IronPLC and RuSTy accept them.
 11. **`REPLACE` with L shorter than IN2**: matiec inserts only L characters of IN2 (beremiz/matiec#41); IronPLC inserts all of IN2 as table 34 says.
 12. **Task priority**: matiec runs the tasks of a resource in declaration order and ignores PRIORITY (beremiz/matiec#43); IronPLC's VM orders by priority but compiles a single instance, so the comparison is between matiec and the standard's text here.
-13. **Functions with VAR_OUTPUT or VAR_IN_OUT do not build**: for such a function matiec emits a per-call `static inline` wrapper (`__MAIN_DIVMOD1`) outside the `#ifndef __POUS_INIT_ONLY__` guard, while the function's prototype is inside it; `config.c` includes `POUS.c` with that macro defined, so the wrapper calls an undeclared `___DIVMOD` (`pou/function_var_output`, `pou/fb_in_out` (`SWAP`), `undefined/short_circuit`). IronPLC, the OpenPLC fork (no guard) and STruC++ run them.
+13. **Functions with VAR_OUTPUT or VAR_IN_OUT call an undeclared function**: for such a function matiec emits a per-call `static inline` wrapper (`__MAIN_DIVMOD1`) outside the `#ifndef __POUS_INIT_ONLY__` guard, while the function's prototype is inside it; `config.c` includes `POUS.c` with that macro defined, so the wrapper calls `___DIVMOD` before any declaration (`pou/function_var_output`, `pou/fb_in_out` (`SWAP`), `undefined/short_circuit`). With gcc 13 (CI) that is a warning and the three tests run correctly; with clang, or gcc 14 where implicit declarations are errors, the build fails, as with beremiz/matiec#39. The OpenPLC fork has no guard.
 
 Items 1, 2, 3 are IronPLC deviations from the standard's timing diagrams
 (matiec's `lib/timer.txt` reproduces those diagrams in its comments). Item 5
@@ -206,8 +206,8 @@ upstream matiec `3a41303`:
    upstream matiec accepts it.
 8. **AND / OR short-circuit** (`undefined/short_circuit`, DIFFERS from the
    IronPLC record): the generated C uses `&&` / `||`, so the right operand's
-   function is not called when the left one decides. Upstream matiec would do
-   the same but does not build the test (item 13).
+   function is not called when the left one decides; upstream matiec does
+   the same.
 
 Shared with upstream: `REPLACE` (#41), `STRING[n]` (#42), task order (#43),
 counters saturating at PV / 0, rounding to even, the `/` operator unguarded.
