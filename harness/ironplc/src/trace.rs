@@ -17,6 +17,8 @@ pub enum Value {
     /// REAL / LREAL: a decimal with a `.` and optional exponent, or
     /// `inf`, `-inf`, `nan`; `text` is the literal as written.
     Real { v: f64, text: String },
+    /// STRING: the decoded bytes of a `'...'` literal.
+    Str(Vec<u8>),
     /// `?`: not checked.
     Any,
 }
@@ -41,6 +43,9 @@ impl Value {
                 .map_err(|_| format!("bad TIME literal: {s}"))?;
             return Ok(Value::Time(ms));
         }
+        if s.starts_with('\'') {
+            return decode_string_literal(s).map(Value::Str);
+        }
         if s == "inf" || s == "-inf" || s == "nan" {
             let v = if s == "nan" { f64::NAN } else if s == "inf" { f64::INFINITY } else { f64::NEG_INFINITY };
             return Ok(Value::Real { v, text: s.to_string() });
@@ -62,6 +67,65 @@ impl Value {
             .map(Value::Int)
             .map_err(|_| format!("bad value: {s}"))
     }
+}
+
+/// `'...'` with the IEC escapes `$$ $' $L $N $P $R $T $xx`; a raw space,
+/// tab or quote inside is an error (SPEC.md).
+pub fn decode_string_literal(s: &str) -> Result<Vec<u8>, String> {
+    let body = s
+        .strip_prefix('\'')
+        .and_then(|t| t.strip_suffix('\''))
+        .ok_or_else(|| format!("STRING value must be quoted with ': {s}"))?;
+    let b = body.as_bytes();
+    let mut out = Vec::with_capacity(b.len());
+    let mut i = 0;
+    while i < b.len() {
+        match b[i] {
+            b'$' => {
+                let e = *b.get(i + 1).ok_or_else(|| format!("dangling $ in {s}"))?;
+                match e.to_ascii_uppercase() {
+                    b'$' => out.push(b'$'),
+                    b'\'' => out.push(b'\''),
+                    b'L' | b'N' => out.push(0x0A),
+                    b'P' => out.push(0x0C),
+                    b'R' => out.push(0x0D),
+                    b'T' => out.push(0x09),
+                    _ => {
+                        let hex = body.get(i + 1..i + 3).ok_or_else(|| format!("bad $xx in {s}"))?;
+                        out.push(u8::from_str_radix(hex, 16).map_err(|_| format!("bad $xx in {s}"))?);
+                        i += 1;
+                    }
+                }
+                i += 2;
+            }
+            b' ' | b'\t' | b'\'' => return Err(format!("STRING value may not contain a raw space, tab or quote: {s}")),
+            c => {
+                out.push(c);
+                i += 1;
+            }
+        }
+    }
+    Ok(out)
+}
+
+/// Canonical `'...'` rendering: printable ASCII raw, space as `$20`, `$` and
+/// `'` escaped, control characters as `$L $P $R $T` or `$xx`.
+pub fn encode_string_literal(b: &[u8]) -> String {
+    let mut out = String::from("'");
+    for &x in b {
+        match x {
+            0x24 => out.push_str("$$"),
+            0x27 => out.push_str("$'"),
+            0x09 => out.push_str("$T"),
+            0x0A => out.push_str("$L"),
+            0x0C => out.push_str("$P"),
+            0x0D => out.push_str("$R"),
+            0x21..=0x7E => out.push(x as char),
+            _ => out.push_str(&format!("${x:02X}")),
+        }
+    }
+    out.push('\'');
+    out
 }
 
 /// `-?[0-9]+\.[0-9]+([eE][-+]?[0-9]+)?`
@@ -111,6 +175,7 @@ impl fmt::Display for Value {
             Value::Time(ms) => write!(f, "T#{ms}ms"),
             Value::Bits { v, digits } => write!(f, "16#{v:0width$X}", width = digits),
             Value::Real { text, .. } => write!(f, "{text}"),
+            Value::Str(b) => write!(f, "{}", encode_string_literal(b)),
             Value::Any => write!(f, "?"),
         }
     }

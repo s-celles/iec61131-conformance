@@ -1,0 +1,15 @@
+# *_TO_STRING and STRING_TO_*. Implementation-defined: ed.3 table 22
+# lists the conversions but the text format of the string (sign, leading
+# zeros, spaces) is implementer-specific. The records are what IronPLC
+# does; the plain decimal with a leading minus is also what matiec and
+# RuSTy produce where they support the conversion.
+period_ms: 100
+program: main
+inputs: i
+outputs: s_i back s_d
+status: implementation-defined
+reference: IEC 61131-3 ed.3 6.6.2.5.1 table 22 (conversions to and from STRING)
+---
+0 i=42   => s_i='42' back=42 s_d='-2147483648'
+1 i=-7   => s_i='-7' back=42 s_d='-2147483648'
+2 i=0    => s_i='0' back=42 s_d='-2147483648'

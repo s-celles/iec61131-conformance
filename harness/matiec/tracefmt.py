@@ -124,6 +124,8 @@ class Value:
 
 def canonical_actual(rhs, types):
     """Rewrite a driver's `name=#hex` STRING outputs as `'...'` literals."""
+    if rhs.startswith("trap"):
+        return rhs
     toks = []
     for tok in rhs.split():
         n, _, v = tok.partition("=")

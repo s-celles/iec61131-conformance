@@ -187,6 +187,14 @@ def declared_types(st_text, program):
                 n = n.strip().lower()
                 if n:
                     types[n] = ty
+    # named string types: TYPE S5 : STRING[5]; END_TYPE
+    aliases = {}
+    for tb in re.finditer(r"\bTYPE\b(.*?)END_TYPE", st_text, re.S | re.I):
+        for m in re.finditer(r"(\w+)\s*:\s*(STRING(?:\s*\[\s*\d+\s*\])?)\s*(?::=[^;]*)?;", tb.group(1), re.I):
+            aliases[m.group(1).upper()] = m.group(2).upper().replace(" ", "")
+    for n, ty in types.items():
+        if ty in aliases:
+            types[n] = aliases[ty]
     return types
 
 

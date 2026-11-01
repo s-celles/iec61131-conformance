@@ -1,0 +1,15 @@
+# STRING variables keep their value across cycles like any program
+# variable (ed.3 6.5.2), a declared initial value applies (6.4.4.4), and
+# assignment copies the value (7.3.2.1): copy shows src as it was before
+# the CONCAT that follows, and grows one cycle behind src.
+period_ms: 100
+program: main
+inputs: push
+outputs: acc n copy
+status: conformant
+reference: IEC 61131-3 ed.3 6.4.4.4 (initial values), 7.3.2.1 (assignment), table 34 (CONCAT, LEN)
+---
+0 push=TRUE  => acc='x'   n=1 copy='ab'
+1 push=TRUE  => acc='xx'  n=2 copy='abz'
+2 push=FALSE => acc='xx'  n=2 copy='abzz'
+3 push=TRUE  => acc='xxx' n=3 copy='abzzz'

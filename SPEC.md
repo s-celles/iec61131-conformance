@@ -49,7 +49,8 @@ cycle.
 Names are IEC identifiers and are matched case-insensitively. All named
 variables must be declared in the program's `VAR`, `VAR_INPUT` or
 `VAR_OUTPUT` section with one of the types `BOOL`, `INT`, `DINT`, `UINT`,
-`TIME`, `BYTE`, `WORD`, `DWORD`, `REAL`, `LREAL` (version 1 scope).
+`TIME`, `BYTE`, `WORD`, `DWORD`, `REAL`, `LREAL`, or `STRING` for an output
+(version 1 scope).
 
 ### Records
 
@@ -85,12 +86,21 @@ variables must be declared in the program's `VAR`, `VAR_INPUT` or
 | `TIME` | `T#<n>ms`, non-negative integer milliseconds only | `et=T#1500ms` |
 | `BYTE`, `WORD`, `DWORD` | `16#` and exactly 2, 4 or 8 upper-case hex digits | `w=16#00FF`, `d=16#DEADBEEF` |
 | `REAL`, `LREAL` | decimal with a `.` and optional exponent, or `inf`, `-inf`, `nan` | `x=1.5`, `y=-2.0E-3` |
+| `STRING`, `STRING[n]` (outputs only) | `'...'` with the IEC escapes `$$ $' $L $N $P $R $T $xx`; no raw space, tab or quote inside (write `$20`) | `s='it$'s$20ok'` |
 
 No other literal forms are allowed (no `T#1.5s`, no `16#` on integers, no
 `INT#`), so a parser is a split on whitespace, a split on the first `=`, and
 five cases. This is the rendering `ironplcvm run --dump-vars` produces, so a
 dump can be compared to a record by string equality, except for `REAL` and
 `LREAL`.
+
+`STRING` values are compared as byte strings after decoding the escapes.
+The canonical rendering, which `--record` prints, is: printable ASCII
+except space raw, space as `$20`, `$` and `'` as `$$` and `$'`, tab, line
+feed, form feed and carriage return as `$T $L $P $R`, any other byte as
+`$xx`. Strings are allowed as outputs only in version 1: the IronPLC VM
+has no public call to write a string's content from outside, so tests
+build their strings inside the program from scalar inputs.
 
 `REAL` and `LREAL` are compared numerically, not textually: the harness
 parses what the runtime printed and accepts it when
@@ -137,6 +147,7 @@ assign   = name "=" value
 value    = "TRUE" / "FALSE" / ["-"] 1*DIGIT / "T#" 1*DIGIT "ms"
          / "16#" ( 2HEXDIG / 4HEXDIG / 8HEXDIG )
          / ["-"] 1*DIGIT "." 1*DIGIT [ ("e" / "E") ["+" / "-"] 1*DIGIT ]
-         / "inf" / "-inf" / "nan" / "?"
+         / "inf" / "-inf" / "nan" / "'" *( %x21-23 / %x25-26 / %x28-7E / "$" escape ) "'" / "?"
+escape   = "$" / "'" / "L" / "N" / "P" / "R" / "T" / 2HEXDIG
 comment  = "#" *VCHAR LF
 ```

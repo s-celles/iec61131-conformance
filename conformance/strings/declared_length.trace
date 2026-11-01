@@ -1,0 +1,15 @@
+# Limited-length strings (ed.3 6.4.4.1 table 10 / ed.2 2.3.1 table 10):
+# `STRING[n]` holds up to n characters; a value of at most n characters is
+# stored whole; the declared initial value applies; a named type may be a
+# STRING[n]. Values here are all within the declared lengths (the longer
+# case is undefined/string_truncate).
+# No inputs; two cycles.
+period_ms: 100
+program: main
+inputs:
+outputs: s3 s4 s5 n3 n4 n5 cat
+status: conformant
+reference: IEC 61131-3 ed.3 6.4.4.1 table 10 (STRING[n]), 6.4.4.4 (initial values)
+---
+0 => s3='xyz' s4='init' s5='abcde' n3=3 n4=4 n5=5 cat='xyzinit'
+1 => s3='xyz' s4='init' s5='abcde' n3=3 n4=4 n5=5 cat='xyzinit'

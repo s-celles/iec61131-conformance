@@ -1,0 +1,15 @@
+# Single-byte character string literals (ed.3 6.3.3 table 6 / ed.2
+# 2.2.2 table 4): `$$` is a dollar, `$'` a quote, `$L` or `$N` a line
+# feed, `$P` form feed, `$R` carriage return, `$T` tab, `$xx` the byte
+# with hex code xx. The trace writes a
+# space as `$20` and a line feed as `$L` (SPEC.md canonical rendering).
+# No inputs; two cycles show the values are stable.
+period_ms: 100
+program: main
+inputs:
+outputs: s1 s2 s3 s4 s5 s6 s7 s8 n1
+status: conformant
+reference: IEC 61131-3 ed.3 6.3.3 table 6 (character string literals)
+---
+0 => s1='abc' s2='' s3='it$'s' s4='$$' s5='a$20b' s6='tab$Tx' s7='nl$Ly' s8='AB' n1=3
+1 => s1='abc' s2='' s3='it$'s' s4='$$' s5='a$20b' s6='tab$Tx' s7='nl$Ly' s8='AB' n1=3

@@ -1,0 +1,13 @@
+# Assigning a string longer than the variable's declared maximum length.
+# Implementation-defined: ed.3 annex E lists "string length exceeds
+# declared maximum" among the errors with implementer-specific handling
+# (truncate, or report). The records are what IronPLC does.
+period_ms: 100
+program: main
+inputs:
+outputs: s3 n3 c2 n2
+status: implementation-defined
+reference: IEC 61131-3 ed.3 annex E (string length exceeded)
+---
+0 => s3='abc' n3=3 c2='ab' n2=2
+1 => s3='abc' n3=3 c2='ab' n2=2

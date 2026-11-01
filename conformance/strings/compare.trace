@@ -1,0 +1,14 @@
+# Comparison functions on strings (ed.3 6.6.2.5.1 table 28, note: for
+# strings the comparison is lexical on the character codes; a shorter
+# string that is a prefix of a longer one is less). 'B' (66) < 'a' (97);
+# '' < 'a'; 'b' > 'abc'; 'abc' <> 'ABC'.
+# No inputs; two cycles.
+period_ms: 100
+program: main
+inputs:
+outputs: e1 e2 l1 l2 l3 l4 g1 n1
+status: conformant
+reference: IEC 61131-3 ed.3 6.6.2.5.1 table 28 (comparison of strings)
+---
+0 => e1=TRUE e2=FALSE l1=TRUE l2=TRUE l3=TRUE l4=TRUE g1=TRUE n1=TRUE
+1 => e1=TRUE e2=FALSE l1=TRUE l2=TRUE l3=TRUE l4=TRUE g1=TRUE n1=TRUE

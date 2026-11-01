@@ -1,0 +1,21 @@
+# Character string functions (ed.3 6.6.2.5.3 table 34 / ed.2 table 29),
+# positions counted from 1:
+#   LEN(IN); CONCAT(IN1, IN2); LEFT(IN, L) the leftmost L characters;
+#   RIGHT(IN, L) the rightmost L; MID(IN, L, P) L characters from the
+#   P-th; INSERT(IN1, IN2, P) IN2 inserted after the P-th character of
+#   IN1; DELETE(IN, L, P) L characters deleted from the P-th;
+#   REPLACE(IN1, IN2, L, P) L characters from the P-th replaced by IN2;
+#   FIND(IN1, IN2) position of the first IN2 in IN1, 0 when absent.
+# Records keep n + 1 <= LEN('hello') so that every L stays inside the
+# string.
+period_ms: 100
+program: main
+inputs: n
+outputs: o_len o_concat o_left o_right o_mid o_insert o_delete o_replace o_find o_find0
+status: conformant
+reference: IEC 61131-3 ed.3 6.6.2.5.3 table 34 (character string functions)
+---
+0 n=1 => o_len=5 o_concat='abcd' o_left='h' o_right='o' o_mid='e' o_insert='hXXello' o_delete='hllo' o_replace='hYYllo' o_find=3 o_find0=0
+1 n=2 => o_len=5 o_concat='abcd' o_left='he' o_right='lo' o_mid='el' o_insert='heXXllo' o_delete='hlo' o_replace='hYYlo' o_find=3 o_find0=0
+2 n=3 => o_len=5 o_concat='abcd' o_left='hel' o_right='llo' o_mid='ell' o_insert='helXXlo' o_delete='ho' o_replace='hYYo' o_find=3 o_find0=0
+3 n=4 => o_len=5 o_concat='abcd' o_left='hell' o_right='ello' o_mid='ello' o_insert='hellXXo' o_delete='h' o_replace='hYY' o_find=3 o_find0=0

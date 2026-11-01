@@ -386,6 +386,30 @@ PASS    conformance/pou/function_call.st
 2 x=0 => f=0
 3 x=-5 => f=-5
 PASS    conformance/pou/function_var_not_retained.st
+### conformance/strings/compare.st
+0 => e1=TRUE e2=FALSE l1=TRUE l2=TRUE l3=TRUE l4=TRUE g1=TRUE n1=TRUE
+1 => e1=TRUE e2=FALSE l1=TRUE l2=TRUE l3=TRUE l4=TRUE g1=TRUE n1=TRUE
+PASS    conformance/strings/compare.st
+### conformance/strings/concat_assign.st
+0 push=TRUE => acc='x' n=1 copy='ab'
+1 push=TRUE => acc='xx' n=2 copy='abz'
+2 push=FALSE => acc='xx' n=2 copy='abzz'
+3 push=TRUE => acc='xxx' n=3 copy='abzzz'
+PASS    conformance/strings/concat_assign.st
+### conformance/strings/declared_length.st
+0 => s3='xyz' s4='init' s5='abcde' n3=3 n4=4 n5=5 cat='xyzinit'
+1 => s3='xyz' s4='init' s5='abcde' n3=3 n4=4 n5=5 cat='xyzinit'
+PASS    conformance/strings/declared_length.st
+### conformance/strings/functions.st
+0 n=1 => o_len=5 o_concat='abcd' o_left='h' o_right='o' o_mid='e' o_insert='hXXello' o_delete='hllo' o_replace='hYYllo' o_find=3 o_find0=0
+1 n=2 => o_len=5 o_concat='abcd' o_left='he' o_right='lo' o_mid='el' o_insert='heXXllo' o_delete='hlo' o_replace='hYYlo' o_find=3 o_find0=0
+2 n=3 => o_len=5 o_concat='abcd' o_left='hel' o_right='llo' o_mid='ell' o_insert='helXXlo' o_delete='ho' o_replace='hYYo' o_find=3 o_find0=0
+3 n=4 => o_len=5 o_concat='abcd' o_left='hell' o_right='ello' o_mid='ello' o_insert='hellXXo' o_delete='h' o_replace='hYY' o_find=3 o_find0=0
+PASS    conformance/strings/functions.st
+### conformance/strings/literals_escapes.st
+0 => s1='abc' s2='' s3='it$'s' s4='$$' s5='a$20b' s6='tab$Tx' s7='nl$Ly' s8='AB' n1=3
+1 => s1='abc' s2='' s3='it$'s' s4='$$' s5='a$20b' s6='tab$Tx' s7='nl$Ly' s8='AB' n1=3
+PASS    conformance/strings/literals_escapes.st
 ### conformance/timers/tof.st
 0 in=FALSE => q=TRUE et=T#0ms
 1 in=TRUE => q=TRUE et=T#0ms
@@ -520,6 +544,15 @@ SAME    conformance/undefined/real_div_zero.st (implementation-defined)
 3 x=-3.5 l=-3.5 => i=-3 d=-3
 4 x=0.5 l=0.5 => i=0 d=0
 SAME    conformance/undefined/real_to_int_ties.st (implementation-defined)
+### conformance/undefined/string_conversions.st
+0 i=42 => s_i='42' back=42 s_d='-2147483648'
+1 i=-7 => s_i='-7' back=42 s_d='-2147483648'
+2 i=0 => s_i='0' back=42 s_d='-2147483648'
+SAME    conformance/undefined/string_conversions.st (implementation-defined)
+### conformance/undefined/string_truncate.st
+0 => s3='abc' n3=3 c2='ab' n2=2
+1 => s3='abc' n3=3 c2='ab' n2=2
+SAME    conformance/undefined/string_truncate.st (implementation-defined)
 ### conformance/undefined/timer_pt_zero.st
 0 in=FALSE => q_ton=FALSE et_ton=T#0ms q_tof=TRUE et_tof=T#0ms q_tp=FALSE et_tp=T#0ms
 1 in=TRUE => q_ton=FALSE et_ton=T#0ms q_tof=TRUE et_tof=T#0ms q_tp=TRUE et_tp=T#0ms
@@ -545,5 +578,5 @@ SAME    conformance/undefined/timer_pt_zero.st (implementation-defined)
 12 in=FALSE => q=FALSE et=T#0ms
 SAME    conformance/undefined/ton_pt_change.st (implementation-defined)
 
-54 tests: 32 pass, 9 fail, 13 same, 0 differs, 0 error
+61 tests: 37 pass, 9 fail, 15 same, 0 differs, 0 error
 exit 1

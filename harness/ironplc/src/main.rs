@@ -18,7 +18,7 @@ use std::path::{Path, PathBuf};
 use std::process::Command;
 
 use ironplc_container::debug_format::VariableRenderer;
-use ironplc_container::debug_section::{iec_type_tag, VarNameEntry};
+use ironplc_container::debug_section::{iec_type_tag, DebugSection, VarNameEntry};
 use ironplc_container::Container;
 use ironplc_vm::{Clock, Vm, VmBuffers};
 use trace::{Expected, Status, Trace, Value};
@@ -107,7 +107,27 @@ fn encode(entry: &VarNameEntry, v: &Value) -> Result<u64, String> {
 }
 
 /// The value part of the `--dump-vars` rendering, e.g. `TRUE`, `-5`, `T#300ms`.
-fn render(renderer: &VariableRenderer, entry: &VarNameEntry, raw: u64, data: &[u8]) -> String {
+fn render(
+    renderer: &VariableRenderer,
+    debug: &DebugSection,
+    entry: &VarNameEntry,
+    raw: u64,
+    data: &[u8],
+) -> String {
+    if entry.iec_type_tag == iec_type_tag::STRING {
+        // Content lives in the data region: [max_len u16][cur_len u16][char width u16][bytes]
+        let Some(layout) = debug.string_layouts.iter().find(|l| l.var_index == entry.var_index) else {
+            return "<no string layout>".into();
+        };
+        let off = layout.data_offset as usize;
+        if off + 6 > data.len() {
+            return "<string offset out of range>".into();
+        }
+        let cur = u16::from_le_bytes([data[off + 2], data[off + 3]]) as usize;
+        let start = off + 6;
+        let end = (start + cur).min(data.len());
+        return trace::encode_string_literal(&data[start..end]);
+    }
     let line = renderer.line(entry.var_index.raw(), raw, data);
     match line.split_once(": ") {
         Some((_, v)) => v.to_string(),
@@ -252,7 +272,7 @@ fn run_test(st: &Path, opts: &Options) -> Outcome {
                         let raw = running.read_variable_raw(e.var_index).unwrap_or(0);
                         (
                             e.name.to_ascii_lowercase(),
-                            render(&renderer, e, raw, running.data_region()),
+                            render(&renderer, debug, e, raw, running.data_region()),
                         )
                     })
                     .collect();
