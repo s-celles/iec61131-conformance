@@ -1,0 +1,38 @@
+# TON whose PT changes while the timer is running.
+#
+# What the standard says: TON is defined by a timing diagram (ed.3 table
+# 46) in which PT is constant. The diagram says nothing about a PT that
+# changes after the rising edge of IN, neither whether the new PT is used
+# immediately, nor whether Q may fall again when PT is raised above the
+# elapsed time. Implementations differ (some latch PT at the rising edge,
+# some compare against the live PT every evaluation).
+#
+# What IronPLC 0.251.0 (5ea0610) does (vm/src/intrinsic.rs, `ton`): the
+# live PT is used on every evaluation for the comparison and for clamping
+# ET; so lowering PT below the elapsed time makes Q rise at once (cycle 3).
+# But once Q is TRUE it is only cleared when IN goes FALSE: raising PT to
+# 800 ms at cycle 5 leaves Q TRUE while ET climbs from 400 to 800 ms
+# (cycles 5 to 9), i.e. Q = TRUE with ET < PT. Recorded 2026-10-31.
+period_ms: 100
+program: main
+inputs: in pt
+outputs: q et
+status: implementation-defined
+reference: IEC 61131-3 ed.3 6.6.3.5.4 table 46 (TON timing diagram)
+---
+0 in=FALSE pt=T#500ms => q=FALSE et=T#0ms
+# rising edge at t = 100
+1 in=TRUE => q=FALSE et=T#0ms
+2 => q=FALSE et=T#100ms
+# PT lowered to 200 ms: elapsed 200 >= new PT, Q rises immediately
+3 pt=T#200ms => q=TRUE et=T#200ms
+4 => q=TRUE et=T#200ms
+# PT raised to 800 ms: Q stays TRUE although ET < PT
+5 pt=T#800ms => q=TRUE et=T#400ms
+6 => q=TRUE et=T#500ms
+7 => q=TRUE et=T#600ms
+8 => q=TRUE et=T#700ms
+9 => q=TRUE et=T#800ms
+10 => q=TRUE et=T#800ms
+11 => q=TRUE et=T#800ms
+12 in=FALSE => q=FALSE et=T#0ms

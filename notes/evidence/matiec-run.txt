@@ -1,0 +1,212 @@
+### conformance/control-flow/for_exit.st
+0 n=0 => sum=0 last=0 count=0 down_count=4 down_sum=22
+1 n=-2 => sum=0 last=0 count=0 down_count=4 down_sum=22
+2 n=1 => sum=1 last=1 count=1 down_count=4 down_sum=22
+3 n=3 => sum=6 last=3 count=3 down_count=4 down_sum=22
+4 n=5 => sum=15 last=5 count=5 down_count=4 down_sum=22
+5 n=6 => sum=15 last=5 count=5 down_count=4 down_sum=22
+6 n=10 => sum=15 last=5 count=5 down_count=4 down_sum=22
+7 n=32767 => sum=15 last=5 count=5 down_count=4 down_sum=22
+8 n=2 => sum=3 last=2 count=2 down_count=4 down_sum=22
+PASS    conformance/control-flow/for_exit.st
+### conformance/control-flow/if_case.st
+0 x=-5 => sign=-1 bucket=0
+1 x=0 => sign=0 bucket=0
+2 x=1 => sign=1 bucket=10
+3 x=2 => sign=1 bucket=20
+4 x=3 => sign=1 bucket=20
+5 x=4 => sign=1 bucket=30
+6 x=5 => sign=1 bucket=30
+7 x=6 => sign=1 bucket=30
+8 x=7 => sign=1 bucket=0
+9 x=-1 => sign=-1 bucket=-10
+10 x=-32768 => sign=-1 bucket=0
+11 x=32767 => sign=1 bucket=0
+PASS    conformance/control-flow/if_case.st
+### conformance/control-flow/while.st
+0 n=0 => iters=0 acc=0 rep=1
+1 n=1 => iters=1 acc=1 rep=1
+2 n=4 => iters=4 acc=10 rep=4
+3 n=100 => iters=100 acc=5050 rep=100
+4 n=0 => iters=0 acc=0 rep=1
+5 n=1000 => iters=1000 acc=500500 rep=1000
+PASS    conformance/control-flow/while.st
+### conformance/counters/ctu.st
+0 cu=FALSE r=FALSE => q=FALSE cv=0
+1 cu=TRUE => q=FALSE cv=1
+2 => q=FALSE cv=1
+3 cu=FALSE => q=FALSE cv=1
+4 cu=TRUE => q=FALSE cv=2
+5 cu=FALSE => q=FALSE cv=2
+6 cu=TRUE => q=TRUE cv=3
+7 cu=FALSE => q=TRUE cv=3
+8 cu=TRUE => q=TRUE cv=3
+9 r=TRUE => q=FALSE cv=0
+10 r=FALSE => q=FALSE cv=0
+11 cu=FALSE => q=FALSE cv=0
+12 cu=TRUE => q=FALSE cv=1
+FAIL    conformance/counters/ctu.st
+        cycle 8 (trace line 32): cv expected 4, got 3
+### conformance/edge/f_trig.st
+0 clk=FALSE => q=TRUE
+1 clk=TRUE => q=FALSE
+2 clk=FALSE => q=TRUE
+3 => q=FALSE
+4 clk=TRUE => q=FALSE
+5 clk=TRUE => q=FALSE
+6 clk=FALSE => q=TRUE
+7 clk=TRUE => q=FALSE
+8 clk=FALSE => q=TRUE
+9 clk=FALSE => q=FALSE
+FAIL    conformance/edge/f_trig.st
+        cycle 0 (trace line 17): q expected FALSE, got TRUE
+### conformance/edge/r_trig.st
+0 clk=FALSE => q=FALSE
+1 clk=TRUE => q=TRUE
+2 => q=FALSE
+3 => q=FALSE
+4 clk=FALSE => q=FALSE
+5 clk=TRUE => q=TRUE
+6 clk=FALSE => q=FALSE
+7 clk=TRUE => q=TRUE
+8 clk=TRUE => q=FALSE
+PASS    conformance/edge/r_trig.st
+### conformance/edge/sr_rs.st
+0 s=FALSE r=FALSE => q_sr=FALSE q_rs=FALSE
+1 s=TRUE => q_sr=TRUE q_rs=TRUE
+2 s=FALSE => q_sr=TRUE q_rs=TRUE
+3 r=TRUE => q_sr=FALSE q_rs=FALSE
+4 r=FALSE => q_sr=FALSE q_rs=FALSE
+5 s=TRUE r=TRUE => q_sr=TRUE q_rs=FALSE
+6 s=FALSE r=FALSE => q_sr=TRUE q_rs=FALSE
+7 r=TRUE => q_sr=FALSE q_rs=FALSE
+8 r=FALSE => q_sr=FALSE q_rs=FALSE
+9 s=TRUE => q_sr=TRUE q_rs=TRUE
+10 r=TRUE => q_sr=TRUE q_rs=FALSE
+PASS    conformance/edge/sr_rs.st
+### conformance/pou/fb_two_instances.st
+0 enable_a=TRUE inc_a=5 enable_b=FALSE inc_b=100 => tot_a=5 tot_b=0 calls_a=1 calls_b=1
+1 => tot_a=10 tot_b=0 calls_a=2 calls_b=2
+2 enable_b=TRUE => tot_a=15 tot_b=100 calls_a=3 calls_b=3
+3 enable_a=FALSE => tot_a=15 tot_b=200 calls_a=4 calls_b=4
+4 inc_a=-1000 => tot_a=15 tot_b=300 calls_a=5 calls_b=5
+5 enable_a=TRUE enable_b=FALSE => tot_a=-985 tot_b=300 calls_a=6 calls_b=6
+6 inc_b=-300 => tot_a=-1985 tot_b=300 calls_a=7 calls_b=7
+7 enable_b=TRUE => tot_a=-2985 tot_b=0 calls_a=8 calls_b=8
+PASS    conformance/pou/fb_two_instances.st
+### conformance/pou/function_call.st
+0 x=5 d=1 => y=5 e=11
+1 x=50 d=-4 => y=10 e=96
+2 x=-50 d=0 => y=-10 e=0
+3 x=-10 d=1000000 => y=-10 e=1000000
+4 x=200 d=-200 => y=10 e=0
+5 x=0 d=2147483647 => y=0 e=2147483647
+PASS    conformance/pou/function_call.st
+### conformance/timers/tof.st
+0 in=FALSE => q=FALSE et=T#0ms
+1 in=TRUE => q=TRUE et=T#0ms
+2 => q=TRUE et=T#0ms
+3 in=FALSE => q=TRUE et=T#0ms
+4 => q=TRUE et=T#100ms
+5 => q=FALSE et=T#200ms
+6 => q=FALSE et=T#200ms
+7 in=TRUE => q=TRUE et=T#0ms
+8 in=FALSE => q=TRUE et=T#0ms
+9 in=TRUE => q=TRUE et=T#0ms
+10 in=FALSE => q=TRUE et=T#0ms
+11 => q=TRUE et=T#100ms
+12 => q=FALSE et=T#200ms
+PASS    conformance/timers/tof.st
+### conformance/timers/ton.st
+0 in=FALSE => q=FALSE et=T#0ms
+1 in=TRUE => q=FALSE et=T#0ms
+2 => q=FALSE et=T#100ms
+3 => q=FALSE et=T#200ms
+4 => q=TRUE et=T#300ms
+5 => q=TRUE et=T#300ms
+6 in=FALSE => q=FALSE et=T#0ms
+7 in=TRUE => q=FALSE et=T#0ms
+8 => q=FALSE et=T#100ms
+9 in=FALSE => q=FALSE et=T#0ms
+10 => q=FALSE et=T#0ms
+PASS    conformance/timers/ton.st
+### conformance/timers/tp.st
+0 in=FALSE => q=FALSE et=T#0ms
+1 in=TRUE => q=TRUE et=T#0ms
+2 in=FALSE => q=TRUE et=T#100ms
+3 => q=TRUE et=T#200ms
+4 => q=FALSE et=T#0ms
+5 => q=FALSE et=T#0ms
+6 in=TRUE => q=TRUE et=T#0ms
+7 => q=TRUE et=T#100ms
+8 => q=TRUE et=T#200ms
+9 => q=FALSE et=T#300ms
+10 => q=FALSE et=T#300ms
+11 => q=FALSE et=T#300ms
+12 in=FALSE => q=FALSE et=T#0ms
+13 in=TRUE => q=TRUE et=T#0ms
+14 in=FALSE => q=TRUE et=T#100ms
+15 in=TRUE => q=TRUE et=T#200ms
+16 => q=FALSE et=T#300ms
+17 => q=FALSE et=T#300ms
+18 in=FALSE => q=FALSE et=T#0ms
+PASS    conformance/timers/tp.st
+### conformance/undefined/ctu_pv_zero.st
+0 cu=FALSE r=FALSE => q=TRUE cv=0
+1 cu=TRUE => q=TRUE cv=0
+2 cu=FALSE => q=TRUE cv=0
+3 cu=TRUE => q=TRUE cv=0
+4 r=TRUE => q=TRUE cv=0
+5 r=FALSE cu=FALSE => q=TRUE cv=0
+DIFFERS conformance/undefined/ctu_pv_zero.st
+        cycle 1 (trace line 22): cv expected 1, got 0
+        cycle 2 (trace line 23): cv expected 1, got 0
+        cycle 3 (trace line 24): cv expected 2, got 0
+### conformance/undefined/div_zero.st
+0 a=7 b=2 => q=3 m=1
+1 a=-7 b=2 => q=-3 m=-1
+2 a=7 b=0 => trap   # SIGFPE
+SAME    conformance/undefined/div_zero.st
+### conformance/undefined/eval_order.st
+0 reset=TRUE => y=-19 c=2
+1 reset=TRUE => y=-19 c=2
+2 reset=FALSE => y=-37 c=4
+SAME    conformance/undefined/eval_order.st
+### conformance/undefined/for_bound_modified.st
+0 start_n=3 => count=50 n_after=53
+1 start_n=0 => count=0 n_after=0
+2 start_n=10 => count=50 n_after=60
+SAME    conformance/undefined/for_bound_modified.st
+### conformance/undefined/int_overflow.st
+0 a=1 b=2 => s=3 d=-1
+1 a=32767 b=1 => s=-32768 d=32766
+2 a=-32768 b=-1 => s=32767 d=-32767
+3 a=-32768 b=1 => s=-32767 d=32767
+4 a=32767 b=32767 => s=-2 d=0
+5 a=-32768 b=-32768 => s=0 d=0
+SAME    conformance/undefined/int_overflow.st
+### conformance/undefined/ton_pt_change.st
+0 in=FALSE pt=T#500ms => q=FALSE et=T#0ms
+1 in=TRUE => q=FALSE et=T#0ms
+2 => q=FALSE et=T#100ms
+3 pt=T#200ms => q=TRUE et=T#200ms
+4 => q=TRUE et=T#200ms
+5 pt=T#800ms => q=TRUE et=T#200ms
+6 => q=TRUE et=T#200ms
+7 => q=TRUE et=T#200ms
+8 => q=TRUE et=T#200ms
+9 => q=TRUE et=T#200ms
+10 => q=TRUE et=T#200ms
+11 => q=TRUE et=T#200ms
+12 in=FALSE => q=FALSE et=T#0ms
+DIFFERS conformance/undefined/ton_pt_change.st
+        cycle 5 (trace line 31): et expected T#400ms, got T#200ms
+        cycle 6 (trace line 32): et expected T#500ms, got T#200ms
+        cycle 7 (trace line 33): et expected T#600ms, got T#200ms
+        cycle 8 (trace line 34): et expected T#700ms, got T#200ms
+        cycle 9 (trace line 35): et expected T#800ms, got T#200ms
+        cycle 10 (trace line 36): et expected T#800ms, got T#200ms
+        cycle 11 (trace line 37): et expected T#800ms, got T#200ms
+
+18 tests: 10 pass, 2 fail, 4 same, 2 differs, 0 error
+exit 1

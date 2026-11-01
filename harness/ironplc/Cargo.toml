@@ -1,0 +1,15 @@
+[package]
+name = "iec61131-conformance-ironplc"
+version = "0.1.0"
+edition = "2021"
+description = "Runs the IEC 61131-3 conformance traces against the IronPLC VM"
+license = "CC0-1.0"
+
+# The IronPLC checkout is reached through the `ironplc-src` symlink at the
+# suite root (see README.md). The harness links the VM crate directly so it
+# can drive simulated time and write inputs, which the ironplcvm CLI cannot.
+[dependencies]
+ironplc-vm = { path = "../../ironplc-src/compiler/vm" }
+ironplc-container = { path = "../../ironplc-src/compiler/container" }
+
+[workspace]

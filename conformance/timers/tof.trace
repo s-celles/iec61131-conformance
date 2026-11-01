@@ -1,0 +1,37 @@
+# TOF, PT = 200 ms, period 100 ms.
+#
+# Derivation (ed.3 table 46 / ed.2 figure 20, TOF timing diagram):
+#   - Q follows IN rising immediately; while IN is TRUE, ET = 0;
+#   - at the falling edge of IN, timing starts; Q stays TRUE while
+#     t - t_fall < PT and ET = min(PT, t - t_fall);
+#   - when t - t_fall reaches PT, Q falls; the diagram shows ET staying at PT
+#     until the next rising edge of IN, which resets ET to 0;
+#   - a rising edge of IN during the off-delay aborts it: Q stays TRUE, ET
+#     goes back to 0.
+# Initial state before any rising edge: Q = FALSE, ET = 0 (default initial
+# values of the outputs; the diagram starts with IN and Q both FALSE).
+period_ms: 100
+program: main
+inputs: in
+outputs: q et
+status: conformant
+reference: IEC 61131-3 ed.3 6.6.3.5.4 table 46 (TOF timing diagram)
+---
+0  in=FALSE => q=FALSE et=T#0ms
+1  in=TRUE  => q=TRUE  et=T#0ms
+2           => q=TRUE  et=T#0ms
+# falling edge seen at t = 300
+3  in=FALSE => q=TRUE  et=T#0ms
+4           => q=TRUE  et=T#100ms
+# t = 500: elapsed 200 >= PT, Q falls
+5           => q=FALSE et=T#200ms
+# ET holds PT after expiry while IN stays FALSE (diagram)
+6           => q=FALSE et=T#200ms
+7  in=TRUE  => q=TRUE  et=T#0ms
+# falling edge at t = 800, then IN rises again at t = 900 before PT: abort
+8  in=FALSE => q=TRUE  et=T#0ms
+9  in=TRUE  => q=TRUE  et=T#0ms
+# new falling edge at t = 1000
+10 in=FALSE => q=TRUE  et=T#0ms
+11          => q=TRUE  et=T#100ms
+12          => q=FALSE et=T#200ms

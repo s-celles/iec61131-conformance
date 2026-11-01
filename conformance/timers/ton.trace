@@ -1,0 +1,34 @@
+# TON, PT = 300 ms, period 100 ms.
+#
+# Derivation (IEC 61131-3 ed.3 table 46 / ed.2 figure 20, TON timing
+# diagram; the standard defines TON by diagram, not by an ST body):
+#   - while IN is FALSE: Q = FALSE, ET = 0;
+#   - at the rising edge of IN, timing starts from 0;
+#   - while IN stays TRUE, ET = min(PT, t - t_rise) and Q = (t - t_rise >= PT);
+#   - when IN falls, Q = FALSE and ET = 0 at once, whether or not PT was reached.
+# Discrete-time assumption (stated, not in the standard): the block is
+# evaluated once per cycle at PLC time t = cycle * period_ms, and the rising
+# edge is seen at the first cycle in which the block sees IN = TRUE, so
+# t_rise is that cycle's time.
+period_ms: 100
+program: main
+inputs: in
+outputs: q et
+status: conformant
+reference: IEC 61131-3 ed.3 6.6.3.5.4 table 46 (TON timing diagram)
+---
+0  in=FALSE => q=FALSE et=T#0ms
+# rising edge seen at t = 100 ms
+1  in=TRUE  => q=FALSE et=T#0ms
+2           => q=FALSE et=T#100ms
+3           => q=FALSE et=T#200ms
+# t = 400: elapsed 300 >= PT, Q rises on the same evaluation; ET clamps at PT
+4           => q=TRUE  et=T#300ms
+5           => q=TRUE  et=T#300ms
+6  in=FALSE => q=FALSE et=T#0ms
+# second rising edge at t = 700
+7  in=TRUE  => q=FALSE et=T#0ms
+8           => q=FALSE et=T#100ms
+# IN falls before PT: reset without Q ever rising
+9  in=FALSE => q=FALSE et=T#0ms
+10          => q=FALSE et=T#0ms

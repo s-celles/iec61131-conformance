@@ -1,0 +1,27 @@
+# SR and RS bistables, period 100 ms (time is irrelevant).
+#
+# Derivation: ST bodies in the standard (ed.3 table 42 / ed.2 table 34):
+#   SR:  Q1 := S1 OR (NOT R AND Q1);     set dominant
+#   RS:  Q1 := NOT R1 AND (S OR Q1);     reset dominant
+# Q1 starts FALSE (default initial value).
+period_ms: 100
+program: main
+inputs: s r
+outputs: q_sr q_rs
+status: conformant
+reference: IEC 61131-3 ed.3 6.6.3.5.1 table 42 (SR, RS bodies)
+---
+0 s=FALSE r=FALSE => q_sr=FALSE q_rs=FALSE
+1 s=TRUE          => q_sr=TRUE  q_rs=TRUE
+# both held after S is released
+2 s=FALSE         => q_sr=TRUE  q_rs=TRUE
+3 r=TRUE          => q_sr=FALSE q_rs=FALSE
+4 r=FALSE         => q_sr=FALSE q_rs=FALSE
+# both asserted: SR sets, RS resets
+5 s=TRUE r=TRUE   => q_sr=TRUE  q_rs=FALSE
+6 s=FALSE r=FALSE => q_sr=TRUE  q_rs=FALSE
+7 r=TRUE          => q_sr=FALSE q_rs=FALSE
+# reset alone on an already-reset latch
+8 r=FALSE         => q_sr=FALSE q_rs=FALSE
+9 s=TRUE          => q_sr=TRUE  q_rs=TRUE
+10 r=TRUE         => q_sr=TRUE  q_rs=FALSE

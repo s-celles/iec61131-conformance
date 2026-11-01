@@ -1,0 +1,6 @@
+name = "iec61131-conformance"
+version = "0.1.0"
+defaultTargets = ["Conformance"]
+
+[[lean_lib]]
+name = "Conformance"

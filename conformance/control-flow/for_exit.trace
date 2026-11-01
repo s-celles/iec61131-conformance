@@ -1,0 +1,30 @@
+# FOR with EXIT, period 100 ms (time is irrelevant).
+#
+# Derivation: ed.3 7.3.3.4.2 (FOR): the control variable runs from the
+# initial value to the final value in steps of BY (default 1); the test
+# "control variable <= final value" (or >= for a negative step) is made
+# before each iteration, so a FOR whose initial value already exceeds the
+# final value executes its body zero times. EXIT (7.3.3.4.4) leaves the
+# innermost loop immediately. The value of the control variable after the
+# loop is implementation-dependent, so i and j are not exposed.
+#   n <= 0 : body never runs
+#   n = 3  : i = 1,2,3            sum 6,  last 3, count 3
+#   n = 5  : i = 1..5             sum 15, last 5, count 5
+#   n = 10 : i = 1..5 then EXIT at i = 6: sum 15, last 5, count 5
+# Negative step: j = 10, 7, 4, 1 -> down_count 4, down_sum 22, every cycle.
+period_ms: 100
+program: main
+inputs: n
+outputs: sum last count down_count down_sum
+status: conformant
+reference: IEC 61131-3 ed.3 7.3.3.4.2 (FOR), 7.3.3.4.4 (EXIT)
+---
+0 n=0   => sum=0  last=0 count=0 down_count=4 down_sum=22
+1 n=-2  => sum=0  last=0 count=0 down_count=4 down_sum=22
+2 n=1   => sum=1  last=1 count=1 down_count=4 down_sum=22
+3 n=3   => sum=6  last=3 count=3 down_count=4 down_sum=22
+4 n=5   => sum=15 last=5 count=5 down_count=4 down_sum=22
+5 n=6   => sum=15 last=5 count=5 down_count=4 down_sum=22
+6 n=10  => sum=15 last=5 count=5 down_count=4 down_sum=22
+7 n=32767 => sum=15 last=5 count=5 down_count=4 down_sum=22
+8 n=2   => sum=3  last=2 count=2 down_count=4 down_sum=22

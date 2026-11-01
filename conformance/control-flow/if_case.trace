@@ -1,0 +1,27 @@
+# IF/ELSIF/ELSE and CASE, period 100 ms (time is irrelevant).
+#
+# Derivation: ed.3 7.3.3.3.1 (IF: the first condition that is TRUE selects
+# its statements, ELSE if none) and 7.3.3.3.2 (CASE: the selector is
+# compared to each case list; a list may hold single values, comma-separated
+# values and subranges lo..hi inclusive; ELSE if no match; the integer
+# literal -1 is a valid case value). Every output is recomputed each cycle,
+# so no state carries over.
+period_ms: 100
+program: main
+inputs: x
+outputs: sign bucket
+status: conformant
+reference: IEC 61131-3 ed.3 7.3.3.3.1, 7.3.3.3.2
+---
+0 x=-5     => sign=-1 bucket=0
+1 x=0      => sign=0  bucket=0
+2 x=1      => sign=1  bucket=10
+3 x=2      => sign=1  bucket=20
+4 x=3      => sign=1  bucket=20
+5 x=4      => sign=1  bucket=30
+6 x=5      => sign=1  bucket=30
+7 x=6      => sign=1  bucket=30
+8 x=7      => sign=1  bucket=0
+9 x=-1     => sign=-1 bucket=-10
+10 x=-32768 => sign=-1 bucket=0
+11 x=32767  => sign=1  bucket=0

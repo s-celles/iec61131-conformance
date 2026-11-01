@@ -1,0 +1,24 @@
+# FOR loop whose final value is modified inside the loop body.
+#
+# What the standard says: ed.3 7.3.3.4.2: the FOR statement is for loops
+# whose number of iterations can be determined in advance; the control
+# variable, initial value, final value and increment "shall not be altered
+# by any of the repeated statements". Modifying the final value is
+# therefore a violation and the behaviour is not defined: a runtime may
+# evaluate the final value once (3 iterations for start_n = 3) or on every
+# iteration (unbounded, here stopped by the count >= 50 guard).
+#
+# What IronPLC 0.251.0 (5ea0610) does: the final value is re-read on
+# every iteration, so the loop only stops at the guard: count = 50 and n
+# ended at start_n + 50. Recorded 2026-10-31.
+period_ms: 100
+program: main
+inputs: start_n
+outputs: count n_after
+status: implementation-defined
+reference: IEC 61131-3 ed.3 7.3.3.4.2 (FOR)
+---
+0 start_n=3 => count=50 n_after=53
+# initial value 1 > final value 0: zero iterations whatever the rule
+1 start_n=0 => count=0 n_after=0
+2 start_n=10 => count=50 n_after=60

@@ -1,0 +1,22 @@
+# Function calls, period 100 ms (time is irrelevant).
+#
+# Derivation: ed.3 6.6.1 (functions: a POU with no internal state whose
+# result is the value assigned to its name; formal/positional parameter
+# passing; a function call is an expression and may be nested in another
+# call's argument). Local variables of a function are not retained between
+# calls.
+#   y = clamp(x, -10, 10)
+#   e = 2 * clamp(x, 0, 100) + d
+period_ms: 100
+program: main
+inputs: x d
+outputs: y e
+status: conformant
+reference: IEC 61131-3 ed.3 6.6.1, 7.3.2 (function call expressions)
+---
+0 x=5    d=1        => y=5   e=11
+1 x=50   d=-4       => y=10  e=96
+2 x=-50  d=0        => y=-10 e=0
+3 x=-10  d=1000000  => y=-10 e=1000000
+4 x=200  d=-200     => y=10  e=0
+5 x=0    d=2147483647 => y=0 e=2147483647

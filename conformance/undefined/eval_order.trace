@@ -1,0 +1,27 @@
+# Operand evaluation order with a side-effecting function.
+#
+# What the standard says: ed.3 7.3.1 (expressions) defines operator
+# precedence and says operators of equal precedence are applied left to
+# right, but it does not say in which order the OPERANDS of a binary
+# operator are evaluated. Moreover functions "shall not contain internal
+# state" and a function whose VAR_IN_OUT argument is modified is a side
+# effect the standard does not reason about; passing the same variable to
+# two calls in one expression is not forbidden but its outcome is not
+# specified. So y may be -19 (left operand first), -8 (right operand first)
+# or anything else.
+#
+# What IronPLC 0.251.0 (5ea0610) does: left operand first, then the right
+# operand, each BUMP writing back to c immediately:
+#   y = 1 - 10 * 2 = -19 with c = 2 after the cycle;
+#   without reset, c keeps growing: y = 3 - 10 * 4 = -37, c = 4.
+# Recorded 2026-10-31.
+period_ms: 100
+program: main
+inputs: reset
+outputs: y c
+status: implementation-defined
+reference: IEC 61131-3 ed.3 7.3.1 (expressions), 6.6.1.1 (functions)
+---
+0 reset=TRUE => y=-19 c=2
+1 reset=TRUE => y=-19 c=2
+2 reset=FALSE => y=-37 c=4

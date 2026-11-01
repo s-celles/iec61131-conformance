@@ -1,0 +1,23 @@
+# Function block with two instances, period 100 ms (time is irrelevant).
+#
+# Derivation: ed.3 6.6.2 (function blocks: each instance has its own copy
+# of inputs, outputs and internal variables, retained between invocations;
+# an invocation assigns the inputs, executes the body, and the outputs can
+# be read with instance.output or bound with output => variable). Both
+# output-reading forms are used, one per instance, and must agree in
+# behaviour. calls counts every invocation, total only enabled ones.
+period_ms: 100
+program: main
+inputs: enable_a inc_a enable_b inc_b
+outputs: tot_a tot_b calls_a calls_b
+status: conformant
+reference: IEC 61131-3 ed.3 6.6.2, 7.3.3.2.2 (FB invocation in ST)
+---
+0 enable_a=TRUE inc_a=5 enable_b=FALSE inc_b=100 => tot_a=5  tot_b=0   calls_a=1 calls_b=1
+1                                         => tot_a=10 tot_b=0   calls_a=2 calls_b=2
+2 enable_b=TRUE                               => tot_a=15 tot_b=100 calls_a=3 calls_b=3
+3 enable_a=FALSE                              => tot_a=15 tot_b=200 calls_a=4 calls_b=4
+4 inc_a=-1000                             => tot_a=15 tot_b=300 calls_a=5 calls_b=5
+5 enable_a=TRUE enable_b=FALSE                    => tot_a=-985 tot_b=300 calls_a=6 calls_b=6
+6 inc_b=-300                              => tot_a=-1985 tot_b=300 calls_a=7 calls_b=7
+7 enable_b=TRUE                               => tot_a=-2985 tot_b=0 calls_a=8 calls_b=8

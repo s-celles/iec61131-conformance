@@ -1,0 +1,20 @@
+# WHILE and REPEAT, period 100 ms (time is irrelevant).
+#
+# Derivation: ed.3 7.3.3.4.3: WHILE evaluates its condition before each
+# pass (zero passes when the condition is FALSE at entry); REPEAT evaluates
+# the UNTIL condition after each pass, so the body runs at least once.
+#   WHILE: k counts to n, acc = 1 + 2 + ... + n = n(n+1)/2.
+#   REPEAT: rep = max(n, 1).
+period_ms: 100
+program: main
+inputs: n
+outputs: iters acc rep
+status: conformant
+reference: IEC 61131-3 ed.3 7.3.3.4.3 (WHILE, REPEAT)
+---
+0 n=0    => iters=0   acc=0    rep=1
+1 n=1    => iters=1   acc=1    rep=1
+2 n=4    => iters=4   acc=10   rep=4
+3 n=100  => iters=100 acc=5050 rep=100
+4 n=0    => iters=0   acc=0    rep=1
+5 n=1000 => iters=1000 acc=500500 rep=1000

@@ -1,0 +1,46 @@
+# TP, PT = 300 ms, period 100 ms.
+#
+# Derivation (ed.3 table 46 / ed.2 figure 20, TP timing diagram):
+#   - at a rising edge of IN while no pulse is running, Q becomes TRUE and
+#     timing starts; ET = min(PT, t - t_rise);
+#   - the pulse lasts exactly PT regardless of IN: IN falling during the
+#     pulse does not shorten it, IN rising again during the pulse does not
+#     retrigger it;
+#   - when t - t_rise reaches PT, Q falls. If IN is still TRUE, ET stays at
+#     PT until IN falls; no new pulse starts until a NEW rising edge of IN;
+#   - once IN is FALSE after the pulse, ET = 0.
+# The cycle on which the pulse ends with IN already FALSE is the only one the
+# diagram leaves open for ET (it reaches PT and returns to 0 at the same
+# instant), hence `et=?` on cycle 4.
+period_ms: 100
+program: main
+inputs: in
+outputs: q et
+status: conformant
+reference: IEC 61131-3 ed.3 6.6.3.5.4 table 46 (TP timing diagram)
+---
+0  in=FALSE => q=FALSE et=T#0ms
+# rising edge at t = 100: pulse starts
+1  in=TRUE  => q=TRUE  et=T#0ms
+# IN dropped: pulse continues
+2  in=FALSE => q=TRUE  et=T#100ms
+3           => q=TRUE  et=T#200ms
+# t = 400: elapsed 300 >= PT, pulse ends with IN FALSE; ET at that instant is open
+4           => q=FALSE et=?
+5           => q=FALSE et=T#0ms
+# second pulse, IN held TRUE well past PT
+6  in=TRUE  => q=TRUE  et=T#0ms
+7           => q=TRUE  et=T#100ms
+8           => q=TRUE  et=T#200ms
+9           => q=FALSE et=T#300ms
+# IN still TRUE: no retrigger, ET holds PT
+10          => q=FALSE et=T#300ms
+11          => q=FALSE et=T#300ms
+12 in=FALSE => q=FALSE et=T#0ms
+# third pulse: a rising edge of IN during the pulse is ignored
+13 in=TRUE  => q=TRUE  et=T#0ms
+14 in=FALSE => q=TRUE  et=T#100ms
+15 in=TRUE  => q=TRUE  et=T#200ms
+16          => q=FALSE et=T#300ms
+17          => q=FALSE et=T#300ms
+18 in=FALSE => q=FALSE et=T#0ms

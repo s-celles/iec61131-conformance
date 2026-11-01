@@ -1,0 +1,28 @@
+# R_TRIG, period 100 ms (time is irrelevant to this block).
+#
+# Derivation: the standard gives R_TRIG as an ST body (ed.3 table 43 /
+# ed.2 table 35):
+#   VAR M : BOOL; END_VAR        (* M initial value FALSE *)
+#   Q := CLK AND NOT M;
+#   M := CLK;
+# so Q is TRUE for exactly the one evaluation in which CLK is TRUE and was
+# FALSE at the previous evaluation. Because M starts FALSE, a CLK that is
+# TRUE at the very first evaluation produces an edge; this trace starts with
+# CLK = FALSE so that no runtime is penalised for a different initial M, and
+# documents the first-call case in notes/findings.md instead.
+period_ms: 100
+program: main
+inputs: clk
+outputs: q
+status: conformant
+reference: IEC 61131-3 ed.3 6.6.3.5.2 table 43 (R_TRIG body)
+---
+0 clk=FALSE => q=FALSE
+1 clk=TRUE  => q=TRUE
+2           => q=FALSE
+3           => q=FALSE
+4 clk=FALSE => q=FALSE
+5 clk=TRUE  => q=TRUE
+6 clk=FALSE => q=FALSE
+7 clk=TRUE  => q=TRUE
+8 clk=TRUE  => q=FALSE

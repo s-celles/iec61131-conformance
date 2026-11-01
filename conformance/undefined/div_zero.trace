@@ -1,0 +1,24 @@
+# Integer division and MOD by zero.
+#
+# What the standard says: ed.3 6.6.1.5 (table 29 / 30) defines DIV and
+# MOD; ed.2 annex E table E.1 lists "division by zero" as an error, with
+# implementer-specific detection and reaction. Ed.3 states that an
+# implementation-specific error reaction applies (the result is not
+# defined). Note also that integer division of negative operands is
+# defined as truncation toward zero (ed.2 2.5.1.5.2: "the result of DIV
+# shall be truncated toward zero"), hence -7 / 2 = -3 and -7 MOD 2 = -1
+# on cycle 1, which IS conformant and is kept here as context.
+#
+# What IronPLC 0.251.0 (5ea0610) does: the scan stops with the runtime
+# trap "divide by zero" (VmFaulted); MOD by zero is not reached because the
+# trap on the division ends the scan. Recorded 2026-10-31.
+period_ms: 100
+program: main
+inputs: a b
+outputs: q m
+status: implementation-defined
+reference: IEC 61131-3 ed.2 annex E table E.1; ed.2 2.5.1.5.2 (DIV, MOD)
+---
+0 a=7 b=2 => q=3 m=1
+1 a=-7 b=2 => q=-3 m=-1
+2 a=7 b=0 => trap

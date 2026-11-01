@@ -1,0 +1,26 @@
+# F_TRIG, period 100 ms (time is irrelevant to this block).
+#
+# Derivation: ST body in the standard (ed.3 table 43 / ed.2 table 35):
+#   VAR M : BOOL := TRUE; END_VAR
+#   Q := NOT CLK AND NOT M;
+#   M := NOT CLK;
+# M starts TRUE, so a CLK that is FALSE at the first evaluation does NOT
+# produce an edge (cycle 0 below checks exactly that). Q is TRUE for the one
+# evaluation in which CLK is FALSE and was TRUE at the previous evaluation.
+period_ms: 100
+program: main
+inputs: clk
+outputs: q
+status: conformant
+reference: IEC 61131-3 ed.3 6.6.3.5.2 table 43 (F_TRIG body)
+---
+0 clk=FALSE => q=FALSE
+1 clk=TRUE  => q=FALSE
+2 clk=FALSE => q=TRUE
+3           => q=FALSE
+4 clk=TRUE  => q=FALSE
+5 clk=TRUE  => q=FALSE
+6 clk=FALSE => q=TRUE
+7 clk=TRUE  => q=FALSE
+8 clk=FALSE => q=TRUE
+9 clk=FALSE => q=FALSE
