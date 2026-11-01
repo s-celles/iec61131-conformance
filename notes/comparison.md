@@ -83,7 +83,7 @@ Legend: PASS/FAIL for `status: conformant` traces; SAME/DIFFERS for
 | ops/std_functions | PASS | PASS | PASS | |
 | ops/std_functions_ext | **FAIL** (compile) | PASS | **FAIL** (compile) | IronPLC: MAX and MIN with three inputs are P4018 (findings #11, ironplc#2548); RuSTy: formal argument names on a standard function (`LIMIT(MN := ..)`) are E048 "Could not resolve reference to MN" (other runtimes #4) |
 | ops/conversions | PASS | PASS | PASS | |
-| ops/time_arith | PASS | **ERROR** (build) | PASS | matiec emits `_____time_add`/`_____time_sub` for `+`/`-` on TIME (`print_binary_function` adds `___` to a name that already starts with `__`), a symbol that does not exist, so the program never builds (beremiz/matiec#40); with #40 fixed, `T#1h2m3s4ms` is still 1 ns short (beremiz/matiec#44) |
+| ops/time_arith | PASS | **ERROR** (build) | PASS | matiec emits `_____time_add`/`_____time_sub` for `+`/`-` on TIME (`print_binary_function` adds `___` to a name that already starts with `__`), a symbol that does not exist, so the program never builds (beremiz/matiec#40, fix in PR #45); with #40 fixed, `T#1h2m3s4ms` is still 1 ns short (beremiz/matiec#44) |
 | ops/literals | PASS | PASS | PASS | |
 | ops/bit_ops | PASS | PASS | PASS | |
 | data/array_internal | PASS | PASS | PASS | |
@@ -98,16 +98,16 @@ Legend: PASS/FAIL for `status: conformant` traces; SAME/DIFFERS for
 | ops/lreal_precision | PASS | PASS | **FAIL** (cycles 0-3, big) | binary64 within 1e-12; RuSTy evaluates the untyped literals of `1.0E15 + 1.0` as REAL before widening, giving 999999986991104 (other runtimes #6) |
 | strings/literals_escapes | PASS | PASS | PASS | |
 | strings/declared_length | PASS | **FAIL** (compile) | PASS | matiec: a `STRING[n]` variable is parsed but then "not declared in this scope" (stage3 visitors for `single_byte_string_var_declaration_c` are commented out; beremiz/matiec#42) |
-| strings/functions | PASS | **FAIL** (cycle 0) | PASS | matiec: `REPLACE(IN1, IN2, L, P)` copies only min(LEN(IN2), L) characters of IN2 (`__replace`, `iec_std_functions.h`), so with L = 1 'hYllo' instead of 'hYYllo' (beremiz/matiec#41) |
+| strings/functions | PASS | **FAIL** (cycle 0) | PASS | matiec: `REPLACE(IN1, IN2, L, P)` copies only min(LEN(IN2), L) characters of IN2 (`__replace`, `iec_std_functions.h`), so with L = 1 'hYllo' instead of 'hYYllo' (beremiz/matiec#41, fix in PR #46) |
 | strings/compare | PASS | PASS | PASS | |
 | strings/concat_assign | PASS | PASS | PASS | |
 | config/globals_external | PASS | PASS | **ERROR** (configuration) | SPEC version 2; RuSTy's harness does not take configurations (RuSTy compiles one program) |
 | config/two_periods | **FAIL** (compile) | PASS | **ERROR** (configuration) | IronPLC: one program instance only (findings #18, ironplc#1613) |
-| config/priority_order | **FAIL** (compile) | **FAIL** (cycles 0-3) | **ERROR** (configuration) | matiec runs the tasks of a resource in declaration order, ignoring PRIORITY (`RES0_run__` in the generated res0.c; beremiz/matiec#43), so the reader sees g one step late |
+| config/priority_order | **FAIL** (compile) | **FAIL** (cycles 0-3) | **ERROR** (configuration) | matiec runs the tasks of a resource in declaration order, ignoring PRIORITY (`RES0_run__` in the generated res0.c; beremiz/matiec#43, fix in PR #48), so the reader sees g one step late |
 | config/global_exchange | **FAIL** (compile) | PASS | **ERROR** (configuration) | |
 | config/event_single | **FAIL** (compile) | PASS | **ERROR** (configuration) | IronPLC: P4047 SINGLE not supported (findings #18); matiec: an R_TRIG on the SINGLE input, one run per rising edge |
 | undefined/int_overflow | SAME | SAME | SAME | all three wrap in two's complement |
-| undefined/div_zero | SAME | SAME | SAME | IronPLC: VM trap "divide by zero"; matiec and RuSTy: native integer division, the process receives SIGFPE (the drivers report it as `trap`). All stop the scan; none computes `MOD`. matiec's `/` is a bare C division, so on AArch64 it returns 0 instead of trapping (beremiz/matiec#38); its `MOD` and `DIV()` are guarded |
+| undefined/div_zero | SAME | SAME | SAME | IronPLC: VM trap "divide by zero"; matiec and RuSTy: native integer division, the process receives SIGFPE (the drivers report it as `trap`). All stop the scan; none computes `MOD`. matiec's `/` is a bare C division, so on AArch64 it returns 0 instead of trapping (beremiz/matiec#38, fix in PR #47); its `MOD` and `DIV()` are guarded |
 | undefined/eval_order | SAME | SAME | SAME | all three evaluate the left operand of `-` first |
 | undefined/for_bound_modified | SAME | SAME | SAME | all three re-read the final value on every iteration |
 | undefined/ctu_pv_zero | SAME | **DIFFERS** | SAME | IronPLC counts (CV = 1, 2) with Q always TRUE; matiec never counts because `CV < PV` is false at PV = 0, Q always TRUE. Same Q, different CV |
