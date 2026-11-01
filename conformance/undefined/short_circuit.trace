@@ -1,0 +1,18 @@
+# Short-circuit evaluation of AND / OR: implementation-defined.
+#
+# ed.3 7.3.2 (ed.2 3.3.1): "Boolean expressions may be evaluated only as
+# far as necessary to determine the resultant value", so with g = FALSE
+# the right operand of AND, and with g = TRUE the right operand of OR, may
+# or may not be evaluated. a and o themselves are fixed: a = g, o = TRUE.
+# n_and / n_or record whether the function was called; this trace records
+# IronPLC's behaviour (full evaluation: 1 / 1).
+period_ms: 100
+program: main
+inputs: g
+outputs: a o n_and n_or
+status: implementation-defined
+reference: IEC 61131-3 ed.3 7.3.2 (expression evaluation); ed.2 3.3.1
+---
+0 g=FALSE => a=FALSE o=TRUE n_and=1 n_or=1
+1 g=TRUE => a=TRUE o=TRUE n_and=1 n_or=1
+2 g=FALSE => a=FALSE o=TRUE n_and=1 n_or=1

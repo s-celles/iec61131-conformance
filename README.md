@@ -7,7 +7,7 @@ Text runtimes: plain `.st` programs paired with plain-text expected
 input/output traces, one record per scan cycle. Dedicated to the public
 domain under CC0 1.0 (see `LICENSE`).
 
-Status: 67 tests, run against IronPLC, matiec, OpenPLC's matiec fork, STruC++
+Status: 81 tests, run against IronPLC, matiec, OpenPLC's matiec fork, STruC++
 (and RuSTy,
 see `notes/comparison.md`), with a Lean 4 model of the function block
 semantics that the expected traces are proved to follow from.
@@ -28,8 +28,11 @@ conformance/
                real_arith real_functions        REAL + - * /, SQRT ABS EXP LN SIN COS
                real_power real_conversions      EXPT and **, INT/DINT/UINT <-> REAL/LREAL
                real_compare lreal_precision     comparisons, binary64 at full precision
+               date_time trunc                  DATE/TOD/DT arithmetic and conversions, TRUNC
   data/        array_internal array_init        arrays (negative bounds, initialisers)
                struct_internal enum             structures (copy, nesting), enumerations
+               array_2d array_of_struct         2-D array, array of a named array type, array of structures
+               defaults                         default initial values of every type
   strings/     literals_escapes declared_length STRING literals and $ escapes, STRING[n]
                functions compare concat_assign  LEN CONCAT LEFT RIGHT MID INSERT DELETE REPLACE FIND, < =, copies
   config/      globals_external                 VAR_GLOBAL / VAR_EXTERNAL (SPEC version 2: the .st has
@@ -37,17 +40,21 @@ conformance/
                global_exchange event_single     producer/consumer through a global, SINGLE task
   control-flow/ if_case for_exit while          IF/CASE, FOR+EXIT, WHILE/REPEAT
                nested_exit case_expr            EXIT in nested loops, CASE on an expression
+               return continue for_step         RETURN, CONTINUE (ed.3), FOR BY -n and empty ranges
   pou/         function_call fb_two_instances   functions, FB instances
                fb_input_retention fb_input_defaults  FB inputs kept across calls, initial values
                function_var_not_retained fb_var_temp FUNCTION VAR and VAR_TEMP are not retained
                fb_en_eno                        implicit EN/ENO on a function block
+               fb_in_out function_var_output    VAR_IN_OUT (FB and function), function VAR_OUTPUT (=>)
+               function_input_default fb_method omitted function inputs, METHOD (ed.3)
   undefined/   int_overflow div_zero eval_order ton_pt_change
                for_bound_modified ctu_pv_zero   corners the standard leaves open
                for_var_after_loop timer_pt_zero
                abs_int_min dint_to_int_overflow
                array_out_of_bounds real_div_zero real_to_int_ties
                string_truncate string_conversions
-               tasks_same_priority
+               tasks_same_priority short_circuit
+               subrange_out_of_range
 harness/
   ironplc/     Rust: drives the ironplc_vm crate with simulated time
   matiec/      Python: iec2c + generated C driver with simulated time (also
@@ -63,7 +70,7 @@ notes/
   evidence/         full harness outputs
 ```
 
-Each test is `<name>.st` + `<name>.trace`. Fifty-one tests under the first
+Each test is `<name>.st` + `<name>.trace`. Sixty-three tests under the first
 nine categories are `status: conformant`: their expected values were derived
 by hand from the standard's function block bodies and timing diagrams, and
 the derivation is written as a comment at the top of each `.trace` file.

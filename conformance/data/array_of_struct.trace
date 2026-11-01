@@ -1,0 +1,24 @@
+# Array of structures: initialiser, indexed member access, copy semantics.
+#
+# Derivation (ed.3 6.4.4.4.2 and table 14 (structure initialiser
+# "(x := 1, y := 10)" inside an array initialiser); 6.4.4.4 program
+# variables keep their value between cycles; assignment of a structure
+# copies it):
+#   pts starts as (1,10) (2,20) (3,30); pts[2].x accumulates k.
+#   sum_y is always 60 and copy_y always 30 (c.y := c.y + 1 touches the
+#   copy only).
+# cycle 0: k=1  -> pts[2].x = 3:  sum_x = 1+3+3 = 7,  px = 3
+# cycle 1: k=0  -> still 3:        sum_x = 7,          px = 3
+# cycle 2: k=5  -> 8:              sum_x = 12,         px = 8
+# cycle 3: k=-8 -> 0:              sum_x = 4,          px = 0
+period_ms: 100
+program: main
+inputs: k
+outputs: sum_x sum_y px copy_y
+status: conformant
+reference: IEC 61131-3 ed.3 6.4.4.4.2 (initialisation), table 14 (array of structures); ed.2 2.4.3.1
+---
+0 k=1 => sum_x=7 sum_y=60 px=3 copy_y=30
+1 k=0 => sum_x=7 sum_y=60 px=3 copy_y=30
+2 k=5 => sum_x=12 sum_y=60 px=8 copy_y=30
+3 k=-8 => sum_x=4 sum_y=60 px=0 copy_y=30

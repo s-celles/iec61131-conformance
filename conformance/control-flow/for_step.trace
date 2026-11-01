@@ -1,0 +1,24 @@
+# FOR: negative step, overshooting step, empty range, input range.
+#
+# Derivation (ed.3 7.3.3.4.2 / ed.2 3.3.2.4; the FOR semantics of table 72
+# / table 56: the test "control variable past the final value" is made
+# before each iteration, in the direction given by the sign of BY):
+#   10 TO 1 BY -3: i = 10, 7, 4, 1 (next, -2, is past 1): sum 22, 4 passes
+#   1 TO 10 BY 4:  i = 1, 5, 9 (next, 13, is past 10): sum 15, 3 passes
+#   5 TO 1 (BY 1): 5 is already past 1: 0 passes
+#   lo TO hi:      hi - lo + 1 passes when hi >= lo, else 0
+# cycle 0: lo=1  hi=3 -> up_n=3
+# cycle 1: lo=3  hi=3 -> up_n=1
+# cycle 2: lo=4  hi=3 -> up_n=0
+# cycle 3: lo=-2 hi=2 -> up_n=5
+period_ms: 100
+program: main
+inputs: lo hi
+outputs: down_sum down_n by4_sum by4_n empty_n up_n
+status: conformant
+reference: IEC 61131-3 ed.3 7.3.3.4.2 (FOR), table 72; ed.2 3.3.2.4, table 56
+---
+0 lo=1 hi=3 => down_sum=22 down_n=4 by4_sum=15 by4_n=3 empty_n=0 up_n=3
+1 lo=3 hi=3 => down_sum=22 down_n=4 by4_sum=15 by4_n=3 empty_n=0 up_n=1
+2 lo=4 hi=3 => down_sum=22 down_n=4 by4_sum=15 by4_n=3 empty_n=0 up_n=0
+3 lo=-2 hi=2 => down_sum=22 down_n=4 by4_sum=15 by4_n=3 empty_n=0 up_n=5

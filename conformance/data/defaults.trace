@@ -1,0 +1,19 @@
+# Default initial values.
+#
+# Derivation (ed.3 table 10 "default initial value" column: 0 for BOOL
+# (FALSE), the integer, bit-string and real types, T#0s for TIME, '' for
+# STRING; ed.3 6.4.4.4.3 / ed.2 2.3.3.1: an enumerated type starts at its
+# first value and a subrange at its lower limit; arrays and structures
+# take the defaults of their elements):
+#   b=FALSE i=0 d=0 u=0 bt=16#00 w=16#0000 dw=16#00000000 r=0.0 lr=0.0
+#   t=T#0ms s='' slen=0 is_red=TRUE lo_lim=5 arr=0 pa=0 pb=FALSE
+# No inputs; nothing changes between cycles.
+period_ms: 100
+program: main
+inputs:
+outputs: b i d u bt w dw r lr t s slen is_red lo_lim arr pa pb
+status: conformant
+reference: IEC 61131-3 ed.3 table 10 (default initial values), 6.4.4.4.3; ed.2 2.3.3.1, 2.4.2
+---
+0 => b=FALSE i=0 d=0 u=0 bt=16#00 w=16#0000 dw=16#00000000 r=0.0 lr=0.0 t=T#0ms s='' slen=0 is_red=TRUE lo_lim=5 arr=0 pa=0 pb=FALSE
+1 => b=FALSE i=0 d=0 u=0 bt=16#00 w=16#0000 dw=16#00000000 r=0.0 lr=0.0 t=T#0ms s='' slen=0 is_red=TRUE lo_lim=5 arr=0 pa=0 pb=FALSE

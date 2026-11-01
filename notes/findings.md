@@ -242,3 +242,44 @@ Reported: https://github.com/ironplc/ironplc/issues/2549
   program. The same limit would apply to `ironplcvm run --trace` and to
   MCP `stimuli` (ironplc#1163).
 - Asked for on the proposal: https://github.com/ironplc/ironplc/issues/2547#issuecomment-6558044129
+
+## 20. (Limitation) Edition 3 syntax: CONTINUE, METHOD
+
+- Reproducers: `control-flow/continue.st` (`P0002` at `CONTINUE;`),
+  `pou/fb_method.st` (`P0002` at `METHOD BUMP : INT`). Both are ed.3
+  additions (7.3.3.4.2, 6.6.3.5); matiec, an ed.2 compiler, has CONTINUE
+  but no METHOD; STruC++ has METHOD but no CONTINUE.
+
+## 21. (Limitation) VAR_IN_OUT of a function block is not lowered
+
+- Reproducer: `pou/fb_in_out.st`: `P9999 Capability is not implemented` at
+  `acc := acc + inc;` inside the FB (`lowering/src/program.rs#L581`). The
+  same `VAR_IN_OUT` on a FUNCTION (`SWAP`, and `TICK` in
+  `undefined/short_circuit.st`) compiles and runs.
+
+## 22. (Limitation) Array initialisers with structured elements
+
+- Reproducers: `data/array_of_struct.st`, `[(x := 1, y := 10), ...]`, and
+  `data/array_2d.st`, `[[10, 20, 30], [40, 50, 60]]` for an array of a named
+  array type: both `P0002` at the first `(` or `[` of the initialiser (ed.3
+  6.4.4.4.2, table 14). The flat initialiser of a two-dimensional array in
+  the same test is accepted (the test fails only on the nested one).
+
+## 23. (Defect) An input omitted from a formal function call is an error
+
+- Reproducer: `pou/function_input_default.st`: `SCALE(x := x)` where `k` and
+  `off` have initial values gives `P4018 Function call has wrong number of
+  arguments (function=SCALE, expected=3, actual=1)`. Ed.3 6.6.1.7.1: in a
+  formal call, the assignment of an input may be omitted and the input
+  keeps its initial value; the same rule for function blocks
+  (`pou/fb_input_defaults`) is honoured. matiec, its OpenPLC fork and
+  STruC++ apply the default.
+
+## 24. (Not a defect) Subrange and short-circuit corners
+
+- `undefined/subrange_out_of_range`: a value outside `INT (5..10)` is
+  stored unchecked (20, -3); the default initial value is the lower limit
+  (5, `data/defaults` passes).
+- `undefined/short_circuit`: `g AND f()` and `g OR f()` always call `f`
+  (full evaluation); OpenPLC's matiec fork short-circuits. Both are allowed
+  by ed.3 7.3.2.

@@ -149,6 +149,7 @@ Totals (67 tests, 51 with `status: conformant`): conformant tests passed, IronPL
 10. **`STRING[n]` declarations**: matiec rejects them after parsing ("not declared in this scope", beremiz/matiec#42); IronPLC and RuSTy accept them.
 11. **`REPLACE` with L shorter than IN2**: matiec inserts only L characters of IN2 (beremiz/matiec#41); IronPLC inserts all of IN2 as table 34 says.
 12. **Task priority**: matiec runs the tasks of a resource in declaration order and ignores PRIORITY (beremiz/matiec#43); IronPLC's VM orders by priority but compiles a single instance, so the comparison is between matiec and the standard's text here.
+13. **Functions with VAR_OUTPUT or VAR_IN_OUT do not build**: for such a function matiec emits a per-call `static inline` wrapper (`__MAIN_DIVMOD1`) outside the `#ifndef __POUS_INIT_ONLY__` guard, while the function's prototype is inside it; `config.c` includes `POUS.c` with that macro defined, so the wrapper calls an undeclared `___DIVMOD` (`pou/function_var_output`, `pou/fb_in_out` (`SWAP`), `undefined/short_circuit`). IronPLC, the OpenPLC fork (no guard) and STruC++ run them.
 
 Items 1, 2, 3 are IronPLC deviations from the standard's timing diagrams
 (matiec's `lib/timer.txt` reproduces those diagrams in its comments). Item 5
@@ -178,7 +179,21 @@ upstream matiec `3a41303`:
    computes in `long double`, which is 80-bit on x86-64 and plain `double`
    on AArch64, so the truncation only bites there.
 5. **No `__POUS_INIT_ONLY__` guard**: `undefined/eval_order` builds with
-   clang here (beremiz/matiec#39 is also later).
+   clang here (beremiz/matiec#39 is also later), and so do functions with
+   `VAR_OUTPUT` / `VAR_IN_OUT` (upstream item 13).
+6. **Nested array initialiser is an internal compiler error**:
+   `a : ARRAY[0..1] OF ROW := [[10, 20, 30], [40, 50, 60]]` with
+   `ROW : ARRAY[0..2] OF INT` stops `iec2c` with "Internal compiler error
+   in file ./generate_c_vardecl.cc at line 249" (`data/array_2d`); without
+   the initialiser it compiles, and upstream matiec accepts it.
+7. **Structure initialisers inside an array initialiser are rejected**:
+   `[(x := 1, y := 10), ...]` gives "Initialization element identifier (x)
+   is not declared in referenced structure/FB scope" (`data/array_of_struct`);
+   upstream matiec accepts it.
+8. **AND / OR short-circuit** (`undefined/short_circuit`, DIFFERS from the
+   IronPLC record): the generated C uses `&&` / `||`, so the right operand's
+   function is not called when the left one decides. Upstream matiec would do
+   the same but does not build the test (item 13).
 
 Shared with upstream: `REPLACE` (#41), `STRING[n]` (#42), task order (#43),
 counters saturating at PV / 0, rounding to even, the `/` operator unguarded.
@@ -234,6 +249,18 @@ as matiec's do. The failures are in the front end and the string codegen:
    tick regardless of the trigger. Reproducing that rule in the harness
    would only confirm the deviation; the real-time run would add
    non-determinism. Left as a documented limitation.
+8. **`TOD - TOD` is typed as `TOD`** instead of `TIME` (ed.3 table 30),
+   so `(TOD#12:00:00 + T#90m) - TOD#00:00:00` assigned to a TIME is rejected
+   with "Cannot assign TIME_OF_DAY to TIME" (`ops/date_time`); IronPLC and
+   the OpenPLC fork compute the test.
+9. **A subrange variable starts at 0, not at its lower limit**:
+   `sm : SMALL` with `SMALL : INT (5..10)` reads 0 (`data/defaults`, 5
+   expected per ed.3 6.4.4.4.3; IronPLC and both matiecs give 5). An
+   out-of-range assignment is stored unchecked, like the others
+   (`undefined/subrange_out_of_range`).
+10. **No `CONTINUE`** (ed.3 7.3.3.4.2): "Unexpected identifier `CONTINUE`
+   after `THEN`" (`control-flow/continue`). `METHOD` is supported
+   (`pou/fb_method` passes).
 
 ## RuSTy deviations (commit `e911ee5`)
 

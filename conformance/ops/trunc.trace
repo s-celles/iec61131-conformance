@@ -1,0 +1,21 @@
+# TRUNC: truncation toward zero.
+#
+# Derivation (ed.3 table 22 row 7 "TRUNC: truncation toward zero";
+# ed.2 table 22 row 6 "TRUNC: truncation toward zero"):
+#   3.7 -> 3, -3.7 -> -3 (not -4), 2.5 -> 2, -2.5 -> -2, 0.99 -> 0,
+#   -0.99 -> 0, 100.0 -> 100. Every value is exactly representable enough
+#   that the integer part is unambiguous in binary32.
+period_ms: 100
+program: main
+inputs: r
+outputs: t
+status: conformant
+reference: IEC 61131-3 ed.3 table 22 row 7; ed.2 table 22 row 6
+---
+0 r=3.7 => t=3
+1 r=-3.7 => t=-3
+2 r=2.5 => t=2
+3 r=-2.5 => t=-2
+4 r=0.99 => t=0
+5 r=-0.99 => t=0
+6 r=100.0 => t=100

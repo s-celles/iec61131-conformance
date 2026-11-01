@@ -1,0 +1,23 @@
+# RETURN in a function block and in a function.
+#
+# Derivation (ed.3 7.3.3.3.4 / ed.2 3.3.2.3: RETURN "provides early exit
+# from a function, function block or program"):
+#   GUARD: calls is incremented before the test, so it counts every
+#   invocation; y is only written when x >= 0 and keeps its last value
+#   otherwise (FB outputs are retained between calls).
+#   CLAMP10: v <= 10 gives v + 100; v > 10 returns 10 before the + 100.
+# cycle 0: x=3  -> y=6,  calls=1, c=103
+# cycle 1: x=-1 -> RETURN before y: y=6 kept, calls=2, c=99
+# cycle 2: x=15 -> y=30, calls=3, c=10 (returned before + 100)
+# cycle 3: x=0  -> y=0,  calls=4, c=100
+period_ms: 100
+program: main
+inputs: x
+outputs: y calls c
+status: conformant
+reference: IEC 61131-3 ed.3 7.3.3.3.4 (RETURN), 6.6.3.1 (FB outputs retained); ed.2 3.3.2.3
+---
+0 x=3 => y=6 calls=1 c=103
+1 x=-1 => y=6 calls=2 c=99
+2 x=15 => y=30 calls=3 c=10
+3 x=0 => y=0 calls=4 c=100

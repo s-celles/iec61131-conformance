@@ -1,0 +1,20 @@
+# VAR_IN_OUT on a function block and on a function.
+#
+# Derivation (ed.3 6.6.2.3: "VAR_IN_OUT ... the variable is passed by
+# reference", the POU reads and writes the caller's variable; ed.2 2.5.2.2
+# figure 11 and 2.5.1.3 for functions):
+#   total is the program's own variable handed to ADDER as acc, so it
+#   accumulates inc from cycle to cycle: 5, 8, 8, 0.
+#   SWAP exchanges x and y every cycle: (1,2) -> (2,1) -> (1,2) -> ...
+#   so p,q alternate 2,1 / 1,2; ok is always TRUE.
+period_ms: 100
+program: main
+inputs: inc
+outputs: total p q ok
+status: conformant
+reference: IEC 61131-3 ed.3 6.6.2.3 (VAR_IN_OUT), 6.6.1.7 (function call); ed.2 2.5.1.3, 2.5.2.2
+---
+0 inc=5 => total=5 p=2 q=1 ok=TRUE
+1 inc=3 => total=8 p=1 q=2 ok=TRUE
+2 inc=0 => total=8 p=2 q=1 ok=TRUE
+3 inc=-8 => total=0 p=1 q=2 ok=TRUE

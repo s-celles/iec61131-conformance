@@ -1,0 +1,26 @@
+# DATE / TOD / DT arithmetic and conversions, as TIME and BOOL.
+#
+# Derivation (ed.3 table 30 / ed.2 table 30, calendar arithmetic; 2024 is
+# a leap year so February has 29 days):
+#   d_sub   = 2024-03-01 - 2024-02-27 = 3 days = 259200000 ms
+#   tod_sub = 12:30:00 - 10:15:30.5 = 2h14m29.5s = 8069500 ms
+#   dt_sub  = 2024-03-01 12:30:00 - 2024-02-29 23:59:59 = 12h30m01s = 45001000 ms
+#   tod_add = 12:00 + 90 min = 13:30 -> 48600000 ms from midnight
+#   tod_min = 01:00 - 30 min = 00:30 -> 1800000 ms
+#   dt_add  = 2024-02-28 23:00 + 2 h = 2024-02-29 01:00 -> 25 h = 90000000 ms
+#             from 2024-02-28 00:00
+#   dt_min  = 2024-03-01 00:30 - 1 h = 2024-02-29 23:30 -> 23h30m = 84600000 ms
+#             from 2024-02-29 00:00
+#   same_d: DT_TO_DATE(DT#2024-03-01-12:30:00) = D#2024-03-01, TRUE
+#   same_t: DT_TO_TOD(DT#2024-03-01-12:30:00) = TOD#12:30:00, TRUE
+#   before: DT#2024-02-29-23:59:59 < DT#2024-03-01-12:30:00, TRUE
+# No inputs; the values are the same every cycle.
+period_ms: 100
+program: main
+inputs:
+outputs: d_sub tod_sub dt_sub tod_add tod_min dt_add dt_min same_d same_t before
+status: conformant
+reference: IEC 61131-3 ed.3 6.3.3 (literals), table 30 (ADD/SUB on date and time types), table 22 (DT_TO_DATE, DT_TO_TOD)
+---
+0 => d_sub=T#259200000ms tod_sub=T#8069500ms dt_sub=T#45001000ms tod_add=T#48600000ms tod_min=T#1800000ms dt_add=T#90000000ms dt_min=T#84600000ms same_d=TRUE same_t=TRUE before=TRUE
+1 => d_sub=T#259200000ms tod_sub=T#8069500ms dt_sub=T#45001000ms tod_add=T#48600000ms tod_min=T#1800000ms dt_add=T#90000000ms dt_min=T#84600000ms same_d=TRUE same_t=TRUE before=TRUE

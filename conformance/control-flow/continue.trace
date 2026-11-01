@@ -1,0 +1,24 @@
+# CONTINUE in FOR, WHILE and a nested FOR.
+#
+# Derivation (ed.3 7.3.3.4.2: "CONTINUE ... skips the remaining statements
+# of the loop body and continues with the next iteration"; not in ed.2, so
+# an ed.2-only implementation fails to compile):
+#   odd_sum: even i are skipped, so 1 + 3 + 5 + ... up to n
+#   w_count: k runs 1..n, the iteration k = 2 does not count, so n - 1
+#            when n >= 2, else n
+#   inner:   3 outer x 2 counted inner iterations = 6, whatever n
+# cycle 0: n=5 -> 9, 4, 6
+# cycle 1: n=0 -> 0, 0, 6
+# cycle 2: n=6 -> 9, 5, 6
+# cycle 3: n=1 -> 1, 1, 6
+period_ms: 100
+program: main
+inputs: n
+outputs: odd_sum w_count inner
+status: conformant
+reference: IEC 61131-3 ed.3 7.3.3.4.2 (CONTINUE), table 72
+---
+0 n=5 => odd_sum=9 w_count=4 inner=6
+1 n=0 => odd_sum=0 w_count=0 inner=6
+2 n=6 => odd_sum=9 w_count=5 inner=6
+3 n=1 => odd_sum=1 w_count=1 inner=6

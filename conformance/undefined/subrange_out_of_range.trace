@@ -1,0 +1,18 @@
+# Subrange violation: implementation-defined.
+#
+# ed.3 6.4.4.4.3 / ed.2 2.3.3.1 give the limits of a subrange and say
+# nothing about a value outside them (ed.3 6.4.4.4.3 only notes that the
+# behaviour "is implementation-dependent"). In range (cycle 0 and 3) the
+# value is simply stored. Out of range, this trace records IronPLC's
+# behaviour: the value is stored unchecked (20, -3).
+period_ms: 100
+program: main
+inputs: v
+outputs: s
+status: implementation-defined
+reference: IEC 61131-3 ed.3 6.4.4.4.3 (subrange); ed.2 2.3.3.1
+---
+0 v=7 => s=7
+1 v=20 => s=20
+2 v=-3 => s=-3
+3 v=10 => s=10
