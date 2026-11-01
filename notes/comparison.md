@@ -84,7 +84,7 @@ Legend: PASS/FAIL for `status: conformant` traces; SAME/DIFFERS for
 | ops/std_functions | PASS | PASS | PASS | PASS | |
 | ops/std_functions_ext | **FAIL** (compile) | PASS | PASS | **FAIL** (compile) | IronPLC: MAX and MIN with three inputs are P4018 (findings #11, ironplc#2548, fix in PR #2551); RuSTy: formal argument names on a standard function (`LIMIT(MN := ..)`) are E048 "Could not resolve reference to MN" (other runtimes #4) |
 | ops/conversions | PASS | PASS | PASS | PASS | |
-| ops/time_arith | PASS | **ERROR** (build) | **FAIL** (cycles 0-3) | PASS | matiec emits `_____time_add`/`_____time_sub` for `+`/`-` on TIME (`print_binary_function` adds `___` to a name that already starts with `__`), a symbol that does not exist, so the program never builds (beremiz/matiec#40, fix in PR #45); with #40 fixed, `T#1h2m3s4ms` is still 1 ns short (beremiz/matiec#44) |
+| ops/time_arith | PASS | **ERROR** (build) | PASS | PASS | matiec emits `_____time_add`/`_____time_sub` for `+`/`-` on TIME (`print_binary_function` adds `___` to a name that already starts with `__`), a symbol that does not exist, so the program never builds (beremiz/matiec#40, fix in PR #45); with #40 fixed, `T#1h2m3s4ms` is still 1 ns short (beremiz/matiec#44) |
 | ops/literals | PASS | PASS | PASS | PASS | |
 | ops/bit_ops | PASS | PASS | PASS | PASS | |
 | data/array_internal | PASS | PASS | PASS | PASS | |
@@ -125,7 +125,7 @@ Legend: PASS/FAIL for `status: conformant` traces; SAME/DIFFERS for
 | undefined/tasks_same_priority | **DIFFERS** (compile) | SAME | SAME | **ERROR** (configuration) | records matiec (IronPLC cannot run two instances): declaration order |
 
 Totals: IronPLC 38/51 conformant pass; matiec 43/51; OpenPLC's matiec fork
-43/51 (a different 43, see below); RuSTy 39/51 (the five `config/` tests are
+44/51 (a different set, see below); RuSTy 39/51 (the five `config/` tests are
 outside RuSTy's harness). No test
 other than the six control-flow/POU/R_TRIG ones and the four "all SAME"
 corners has the same result on all three runtimes: the three disagree
@@ -172,7 +172,10 @@ upstream matiec `3a41303`:
    body follows the FDIS 2001 text (`notes/findings.md` #6).
 4. **`+` and `-` on TIME build**: `print_binary_function()` has no `___`
    prefix in this snapshot, so beremiz/matiec#40 is a later regression;
-   `ops/time_arith` then fails only on the 1 ns short literal (#44).
+   `ops/time_arith` passes on Linux x86-64. On macOS arm64 the same build
+   gives `T#1h2m3s4ms` 1 ns short (beremiz/matiec#44): the literal macro
+   computes in `long double`, which is 80-bit on x86-64 and plain `double`
+   on AArch64, so the truncation only bites there.
 5. **No `__POUS_INIT_ONLY__` guard**: `undefined/eval_order` builds with
    clang here (beremiz/matiec#39 is also later).
 

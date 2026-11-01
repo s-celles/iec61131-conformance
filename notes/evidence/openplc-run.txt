@@ -323,15 +323,11 @@ PASS    conformance/ops/std_functions.st
 3 a=0 b=0 c=0 g=TRUE => max3=0 min3=0 add3=0 mul3=0 lim=0 selv=0
 PASS    conformance/ops/std_functions_ext.st
 ### conformance/ops/time_arith.st
-0 t1=T#1500ms t2=T#500ms => sum=T#2000ms diff=T#1000ms is_lt=FALSE is_gt=TRUE is_le=FALSE is_eq=FALSE lit1=T#90000ms lit2=T#3723003ms lit3=T#1500ms lit4=T#500ms lit5=T#172800000ms
-1 t1=T#0ms t2=T#0ms => sum=T#0ms diff=T#0ms is_lt=FALSE is_gt=FALSE is_le=TRUE is_eq=TRUE lit1=T#90000ms lit2=T#3723003ms lit3=T#1500ms lit4=T#500ms lit5=T#172800000ms
-2 t1=T#100ms t2=T#100ms => sum=T#200ms diff=T#0ms is_lt=FALSE is_gt=FALSE is_le=TRUE is_eq=TRUE lit1=T#90000ms lit2=T#3723003ms lit3=T#1500ms lit4=T#500ms lit5=T#172800000ms
-3 t1=T#3600000ms t2=T#1ms => sum=T#3600001ms diff=T#3599999ms is_lt=FALSE is_gt=TRUE is_le=FALSE is_eq=FALSE lit1=T#90000ms lit2=T#3723003ms lit3=T#1500ms lit4=T#500ms lit5=T#172800000ms
-FAIL    conformance/ops/time_arith.st
-        cycle 0 (trace line 16): lit2 expected T#3723004ms, got T#3723003ms
-        cycle 1 (trace line 17): lit2 expected T#3723004ms, got T#3723003ms
-        cycle 2 (trace line 18): lit2 expected T#3723004ms, got T#3723003ms
-        cycle 3 (trace line 19): lit2 expected T#3723004ms, got T#3723003ms
+0 t1=T#1500ms t2=T#500ms => sum=T#2000ms diff=T#1000ms is_lt=FALSE is_gt=TRUE is_le=FALSE is_eq=FALSE lit1=T#90000ms lit2=T#3723004ms lit3=T#1500ms lit4=T#500ms lit5=T#172800000ms
+1 t1=T#0ms t2=T#0ms => sum=T#0ms diff=T#0ms is_lt=FALSE is_gt=FALSE is_le=TRUE is_eq=TRUE lit1=T#90000ms lit2=T#3723004ms lit3=T#1500ms lit4=T#500ms lit5=T#172800000ms
+2 t1=T#100ms t2=T#100ms => sum=T#200ms diff=T#0ms is_lt=FALSE is_gt=FALSE is_le=TRUE is_eq=TRUE lit1=T#90000ms lit2=T#3723004ms lit3=T#1500ms lit4=T#500ms lit5=T#172800000ms
+3 t1=T#3600000ms t2=T#1ms => sum=T#3600001ms diff=T#3599999ms is_lt=FALSE is_gt=TRUE is_le=FALSE is_eq=FALSE lit1=T#90000ms lit2=T#3723004ms lit3=T#1500ms lit4=T#500ms lit5=T#172800000ms
+PASS    conformance/ops/time_arith.st
 ### conformance/pou/fb_en_eno.st
 0 run_it=TRUE inc=5 => total=5 done=TRUE
 1 run_it=FALSE => total=5 done=FALSE
@@ -506,9 +502,8 @@ SAME    conformance/undefined/dint_to_int_overflow.st
 ### conformance/undefined/div_zero.st
 0 a=7 b=2 => q=3 m=1
 1 a=-7 b=2 => q=-3 m=-1
-2 a=7 b=0 => q=0 m=0
-DIFFERS conformance/undefined/div_zero.st
-        cycle 2 (trace line 24): expected a trap, got q=0 m=0
+2 a=7 b=0 => trap   # SIGFPE
+SAME    conformance/undefined/div_zero.st
 ### conformance/undefined/eval_order.st
 0 reset=TRUE => y=-19 c=2
 1 reset=TRUE => y=-19 c=2
@@ -537,7 +532,7 @@ SAME    conformance/undefined/int_overflow.st
 0 x=1.0 y=2.0 => q=0.5
 1 x=1.0 y=0.0 => q=inf
 2 x=-1.0 y=0.0 => q=-inf
-3 x=0.0 y=0.0 => q=nan
+3 x=0.0 y=0.0 => q=-nan
 4 x=1.0 y=2.0 => q=0.5
 SAME    conformance/undefined/real_div_zero.st
 ### conformance/undefined/real_to_int_ties.st
@@ -609,5 +604,5 @@ DIFFERS conformance/undefined/ton_pt_change.st
         cycle 10 (trace line 36): et expected T#800ms, got T#200ms
         cycle 11 (trace line 37): et expected T#800ms, got T#200ms
 
-67 tests: 43 pass, 8 fail, 9 same, 7 differs, 0 error
+67 tests: 44 pass, 7 fail, 10 same, 6 differs, 0 error
 exit 1
