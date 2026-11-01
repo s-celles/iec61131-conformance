@@ -27,6 +27,8 @@ not trap on AArch64 (undefined/div_zero reports values instead of a trap),
 and clang rejects the implicit function declaration iec2c emits for a user
 FUNCTION called before its definition (undefined/eval_order fails to build).
 Both are reported upstream: beremiz/matiec#38 (division) and #39 (guard).
+For REAL tests the Linux glibc prints NaN as `-nan` where macOS prints
+`nan`, so those sections of the evidence also come from the CI artifact.
 """
 import argparse
 import os
@@ -38,7 +40,7 @@ import tempfile
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from tracefmt import Status, Value, parse_trace  # noqa: E402
+from tracefmt import Status, Value, canonical_actual, parse_trace  # noqa: E402
 
 TYPE_C = {"BOOL": "BOOL", "INT": "INT", "DINT": "DINT", "UINT": "UINT", "TIME": "TIME",
           "BYTE": "BYTE", "WORD": "WORD", "DWORD": "DWORD", "REAL": "REAL", "LREAL": "LREAL"}
@@ -160,6 +162,8 @@ def c_getters(outputs):
             lines.append(f'    printf(" {name}=16#%0{HEX_WIDTH[ty]}llX", (unsigned long long)RES0__INST0.{cname}.value);')
         elif ty in REAL_FMT:
             lines.append(f'    printf(" {name}={REAL_FMT[ty]}", (double)RES0__INST0.{cname}.value);')
+        elif ty.startswith("STRING"):
+            lines.append(f'    printf(" {name}=#"); for (int i = 0; i < RES0__INST0.{cname}.value.len; i++) printf("%02X", (unsigned)RES0__INST0.{cname}.value.body[i]);')
         else:
             lines.append(f'    printf(" {name}=%lld", (long long)RES0__INST0.{cname}.value);')
     body = "\n".join(lines)
@@ -193,6 +197,10 @@ def run_test(st_path: Path, opts):
     for n in trace.inputs + trace.outputs:
         if n not in types:
             return "ERROR", [f"variable {n} not declared in PROGRAM {trace.program}"], []
+        if types[n].startswith("STRING"):
+            if n in trace.inputs:
+                return "ERROR", [f"variable {n}: STRING inputs are not supported (SPEC.md)"], []
+            continue
         if types[n] not in TYPE_C:
             return "ERROR", [f"variable {n} has unsupported type {types[n]}"], []
 
@@ -243,7 +251,7 @@ def run_test(st_path: Path, opts):
             problems.append(f"cycle {rec.cycle}: no output (program crashed? rc={r.returncode})")
             break
         rhs = got.split("=>", 1)[1].strip()
-        recorded.append(f"{rec.cycle}{inp} => {rhs}")
+        recorded.append(f"{rec.cycle}{inp} => {canonical_actual(rhs, types)}")
         if rhs.startswith("trap"):
             if rec.expected != "trap":
                 problems.append(f"cycle {rec.cycle} (trace line {rec.line}): unexpected trap ({rhs})")
@@ -256,7 +264,7 @@ def run_test(st_path: Path, opts):
             if value.kind == "any":
                 continue
             if not value.matches(actual.get(name), types[name]):
-                problems.append(f"cycle {rec.cycle} (trace line {rec.line}): {name} expected {value}, got {actual.get(name)}")
+                problems.append(f"cycle {rec.cycle} (trace line {rec.line}): {name} expected {value}, got {canonical_actual(f'{name}={actual.get(name)}', types).split('=', 1)[1]}")
     if trace.status == Status.CONFORMANT:
         return ("PASS" if not problems else "FAIL"), problems, recorded
     return ("SAME" if not problems else "DIFFERS"), problems, recorded

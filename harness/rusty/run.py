@@ -32,7 +32,7 @@ import tempfile
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "matiec"))
-from tracefmt import Status, parse_trace  # noqa: E402
+from tracefmt import Status, canonical_actual, parse_trace  # noqa: E402
 
 # IEC type -> (C type for the accessor ABI, printf, literal from trace text)
 C_TYPES = {
@@ -116,8 +116,15 @@ def accessors_st(inputs, outputs):
             f"FUNCTION __set_{n} : DINT\n  VAR_INPUT v : {ty}; END_VAR\n"
             f"  conf_prog.{n} := v;\n  __set_{n} := 0;\nEND_FUNCTION\n")
     for n, ty in outputs:
-        parts.append(
-            f"FUNCTION __get_{n} : {ty}\n  __get_{n} := conf_prog.{n};\nEND_FUNCTION\n")
+        if ty.startswith("STRING"):
+            # a STRING result would need RuSTy's hidden-pointer return ABI; a
+            # VAR_IN_OUT buffer is a plain pointer from C
+            parts.append(
+                f"FUNCTION __get_{n} : DINT\n  VAR_IN_OUT buf : {ty}; END_VAR\n"
+                f"  buf := conf_prog.{n};\n  __get_{n} := 0;\nEND_FUNCTION\n")
+        else:
+            parts.append(
+                f"FUNCTION __get_{n} : {ty}\n  __get_{n} := conf_prog.{n};\nEND_FUNCTION\n")
     parts.append("FUNCTION __run : DINT\n  conf_prog();\n  __run := 0;\nEND_FUNCTION\n")
     return "\n".join(parts)
 
@@ -127,7 +134,10 @@ def c_decls(inputs, outputs):
     for n, ty in inputs:
         lines.append(f"int __set_{n}({C_TYPES[ty]});")
     for n, ty in outputs:
-        lines.append(f"{C_TYPES[ty]} __get_{n}(void);")
+        if ty.startswith("STRING"):
+            lines.append(f"int __get_{n}(char *buf);")
+        else:
+            lines.append(f"{C_TYPES[ty]} __get_{n}(void);")
     return "\n".join(lines)
 
 
@@ -159,6 +169,9 @@ def c_getters(outputs):
             lines.append(f'    printf(" {n}=16#%0{HEX_WIDTH[ty]}llX", (unsigned long long)__get_{n}());')
         elif ty in REAL_FMT:
             lines.append(f'    printf(" {n}={REAL_FMT[ty]}", (double)__get_{n}());')
+        elif ty.startswith("STRING"):
+            size = int(ty[7:-1]) if ty.startswith("STRING[") else 80
+            lines.append(f'    {{ char buf[{size + 1}]; memset(buf, 0, sizeof buf); __get_{n}(buf); printf(" {n}=#"); for (int i = 0; i < {size} && buf[i]; i++) printf("%02X", (unsigned char)buf[i]); }}')
         else:
             lines.append(f'    printf(" {n}=%lld", (long long)__get_{n}());')
     body = "\n".join(lines)
@@ -189,6 +202,10 @@ def run_test(st_path: Path, opts):
     st_text = st_path.read_text()
     types = declared_types(st_text, trace.program)
     for n in trace.inputs + trace.outputs:
+        if types.get(n, "").startswith("STRING"):
+            if n in trace.inputs:
+                return "ERROR", [f"variable {n}: STRING inputs are not supported (SPEC.md)"], []
+            continue
         if types.get(n) not in C_TYPES:
             return "ERROR", [f"variable {n}: unsupported or undeclared type {types.get(n)}"], []
     inputs = [(n, types[n]) for n in trace.inputs]
@@ -238,7 +255,7 @@ def run_test(st_path: Path, opts):
             problems.append(f"cycle {rec.cycle}: no output (program crashed? rc={r.returncode}, stderr={r.stderr.strip()[:200]})")
             break
         rhs = got.split("=>", 1)[1].strip()
-        recorded.append(f"{rec.cycle}{inp} => {rhs}")
+        recorded.append(f"{rec.cycle}{inp} => {canonical_actual(rhs, types)}")
         if rhs.startswith("trap"):
             if rec.expected != "trap":
                 problems.append(f"cycle {rec.cycle} (trace line {rec.line}): unexpected trap ({rhs})")
@@ -251,7 +268,7 @@ def run_test(st_path: Path, opts):
             if value.kind == "any":
                 continue
             if not value.matches(actual.get(name), types[name]):
-                problems.append(f"cycle {rec.cycle} (trace line {rec.line}): {name} expected {value}, got {actual.get(name)}")
+                problems.append(f"cycle {rec.cycle} (trace line {rec.line}): {name} expected {value}, got {canonical_actual(f'{name}={actual.get(name)}', types).split('=', 1)[1]}")
     if trace.status == Status.CONFORMANT:
         return ("PASS" if not problems else "FAIL"), problems, recorded
     return ("SAME" if not problems else "DIFFERS"), problems, recorded

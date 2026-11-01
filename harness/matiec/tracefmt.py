@@ -13,14 +13,52 @@ class Status(Enum):
 
 REAL_RE = re.compile(r"^-?[0-9]+\.[0-9]+([eE][-+]?[0-9]+)?$")
 REAL_TOL = {"REAL": 1e-6, "LREAL": 1e-12}
+STR_ESC = {"$": b"$", "'": b"'", "L": b"\n", "N": b"\n", "P": b"\x0c", "R": b"\r", "T": b"\t"}
+
+
+def decode_string_literal(s):
+    """`'...'` with IEC escapes ($$ $' $L $N $P $R $T $xx), no raw space -> bytes."""
+    if len(s) < 2 or s[0] != "'" or s[-1] != "'":
+        raise ValueError(f"STRING value must be quoted with ': {s}")
+    body, out, i = s[1:-1], bytearray(), 0
+    while i < len(body):
+        c = body[i]
+        if c == "$":
+            e = body[i + 1:i + 2].upper()
+            if e in STR_ESC:
+                out += STR_ESC[e]; i += 2
+            else:
+                out.append(int(body[i + 1:i + 3], 16)); i += 3
+        elif c in " \t'":
+            raise ValueError(f"STRING value may not contain a raw space, tab or quote: {s}")
+        else:
+            out += c.encode("latin-1"); i += 1
+    return bytes(out)
+
+
+def encode_string_literal(b):
+    """bytes -> canonical `'...'`: printable ASCII raw, space as $20,
+    $ and ' doubled/escaped, control characters as $L $P $R $T or $xx."""
+    out = "'"
+    for x in b:
+        if x == 0x24: out += "$$"
+        elif x == 0x27: out += "$'"
+        elif x == 0x09: out += "$T"
+        elif x == 0x0A: out += "$L"
+        elif x == 0x0C: out += "$P"
+        elif x == 0x0D: out += "$R"
+        elif 0x21 <= x <= 0x7E: out += chr(x)
+        else: out += f"${x:02X}"
+    return out + "'"
 
 
 @dataclass(frozen=True)
 class Value:
-    kind: str  # bool | int | time | bits | real | any
+    kind: str  # bool | int | time | bits | real | str | any
     v: int = 0
     width: int = 0  # bits: number of hex digits (2 BYTE, 4 WORD, 8 DWORD)
     text: str = ""  # real: the literal as written, printed back verbatim
+    data: bytes = b""  # str: the decoded bytes
 
     @staticmethod
     def parse(s: str) -> "Value":
@@ -34,6 +72,8 @@ class Value:
             if not s.endswith("ms"):
                 raise ValueError(f"TIME literal must be T#<n>ms: {s}")
             return Value("time", int(s[2:-2]))
+        if s.startswith("'"):
+            return Value("str", 0, 0, "", decode_string_literal(s))
         if REAL_RE.match(s) or s in ("inf", "-inf", "nan"):
             return Value("real", float(s), 0, s)
         if s.startswith("16#"):
@@ -52,6 +92,8 @@ class Value:
             return f"16#{self.v:0{self.width}X}"
         if self.kind == "real":
             return self.text
+        if self.kind == "str":
+            return encode_string_literal(self.data)
         if self.kind == "any":
             return "?"
         return str(self.v)
@@ -61,6 +103,11 @@ class Value:
         tolerance (floored at 1.0), everything else by text."""
         if self.kind == "any":
             return True
+        if self.kind == "str":
+            # drivers print STRING outputs as #<hex bytes>; the Rust harness prints the literal
+            if actual_text and actual_text.startswith("#"):
+                return bytes.fromhex(actual_text[1:]) == self.data
+            return actual_text == str(self)
         if self.kind != "real":
             return actual_text == str(self)
         try:
@@ -73,6 +120,17 @@ class Value:
         if math.isinf(e) or math.isinf(a):
             return e == a
         return abs(a - e) <= REAL_TOL[ty] * max(abs(e), 1.0)
+
+
+def canonical_actual(rhs, types):
+    """Rewrite a driver's `name=#hex` STRING outputs as `'...'` literals."""
+    toks = []
+    for tok in rhs.split():
+        n, _, v = tok.partition("=")
+        if v.startswith("#") and types.get(n, "").startswith("STRING"):
+            v = encode_string_literal(bytes.fromhex(v[1:]))
+        toks.append(f"{n}={v}" if _ else tok)
+    return " ".join(toks)
 
 
 @dataclass

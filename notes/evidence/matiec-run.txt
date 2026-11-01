@@ -464,7 +464,7 @@ SAME    conformance/undefined/int_overflow.st
 0 x=1.0 y=2.0 => q=0.5
 1 x=1.0 y=0.0 => q=inf
 2 x=-1.0 y=0.0 => q=-inf
-3 x=0.0 y=0.0 => q=nan
+3 x=0.0 y=0.0 => q=-nan
 4 x=1.0 y=2.0 => q=0.5
 SAME    conformance/undefined/real_div_zero.st
 ### conformance/undefined/real_to_int_ties.st
