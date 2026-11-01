@@ -7,9 +7,9 @@ Text runtimes: plain `.st` programs paired with plain-text expected
 input/output traces, one record per scan cycle. Dedicated to the public
 domain under CC0 1.0 (see `LICENSE`).
 
-Status: 88 tests, run against IronPLC, matiec, OpenPLC's matiec fork, STruC++
-(and RuSTy,
-see `notes/comparison.md`), with a Lean 4 model of the function block
+Status: 88 tests, run against IronPLC, matiec, OpenPLC's matiec fork, STruC++,
+4diac (IDE + FORTE, on the subset 61499 can pose) and RuSTy
+(see `notes/comparison.md`), with a Lean 4 model of the function block
 semantics that the expected traces are proved to follow from.
 
 ## Method, and what the results do and do not mean
@@ -96,6 +96,8 @@ harness/
   matiec/      Python: iec2c + generated C driver with simulated time (also
                drives the matiec fork bundled in OpenPLC_v3)
   strucpp/     Python: strucpp (ST -> C++) + generated C++ driver with simulated time
+  4diac/       Python: PROGRAM -> 61499 basic FB (.fbt), 4diac IDE headless export
+               to C++ (forte_ng), generated driver against libforte (no clock)
   rusty/       Python: plc (RuSTy) + mock-time stdlib + C driver
 formal/        Lean 4: executable FB semantics, trace theorems, properties
 tools/fuzz/    differential fuzzing: random well-defined programs + driver (not CI)
@@ -141,6 +143,9 @@ located variables.
   to refresh the results table of `notes/comparison.md` (checked by CI).
 - `rusty`: same, on pull requests, weekly and on `workflow_dispatch` (needs
   LLVM 21 and a full RuSTy build; skipped on plain pushes to `main`).
+- `4diac`: not run in CI yet (a 300 MB Eclipse product plus a FORTE build);
+  `notes/evidence/4diac-run.txt` was recorded locally on macOS arm64, see
+  `notes/evidence/COMMANDS.md`.
 
 To bump a runtime, update its SHA in the workflow `env` and the evidence
 file together.
@@ -204,6 +209,28 @@ does (declaration order, priority ignored) and does not drive `SINGLE` tasks.
 ## Running against RuSTy
 
 See `harness/rusty/README.md`.
+
+## Running against 4diac
+
+Needs the 4diac IDE (3.3.0; the `.app` on macOS or the unpacked
+`.tar.gz` on Linux — its bundled JRE is used) and FORTE 3.3.0 built as a
+shared library:
+
+```sh
+git clone -b 3.3.0 https://github.com/eclipse-4diac/4diac-forte scratch/4diac-forte
+cmake -S scratch/4diac-forte -B scratch/4diac-forte/build -DFORTE_ARCHITECTURE=Posix \
+    -DFORTE_BUILD_EXECUTABLE=OFF -DBUILD_SHARED_LIBS=ON -DCMAKE_BUILD_TYPE=Release \
+    -DFORTE_MODULE_IEC61131=ON -DFORTE_MODULE_CONVERT=ON -DFORTE_MODULE_UTILS=ON \
+    -DFORTE_COM_ETH=OFF -DFORTE_COM_FBDK=OFF -DFORTE_COM_LOCAL=ON
+cmake --build scratch/4diac-forte/build -j8
+python3 -I harness/4diac/run.py --ide /path/to/4diac-ide.app \
+    --forte-src scratch/4diac-forte --forte-build scratch/4diac-forte/build conformance
+```
+
+The IDE is launched once (all tests as projects of one workspace, one Ant
+export), then once more per FB it refused, so a full run takes a few
+minutes. Only PROGRAM-only tests over elementary types and FUNCTIONs are in
+scope; the rest is reported as `ERROR` with the reason.
 
 ## Checking the formal model
 

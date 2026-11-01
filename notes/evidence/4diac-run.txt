@@ -1,0 +1,511 @@
+### conformance/config/event_single.st
+ERROR   conformance/config/event_single.st
+        CONFIGURATION is outside this harness's scope (one PROGRAM over elementary types)
+### conformance/config/global_exchange.st
+ERROR   conformance/config/global_exchange.st
+        CONFIGURATION is outside this harness's scope (one PROGRAM over elementary types)
+### conformance/config/globals_external.st
+ERROR   conformance/config/globals_external.st
+        CONFIGURATION is outside this harness's scope (one PROGRAM over elementary types)
+### conformance/config/priority_order.st
+ERROR   conformance/config/priority_order.st
+        CONFIGURATION is outside this harness's scope (one PROGRAM over elementary types)
+### conformance/config/two_periods.st
+ERROR   conformance/config/two_periods.st
+        CONFIGURATION is outside this harness's scope (one PROGRAM over elementary types)
+### conformance/control-flow/case_expr.st
+0 x=5 => branch=11 neg=FALSE cnt=0
+1 x=-5 => branch=11 neg=TRUE cnt=1
+2 x=6 => branch=12 neg=FALSE cnt=1
+3 x=-6 => branch=12 neg=TRUE cnt=2
+4 x=7 => branch=13 neg=FALSE cnt=2
+5 x=-7 => branch=13 neg=TRUE cnt=3
+6 x=0 => branch=10 neg=FALSE cnt=4
+7 x=-10 => branch=12 neg=TRUE cnt=5
+8 x=-11 => branch=13 neg=FALSE cnt=5
+9 x=8 => branch=10 neg=FALSE cnt=5
+PASS    conformance/control-flow/case_expr.st
+### conformance/control-flow/continue.st
+0 n=5 => odd_sum=9 w_count=4 inner=6
+1 n=0 => odd_sum=0 w_count=0 inner=6
+2 n=6 => odd_sum=9 w_count=5 inner=6
+3 n=1 => odd_sum=1 w_count=1 inner=6
+PASS    conformance/control-flow/continue.st
+### conformance/control-flow/for_exit.st
+0 n=0 => sum=0 last=0 count=0 down_count=4 down_sum=22
+1 n=-2 => sum=0 last=0 count=0 down_count=4 down_sum=22
+2 n=1 => sum=1 last=1 count=1 down_count=4 down_sum=22
+3 n=3 => sum=6 last=3 count=3 down_count=4 down_sum=22
+4 n=5 => sum=15 last=5 count=5 down_count=4 down_sum=22
+5 n=6 => sum=15 last=5 count=5 down_count=4 down_sum=22
+6 n=10 => sum=15 last=5 count=5 down_count=4 down_sum=22
+7 n=32767 => sum=15 last=5 count=5 down_count=4 down_sum=22
+8 n=2 => sum=3 last=2 count=2 down_count=4 down_sum=22
+PASS    conformance/control-flow/for_exit.st
+### conformance/control-flow/for_step.st
+0 lo=1 hi=3 => down_sum=22 down_n=4 by4_sum=15 by4_n=3 empty_n=0 up_n=3
+1 lo=3 hi=3 => down_sum=22 down_n=4 by4_sum=15 by4_n=3 empty_n=0 up_n=1
+2 lo=4 hi=3 => down_sum=22 down_n=4 by4_sum=15 by4_n=3 empty_n=0 up_n=0
+3 lo=-2 hi=2 => down_sum=22 down_n=4 by4_sum=15 by4_n=3 empty_n=0 up_n=5
+PASS    conformance/control-flow/for_step.st
+### conformance/control-flow/if_case.st
+0 x=-5 => sign=-1 bucket=0
+1 x=0 => sign=0 bucket=0
+2 x=1 => sign=1 bucket=10
+3 x=2 => sign=1 bucket=20
+4 x=3 => sign=1 bucket=20
+5 x=4 => sign=1 bucket=30
+6 x=5 => sign=1 bucket=30
+7 x=6 => sign=1 bucket=30
+8 x=7 => sign=1 bucket=0
+9 x=-1 => sign=-1 bucket=-10
+10 x=-32768 => sign=-1 bucket=0
+11 x=32767 => sign=1 bucket=0
+PASS    conformance/control-flow/if_case.st
+### conformance/control-flow/nested_exit.st
+0 n=0 => outer=3 inner=0 w=6
+1 n=4 => outer=3 inner=12 w=6
+2 n=10 => outer=3 inner=30 w=6
+3 n=15 => outer=3 inner=30 w=6
+4 n=-3 => outer=3 inner=0 w=6
+5 n=1 => outer=3 inner=3 w=6
+PASS    conformance/control-flow/nested_exit.st
+### conformance/control-flow/return.st
+ERROR   conformance/control-flow/return.st
+        FUNCTION_BLOCK is outside this harness's scope (one PROGRAM over elementary types)
+### conformance/control-flow/while.st
+0 n=0 => iters=0 acc=0 rep=1
+1 n=1 => iters=1 acc=1 rep=1
+2 n=4 => iters=4 acc=10 rep=4
+3 n=100 => iters=100 acc=5050 rep=100
+4 n=0 => iters=0 acc=0 rep=1
+5 n=1000 => iters=1000 acc=500500 rep=1000
+PASS    conformance/control-flow/while.st
+### conformance/counters/ctd.st
+ERROR   conformance/counters/ctd.st
+        type CTD is outside this harness's scope
+### conformance/counters/ctd_bounds.st
+ERROR   conformance/counters/ctd_bounds.st
+        type CTD is outside this harness's scope
+### conformance/counters/ctu.st
+ERROR   conformance/counters/ctu.st
+        type CTU is outside this harness's scope
+### conformance/counters/ctud.st
+ERROR   conformance/counters/ctud.st
+        type CTUD is outside this harness's scope
+### conformance/counters/ctud_bounds.st
+ERROR   conformance/counters/ctud_bounds.st
+        type CTUD is outside this harness's scope
+### conformance/data/array_2d.st
+ERROR   conformance/data/array_2d.st
+        TYPE is outside this harness's scope (one PROGRAM over elementary types)
+### conformance/data/array_init.st
+0 => s_list=24 s_rep=20 z=0 f=TRUE
+1 => s_list=24 s_rep=20 z=0 f=TRUE
+PASS    conformance/data/array_init.st
+### conformance/data/array_internal.st
+0 idx=0 val=10 => sum=10 at_idx=10 lo=10 hi=0
+1 idx=4 val=-3 => sum=7 at_idx=-3 lo=10 hi=-3
+2 idx=2 val=100 => sum=107 at_idx=100 lo=10 hi=-3
+3 idx=0 val=1 => sum=98 at_idx=1 lo=1 hi=-3
+4 idx=4 val=0 => sum=101 at_idx=0 lo=1 hi=0
+PASS    conformance/data/array_internal.st
+### conformance/data/array_of_struct.st
+ERROR   conformance/data/array_of_struct.st
+        TYPE is outside this harness's scope (one PROGRAM over elementary types)
+### conformance/data/defaults.st
+ERROR   conformance/data/defaults.st
+        TYPE is outside this harness's scope (one PROGRAM over elementary types)
+### conformance/data/enum.st
+ERROR   conformance/data/enum.st
+        TYPE is outside this harness's scope (one PROGRAM over elementary types)
+### conformance/data/struct_internal.st
+ERROR   conformance/data/struct_internal.st
+        TYPE is outside this harness's scope (one PROGRAM over elementary types)
+### conformance/edge/f_trig.st
+ERROR   conformance/edge/f_trig.st
+        type F_TRIG is outside this harness's scope
+### conformance/edge/power_on_clk_true.st
+ERROR   conformance/edge/power_on_clk_true.st
+        type R_TRIG is outside this harness's scope
+### conformance/edge/r_trig.st
+ERROR   conformance/edge/r_trig.st
+        type R_TRIG is outside this harness's scope
+### conformance/edge/sr_rs.st
+ERROR   conformance/edge/sr_rs.st
+        type SR is outside this harness's scope
+### conformance/ops/bit_expr_operands.st
+0 a=16#3C b=16#0F w=16#1234 n=0 => n_xor=16#CC n_and=16#FFCB s_or=16#3F r_xor=16#33 r_w=16#EDCB same=TRUE
+1 a=16#F0 b=16#F0 w=16#0000 n=4 => n_xor=16#FF n_and=16#FFFF s_or=16#00 r_xor=16#FF r_w=16#FFFF same=TRUE
+2 a=16#81 b=16#01 w=16#00FF n=1 => n_xor=16#7F n_and=16#FF00 s_or=16#02 r_xor=16#1D r_w=16#7F80 same=TRUE
+3 a=16#A5 b=16#5A w=16#8001 n=7 => n_xor=16#00 n_and=16#FFFE s_or=16#80 r_xor=16#55 r_w=16#FCFF same=TRUE
+PASS    conformance/ops/bit_expr_operands.st
+### conformance/ops/bit_literals.st
+0 b=16#3C w=16#1255 n=0 => ob=16#A5 ow=16#8001 b_and=16#0C w_or=16#FF55 b_xor=16#C3 w_shl=16#0001 lo55=TRUE tw=FALSE
+1 b=16#F0 w=16#1234 n=4 => ob=16#A5 ow=16#8001 b_and=16#00 w_or=16#FF34 b_xor=16#0F w_shl=16#0010 lo55=FALSE tw=TRUE
+2 b=16#FF w=16#0055 n=15 => ob=16#A5 ow=16#8001 b_and=16#0F w_or=16#FF55 b_xor=16#00 w_shl=16#8000 lo55=TRUE tw=FALSE
+3 b=16#00 w=16#FFFF n=1 => ob=16#A5 ow=16#8001 b_and=16#00 w_or=16#FFFF b_xor=16#FF w_shl=16#0002 lo55=FALSE tw=FALSE
+PASS    conformance/ops/bit_literals.st
+### conformance/ops/bit_ops.st
+0 b=16#F0 m=16#3C w=16#1234 d=16#80000001 n=4 => o_and=16#30 o_or=16#FC o_xor=16#CC o_not=16#0F w_shl=16#2340 w_shr=16#0123 w_rol=16#2341 w_ror=16#4123 d_shl=16#00000010 d_shr=16#08000000 d_rol=16#00000018 d_ror=16#18000000
+1 b=16#AA m=16#55 w=16#8001 d=16#00000001 n=1 => o_and=16#00 o_or=16#FF o_xor=16#FF o_not=16#55 w_shl=16#0002 w_shr=16#4000 w_rol=16#0003 w_ror=16#C000 d_shl=16#00000002 d_shr=16#00000000 d_rol=16#00000002 d_ror=16#80000000
+2 b=16#FF m=16#00 w=16#FFFF d=16#FFFFFFFF n=0 => o_and=16#00 o_or=16#FF o_xor=16#FF o_not=16#00 w_shl=16#FFFF w_shr=16#FFFF w_rol=16#FFFF w_ror=16#FFFF d_shl=16#FFFFFFFF d_shr=16#FFFFFFFF d_rol=16#FFFFFFFF d_ror=16#FFFFFFFF
+3 b=16#0F m=16#0F w=16#0001 d=16#80000000 n=15 => o_and=16#0F o_or=16#0F o_xor=16#00 o_not=16#F0 w_shl=16#8000 w_shr=16#0000 w_rol=16#8000 w_ror=16#0002 d_shl=16#00000000 d_shr=16#00010000 d_rol=16#00004000 d_ror=16#00010000
+4 b=16#00 m=16#00 w=16#1234 d=16#12345678 n=16 => o_and=16#00 o_or=16#00 o_xor=16#00 o_not=16#FF w_shl=16#0000 w_shr=16#0000 w_rol=16#1234 w_ror=16#1234 d_shl=16#56780000 d_shr=16#00001234 d_rol=16#56781234 d_ror=16#56781234
+PASS    conformance/ops/bit_ops.st
+### conformance/ops/conversions.st
+0 i=100 ip=100 d=-1000 dp=1000 u=30000 ub=30000 => i2d=100 i2u=100 d2i=-1000 d2u=1000 u2i=30000 u2d=30000
+1 i=0 ip=0 d=0 dp=0 u=0 ub=0 => i2d=0 i2u=0 d2i=0 d2u=0 u2i=0 u2d=0
+2 i=-32768 ip=32767 d=32767 dp=65535 u=32767 ub=1 => i2d=-32768 i2u=32767 d2i=32767 d2u=65535 u2i=32767 u2d=1
+3 i=-1 ip=1 d=-32768 dp=0 u=0 ub=65535 => i2d=-1 i2u=1 d2i=-32768 d2u=0 u2i=0 u2d=65535
+PASS    conformance/ops/conversions.st
+### conformance/ops/date_time.st
+0 => d_sub=T#259200000ms tod_sub=T#8069500ms dt_sub=T#45001000ms tod_add=T#48600000ms tod_min=T#1800000ms dt_add=T#90000000ms dt_min=T#84600000ms same_d=TRUE same_t=TRUE before=TRUE
+1 => d_sub=T#259200000ms tod_sub=T#8069500ms dt_sub=T#45001000ms tod_add=T#48600000ms tod_min=T#1800000ms dt_add=T#90000000ms dt_min=T#84600000ms same_d=TRUE same_t=TRUE before=TRUE
+PASS    conformance/ops/date_time.st
+### conformance/ops/limit_inverted.st
+ERROR   conformance/ops/limit_inverted.st
+        c++ failed:
+        In file included from <tmpdir>/exported/FB_CONFORMANCE_OPS_LIMIT_INVERTED/src/FB_CONFORMANCE_OPS_LIMIT_INVERTED_fbt.cpp:17:
+        <forte>/core/include/forte/iec61131_functions/func_LIMIT.h:35:21: error: use of undeclared identifier 'func_MAX'
+           35 |     return func_MIN(func_MAX(static_cast<tImplicitType>(paIN), static_cast<tImplicitType>(paMN)),
+              |                     ^
+        FB_CONFORMANCE_OPS_LIMIT_INVERTED.fbt:2:13: note: in instantiation of function template specialization 'forte::func_LIMIT<forte::CIEC_INT, forte::CIEC_INT, forte::CIEC_INT>' requested here
+            2 |     var_l = func_LIMIT(var_mn, var_x, var_mx);
+              |             ^
+        1 error generated.
+        
+### conformance/ops/literals.st
+0 => hex=255 bin=170 oct=15 under=1000000 typed=-5 neg=-16 tu=65535 dh=2147483647
+1 => hex=255 bin=170 oct=15 under=1000000 typed=-5 neg=-16 tu=65535 dh=2147483647
+PASS    conformance/ops/literals.st
+### conformance/ops/lreal_precision.st
+0 a=0.1 b=0.2 => sum=0.30000000000000004 quot=0.5 prod=0.020000000000000004 sq=0.31622776601683794 big=1000000000000001
+1 a=1.0 b=3.0 => sum=4 quot=0.33333333333333331 prod=3 sq=1 big=1000000000000001
+2 a=2.0 b=1.0E300 => sum=1.0000000000000001e+300 quot=2.0000000000000001e-300 prod=2.0000000000000001e+300 sq=1.4142135623730951 big=1000000000000001
+3 a=1.0E16 b=1.0 => sum=10000000000000000 quot=10000000000000000 prod=10000000000000000 sq=100000000 big=1000000000000001
+PASS    conformance/ops/lreal_precision.st
+### conformance/ops/precedence.st
+0 a=7 b=2 c=3 p=TRUE q=FALSE r=TRUE => e1=13 e2=27 e3=2 e4=9 e5=-1 e6=3 e7=9 l1=TRUE l2=TRUE l3=FALSE l4=FALSE l5=FALSE l6=TRUE
+1 a=-9 b=4 c=-2 p=FALSE q=TRUE r=FALSE => e1=-17 e2=10 e3=-11 e4=4 e5=1 e6=2 e7=-5 l1=FALSE l2=TRUE l3=TRUE l4=FALSE l5=FALSE l6=TRUE
+2 a=1 b=2 c=3 p=TRUE q=TRUE r=TRUE => e1=7 e2=9 e3=-4 e4=0 e5=-1 e6=3 e7=3 l1=TRUE l2=TRUE l3=FALSE l4=TRUE l5=TRUE l6=FALSE
+3 a=5 b=3 c=1 p=FALSE q=FALSE r=FALSE => e1=8 e2=8 e3=1 e4=1 e5=-2 e6=2 e7=8 l1=FALSE l2=FALSE l3=FALSE l4=FALSE l5=FALSE l6=FALSE
+PASS    conformance/ops/precedence.st
+### conformance/ops/real_arith.st
+0 x=1.5 y=0.25 => sum=1.75 diff=1.25 prod=0.375 quot=6 neg=-1.5 lit1=1000 lit2=1.5 lit3=-0.0250000004
+1 x=1.0 y=3.0 => sum=4 diff=-2 prod=3 quot=0.333333343 neg=-1 lit1=1000 lit2=1.5 lit3=-0.0250000004
+2 x=0.1 y=0.2 => sum=0.300000012 diff=-0.100000001 prod=0.0200000014 quot=0.5 neg=-0.100000001 lit1=1000 lit2=1.5 lit3=-0.0250000004
+3 x=1.0E10 y=1.0E10 => sum=2e+10 diff=0 prod=1.00000002e+20 quot=1 neg=-1e+10 lit1=1000 lit2=1.5 lit3=-0.0250000004
+4 x=-2.5 y=4.0 => sum=1.5 diff=-6.5 prod=-10 quot=-0.625 neg=2.5 lit1=1000 lit2=1.5 lit3=-0.0250000004
+PASS    conformance/ops/real_arith.st
+### conformance/ops/real_compare.st
+0 x=1.5 y=2.5 a=0.1 b=0.1 => r_lt=TRUE r_eq=FALSE r_ge=FALSE l_lt=FALSE l_eq=TRUE l_ne=FALSE
+1 x=2.5 y=2.5 a=1.0E-300 b=0.0 => r_lt=FALSE r_eq=TRUE r_ge=TRUE l_lt=FALSE l_eq=FALSE l_ne=TRUE
+2 x=-1.0E-5 y=0.0 a=-5.0 b=-5.0 => r_lt=TRUE r_eq=FALSE r_ge=FALSE l_lt=FALSE l_eq=TRUE l_ne=FALSE
+3 x=3.0 y=-3.0 a=1.0 b=1.0000000001 => r_lt=FALSE r_eq=FALSE r_ge=TRUE l_lt=TRUE l_eq=FALSE l_ne=TRUE
+PASS    conformance/ops/real_compare.st
+### conformance/ops/real_conversions.st
+0 i=7 d=-100000 u=65535 x=2.25 l=123456.75 => i2r=7 d2l=-100000 u2r=65535 r2i=2 r2l=2.25 l2r=123456.75 l2d=123457
+1 i=-32768 d=2147483647 u=0 x=-2.75 l=-1.25 => i2r=-32768 d2l=2147483647 u2r=0 r2i=-3 r2l=-2.75 l2r=-1.25 l2d=-1
+2 i=0 d=0 u=1 x=0.125 l=1.0E6 => i2r=0 d2l=0 u2r=1 r2i=0 r2l=0.125 l2r=1000000 l2d=1000000
+3 i=100 d=-1 u=40000 x=2.75 l=2.75 => i2r=100 d2l=-1 u2r=40000 r2i=3 r2l=2.75 l2r=2.75 l2d=3
+4 i=1 d=1 u=2 x=-0.75 l=-123456.125 => i2r=1 d2l=1 u2r=2 r2i=-1 r2l=-0.75 l2r=-123456.125 l2d=-123456
+PASS    conformance/ops/real_conversions.st
+### conformance/ops/real_functions.st
+0 x=4.0 => o_sqrt=2 o_abs=4 o_exp=54.5981483 o_ln=1.38629436 o_sin=-0.756802499 o_cos=-0.653643608
+1 x=1.0 => o_sqrt=1 o_abs=1 o_exp=2.71828175 o_ln=0 o_sin=0.841470957 o_cos=0.540302277
+2 x=2.25 => o_sqrt=1.5 o_abs=2.25 o_exp=9.48773575 o_ln=0.810930192 o_sin=0.778073192 o_cos=-0.628173649
+3 x=-3.0 => o_sqrt=1.73205078 o_abs=3 o_exp=0.0497870669 o_ln=1.09861231 o_sin=-0.141120002 o_cos=-0.989992499
+4 x=0.5 => o_sqrt=0.707106769 o_abs=0.5 o_exp=1.64872122 o_ln=-0.693147182 o_sin=0.47942555 o_cos=0.87758255
+PASS    conformance/ops/real_functions.st
+### conformance/ops/real_power.st
+0 x=2.0 n=10 => o_expt=1024 o_pow2=4
+1 x=-1.5 n=3 => o_expt=-3.375 o_pow2=2.25
+2 x=10.0 n=-2 => o_expt=0.00999999978 o_pow2=100
+3 x=1.0 n=0 => o_expt=1 o_pow2=1
+4 x=0.5 n=4 => o_expt=0.0625 o_pow2=0.25
+PASS    conformance/ops/real_power.st
+### conformance/ops/shl_width.st
+0 b=16#44 w=16#67CB => b_back=16#00 b_rol=16#04 w_back=16#00B0 w_ror=16#00CB b_or=16#44
+1 b=16#77 w=16#444A => b_back=16#08 b_rol=16#07 w_back=16#00A0 w_ror=16#004A b_or=16#4C
+2 b=16#E9 w=16#F0E8 => b_back=16#08 b_rol=16#09 w_back=16#0080 w_ror=16#00E8 b_or=16#4C
+3 b=16#FF w=16#FFFF => b_back=16#08 b_rol=16#0F w_back=16#00F0 w_ror=16#00FF b_or=16#4C
+4 b=16#00 w=16#0010 => b_back=16#00 b_rol=16#00 w_back=16#0000 w_ror=16#0010 b_or=16#44
+PASS    conformance/ops/shl_width.st
+### conformance/ops/std_functions.st
+ERROR   conformance/ops/std_functions.st
+        c++ failed:
+        <tmpdir>/exported/FB_CONFORMANCE_OPS_STD_FUNCTIONS/src/FB_CONFORMANCE_OPS_STD_FUNCTIONS_fbt.cpp:22:10: fatal error: 'forte/iec61131_functions/func_MUX.h' file not found
+           22 | #include "forte/iec61131_functions/func_MUX.h"
+              |          ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+        1 error generated.
+        
+### conformance/ops/std_functions_expr.st
+ERROR   conformance/ops/std_functions_expr.st
+        c++ failed:
+        <tmpdir>/exported/FB_CONFORMANCE_OPS_STD_FUNCTIONS_EXPR/src/FB_CONFORMANCE_OPS_STD_FUNCTIONS_EXPR_fbt.cpp:23:10: fatal error: 'forte/iec61131_functions/func_MUX.h' file not found
+           23 | #include "forte/iec61131_functions/func_MUX.h"
+              |          ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+        1 error generated.
+        
+### conformance/ops/std_functions_ext.st
+FAIL    conformance/ops/std_functions_ext.st
+        4diac IDE failed to export the FB:
+        [fordiac.exportProjectFBs] L/FB_CONFORMANCE_OPS_STD_FUNCTIONS_EXT/FB_CONFORMANCE_OPS_STD_FUNCTIONS_EXT.fbt
+        [fordiac.exportProjectFBs] FB_CONFORMANCE_OPS_STD_FUNCTIONS_EXT: FB_CONFORMANCE_OPS_STD_FUNCTIONS_EXT at 6: The parameter MN is undefined for the callable LIMIT
+        [fordiac.exportProjectFBs] FB_CONFORMANCE_OPS_STD_FUNCTIONS_EXT: FB_CONFORMANCE_OPS_STD_FUNCTIONS_EXT at 6: The parameter IN is undefined for the callable LIMIT
+        [fordiac.exportProjectFBs] FB_CONFORMANCE_OPS_STD_FUNCTIONS_EXT: FB_CONFORMANCE_OPS_STD_FUNCTIONS_EXT at 6: The parameter MX is undefined for the callable LIMIT
+        [fordiac.exportProjectFBs] FB_CONFORMANCE_OPS_STD_FUNCTIONS_EXT: FB_CONFORMANCE_OPS_STD_FUNCTIONS_EXT at 7: The parameter G is undefined for the callable SEL
+        [fordiac.exportProjectFBs] FB_CONFORMANCE_OPS_STD_FUNCTIONS_EXT: FB_CONFORMANCE_OPS_STD_FUNCTIONS_EXT at 6: Attempting to call standard function LIMIT with formal arguments
+        [fordiac.exportProjectFBs] FB_CONFORMANCE_OPS_STD_FUNCTIONS_EXT: FB_CONFORMANCE_OPS_STD_FUNCTIONS_EXT at 7: Attempting to call standard function SEL with formal arguments
+        !ENTRY org.eclipse.osgi 4 0 2026-11-01 19:20:22.116
+        !MESSAGE Application error
+        !STACK 1
+        at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(Unknown Source)
+        at java.base/java.lang.reflect.Method.invoke(Unknown Source)
+### conformance/ops/time_arith.st
+FAIL    conformance/ops/time_arith.st
+        4diac IDE failed to export the FB:
+        [fordiac.exportProjectFBs] L/FB_CONFORMANCE_OPS_TIME_ARITH/FB_CONFORMANCE_OPS_TIME_ARITH.fbt
+        [fordiac.exportProjectFBs] FB_CONFORMANCE_OPS_TIME_ARITH: FB_CONFORMANCE_OPS_TIME_ARITH at 10: mismatched input '1' expecting RULE_TIME_VALUE
+        [fordiac.exportProjectFBs] FB_CONFORMANCE_OPS_TIME_ARITH: FB_CONFORMANCE_OPS_TIME_ARITH at 10: no viable alternative at input '5s'
+        !ENTRY org.eclipse.osgi 4 0 2026-11-01 19:20:28.898
+        !MESSAGE Application error
+        !STACK 1
+        at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(Unknown Source)
+        at java.base/java.lang.reflect.Method.invoke(Unknown Source)
+        at org.eclipse.ant.core.AntRunner.run(AntRunner.java:506)
+        at org.eclipse.ant.core.AntRunner.start(AntRunner.java:603)
+        at org.eclipse.equinox.internal.app.EclipseAppHandle.run(EclipseAppHandle.java:219)
+        at org.eclipse.core.runtime.internal.adaptor.EclipseAppLauncher.runApplication(EclipseAppLauncher.java:149)
+### conformance/ops/time_functions.st
+ERROR   conformance/ops/time_functions.st
+        c++ failed:
+        <tmpdir>/exported/FB_CONFORMANCE_OPS_TIME_FUNCTIONS/src/FB_CONFORMANCE_OPS_TIME_FUNCTIONS_fbt.cpp:23:10: fatal error: 'forte/iec61131_functions/func_MUX.h' file not found
+           23 | #include "forte/iec61131_functions/func_MUX.h"
+              |          ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+        1 error generated.
+        
+### conformance/ops/time_mul.st
+FAIL    conformance/ops/time_mul.st
+        4diac IDE failed to export the FB:
+        [fordiac.exportProjectFBs] L/FB_CONFORMANCE_OPS_TIME_MUL/FB_CONFORMANCE_OPS_TIME_MUL.fbt
+        [fordiac.exportProjectFBs] FB_CONFORMANCE_OPS_TIME_MUL: FB_CONFORMANCE_OPS_TIME_MUL at 2: mismatched input '*' expecting '#'
+        [fordiac.exportProjectFBs] FB_CONFORMANCE_OPS_TIME_MUL: FB_CONFORMANCE_OPS_TIME_MUL at 5: mismatched input '*' expecting '#'
+        [fordiac.exportProjectFBs] FB_CONFORMANCE_OPS_TIME_MUL: FB_CONFORMANCE_OPS_TIME_MUL at 5: mismatched input '=' expecting '#'
+        !ENTRY org.eclipse.osgi 4 0 2026-11-01 19:20:42.296
+        !MESSAGE Application error
+        !STACK 1
+        at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(Unknown Source)
+        at java.base/java.lang.reflect.Method.invoke(Unknown Source)
+        at org.eclipse.ant.core.AntRunner.run(AntRunner.java:506)
+        at org.eclipse.ant.core.AntRunner.start(AntRunner.java:603)
+        at org.eclipse.equinox.internal.app.EclipseAppHandle.run(EclipseAppHandle.java:219)
+### conformance/ops/trunc.st
+FAIL    conformance/ops/trunc.st
+        4diac IDE failed to export the FB:
+        [fordiac.exportProjectFBs] L/FB_CONFORMANCE_OPS_TRUNC/FB_CONFORMANCE_OPS_TRUNC.fbt
+        [fordiac.exportProjectFBs] FB_CONFORMANCE_OPS_TRUNC: FB_CONFORMANCE_OPS_TRUNC at 2: mismatched input ':=' expecting '#'
+        [fordiac.exportProjectFBs] FB_CONFORMANCE_OPS_TRUNC: FB_CONFORMANCE_OPS_TRUNC at 2: The callable TRUNC(REAL) is undefined
+        [fordiac.exportProjectFBs] FB_CONFORMANCE_OPS_TRUNC: FB_CONFORMANCE_OPS_TRUNC at 2: Not possible to assign a value to the left side of this assignment
+        !ENTRY org.eclipse.osgi 4 0 2026-11-01 19:20:49.032
+        !MESSAGE Application error
+        !STACK 1
+        at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(Unknown Source)
+        at java.base/java.lang.reflect.Method.invoke(Unknown Source)
+        at org.eclipse.ant.core.AntRunner.run(AntRunner.java:506)
+        at org.eclipse.ant.core.AntRunner.start(AntRunner.java:603)
+        at org.eclipse.equinox.internal.app.EclipseAppHandle.run(EclipseAppHandle.java:219)
+### conformance/pou/fb_en_eno.st
+ERROR   conformance/pou/fb_en_eno.st
+        FUNCTION_BLOCK is outside this harness's scope (one PROGRAM over elementary types)
+### conformance/pou/fb_in_out.st
+ERROR   conformance/pou/fb_in_out.st
+        FUNCTION SWAP: VAR_IN_OUT on a function is outside this harness's scope
+### conformance/pou/fb_input_defaults.st
+ERROR   conformance/pou/fb_input_defaults.st
+        FUNCTION_BLOCK is outside this harness's scope (one PROGRAM over elementary types)
+### conformance/pou/fb_input_retention.st
+ERROR   conformance/pou/fb_input_retention.st
+        FUNCTION_BLOCK is outside this harness's scope (one PROGRAM over elementary types)
+### conformance/pou/fb_method.st
+ERROR   conformance/pou/fb_method.st
+        FUNCTION_BLOCK is outside this harness's scope (one PROGRAM over elementary types)
+### conformance/pou/fb_two_instances.st
+ERROR   conformance/pou/fb_two_instances.st
+        FUNCTION_BLOCK is outside this harness's scope (one PROGRAM over elementary types)
+### conformance/pou/fb_var_temp.st
+ERROR   conformance/pou/fb_var_temp.st
+        FUNCTION_BLOCK is outside this harness's scope (one PROGRAM over elementary types)
+### conformance/pou/function_call.st
+0 x=5 d=1 => y=5 e=11
+1 x=50 d=-4 => y=10 e=96
+2 x=-50 d=0 => y=-10 e=0
+3 x=-10 d=1000000 => y=-10 e=1000000
+4 x=200 d=-200 => y=10 e=0
+5 x=0 d=2147483647 => y=0 e=2147483647
+PASS    conformance/pou/function_call.st
+### conformance/pou/function_input_default.st
+0 x=4 => dflt=0 with_k=40 all=13
+1 x=0 => dflt=0 with_k=0 all=5
+2 x=-2 => dflt=0 with_k=-20 all=1
+FAIL    conformance/pou/function_input_default.st
+        cycle 0 (trace line 20): dflt expected 11, got 0
+        cycle 0 (trace line 20): with_k expected 39, got 40
+        cycle 1 (trace line 21): dflt expected -1, got 0
+        cycle 1 (trace line 21): with_k expected -1, got 0
+        cycle 2 (trace line 22): dflt expected -7, got 0
+        cycle 2 (trace line 22): with_k expected -21, got -20
+### conformance/pou/function_var_not_retained.st
+0 x=3 => f=3
+1 x=4 => f=4
+2 x=0 => f=0
+3 x=-5 => f=-5
+PASS    conformance/pou/function_var_not_retained.st
+### conformance/pou/function_var_output.st
+0 a=7 b=2 => ok=TRUE q=3 r=1
+1 a=7 b=0 => ok=FALSE q=0 r=0
+2 a=-7 b=2 => ok=TRUE q=-3 r=-1
+3 a=9 b=3 => ok=TRUE q=3 r=0
+PASS    conformance/pou/function_var_output.st
+### conformance/strings/compare.st
+0 => e1=TRUE e2=FALSE l1=TRUE l2=TRUE l3=TRUE l4=TRUE g1=TRUE n1=TRUE
+1 => e1=TRUE e2=FALSE l1=TRUE l2=TRUE l3=TRUE l4=TRUE g1=TRUE n1=TRUE
+PASS    conformance/strings/compare.st
+### conformance/strings/concat_assign.st
+0 push=TRUE => acc='x' n=1 copy='ab'
+1 push=TRUE => acc='xx' n=2 copy='abz'
+2 push=FALSE => acc='xx' n=2 copy='abzz'
+3 push=TRUE => acc='xxx' n=3 copy='abzzz'
+PASS    conformance/strings/concat_assign.st
+### conformance/strings/declared_length.st
+ERROR   conformance/strings/declared_length.st
+        TYPE is outside this harness's scope (one PROGRAM over elementary types)
+### conformance/strings/functions.st
+0 n=1 => o_len=5 o_concat='abcd' o_left='h' o_right='o' o_mid='e' o_insert='hXXello' o_delete='hllo' o_replace='hYYllo' o_find=3 o_find0=0
+1 n=2 => o_len=5 o_concat='abcd' o_left='he' o_right='lo' o_mid='el' o_insert='heXXllo' o_delete='hlo' o_replace='hYYlo' o_find=3 o_find0=0
+2 n=3 => o_len=5 o_concat='abcd' o_left='hel' o_right='llo' o_mid='ell' o_insert='helXXlo' o_delete='ho' o_replace='hYYo' o_find=3 o_find0=0
+3 n=4 => o_len=5 o_concat='abcd' o_left='hell' o_right='ello' o_mid='ello' o_insert='hellXXo' o_delete='hello' o_replace='hYY' o_find=3 o_find0=0
+FAIL    conformance/strings/functions.st
+        cycle 3 (trace line 21): o_delete expected 'h', got 'hello'
+### conformance/strings/literals_escapes.st
+0 => s1='abc' s2='' s3='it$'s' s4='$$' s5='a$20b' s6='tab$Tx' s7='nl$Ly' s8='AB' n1=3
+1 => s1='abc' s2='' s3='it$'s' s4='$$' s5='a$20b' s6='tab$Tx' s7='nl$Ly' s8='AB' n1=3
+PASS    conformance/strings/literals_escapes.st
+### conformance/timers/tof.st
+ERROR   conformance/timers/tof.st
+        type TOF is outside this harness's scope
+### conformance/timers/ton.st
+ERROR   conformance/timers/ton.st
+        type TON is outside this harness's scope
+### conformance/timers/tp.st
+ERROR   conformance/timers/tp.st
+        type TP is outside this harness's scope
+### conformance/undefined/abs_int_min.st
+0 x=-7 d=-7 => ax=7 nx=7 ad=7 nd=7
+1 x=-32768 d=-2147483648 => ax=-32768 nx=-32768 ad=-2147483648 nd=-2147483648
+SAME    conformance/undefined/abs_int_min.st
+### conformance/undefined/array_out_of_bounds.st
+0 idx=2 => v=20 ok=TRUE
+1 idx=3 => v=30 ok=TRUE
+DIFFERS conformance/undefined/array_out_of_bounds.st
+        cycle 2: no output (program crashed?)
+### conformance/undefined/ctu_pv_zero.st
+ERROR   conformance/undefined/ctu_pv_zero.st
+        type CTU is outside this harness's scope
+### conformance/undefined/dint_to_int_overflow.st
+0 d=100 i=100 u=100 => d2i=100 d2u=100 i2u=100 u2i=100
+1 d=40000 i=-1 u=65535 => d2i=-25536 d2u=40000 i2u=65535 u2i=-1
+2 d=-40000 i=-32768 u=32768 => d2i=25536 d2u=25536 i2u=32768 u2i=-32768
+3 d=2147483647 i=32767 u=0 => d2i=-1 d2u=65535 i2u=32767 u2i=0
+4 d=65541 i=0 u=40000 => d2i=5 d2u=5 i2u=0 u2i=-25536
+SAME    conformance/undefined/dint_to_int_overflow.st
+### conformance/undefined/div_zero.st
+0 a=7 b=2 => q=3 m=1
+1 a=-7 b=2 => q=-3 m=-1
+2 a=7 b=0 => q=0 m=0
+DIFFERS conformance/undefined/div_zero.st
+        cycle 2 (trace line 24): expected a trap, got q=0 m=0
+### conformance/undefined/eval_order.st
+ERROR   conformance/undefined/eval_order.st
+        FUNCTION BUMP: VAR_IN_OUT on a function is outside this harness's scope
+### conformance/undefined/for_bound_modified.st
+0 start_n=3 => count=3 n_after=6
+1 start_n=0 => count=0 n_after=0
+2 start_n=10 => count=10 n_after=20
+DIFFERS conformance/undefined/for_bound_modified.st
+        cycle 0 (trace line 21): count expected 50, got 3
+        cycle 0 (trace line 21): n_after expected 53, got 6
+        cycle 2 (trace line 24): count expected 50, got 10
+        cycle 2 (trace line 24): n_after expected 60, got 20
+### conformance/undefined/for_var_after_loop.st
+0 n=3 => i_after=4 sum=6
+1 n=0 => i_after=1 sum=0
+2 n=1 => i_after=2 sum=1
+3 n=-2 => i_after=1 sum=0
+SAME    conformance/undefined/for_var_after_loop.st
+### conformance/undefined/int_overflow.st
+0 a=1 b=2 => s=3 d=-1
+1 a=32767 b=1 => s=-32768 d=32766
+2 a=-32768 b=-1 => s=32767 d=-32767
+3 a=-32768 b=1 => s=-32767 d=32767
+4 a=32767 b=32767 => s=-2 d=0
+5 a=-32768 b=-32768 => s=0 d=0
+SAME    conformance/undefined/int_overflow.st
+### conformance/undefined/real_div_zero.st
+0 x=1.0 y=2.0 => q=0.5
+1 x=1.0 y=0.0 => q=0
+2 x=-1.0 y=0.0 => q=0
+3 x=0.0 y=0.0 => q=0
+4 x=1.0 y=2.0 => q=0.5
+DIFFERS conformance/undefined/real_div_zero.st
+        cycle 1 (trace line 13): q expected inf, got 0
+        cycle 2 (trace line 14): q expected -inf, got 0
+        cycle 3 (trace line 15): q expected nan, got 0
+### conformance/undefined/real_to_int_ties.st
+0 x=2.5 l=2.5 => i=2 d=2
+1 x=3.5 l=3.5 => i=4 d=4
+2 x=-2.5 l=-2.5 => i=-2 d=-2
+3 x=-3.5 l=-3.5 => i=-4 d=-4
+4 x=0.5 l=0.5 => i=0 d=0
+DIFFERS conformance/undefined/real_to_int_ties.st
+        cycle 1 (trace line 20): i expected 3, got 4
+        cycle 1 (trace line 20): d expected 3, got 4
+        cycle 3 (trace line 22): i expected -3, got -4
+        cycle 3 (trace line 22): d expected -3, got -4
+### conformance/undefined/short_circuit.st
+ERROR   conformance/undefined/short_circuit.st
+        FUNCTION TICK: VAR_IN_OUT on a function is outside this harness's scope
+### conformance/undefined/string_conversions.st
+DIFFERS conformance/undefined/string_conversions.st
+        4diac IDE failed to export the FB:
+        [fordiac.exportProjectFBs] L/FB_CONFORMANCE_UNDEFINED_STRING_CONVERSIONS/FB_CONFORMANCE_UNDEFINED_STRING_CONVERSIONS.fbt
+        [fordiac.exportProjectFBs] FB_CONFORMANCE_UNDEFINED_STRING_CONVERSIONS: FB_CONFORMANCE_UNDEFINED_STRING_CONVERSIONS at 2: The callable INT_TO_STRING(INT) is undefined
+        [fordiac.exportProjectFBs] FB_CONFORMANCE_UNDEFINED_STRING_CONVERSIONS: FB_CONFORMANCE_UNDEFINED_STRING_CONVERSIONS at 3: The callable STRING_TO_INT(STRING) is undefined
+        [fordiac.exportProjectFBs] FB_CONFORMANCE_UNDEFINED_STRING_CONVERSIONS: FB_CONFORMANCE_UNDEFINED_STRING_CONVERSIONS at 4: The callable DINT_TO_STRING(DINT) is undefined
+        !ENTRY org.eclipse.osgi 4 0 2026-11-01 19:22:58.587
+        !MESSAGE Application error
+        !STACK 1
+        at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(Unknown Source)
+        at java.base/java.lang.reflect.Method.invoke(Unknown Source)
+        at org.eclipse.ant.core.AntRunner.run(AntRunner.java:506)
+        at org.eclipse.ant.core.AntRunner.start(AntRunner.java:603)
+        at org.eclipse.equinox.internal.app.EclipseAppHandle.run(EclipseAppHandle.java:219)
+### conformance/undefined/string_truncate.st
+ERROR   conformance/undefined/string_truncate.st
+        STRING[n] is not a 4diac type
+### conformance/undefined/subrange_out_of_range.st
+ERROR   conformance/undefined/subrange_out_of_range.st
+        TYPE is outside this harness's scope (one PROGRAM over elementary types)
+### conformance/undefined/tasks_same_priority.st
+ERROR   conformance/undefined/tasks_same_priority.st
+        CONFIGURATION is outside this harness's scope (one PROGRAM over elementary types)
+### conformance/undefined/timer_pt_zero.st
+ERROR   conformance/undefined/timer_pt_zero.st
+        type TON is outside this harness's scope
+### conformance/undefined/ton_pt_change.st
+ERROR   conformance/undefined/ton_pt_change.st
+        type TON is outside this harness's scope
+
+88 tests: 29 pass, 6 fail, 4 same, 6 differs, 43 error
+exit 1
