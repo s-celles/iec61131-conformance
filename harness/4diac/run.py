@@ -46,7 +46,7 @@ SCALAR = {
 }
 HEX_WIDTH = {"BYTE": 2, "WORD": 4, "DWORD": 8}
 REAL_FMT = {"REAL": "%.9g", "LREAL": "%.17g"}
-UNSUPPORTED = ["FUNCTION_BLOCK", "TYPE", "CONFIGURATION", "VAR_GLOBAL", "VAR_EXTERNAL"]
+UNSUPPORTED = ["FUNCTION_BLOCK", "CONFIGURATION", "VAR_GLOBAL", "VAR_EXTERNAL"]
 
 
 class Unsupported(Exception):
@@ -55,6 +55,48 @@ class Unsupported(Exception):
 
 def strip_comments(text):
     return re.sub(r"\(\*.*?\*\)", "", text, flags=re.S)
+
+
+def parse_types(st_text):
+    """-> {name: dtp xml} for the TYPE declarations: STRUCT and enumerations are
+    4diac data types (.dtp); an array alias, a subrange or STRING[n] is not."""
+    text = strip_comments(st_text)
+    out = {}
+    for tb in re.finditer(r"\bTYPE\b(.*?)\bEND_TYPE\b", text, re.S | re.I):
+        body = tb.group(1)
+        for m in re.finditer(r"(\w+)\s*:\s*(STRUCT\b(.*?)\bEND_STRUCT\s*;|\((.*?)\)\s*;|[^;]*;)", body, re.S | re.I):
+            name, decl = m.group(1), m.group(2)
+            if decl.upper().startswith("STRUCT"):
+                members = []
+                for d in m.group(3).split(";"):
+                    if ":" not in d:
+                        continue
+                    n, rest = d.split(":", 1)
+                    ty, init = (rest.split(":=", 1) + [None])[:2] if ":=" in rest else (rest, None)
+                    ty = " ".join(ty.split()).upper()
+                    am = re.match(r"ARRAY\s*\[\s*(-?\d+)\s*\.\.\s*(-?\d+)\s*\]\s*OF\s+(\w+)$", ty)
+                    a = f' ArraySize="{am.group(1)}..{am.group(2)}"' if am else ""
+                    if am:
+                        ty = am.group(3)
+                    i = f' InitialValue="{xml_escape(init.strip())}"' if init else ""
+                    members.append(f'    <VarDeclaration Name="{n.strip()}" Type="{ty}"{a}{i}/>')
+                kind = "StructuredType"
+                inner = "\n".join(members)
+            elif decl.startswith("("):
+                kind = "EnumeratedType"
+                inner = "\n".join(f'    <EnumeratedValue Name="{v.strip().split(':=')[0].strip()}"/>' for v in m.group(4).split(","))
+            else:
+                raise Unsupported(f"TYPE {name}: {' '.join(decl.split())} is not a 4diac data type (only STRUCT and enumerations are)")
+            out[name] = f"""<?xml version="1.0" encoding="UTF-8"?>
+<DataType Name="{name}" Comment="iec61131-conformance">
+  <Identification Standard="61499-1"/>
+  <VersionInfo Version="1.0" Author="harness" Date="2026-01-01"/>
+  <{kind}>
+{inner}
+  </{kind}>
+</DataType>
+"""
+    return out
 
 
 def parse_functions(st_text):
@@ -110,10 +152,11 @@ def fct(name, rtype, ins, outs, text):
 """
 
 
-def parse_program(st_text):
+def parse_program(st_text, user_types=()):
     """-> (name, sections, body). sections: list of (kind, [(name, type, array, init)])."""
     text = strip_comments(st_text)
     text = re.sub(r"\bFUNCTION\s+\w+\s*:.*?\bEND_FUNCTION\b", "", text, flags=re.S | re.I)
+    text = re.sub(r"\bTYPE\b.*?\bEND_TYPE\b", "", text, flags=re.S | re.I)
     for kw in UNSUPPORTED:
         if re.search(rf"^\s*{kw}\b", text, re.M | re.I):
             raise Unsupported(f"{kw} is outside this harness's scope (one PROGRAM over elementary types)")
@@ -139,7 +182,7 @@ def parse_program(st_text):
                 array, ty = f"{am.group(1)}..{am.group(2)}", am.group(3)
             if ty.startswith("STRING["):
                 raise Unsupported("STRING[n] is not a 4diac type")
-            if ty not in SCALAR:
+            if ty not in SCALAR and ty not in {u.upper() for u in user_types}:
                 raise Unsupported(f"type {ty} is outside this harness's scope")
             for n in names.split(","):
                 n = n.strip()
@@ -292,7 +335,9 @@ def export_all(opts, work, projects):
             msgs = [x.strip() for x in log.splitlines() if x.strip() and "BUILD" not in x and "Buildfile" not in x
                     and "log4j" not in x and "NLS" not in x and "Total time" not in x and "importProject" not in x
                     and "export:" != x.strip() and "!SESSION" not in x and "eclipse.buildId" not in x
-                    and not x.startswith("java.") and "BootLoader" not in x and "arguments:" not in x]
+                    and not x.startswith("java.") and "BootLoader" not in x and "arguments:" not in x
+                    and not x.strip().startswith("at ") and "!ENTRY" not in x and "!STACK" not in x
+                    and "!MESSAGE Application error" not in x]
             errors[name] = "\n".join(msgs[:12]) or "export produced no C++"
     return errors
 
@@ -412,7 +457,8 @@ def compile_driver(opts, work, fb):
            "-I", str(exp / "include"), "-I", f"{src}/core/include", "-I", f"{bld}/core/include",
            "-I", f"{src}/core/arch/common/include", "-I", f"{src}/core/arch/posix/include",
            str(work / f"{fb}_driver.cpp"), str(exp / "src" / f"{fb}_fbt.cpp")] + \
-          [str(f) for f in sorted((exp / "src").glob("*_fct.cpp"))] + [
+          [str(f) for f in sorted((exp / "src").glob("*_fct.cpp"))] + \
+          [str(f) for f in sorted((exp / "src").glob("*_dtp.cpp"))] + [
            "-L", bld, "-L", f"{bld}/core", "-L", f"{bld}/modules/IEC61131-3",
            "-lforte", "-lforte-core", "-lforte-iec61131-3",
            f"-Wl,-rpath,{bld}", f"-Wl,-rpath,{bld}/core", f"-Wl,-rpath,{bld}/modules/IEC61131-3",
@@ -468,7 +514,8 @@ def main():
         try:
             st_text = st.read_text()
             functions = parse_functions(st_text)
-            name, sections, body = parse_program(st_text)
+            user_types = parse_types(st_text)
+            name, sections, body = parse_program(st_text, user_types)
             if trace.program and trace.program.lower() != name.lower():
                 raise Unsupported(f"trace program {trace.program} is not the PROGRAM {name}")
             types = {n: ty for k, ds in sections for n, ty, _, _ in ds}
@@ -477,12 +524,14 @@ def main():
                     raise Unsupported(f"variable {n} not declared")
                 if types[n] == "STRING" and n in trace.inputs:
                     raise Unsupported("STRING inputs are not supported (SPEC.md)")
-                if SCALAR[types[n]][1] is None:
+                if types[n] not in SCALAR or SCALAR[types[n]][1] is None:
                     raise Unsupported(f"variable {n}: {types[n]} has no trace value syntax")
             fb = "FB_" + re.sub(r"[^A-Za-z0-9]", "_", str(st.with_suffix("")).replace("/", "_"))[-40:].upper()
             projects[fb] = {f"{fb}.fbt": fbt(fb, sections, body)}
             for fname, (rtype, ins, outs, text) in functions.items():
                 projects[fb][f"{fname}.fct"] = fct(fname, rtype, ins, outs, text)
+            for tname, xml in user_types.items():
+                projects[fb][f"{tname}.dtp"] = xml
             prepared[st] = ("ok", fb, sections, trace)
         except Unsupported as e:
             prepared[st] = ("err", "ERROR", [str(e)], [])
