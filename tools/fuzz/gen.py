@@ -8,6 +8,9 @@ functions whose meaning IEC 61131-3 fixes completely:
 
   core  INT and BOOL: + - * / MOD, comparisons, AND OR XOR NOT, ABS MIN
         MAX LIMIT SEL MUX (tables 29/30/32, 71);
+  time  core plus TIME: + and - between TIMEs (kept >= 0), TIME * INT,
+        comparisons, MIN MAX LIMIT SEL MUX (table 30); no division (its
+        resolution is implementation-dependent);
   wide  core plus DINT and UINT with the same operators and the
         *_TO_* conversions between the three (table 22, in-range only),
         and BYTE and WORD with AND OR XOR NOT, SHL SHR ROL ROR by a
@@ -35,12 +38,14 @@ import random
 RANGE = {
     "INT": (-32768, 32767), "DINT": (-2**31, 2**31 - 1), "UINT": (0, 65535),
     "BYTE": (0, 255), "WORD": (0, 65535),
+    "TIME": (0, 10**7),   # milliseconds; kept non-negative (SPEC.md writes T#<n>ms)
 }
 WIDTH = {"BYTE": 8, "WORD": 16}
 INT_TYPES = ("INT", "DINT", "UINT")
+ORDERED_TYPES = INT_TYPES + ("TIME",)
 BIT_TYPES = ("BYTE", "WORD")
-LIT_RANGE = {"INT": (-20, 20), "DINT": (-20, 20), "UINT": (0, 20), "BYTE": (0, 255), "WORD": (0, 65535)}
-IN_RANGE = {"INT": (-50, 50), "DINT": (-100000, 100000), "UINT": (0, 200), "BYTE": (0, 255), "WORD": (0, 65535)}
+LIT_RANGE = {"INT": (-20, 20), "DINT": (-20, 20), "UINT": (0, 20), "BYTE": (0, 255), "WORD": (0, 65535), "TIME": (0, 5000)}
+IN_RANGE = {"INT": (-50, 50), "DINT": (-100000, 100000), "UINT": (0, 200), "BYTE": (0, 255), "WORD": (0, 65535), "TIME": (0, 100000)}
 
 EXCLUDABLE = {
     "ext_minmax": "MIN/MAX with more than two inputs (ironplc#2548)",
@@ -52,6 +57,9 @@ EXCLUDABLE = {
     "conversions": "the *_TO_* conversions between INT, DINT and UINT, and BYTE_TO_WORD",
     "shifts": "SHL SHR ROL ROR",
     "typed_literals": "DINT#, UINT#, BYTE# and WORD# literals: plain decimal / 16# is written instead",
+    "time_functions": "MIN MAX LIMIT SEL MUX on TIME (ironplc#2555)",
+    "time_literal_ms": "TIME literals with a millisecond part: whole seconds are written instead (beremiz/matiec#44 on AArch64)",
+    "time_mul": "TIME * INT (beremiz/matiec#51)",
 }
 
 
@@ -115,7 +123,10 @@ class Gen:
 
     def lit(self, ty):
         lo, hi = LIT_RANGE[ty]
-        return ("lit", ty, self.rng.randint(lo, hi))
+        v = self.rng.randint(lo, hi)
+        if ty == "TIME" and "time_literal_ms" in self.excl:
+            v = v - v % 1000
+        return ("lit", ty, v)
 
     def var_or_lit(self, ty):
         vs = self.vars_of(ty)
@@ -135,6 +146,17 @@ class Gen:
         if depth <= 0 or r.random() < 0.3:
             return self.var_or_lit(ty)
         k = r.random()
+        if ty == "TIME" and k < 0.5:
+            # table 30: TIME + TIME, TIME - TIME, TIME * ANY_NUM (the INT factor
+            # is kept non-negative by ABS); the difference must stay >= 0
+            op = r.choice(["+", "+", "-"] + ([] if "time_mul" in self.excl else ["*"]))
+            l = self.int_expr(ty, depth - 1)
+            rr = ("call", "ABS", [self.int_expr("INT", depth - 1)]) if op == "*" else self.int_expr(ty, depth - 1)
+            return ("bin", op, l, rr)
+        if ty == "TIME" and "time_functions" in self.excl:
+            return self.var_or_lit(ty)
+        if ty == "TIME" and k < 0.62:
+            k = 0.75   # no negation, no conversion: fall through to the functions
         if k < 0.5:
             op = r.choice(["+", "+", "-", "-", "*", "/", "MOD"])
             l, rr = self.int_expr(ty, depth - 1), self.int_expr(ty, depth - 1)
@@ -151,7 +173,7 @@ class Gen:
             return ("conv", src, ty, self.arg(src, depth - 1))
         fn = r.choice(["ABS", "MIN", "MAX", "LIMIT", "SEL", "MUX"])
         if fn == "ABS":
-            if ty == "UINT":
+            if ty in ("UINT", "TIME"):
                 fn = "MIN"
             else:
                 return ("call", fn, [self.arg(ty, depth - 1)])
@@ -200,7 +222,7 @@ class Gen:
             return ("lit", "BOOL", r.choice([True, False]))
         k = r.random()
         if k < 0.4:
-            ty = r.choice([t for t in INT_TYPES if self.vars_of(t)] or ["INT"])
+            ty = r.choice([t for t in ORDERED_TYPES if self.vars_of(t)] or ["INT"])
             op = r.choice(["<", "<=", ">", ">=", "=", "<>"])
             return ("bin", op, self.int_expr(ty, depth - 1), self.int_expr(ty, depth - 1))
         if k < 0.5 and any(self.vars_of(t) for t in BIT_TYPES):
@@ -230,6 +252,8 @@ def render(e, excl=()):
         if ty in BIT_TYPES:
             hexa = f"16#{v:0{WIDTH[ty] // 4}X}"
             return hexa if "typed_literals" in excl else f"{ty}#{hexa}"
+        if ty == "TIME":
+            return f"T#{v}ms"
         if ty == "INT" or "typed_literals" in excl:
             return str(v) if v >= 0 else f"(-{-v})"
         return f"{ty}#{v}" if v >= 0 else f"(-{ty}#{-v})"
@@ -371,6 +395,11 @@ PROFILES = {
         "outputs": [("o0", "INT"), ("o1", "INT"), ("o2", "INT"), ("q0", "BOOL"), ("q1", "BOOL")],
         "internal": [("v0", "INT"), ("v1", "INT"), ("f0", "BOOL")],
     },
+    "time": {
+        "inputs": [("i0", "INT"), ("i1", "INT"), ("t0", "TIME"), ("t1", "TIME"), ("b0", "BOOL")],
+        "outputs": [("o0", "INT"), ("ot", "TIME"), ("ot2", "TIME"), ("q0", "BOOL"), ("q1", "BOOL")],
+        "internal": [("v0", "INT"), ("vt", "TIME"), ("f0", "BOOL")],
+    },
     "wide": {
         "inputs": [("i0", "INT"), ("i1", "INT"), ("d0", "DINT"), ("u0", "UINT"), ("by0", "BYTE"), ("w0", "WORD"), ("b0", "BOOL")],
         "outputs": [("o0", "INT"), ("o1", "INT"), ("od", "DINT"), ("ou", "UINT"), ("ob", "BYTE"), ("ow", "WORD"), ("q0", "BOOL"), ("q1", "BOOL")],
@@ -503,6 +532,8 @@ def exec_stmts(stmts, env, types):
 def fmt(ty, v):
     if ty == "BOOL":
         return "TRUE" if v else "FALSE"
+    if ty == "TIME":
+        return f"T#{v}ms"
     if ty in BIT_TYPES:
         return f"16#{v:0{WIDTH[ty] // 4}X}"
     return str(v)

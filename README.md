@@ -7,7 +7,7 @@ Text runtimes: plain `.st` programs paired with plain-text expected
 input/output traces, one record per scan cycle. Dedicated to the public
 domain under CC0 1.0 (see `LICENSE`).
 
-Status: 86 tests, run against IronPLC, matiec, OpenPLC's matiec fork, STruC++
+Status: 88 tests, run against IronPLC, matiec, OpenPLC's matiec fork, STruC++
 (and RuSTy,
 see `notes/comparison.md`), with a Lean 4 model of the function block
 semantics that the expected traces are proved to follow from.
@@ -64,6 +64,7 @@ conformance/
                limit_inverted std_functions_expr LIMIT with MN > MX, MUX/SEL/NOT on expressions (from tools/fuzz)
                bit_literals bit_expr_operands   16# literals as BYTE/WORD, NOT/SHL/ROL on expressions (from tools/fuzz)
                shl_width                        SHL truncates to the width of its input (from tools/fuzz)
+               time_mul time_functions          TIME * INT with large products, MIN/MAX/LIMIT/SEL/MUX/LT on TIME (from tools/fuzz)
   data/        array_internal array_init        arrays (negative bounds, initialisers)
                struct_internal enum             structures (copy, nesting), enumerations
                array_2d array_of_struct         2-D array, array of a named array type, array of structures
@@ -106,7 +107,7 @@ notes/
   evidence/         full harness outputs
 ```
 
-Each test is `<name>.st` + `<name>.trace`. Sixty-eight tests under the first
+Each test is `<name>.st` + `<name>.trace`. Seventy tests under the first
 nine categories are `status: conformant`: their expected values were derived
 by hand from the standard's function block bodies and timing diagrams, and
 the derivation is written as a comment at the top of each `.trace` file.
@@ -270,8 +271,8 @@ of the repository, a harness should:
 ## Differential fuzzing
 
 `tools/fuzz/gen.py` generates small, well-defined ST programs (profile
-`core`: INT and BOOL; profile `wide`: also DINT, UINT, BYTE and WORD with
-the conversions, bit-string operators and shifts; IF/CASE/FOR; the
+`core`: INT and BOOL; profile `time`: also TIME; profile `wide`: also DINT,
+UINT, BYTE and WORD with the conversions, bit-string operators and shifts; IF/CASE/FOR; the
 operators and standard functions whose meaning the standard fixes
 completely) with the expected trace from a reference evaluator; `tools/fuzz/run.py` runs them through the local harnesses and
 prints the divergences, keeping the programs for reduction. `--exclude`

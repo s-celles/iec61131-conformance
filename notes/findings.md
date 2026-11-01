@@ -309,3 +309,15 @@ Reported: https://github.com/ironplc/ironplc/issues/2549
   types included; the typed forms `BYTE#16#FF`, `WORD#16#1234` are
   accepted. matiec, its fork and STruC++ accept the untyped form. Found
   by `tools/fuzz`.
+
+## 27. (Defect) MIN, MAX and LIMIT do not accept TIME
+
+- Reported: https://github.com/ironplc/ironplc/issues/2555
+- Reproducer: `ops/time_functions.st`: `MIN(a, b)` with `a, b : TIME` is
+  `P4026 Function call argument type does not match parameter type
+  (function=MIN, parameter=IN1, expected=ANY_NUM, actual=time)`, likewise
+  `MAX` and `LIMIT`. Ed.3 table 32 (ed.2 table 27) declares the three on
+  `ANY_ELEMENTARY`, which includes TIME (durations are ordered, table 33
+  / ed.2 table 28; `LT(a, b)` and `a < b` on TIME are accepted). `SEL` and
+  `MUX` on TIME are accepted. matiec's OpenPLC fork and STruC++ compute
+  the test. Found by `tools/fuzz` (profile `time`).

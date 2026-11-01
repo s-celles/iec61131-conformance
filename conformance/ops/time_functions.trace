@@ -1,0 +1,22 @@
+# MIN, MAX, LIMIT, SEL, MUX and LT on TIME.
+#
+# Derivation (ed.3 table 32: MIN/MAX/LIMIT on ANY_ELEMENTARY, which
+# includes TIME; SEL/MUX on ANY; table 33: LT on ANY_ELEMENTARY; ed.2
+# tables 27-28 likewise; the values follow the ordering of durations):
+# cycle 0: a=T#2s    b=T#500ms k=0 -> lo=500 hi=2000 clamp=2000 big: a<b F -> a = 2000
+#          pick = a = 2000; less F
+# cycle 1: a=T#50ms  b=T#3s    k=1 -> 50, 3000, 100 (below the lower limit), big: T -> b = 3000
+#          pick = b = 3000; less T
+# cycle 2: a=T#9s    b=T#9s    k=2 -> 9000, 9000, 5000 (above the upper), big: F -> a; pick = a+b = 18000; less F
+# cycle 3: a=T#0ms   b=T#1ms   k=2 -> 0, 1000 (T#1s is the largest), 100, big: T -> b = 1; pick = 1; less T
+period_ms: 100
+program: main
+inputs: a b k
+outputs: lo hi clamp big pick less
+status: conformant
+reference: IEC 61131-3 ed.3 table 32 (MIN MAX LIMIT SEL MUX), table 33 (LT); ed.2 tables 27-28
+---
+0 a=T#2000ms b=T#500ms k=0 => lo=T#500ms hi=T#2000ms clamp=T#2000ms big=T#2000ms pick=T#2000ms less=FALSE
+1 a=T#50ms b=T#3000ms k=1 => lo=T#50ms hi=T#3000ms clamp=T#100ms big=T#3000ms pick=T#3000ms less=TRUE
+2 a=T#9000ms b=T#9000ms k=2 => lo=T#9000ms hi=T#9000ms clamp=T#5000ms big=T#9000ms pick=T#18000ms less=FALSE
+3 a=T#0ms b=T#1ms k=2 => lo=T#0ms hi=T#1000ms clamp=T#100ms big=T#1ms pick=T#1ms less=TRUE

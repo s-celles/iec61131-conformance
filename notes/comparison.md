@@ -170,6 +170,7 @@ Totals (86 tests, 68 with `status: conformant`): conformant tests passed, IronPL
 12. **Task priority**: matiec runs the tasks of a resource in declaration order and ignores PRIORITY (beremiz/matiec#43); IronPLC's VM orders by priority but compiles a single instance, so the comparison is between matiec and the standard's text here.
 13. **Functions with VAR_OUTPUT or VAR_IN_OUT call an undeclared function** (beremiz/matiec#49): for such a function matiec emits a per-call `static inline` wrapper (`__MAIN_DIVMOD1`) outside the `#ifndef __POUS_INIT_ONLY__` guard, while the function's prototype is inside it; `config.c` includes `POUS.c` with that macro defined, so the wrapper calls `___DIVMOD` before any declaration (`pou/function_var_output`, `pou/fb_in_out` (`SWAP`), `undefined/short_circuit`). With gcc 13 (CI) that is a warning and the three tests run correctly; with clang, or gcc 14 where implicit declarations are errors, the build fails, as with beremiz/matiec#39. The OpenPLC fork has no guard.
 14. **`LIMIT` with MN > MX returns MN** (beremiz/matiec#50): matiec's `LIMIT` tests `IN <= MN` first, so `LIMIT(5, 3, 1)` is 5 where the standard's formula `MIN(MAX(IN, MN), MX)` (ed.3 table 32) gives 1; IronPLC follows the formula (`ops/limit_inverted`, found by `tools/fuzz`; the suite's other LIMIT tests keep MN <= MX). The OpenPLC fork (item 9), STruC++ (item 13) and RuSTy (item 8) do the same.
+15. **`TIME * n` overflows a 32-bit intermediate** (beremiz/matiec#51): `lib/C/iec_std_lib.h` `__time_mul` computes `(int)((LREAL)IN1.tv_nsec * IN2)`, so once the nanosecond part times the factor exceeds 2^31 (`T#700ms * 4`, `T#999ms * 3`) the product is wrong (`ops/time_mul`: 2147 ms instead of 2800); upstream does not build it (#40) but has the same line, the OpenPLC fork shows it. Found by `tools/fuzz` (profile `time`).
 
 Items 1, 2, 3 are IronPLC deviations from the standard's timing diagrams
 (matiec's `lib/timer.txt` reproduces those diagrams in its comments). Item 5
@@ -216,6 +217,8 @@ upstream matiec `3a41303`:
    the same.
 9. **`LIMIT` with MN > MX returns MN**, as upstream (item 14;
    `ops/limit_inverted`).
+10. **`TIME * n` overflows a 32-bit intermediate**, as upstream (item 15;
+    `ops/time_mul`: `T#700ms * 4` is 2147 ms).
 
 Shared with upstream: `REPLACE` (#41), `STRING[n]` (#42), task order (#43),
 counters saturating at PV / 0, rounding to even, the `/` operator unguarded.
