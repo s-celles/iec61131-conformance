@@ -218,7 +218,22 @@ as matiec's do. The failures are in the front end and the string codegen:
    tasks in declaration order and the harness follows that rule, so
    `config/priority_order` fails here by construction and `SINGLE` tasks are
    not driven (`config/event_single`, see STruCpp#201). OpenPLC Runtime v4's
-   threaded scheduler is not what this harness exercises.
+   threaded scheduler is not what this harness exercises, and it cannot be
+   driven by a simulated clock: `core/src/plc_app/plc_state_manager.cpp`
+   (autonomy-logic/openplc-runtime `8d69d93`) runs one `SCHED_FIFO` thread
+   per task, released by a master-tick dispatcher paced with
+   `clock_nanosleep` on `CLOCK_MONOTONIC` at the GCD of the intervals; all
+   tasks due at a tick are posted together and the order in which they run
+   is the OS scheduler's (IEC priority mapped to FIFO 49..1 by
+   `task_policy.h`), so on more than one core they run concurrently and
+   `priority_order` has no defined answer. The `SINGLE` parameter does not
+   survive compilation at all: `TaskInstance` (`iec_std_lib.hpp`) carries
+   `name, interval_ns, priority, programs` and a `SINGLE` task is emitted
+   with `interval_ns = 0`, which v4 then schedules at the base tick
+   (`ctx->interval_ns = tk.interval_ns > 0 ? ... : base_ns`), i.e. every
+   tick regardless of the trigger. Reproducing that rule in the harness
+   would only confirm the deviation; the real-time run would add
+   non-determinism. Left as a documented limitation.
 
 ## RuSTy deviations (commit `e911ee5`)
 
