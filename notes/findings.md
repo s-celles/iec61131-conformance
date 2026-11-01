@@ -231,3 +231,14 @@ Reported: https://github.com/ironplc/ironplc/issues/2549
   interval honoured by `run_round`). The VM itself schedules tasks in
   priority order (`vm.rs`, `run_round`), so #1613 is the only gap for
   `two_periods`, `priority_order` and `global_exchange`.
+
+## 19. (Limitation) No API to write a STRING from outside the VM
+
+- `VmRunning` offers `write_variable_raw` for scalar slots and a read-only
+  `data_region()`; a string's content lives in the data region at the
+  offset of the debug section's STRING layout entry, which the harness
+  reads directly. Nothing writes it, so SPEC.md version 1 allows STRING
+  outputs only and the `strings/` tests build their strings inside the
+  program. The same limit would apply to `ironplcvm run --trace` and to
+  MCP `stimuli` (ironplc#1163).
+- Asked for on the proposal: https://github.com/ironplc/ironplc/issues/2547#issuecomment-6558044129
