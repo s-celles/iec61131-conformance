@@ -10,6 +10,8 @@ implementation).
 
 ## 1. TOF produces an off-delay at power-up although IN was never TRUE
 
+Reported: https://github.com/ironplc/ironplc/issues/2545
+
 - Reproducer: `conformance/timers/tof.st` / `.trace`, cycle 0.
 - Expected (TOF timing diagram, ed.3 table 46): Q = FALSE until the first
   rising edge of IN; a falling edge needs a previous TRUE.
@@ -25,6 +27,8 @@ implementation).
   power-up.
 
 ## 2. TP retriggers while IN stays TRUE (free-running oscillator)
+
+Reported together with item 3: https://github.com/ironplc/ironplc/issues/2546
 
 - Reproducer: `conformance/timers/tp.st` / `.trace`, cycles 9 to 11 and 16 to 17.
 - Expected (TP timing diagram): after the pulse, Q stays FALSE until a new

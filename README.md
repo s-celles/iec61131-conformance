@@ -1,5 +1,7 @@
 # IEC 61131-3 conformance traces
 
+[![CI](https://github.com/s-celles/iec61131-conformance/actions/workflows/ci.yml/badge.svg)](https://github.com/s-celles/iec61131-conformance/actions/workflows/ci.yml)
+
 An open, runtime-agnostic conformance test suite for IEC 61131-3 Structured
 Text runtimes: plain `.st` programs paired with plain-text expected
 input/output traces, one record per scan cycle. Dedicated to the public
