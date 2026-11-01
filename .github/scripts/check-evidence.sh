@@ -14,7 +14,9 @@
 # the suite's absolute root (which ironplcc quotes in diagnostics) is
 # replaced by <root>, and the runner's temp dir (where CI builds the
 # runtimes) by <tmp>, and the Rust toolchain source path ironplcc's P9999
-# "Learn more" URL carries by <file>, since compiler diagnostics quote them.
+# "Learn more" URL carries by <file>, since compiler diagnostics quote them;
+# the 4diac harness's temporary dirs, FORTE path and the Eclipse log
+# timestamps (!ENTRY lines) are masked too.
 #
 # Usage: check-evidence.sh EVIDENCE_FILE -- COMMAND...
 set -uo pipefail
@@ -27,7 +29,7 @@ name=$(basename "$evidence")
 cp "$out" "${RUNNER_TEMP:-/tmp}/$name"
 summary=$(grep -E '^[0-9]+ tests:' "$out" || echo "no summary line")
 root=$(pwd -P)
-normalise() { sed -E -e $'s/\x1b\\[[0-9;]*m//g' -e 's#/tmp/[A-Za-z0-9_.-]+/#<tmpdir>/#g' -e "s#$root/#<root>/#g" -e "s#${RUNNER_TEMP:-/nonexistent}/#<tmp>/#g" -e 's#<tmp>/strucpp/#<strucpp>/#g'  -e 's/&file=[^&]*&line=[0-9]+/\&file=<file>\&line=<n>/g' -e 's#/private/var/folders/[^ ]*/T/4diac-[A-Za-z0-9_]+/#<tmpdir>/#g' -e 's#/var/folders/[^ ]*/T/4diac-[A-Za-z0-9_]+/#<tmpdir>/#g' -e 's#<tmp>/4diac-forte/#<forte>/#g' -e 's#<tmpdir>/4diac-[A-Za-z0-9_]+/#<tmpdir>/#g' "$1"; }
+normalise() { sed -E -e $'s/\x1b\\[[0-9;]*m//g' -e 's#/tmp/[A-Za-z0-9_.-]+/#<tmpdir>/#g' -e "s#$root/#<root>/#g" -e "s#${RUNNER_TEMP:-/nonexistent}/#<tmp>/#g" -e 's#<tmp>/strucpp/#<strucpp>/#g'  -e 's/&file=[^&]*&line=[0-9]+/\&file=<file>\&line=<n>/g' -e 's#/private/var/folders/[^ ]*/T/4diac-[A-Za-z0-9_]+/#<tmpdir>/#g' -e 's#/var/folders/[^ ]*/T/4diac-[A-Za-z0-9_]+/#<tmpdir>/#g' -e 's#<tmp>/4diac-forte/#<forte>/#g' -e 's#<tmpdir>/4diac-[A-Za-z0-9_]+/#<tmpdir>/#g' -e 's/^(\s*!(ENTRY|SESSION) .*) [0-9]{4}-[0-9]{2}-[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2}\.[0-9]+/\1 <timestamp>/' "$1"; }
 if diff -u --label "$evidence" --label "harness output" <(normalise "$evidence") <(normalise "$out"); then
   echo "### $name: matches evidence — $summary" >> "${GITHUB_STEP_SUMMARY:-/dev/null}"
 else
