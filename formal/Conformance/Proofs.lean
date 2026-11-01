@@ -29,6 +29,7 @@ class Matches (E A : Type) where
 
 instance : Matches (Option Bool) Bool := ⟨fun e a => match e with | none => true | some v => v == a⟩
 instance : Matches (Option Nat) Nat := ⟨fun e a => match e with | none => true | some v => v == a⟩
+instance : Matches (Option Int) Int := ⟨fun e a => match e with | none => true | some v => v == a⟩
 instance [Matches E₁ A₁] [Matches E₂ A₂] : Matches (E₁ × E₂) (A₁ × A₂) :=
   ⟨fun e a => Matches.ok e.1 a.1 && Matches.ok e.2 a.2⟩
 
@@ -64,6 +65,13 @@ theorem rs_trace : conforms RS srRsInputs srRsExpectedRS = true := by decide
 theorem ctu_trace_ed3 : conforms (CTU .pvMax 3) ctuInputs ctuExpected = true := by decide
 /-- ... and with the FDIS 2001 `CV < PV` it does not (matiec's cycle-8 failure). -/
 theorem ctu_trace_fdis : conforms (CTU .pv 3) ctuInputs ctuExpected = false := by decide
+
+/-- CTD and CTUD likewise hold under ed.3's bounds and fail under the FDIS
+2001 ones, each at the single cycle where CV goes below 0. -/
+theorem ctd_trace_ed3 : conforms (CTD .pvMax 3) ctdInputs ctdExpected = true := by decide
+theorem ctd_trace_fdis : conforms (CTD .pv 3) ctdInputs ctdExpected = false := by decide
+theorem ctud_trace_ed3 : conforms (CTUD .pvMax 2) ctudInputs ctudExpected = true := by decide
+theorem ctud_trace_fdis : conforms (CTUD .pv 2) ctudInputs ctudExpected = false := by decide
 
 /-! ## 2. Properties of the models
 
@@ -186,6 +194,33 @@ theorem ctu_fdis_cv_le_pv (pv : Nat) (s : CtuState) (i : Bool × Bool) (t : Nat)
     · rename_i hlt
       exact Nat.succ_le_of_lt (by simpa using (Bool.and_eq_true _ _ |>.mp hlt).2)
     · exact h
+
+/-- CTD: load dominates, CV = PV after an evaluation with LD = TRUE. -/
+theorem ctd_load_dominant (rule : CtuRule) (pv : Int) (s : CtdState) (cd : Bool) (t : Nat) :
+    (ctdStep rule pv s (cd, true) t).2.2 = pv := by
+  simp [ctdStep]
+
+/-- CTD: Q is exactly `CV ≤ 0` after the evaluation. -/
+theorem ctd_q_iff (rule : CtuRule) (pv : Int) (s : CtdState) (i : Bool × Bool) (t : Nat) :
+    (ctdStep rule pv s i t).2.1 = decide ((ctdStep rule pv s i t).2.2 ≤ 0) := by
+  rcases i with ⟨cd, ld⟩
+  simp [ctdStep]
+
+/-- CTUD: reset dominates load and counting, CV = 0 after R = TRUE. -/
+theorem ctud_reset_dominant (rule : CtuRule) (pv : Int) (s : CtudState) (cu cd ld : Bool)
+    (t : Nat) : (ctudStep rule pv s (cu, cd, true, ld) t).2.2.2 = 0 := by
+  simp [ctudStep]
+
+/-- CTUD: with R FALSE, load dominates counting, CV = PV after LD = TRUE. -/
+theorem ctud_load_dominant (rule : CtuRule) (pv : Int) (s : CtudState) (cu cd : Bool)
+    (t : Nat) : (ctudStep rule pv s (cu, cd, false, true) t).2.2.2 = pv := by
+  simp [ctudStep]
+
+/-- CTUD: simultaneous rising edges on CU and CD leave CV unchanged. -/
+theorem ctud_both_edges_cancel (rule : CtuRule) (pv : Int) (s : CtudState) (t : Nat)
+    (hu : s.prevCu = false) (hd : s.prevCd = false) :
+    (ctudStep rule pv s (true, true, false, false) t).2.2.2 = s.cv := by
+  simp [ctudStep, hu, hd]
 
 /-- TON switches at equality: when the elapsed time is exactly PT, Q is TRUE
 on that very evaluation (RuSTy's `elapsed <= PT` test switches one cycle

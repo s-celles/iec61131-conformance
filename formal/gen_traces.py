@@ -21,6 +21,10 @@ def b(v):
 def n(v):
     return str(v.v)
 
+def z(v):
+    """Int literal; negatives need parentheses after `some`."""
+    return f"({v.v})" if v.v < 0 else str(v.v)
+
 def opt(enc, v):
     return "none" if v.kind == "any" else f"some {enc(v)}"
 
@@ -39,13 +43,22 @@ TESTS = {
                    lambda o: f"({opt(b, o['q_sr'])}, {opt(b, o['q_rs'])})"),
     "counters/ctu": ("ctu", ["cu", "r"], lambda i: f"({b(i['cu'])}, {b(i['r'])})", ["q", "cv"],
                      lambda o: f"({opt(b, o['q'])}, {opt(n, o['cv'])})"),
+    "counters/ctd": ("ctd", ["cd", "ld"], lambda i: f"({b(i['cd'])}, {b(i['ld'])})", ["q", "cv"],
+                     lambda o: f"({opt(b, o['q'])}, {opt(z, o['cv'])})"),
+    "counters/ctud": ("ctud", ["cu", "cd", "r", "ld"],
+                      lambda i: f"({b(i['cu'])}, {b(i['cd'])}, {b(i['r'])}, {b(i['ld'])})",
+                      ["qu", "qd", "cv"],
+                      lambda o: f"({opt(b, o['qu'])}, {opt(b, o['qd'])}, {opt(z, o['cv'])})"),
 }
 
 INPUT_TYPES = {"ton": "Bool", "tof": "Bool", "tp": "Bool", "rTrig": "Bool", "fTrig": "Bool",
-               "srRs": "Bool × Bool", "ctu": "Bool × Bool"}
+               "srRs": "Bool × Bool", "ctu": "Bool × Bool", "ctd": "Bool × Bool",
+               "ctud": "Bool × Bool × Bool × Bool"}
 OUTPUT_TYPES = {"ton": "Option Bool × Option Nat", "tof": "Option Bool × Option Nat",
                 "tp": "Option Bool × Option Nat", "rTrig": "Option Bool", "fTrig": "Option Bool",
-                "srRs": "Option Bool × Option Bool", "ctu": "Option Bool × Option Nat"}
+                "srRs": "Option Bool × Option Bool", "ctu": "Option Bool × Option Nat",
+                "ctd": "Option Bool × Option Int",
+                "ctud": "Option Bool × Option Bool × Option Int"}
 
 
 def initial_inputs(trace, st_text):

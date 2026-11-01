@@ -7,7 +7,7 @@ Text runtimes: plain `.st` programs paired with plain-text expected
 input/output traces, one record per scan cycle. Dedicated to the public
 domain under CC0 1.0 (see `LICENSE`).
 
-Status: first cut, 18 tests, run against IronPLC and matiec (and RuSTy,
+Status: first cut, 20 tests, run against IronPLC and matiec (and RuSTy,
 see `notes/comparison.md`), with a Lean 4 model of the function block
 semantics that the expected traces are proved to follow from.
 
@@ -18,7 +18,7 @@ SPEC.md                   the .trace format (header + one record per cycle)
 conformance/
   timers/      ton tof tp                        TON, TOF, TP
   edge/        r_trig f_trig sr_rs              edge detectors and bistables
-  counters/    ctu                              CTU
+  counters/    ctu ctd ctud                     CTU, CTD, CTUD
   control-flow/ if_case for_exit while          IF/CASE, FOR+EXIT, WHILE/REPEAT
   pou/         function_call fb_two_instances   functions, FB instances
   undefined/   int_overflow div_zero eval_order ton_pt_change
@@ -35,7 +35,7 @@ notes/
   evidence/         full harness outputs
 ```
 
-Each test is `<name>.st` + `<name>.trace`. Twelve tests under the first
+Each test is `<name>.st` + `<name>.trace`. Fourteen tests under the first
 five categories are `status: conformant`: their expected values were derived
 by hand from the standard's function block bodies and timing diagrams, and
 the derivation is written as a comment at the top of each `.trace` file.

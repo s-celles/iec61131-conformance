@@ -1,0 +1,57 @@
+# CTUD, PV = 2, period 100 ms (time is irrelevant).
+#
+# Derivation: ST body in the standard (ed.3 table 44 / ed.2 table 36):
+#   VAR_INPUT CU, CD : BOOL R_EDGE; R, LD : BOOL; PV : INT; END_VAR
+#   VAR_OUTPUT QU, QD : BOOL; CV : INT; END_VAR
+#   IF R THEN CV := 0;
+#   ELSIF LD THEN CV := PV;
+#   ELSE
+#     IF NOT (CU AND CD) THEN
+#       IF CU AND (CV < PVmax) THEN CV := CV + 1;
+#       ELSIF CD AND (CV > PVmin) THEN CV := CV - 1;
+#       END_IF;
+#     END_IF;
+#   END_IF;
+#   QU := (CV >= PV);
+#   QD := (CV <= 0);
+# Priorities exercised: R over LD (cycle 11), LD over counting (cycle 9),
+# rising edges on CU and CD in the same cycle cancel each other (cycle 7).
+# Edge memories are updated on every evaluation, as in ctu.trace. CV goes
+# below 0 at cycle 18 (ed.3: bound is PVmin); the FDIS 2001 body (`CV > 0`,
+# as in matiec) stops at 0 instead, and its `CV < PV` bound is not reached
+# by this trace.
+period_ms: 100
+program: main
+inputs: cu cd r ld
+outputs: qu qd cv
+status: conformant
+reference: IEC 61131-3 ed.3 6.6.3.5.3 table 44 (CTUD body)
+---
+0  cu=FALSE cd=FALSE r=FALSE ld=FALSE => qu=FALSE qd=TRUE  cv=0
+1  cu=TRUE                            => qu=FALSE qd=FALSE cv=1
+2  cu=FALSE                           => qu=FALSE qd=FALSE cv=1
+3  cu=TRUE                            => qu=TRUE  qd=FALSE cv=2
+4  cu=FALSE                           => qu=TRUE  qd=FALSE cv=2
+# count down
+5  cd=TRUE                            => qu=FALSE qd=FALSE cv=1
+6  cd=FALSE                           => qu=FALSE qd=FALSE cv=1
+# rising edges on both inputs: neither counts
+7  cu=TRUE cd=TRUE                    => qu=FALSE qd=FALSE cv=1
+8  cu=FALSE cd=FALSE                  => qu=FALSE qd=FALSE cv=1
+# load dominates over a rising edge on CU
+9  ld=TRUE cu=TRUE                    => qu=TRUE  qd=FALSE cv=2
+10 ld=FALSE cu=FALSE                  => qu=TRUE  qd=FALSE cv=2
+# reset dominates over load
+11 r=TRUE ld=TRUE                     => qu=FALSE qd=TRUE  cv=0
+# R released with LD still TRUE: load
+12 r=FALSE                            => qu=TRUE  qd=FALSE cv=2
+13 ld=FALSE                           => qu=TRUE  qd=FALSE cv=2
+14 cd=TRUE                            => qu=FALSE qd=FALSE cv=1
+15 cd=FALSE                           => qu=FALSE qd=FALSE cv=1
+16 cd=TRUE                            => qu=FALSE qd=TRUE  cv=0
+17 cd=FALSE                           => qu=FALSE qd=TRUE  cv=0
+# counting continues below 0 (ed.3: bound is PVmin)
+18 cd=TRUE                            => qu=FALSE qd=TRUE  cv=-1
+19 cd=FALSE                           => qu=FALSE qd=TRUE  cv=-1
+# back up from -1
+20 cu=TRUE                            => qu=FALSE qd=TRUE  cv=0

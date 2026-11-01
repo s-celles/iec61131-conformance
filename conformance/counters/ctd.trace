@@ -1,0 +1,42 @@
+# CTD, PV = 3, period 100 ms (time is irrelevant).
+#
+# Derivation: ST body in the standard (ed.3 table 44 / ed.2 table 36):
+#   VAR_INPUT CD : BOOL R_EDGE; LD : BOOL; PV : INT; END_VAR
+#   VAR_OUTPUT Q : BOOL; CV : INT; END_VAR
+#   IF LD THEN CV := PV;
+#   ELSIF CD AND (CV > PVmin) THEN CV := CV - 1;
+#   END_IF;
+#   Q := (CV <= 0);
+# Same conventions as ctu.trace: the edge memory is updated on every
+# evaluation, including while LD is TRUE, so a CD that stays TRUE across a
+# load does not count again when LD drops (cycle 12). CV starts at 0, so Q
+# is TRUE before the first load (cycle 0). CV keeps counting below 0 down
+# to PVmin (cycle 10): the FDIS 2001 body (`CV > 0`, as in matiec) stops at
+# 0 instead; that cycle is the only place where the two editions differ.
+period_ms: 100
+program: main
+inputs: cd ld
+outputs: q cv
+status: conformant
+reference: IEC 61131-3 ed.3 6.6.3.5.3 table 44 (CTD body)
+---
+# initial CV = 0 gives Q = TRUE before any load
+0  cd=FALSE ld=FALSE => q=TRUE  cv=0
+1  ld=TRUE          => q=FALSE cv=3
+2  ld=FALSE         => q=FALSE cv=3
+3  cd=TRUE          => q=FALSE cv=2
+# CD held: no second count
+4                   => q=FALSE cv=2
+5  cd=FALSE         => q=FALSE cv=2
+6  cd=TRUE          => q=FALSE cv=1
+7  cd=FALSE         => q=FALSE cv=1
+8  cd=TRUE          => q=TRUE  cv=0
+9  cd=FALSE         => q=TRUE  cv=0
+# counting continues below 0 (ed.3: bound is PVmin)
+10 cd=TRUE          => q=TRUE  cv=-1
+# load dominates; CD is TRUE during the load
+11 ld=TRUE          => q=FALSE cv=3
+# LD released with CD still TRUE: no rising edge, no count
+12 ld=FALSE         => q=FALSE cv=3
+13 cd=FALSE         => q=FALSE cv=3
+14 cd=TRUE          => q=FALSE cv=2

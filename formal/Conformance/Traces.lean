@@ -215,4 +215,88 @@ def ctuExpected : List (Option Bool × Option Nat) :=
    (some false, some 0),
    (some false, some 1)]
 
+/-- conformance/counters/ctd.trace: (time ms, inputs) per cycle. -/
+def ctdInputs : List (Nat × (Bool × Bool)) :=
+  [(0, (false, false)),
+   (100, (false, true)),
+   (200, (false, false)),
+   (300, (true, false)),
+   (400, (true, false)),
+   (500, (false, false)),
+   (600, (true, false)),
+   (700, (false, false)),
+   (800, (true, false)),
+   (900, (false, false)),
+   (1000, (true, false)),
+   (1100, (true, true)),
+   (1200, (true, false)),
+   (1300, (false, false)),
+   (1400, (true, false))]
+
+/-- conformance/counters/ctd.trace: expected outputs per cycle (`none` = `?`). -/
+def ctdExpected : List (Option Bool × Option Int) :=
+  [(some true, some 0),
+   (some false, some 3),
+   (some false, some 3),
+   (some false, some 2),
+   (some false, some 2),
+   (some false, some 2),
+   (some false, some 1),
+   (some false, some 1),
+   (some true, some 0),
+   (some true, some 0),
+   (some true, some (-1)),
+   (some false, some 3),
+   (some false, some 3),
+   (some false, some 3),
+   (some false, some 2)]
+
+/-- conformance/counters/ctud.trace: (time ms, inputs) per cycle. -/
+def ctudInputs : List (Nat × (Bool × Bool × Bool × Bool)) :=
+  [(0, (false, false, false, false)),
+   (100, (true, false, false, false)),
+   (200, (false, false, false, false)),
+   (300, (true, false, false, false)),
+   (400, (false, false, false, false)),
+   (500, (false, true, false, false)),
+   (600, (false, false, false, false)),
+   (700, (true, true, false, false)),
+   (800, (false, false, false, false)),
+   (900, (true, false, false, true)),
+   (1000, (false, false, false, false)),
+   (1100, (false, false, true, true)),
+   (1200, (false, false, false, true)),
+   (1300, (false, false, false, false)),
+   (1400, (false, true, false, false)),
+   (1500, (false, false, false, false)),
+   (1600, (false, true, false, false)),
+   (1700, (false, false, false, false)),
+   (1800, (false, true, false, false)),
+   (1900, (false, false, false, false)),
+   (2000, (true, false, false, false))]
+
+/-- conformance/counters/ctud.trace: expected outputs per cycle (`none` = `?`). -/
+def ctudExpected : List (Option Bool × Option Bool × Option Int) :=
+  [(some false, some true, some 0),
+   (some false, some false, some 1),
+   (some false, some false, some 1),
+   (some true, some false, some 2),
+   (some true, some false, some 2),
+   (some false, some false, some 1),
+   (some false, some false, some 1),
+   (some false, some false, some 1),
+   (some false, some false, some 1),
+   (some true, some false, some 2),
+   (some true, some false, some 2),
+   (some false, some true, some 0),
+   (some true, some false, some 2),
+   (some true, some false, some 2),
+   (some false, some false, some 1),
+   (some false, some false, some 1),
+   (some false, some true, some 0),
+   (some false, some true, some 0),
+   (some false, some true, some (-1)),
+   (some false, some true, some (-1)),
+   (some false, some true, some 0)]
+
 end Conformance.Traces

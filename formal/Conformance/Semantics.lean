@@ -172,4 +172,64 @@ def ctuStep (rule : CtuRule) (pv : Nat) (s : CtuState) (i : Bool × Bool) (_t : 
 def CTU (rule : CtuRule) (pv : Nat) : Block CtuState (Bool × Bool) (Bool × Nat) :=
   ⟨⟨false, 0⟩, ctuStep rule pv⟩
 
+/-! ## Down and up-down counters (ed.3 table 44)
+
+CV is an `Int` here because the CTD and CTUD traces count below 0. The
+same `CtuRule` selects the bounds: ed.3 bounds the count by the INT range
+(`PVmin = -32768`, `PVmax = 32767`), the FDIS 2001 body by `0` and `PV`. -/
+
+def counterLo (rule : CtuRule) : Int := match rule with | .pvMax => -32768 | .pv => 0
+def counterHi (rule : CtuRule) (pv : Int) : Int := match rule with | .pvMax => 32767 | .pv => pv
+
+structure CtdState where
+  prevCd : Bool
+  cv : Int
+  deriving Repr, DecidableEq
+
+/-- CTD, inputs (CD, LD), outputs (Q, CV):
+`IF LD THEN CV := PV; ELSIF CD AND (CV > PVmin) THEN CV := CV - 1; END_IF; Q := (CV <= 0);` -/
+def ctdStep (rule : CtuRule) (pv : Int) (s : CtdState) (i : Bool × Bool) (_t : Nat) :
+    CtdState × (Bool × Int) :=
+  let (cd, ld) := i
+  let edge := cd && !s.prevCd
+  let cv := if ld then pv else if edge && counterLo rule < s.cv then s.cv - 1 else s.cv
+  (⟨cd, cv⟩, (decide (cv ≤ 0), cv))
+
+def CTD (rule : CtuRule) (pv : Int) : Block CtdState (Bool × Bool) (Bool × Int) :=
+  ⟨⟨false, 0⟩, ctdStep rule pv⟩
+
+structure CtudState where
+  prevCu : Bool
+  prevCd : Bool
+  cv : Int
+  deriving Repr, DecidableEq
+
+/-- CTUD, inputs (CU, CD, R, LD), outputs (QU, QD, CV):
+```
+IF R THEN CV := 0;
+ELSIF LD THEN CV := PV;
+ELSE IF NOT (CU AND CD) THEN
+  IF CU AND (CV < PVmax) THEN CV := CV + 1;
+  ELSIF CD AND (CV > PVmin) THEN CV := CV - 1; END_IF; END_IF; END_IF;
+QU := (CV >= PV); QD := (CV <= 0);
+```
+where CU and CD stand for their rising edges. -/
+def ctudStep (rule : CtuRule) (pv : Int) (s : CtudState) (i : Bool × Bool × Bool × Bool)
+    (_t : Nat) : CtudState × (Bool × Bool × Int) :=
+  let (cu, cd, r, ld) := i
+  let up := cu && !s.prevCu
+  let down := cd && !s.prevCd
+  let cv :=
+    if r then 0
+    else if ld then pv
+    else if up && down then s.cv
+    else if up && s.cv < counterHi rule pv then s.cv + 1
+    else if down && counterLo rule < s.cv then s.cv - 1
+    else s.cv
+  (⟨cu, cd, cv⟩, (decide (pv ≤ cv), decide (cv ≤ 0), cv))
+
+def CTUD (rule : CtuRule) (pv : Int) :
+    Block CtudState (Bool × Bool × Bool × Bool) (Bool × Bool × Int) :=
+  ⟨⟨false, false, 0⟩, ctudStep rule pv⟩
+
 end Conformance

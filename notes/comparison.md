@@ -62,6 +62,8 @@ Legend: PASS/FAIL for `status: conformant` traces; SAME/DIFFERS for
 | edge/f_trig | PASS | **FAIL** (cycle 0) | PASS | matiec's F_TRIG has `M` initialised FALSE (ed.2 FDIS wording) so it reports a falling edge on the first evaluation with CLK = FALSE; the trace assumes ed.3's `M := TRUE` (findings #6, flagged as the suite's main uncertainty) |
 | edge/sr_rs | PASS | PASS | **FAIL** (compile) | RuSTy names the bistable inputs `SET1`/`RESET` and `SET`/`RESET1` instead of the standard `S1`/`R` and `S`/`R1` (ed.3 table 42), so a conformant program does not compile (other runtimes #3) |
 | counters/ctu | PASS | **FAIL** (cycle 8) | PASS | matiec stops counting at CV = PV (`CV < PV`, ed.2 FDIS wording); the trace follows ed.3's `CV < PVmax` and counts to 4 (findings #7) |
+| counters/ctd | PASS | **FAIL** (cycle 10) | RUSTY_CTD | matiec stops counting down at CV = 0 (`CV > 0`, ed.2 FDIS wording); the trace follows ed.3's `CV > PVmin` and counts to -1 (same edition difference as ctu) |
+| counters/ctud | PASS | **FAIL** (cycles 18-20) | RUSTY_CTUD | matiec stops at CV = 0 on the way down (cycle 18), so the later up-count lands on 1 instead of 0 (cycle 20). Priorities (R over LD over counting) and the cancelling of simultaneous edges agree on all runtimes |
 | control-flow/if_case | PASS | PASS | PASS | |
 | control-flow/for_exit | PASS | PASS | PASS | |
 | control-flow/while | PASS | PASS | PASS | |
@@ -74,10 +76,11 @@ Legend: PASS/FAIL for `status: conformant` traces; SAME/DIFFERS for
 | undefined/ctu_pv_zero | SAME | **DIFFERS** | SAME | IronPLC counts (CV = 1, 2) with Q always TRUE; matiec never counts because `CV < PV` is false at PV = 0, Q always TRUE. Same Q, different CV |
 | undefined/ton_pt_change | SAME | **DIFFERS** | **DIFFERS** | IronPLC and matiec raise Q as soon as PT drops below the elapsed time and keep Q TRUE when PT is later raised; but IronPLC's ET keeps climbing to the new PT (400..800 ms) while matiec freezes ET at the old PT (200 ms) once Q has risen. RuSTy is a third behaviour: Q is recomputed every cycle as elapsed > PT, so raising PT makes Q fall again (cycles 5 to 9) and it rises once more at 800 ms |
 
-Totals: IronPLC 10/12 conformant pass; matiec 10/12; RuSTy 8/12. No test
+Totals: IronPLC 12/14 conformant pass; matiec 10/14; RuSTy RUSTY_TOTAL/14. No test
 other than the six control-flow/POU/R_TRIG ones and the four "all SAME"
 corners has the same result on all three runtimes: the three disagree
-somewhere on tof, tp, f_trig, sr_rs, ctu, ctu_pv_zero and ton_pt_change.
+somewhere on tof, tp, f_trig, sr_rs, ctu, ctd, ctud, ctu_pv_zero and
+ton_pt_change.
 
 ## Where the two runtimes disagree with each other, in one line each
 
@@ -85,7 +88,7 @@ somewhere on tof, tp, f_trig, sr_rs, ctu, ctu_pv_zero and ton_pt_change.
 2. **TP with IN held TRUE after the pulse**: IronPLC restarts the pulse every PT (free-running oscillator); matiec waits for a new rising edge.
 3. **TP ET after the pulse ends with IN FALSE**: IronPLC holds PT; matiec returns to 0.
 4. **F_TRIG first evaluation with CLK FALSE**: matiec Q = TRUE; IronPLC Q = FALSE.
-5. **CTU above PV**: IronPLC keeps counting; matiec saturates at PV (hence also no count at PV = 0).
+5. **CTU above PV, CTD/CTUD below 0**: IronPLC keeps counting to the INT bounds; matiec saturates at PV and at 0 (hence also no count at PV = 0).
 6. **TON ET after PT is raised past a Q that already rose**: IronPLC ET follows elapsed time up to the new PT; matiec holds the old PT.
 
 Items 1, 2, 3 are IronPLC deviations from the standard's timing diagrams
