@@ -1,0 +1,30 @@
+# NOT, SHL, ROL, ROR on bit-string expressions.
+#
+# Derivation (ed.3 table 30 / ed.2 table 24: NOT, AND, OR, XOR bitwise on
+# ANY_BIT; table 30 / ed.2 table 25: SHL fills with zeros on the right,
+# ROL / ROR rotate within the width; the operand of each is an
+# expression, evaluated first):
+# cycle 0: a=16#3C b=16#0F w=16#1234 n=0
+#   a XOR b = 16#33, NOT = 16#CC; w AND 00FF = 16#0034, NOT = 16#FFCB;
+#   a OR b = 16#3F, SHL 0 = 16#3F; a XOR 0F = 16#33, ROL 0 = 16#33;
+#   NOT w = 16#EDCB, ROR 0 = 16#EDCB; same: De Morgan, TRUE
+# cycle 1: a=16#F0 b=16#F0 w=16#0000 n=4
+#   XOR = 00 -> FF; 0000 -> FFFF; OR = F0, SHL 4 = 16#00; F0 XOR 0F = FF,
+#   ROL 4 = FF; NOT 0000 = FFFF, ROR 4 = FFFF; TRUE
+# cycle 2: a=16#81 b=16#01 w=16#00FF n=1
+#   XOR = 80 -> 7F; 00FF -> FF00; OR = 81, SHL 1 = 16#02; 81 XOR 0F = 8E,
+#   ROL 1 = 16#1D; NOT 00FF = FF00, ROR 1 = 16#7F80; TRUE
+# cycle 3: a=16#A5 b=16#5A w=16#8001 n=7
+#   XOR = FF -> 00; 8001 AND 00FF = 0001 -> FFFE; OR = FF, SHL 7 = 16#80;
+#   A5 XOR 0F = AA, ROL 7 = 16#55; NOT 8001 = 7FFE, ROR 7 = 16#FCFF; TRUE
+period_ms: 100
+program: main
+inputs: a b w n
+outputs: n_xor n_and s_or r_xor r_w same
+status: conformant
+reference: IEC 61131-3 ed.3 table 30 (bit-string operators, SHL ROL ROR); ed.2 tables 24-25
+---
+0 a=16#3C b=16#0F w=16#1234 n=0 => n_xor=16#CC n_and=16#FFCB s_or=16#3F r_xor=16#33 r_w=16#EDCB same=TRUE
+1 a=16#F0 b=16#F0 w=16#0000 n=4 => n_xor=16#FF n_and=16#FFFF s_or=16#00 r_xor=16#FF r_w=16#FFFF same=TRUE
+2 a=16#81 b=16#01 w=16#00FF n=1 => n_xor=16#7F n_and=16#FF00 s_or=16#02 r_xor=16#1D r_w=16#7F80 same=TRUE
+3 a=16#A5 b=16#5A w=16#8001 n=7 => n_xor=16#00 n_and=16#FFFE s_or=16#80 r_xor=16#55 r_w=16#FCFF same=TRUE

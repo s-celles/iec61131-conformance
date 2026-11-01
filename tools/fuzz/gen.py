@@ -1,189 +1,306 @@
 #!/usr/bin/env python3
 """Random, well-defined ST programs for differential testing.
 
-A program is one PROGRAM main with INT and BOOL inputs, outputs and
-retained internal variables, and a body of assignments, IF, CASE and
-bounded FOR statements over the operators and standard functions whose
-meaning IEC 61131-3 fixes completely (table 29/30, 71: + - * / MOD,
-comparisons, AND OR XOR NOT, ABS MIN MAX LIMIT SEL MUX). A reference
-evaluator runs the program on random inputs; any step that would leave
-the INT range, divide by zero or select MUX out of range is "undefined"
-and the whole program is discarded, so what remains is a program whose
-expected trace follows from the standard alone (the evaluator is a
-transcription of those tables, not a runtime).
+A program is one PROGRAM main with inputs, outputs and retained internal
+variables of the types of the chosen profile, and a body of assignments,
+IF, CASE and bounded FOR statements over the operators and standard
+functions whose meaning IEC 61131-3 fixes completely:
 
-    python3 -I tools/fuzz/gen.py --seed 7 --cycles 5 out_dir
+  core  INT and BOOL: + - * / MOD, comparisons, AND OR XOR NOT, ABS MIN
+        MAX LIMIT SEL MUX (tables 29/30/32, 71);
+  wide  core plus DINT and UINT with the same operators and the
+        *_TO_* conversions between the three (table 22, in-range only),
+        and BYTE and WORD with AND OR XOR NOT, SHL SHR ROL ROR by a
+        constant below the width, BYTE_TO_WORD, and = <> (tables 30, 31).
+
+A reference evaluator runs the program on random inputs; any step that
+would leave the type's range, divide by zero, convert out of range or
+select MUX out of range is "undefined" and the whole program is
+discarded, so what remains is a program whose expected trace follows
+from the standard alone (the evaluator transcribes those tables, it is
+not a runtime).
+
+    python3 -I tools/fuzz/gen.py --seed 7 --profile wide out_dir
 
 writes out_dir/fuzz_7.st and out_dir/fuzz_7.trace (SPEC.md version 1).
 Every binary sub-expression is parenthesised, so operator precedence is
-not what is tested here (conformance/ops/precedence does that).
+not what is tested here (conformance/ops/precedence does that). Literals
+outside an INT context are typed (DINT#5, UINT#5, 16#0F).
 """
 
 import argparse
 import pathlib
 import random
 
-INT_MIN, INT_MAX = -32768, 32767
+RANGE = {
+    "INT": (-32768, 32767), "DINT": (-2**31, 2**31 - 1), "UINT": (0, 65535),
+    "BYTE": (0, 255), "WORD": (0, 65535),
+}
+WIDTH = {"BYTE": 8, "WORD": 16}
+INT_TYPES = ("INT", "DINT", "UINT")
+BIT_TYPES = ("BYTE", "WORD")
+LIT_RANGE = {"INT": (-20, 20), "DINT": (-20, 20), "UINT": (0, 20), "BYTE": (0, 255), "WORD": (0, 65535)}
+IN_RANGE = {"INT": (-50, 50), "DINT": (-100000, 100000), "UINT": (0, 200), "BYTE": (0, 255), "WORD": (0, 65535)}
+
+EXCLUDABLE = {
+    "ext_minmax": "MIN/MAX with more than two inputs (ironplc#2548)",
+    "literal_args": "a bare literal as a function argument (STruC++ template deduction)",
+    "case_call": "a CASE selector that is not a plain variable (STruC++)",
+    "limit_inverted": "LIMIT with MN > MX: matiec, STruC++ and RuSTy return MN (matiec#50, rusty#2040)",
+    "mux_expr": "MUX inputs that are expressions rather than variables (STruCpp#262)",
+    "not_expr": "NOT applied to anything but a variable (STruCpp#263)",
+    "conversions": "the *_TO_* conversions between INT, DINT and UINT, and BYTE_TO_WORD",
+    "shifts": "SHL SHR ROL ROR",
+    "typed_literals": "DINT#, UINT#, BYTE# and WORD# literals: plain decimal / 16# is written instead",
+}
 
 
 class Undefined(Exception):
     pass
 
 
-def chk(v):
-    if not INT_MIN <= v <= INT_MAX:
-        raise Undefined("INT range")
+def chk(ty, v):
+    lo, hi = RANGE[ty]
+    if not lo <= v <= hi:
+        raise Undefined(f"{ty} range")
     return v
 
 
-def iec_div(a, b):
+def iec_div(ty, a, b):
     if b == 0:
         raise Undefined("division by zero")
     q = abs(a) // abs(b)
-    return chk(q if (a >= 0) == (b >= 0) else -q)
+    return chk(ty, q if (a >= 0) == (b >= 0) else -q)
 
 
-def iec_mod(a, b):
+def iec_mod(ty, a, b):
     if b == 0:
         raise Undefined("MOD by zero")
-    return chk(a - iec_div(a, b) * b)
-
-
-# ---------------------------------------------------------------- expressions
-# An expression is a tuple; its first element is the node kind.
-#   ("lit", v) ("var", name) ("neg", e) ("not", e)
-#   ("bin", op, l, r)  op in + - * / MOD  (INT) or < <= > >= = <> (INT -> BOOL)
-#                      or AND OR XOR (BOOL)
-#   ("call", fn, [args])  ABS MIN MAX LIMIT (INT), SEL MUX (INT)
-
-
-EXCLUDABLE = {
-    "ext_minmax": "MIN/MAX with more than two inputs (ironplc#2548)",
-    "literal_args": "a bare literal as a function argument (STruC++ template deduction)",
-    "case_call": "a CASE selector that is not a plain variable (STruC++)",
-    "limit_inverted": "LIMIT with MN > MX: matiec, STruC++ and RuSTy return MN",
-    "mux_expr": "MUX inputs that are expressions rather than variables (STruC++)",
-    "not_expr": "NOT applied to anything but a variable (STruC++)",
-}
+    return chk(ty, a - iec_div(ty, a, b) * b)
 
 
 def has_var(e):
-    return e[0] == "var" or any(has_var(x) for x in e[1:] if isinstance(x, tuple)) or \
-        (e[0] == "call" and any(has_var(x) for x in e[2]))
+    if e[0] == "var":
+        return True
+    for x in e[1:]:
+        if isinstance(x, tuple) and has_var(x):
+            return True
+        if isinstance(x, list) and any(has_var(y) for y in x):
+            return True
+    return False
+
+
+def folds_to_zero(e, types):
+    try:
+        return evaluate(e, {}, types) == 0
+    except Undefined:
+        return True
+
+# ---------------------------------------------------------------- expressions
+#   ("lit", ty, v)  ("var", name)  ("neg", e)  ("not", e)  ("bnot", e)
+#   ("bin", op, l, r)   ("call", fn, [args])   ("conv", from, to, e)
+#   ("shift", fn, e, n)
+# Types of variables are in a dict name -> type shared by generator,
+# evaluator and renderer.
 
 
 class Gen:
-    def __init__(self, rng, ints, bools, excl=()):
+    def __init__(self, rng, types, excl=()):
         self.rng = rng
-        self.ints = ints      # readable INT variable names
-        self.bools = bools    # readable BOOL variable names
+        self.types = types
         self.excl = set(excl)
 
-    def arg(self, depth):
-        e = self.int_expr(depth)
+    def vars_of(self, ty):
+        return [n for n, t in self.types.items() if t == ty]
+
+    def lit(self, ty):
+        lo, hi = LIT_RANGE[ty]
+        return ("lit", ty, self.rng.randint(lo, hi))
+
+    def var_or_lit(self, ty):
+        vs = self.vars_of(ty)
+        if vs and self.rng.random() < 0.7:
+            return ("var", self.rng.choice(vs))
+        return self.lit(ty)
+
+    def arg(self, ty, depth):
+        e = self.bit_expr(ty, depth) if ty in BIT_TYPES else self.int_expr(ty, depth)
         if "literal_args" in self.excl and e[0] == "lit":
-            e = ("var", self.rng.choice(self.ints)) if self.ints else ("neg", ("neg", e))
+            vs = self.vars_of(ty)
+            e = ("var", self.rng.choice(vs)) if vs else e
         return e
 
-    def int_expr(self, depth):
+    def int_expr(self, ty, depth):
         r = self.rng
         if depth <= 0 or r.random() < 0.3:
-            if self.ints and r.random() < 0.7:
-                return ("var", r.choice(self.ints))
-            return ("lit", r.randint(-20, 20))
+            return self.var_or_lit(ty)
         k = r.random()
-        if k < 0.55:
+        if k < 0.5:
             op = r.choice(["+", "+", "-", "-", "*", "/", "MOD"])
-            l, rr = self.int_expr(depth - 1), self.int_expr(depth - 1)
-            if op in ("/", "MOD") and not has_var(rr):
-                # a constant divisor must not fold to zero: compilers reject it
-                while not has_var(rr) and evaluate(rr, {}) == 0:
-                    rr = self.int_expr(depth - 1)
+            l, rr = self.int_expr(ty, depth - 1), self.int_expr(ty, depth - 1)
+            if op in ("/", "MOD"):
+                # a constant divisor must not fold to zero (compilers reject it)
+                # nor hit an undefined step of its own
+                while not has_var(rr) and folds_to_zero(rr, self.types):
+                    rr = self.int_expr(ty, depth - 1)
             return ("bin", op, l, rr)
-        if k < 0.65:
-            return ("neg", self.int_expr(depth - 1))
+        if k < 0.58 and ty != "UINT":
+            return ("neg", self.int_expr(ty, depth - 1))
+        if k < 0.7 and "conversions" not in self.excl and len([t for t in INT_TYPES if self.vars_of(t)]) > 1:
+            src = r.choice([t for t in INT_TYPES if t != ty and self.vars_of(t)])
+            return ("conv", src, ty, self.arg(src, depth - 1))
         fn = r.choice(["ABS", "MIN", "MAX", "LIMIT", "SEL", "MUX"])
         if fn == "ABS":
-            return ("call", fn, [self.arg(depth - 1)])
+            if ty == "UINT":
+                fn = "MIN"
+            else:
+                return ("call", fn, [self.arg(ty, depth - 1)])
         if fn in ("MIN", "MAX"):
             n = 2 if "ext_minmax" in self.excl else r.choice([2, 2, 3])
-            return ("call", fn, [self.arg(depth - 1) for _ in range(n)])
+            return ("call", fn, [self.arg(ty, depth - 1) for _ in range(n)])
         if fn == "LIMIT":
             if "limit_inverted" in self.excl:
-                a, b = self.arg(depth - 1), self.arg(depth - 1)
-                return ("call", fn, [("call", "MIN", [a, b]), self.arg(depth - 1), ("call", "MAX", [a, b])])
-            return ("call", fn, [self.arg(depth - 1) for _ in range(3)])
+                a, b = self.arg(ty, depth - 1), self.arg(ty, depth - 1)
+                return ("call", fn, [("call", "MIN", [a, b]), self.arg(ty, depth - 1), ("call", "MAX", [a, b])])
+            return ("call", fn, [self.arg(ty, depth - 1) for _ in range(3)])
         if fn == "SEL":
-            return ("call", fn, [self.bool_expr(depth - 1), self.arg(depth - 1), self.arg(depth - 1)])
+            return ("call", fn, [self.bool_expr(depth - 1), self.arg(ty, depth - 1), self.arg(ty, depth - 1)])
         n = r.choice([2, 3, 4])
-        # K is kept in range by construction: (k MOD n) folded through ABS
-        k_expr = ("bin", "MOD", ("call", "ABS", [self.int_expr(depth - 1)]), ("lit", n))
-        if "mux_expr" in self.excl and self.ints:
-            return ("call", "MUX", [k_expr] + [("var", r.choice(self.ints)) for _ in range(n)])
-        return ("call", "MUX", [k_expr] + [self.arg(depth - 1) for _ in range(n)])
+        # K is an INT kept in range by construction: ABS(k) MOD n
+        k_expr = ("bin", "MOD", ("call", "ABS", [self.int_expr("INT", depth - 1)]), ("lit", "INT", n))
+        if "mux_expr" in self.excl and self.vars_of(ty):
+            return ("call", "MUX", [k_expr] + [("var", r.choice(self.vars_of(ty))) for _ in range(n)])
+        return ("call", "MUX", [k_expr] + [self.arg(ty, depth - 1) for _ in range(n)])
+
+    def bit_expr(self, ty, depth):
+        r = self.rng
+        if depth <= 0 or r.random() < 0.3:
+            return self.var_or_lit(ty)
+        k = r.random()
+        if k < 0.5:
+            op = r.choice(["AND", "OR", "XOR"])
+            return ("bin", op, self.bit_expr(ty, depth - 1), self.bit_expr(ty, depth - 1))
+        if k < 0.62:
+            if "not_expr" in self.excl and self.vars_of(ty):
+                return ("bnot", ("var", r.choice(self.vars_of(ty))))
+            return ("bnot", self.bit_expr(ty, depth - 1))
+        if k < 0.85 and "shifts" not in self.excl:
+            fn = r.choice(["SHL", "SHR", "ROL", "ROR"])
+            return ("shift", fn, self.arg(ty, depth - 1), r.randint(0, WIDTH[ty] - 1))
+        if ty == "WORD" and "conversions" not in self.excl and self.vars_of("BYTE"):
+            return ("conv", "BYTE", "WORD", self.arg("BYTE", depth - 1))
+        return ("bin", r.choice(["AND", "OR"]), self.bit_expr(ty, depth - 1), self.var_or_lit(ty))
 
     def bool_expr(self, depth):
         r = self.rng
+        bools = self.vars_of("BOOL")
         if depth <= 0 or r.random() < 0.25:
-            if self.bools and r.random() < 0.7:
-                return ("var", r.choice(self.bools))
-            return ("lit", r.choice([True, False]))
+            if bools and r.random() < 0.7:
+                return ("var", r.choice(bools))
+            return ("lit", "BOOL", r.choice([True, False]))
         k = r.random()
-        if k < 0.45:
+        if k < 0.4:
+            ty = r.choice([t for t in INT_TYPES if self.vars_of(t)] or ["INT"])
             op = r.choice(["<", "<=", ">", ">=", "=", "<>"])
-            return ("bin", op, self.int_expr(depth - 1), self.int_expr(depth - 1))
+            return ("bin", op, self.int_expr(ty, depth - 1), self.int_expr(ty, depth - 1))
+        if k < 0.5 and any(self.vars_of(t) for t in BIT_TYPES):
+            ty = r.choice([t for t in BIT_TYPES if self.vars_of(t)])
+            return ("bin", r.choice(["=", "<>"]), self.bit_expr(ty, depth - 1), self.bit_expr(ty, depth - 1))
         if k < 0.85:
             op = r.choice(["AND", "OR", "XOR"])
             return ("bin", op, self.bool_expr(depth - 1), self.bool_expr(depth - 1))
-        if "not_expr" in self.excl and self.bools:
-            return ("not", ("var", r.choice(self.bools)))
+        if "not_expr" in self.excl and bools:
+            return ("not", ("var", r.choice(bools)))
         return ("not", self.bool_expr(depth - 1))
 
+    def expr(self, ty, depth):
+        if ty == "BOOL":
+            return self.bool_expr(depth)
+        if ty in BIT_TYPES:
+            return self.bit_expr(ty, depth)
+        return self.int_expr(ty, depth)
 
-def render(e):
+
+def render(e, excl=()):
     k = e[0]
     if k == "lit":
-        v = e[1]
-        if isinstance(v, bool):
+        ty, v = e[1], e[2]
+        if ty == "BOOL":
             return "TRUE" if v else "FALSE"
-        return str(v) if v >= 0 else f"(-{-v})"
+        if ty in BIT_TYPES:
+            hexa = f"16#{v:0{WIDTH[ty] // 4}X}"
+            return hexa if "typed_literals" in excl else f"{ty}#{hexa}"
+        if ty == "INT" or "typed_literals" in excl:
+            return str(v) if v >= 0 else f"(-{-v})"
+        return f"{ty}#{v}" if v >= 0 else f"(-{ty}#{-v})"
     if k == "var":
         return e[1]
     if k == "neg":
-        return f"(-{render(e[1])})"
-    if k == "not":
-        return f"(NOT {render(e[1])})"
+        return f"(-{render(e[1], excl)})"
+    if k in ("not", "bnot"):
+        return f"(NOT {render(e[1], excl)})"
     if k == "bin":
-        return f"({render(e[2])} {e[1]} {render(e[3])})"
+        return f"({render(e[2], excl)} {e[1]} {render(e[3], excl)})"
     if k == "call":
-        return f"{e[1]}({', '.join(render(a) for a in e[2])})"
+        return f"{e[1]}({', '.join(render(a, excl) for a in e[2])})"
+    if k == "conv":
+        return f"{e[1]}_TO_{e[2]}({render(e[3], excl)})"
+    if k == "shift":
+        return f"{e[1]}({render(e[2], excl)}, {e[3]})"
     raise ValueError(k)
 
 
-def evaluate(e, env):
+def type_of(e, types):
     k = e[0]
     if k == "lit":
         return e[1]
     if k == "var":
+        return types[e[1]]
+    if k in ("neg", "bnot"):
+        return type_of(e[1], types)
+    if k == "not":
+        return "BOOL"
+    if k == "bin":
+        return "BOOL" if e[1] in ("<", "<=", ">", ">=", "=", "<>") else type_of(e[2], types)
+    if k == "call":
+        return type_of(e[2][-1], types)
+    if k == "conv":
+        return e[2]
+    if k == "shift":
+        return type_of(e[2], types)
+    raise ValueError(k)
+
+
+def evaluate(e, env, types):
+    k = e[0]
+    if k == "lit":
+        return e[2]
+    if k == "var":
         return env[e[1]]
     if k == "neg":
-        return chk(-evaluate(e[1], env))
+        return chk(type_of(e, types), -evaluate(e[1], env, types))
     if k == "not":
-        return not evaluate(e[1], env)
+        return not evaluate(e[1], env, types)
+    if k == "bnot":
+        ty = type_of(e, types)
+        return (~evaluate(e[1], env, types)) & RANGE[ty][1]
     if k == "bin":
         op = e[1]
-        a = evaluate(e[2], env)
-        b = evaluate(e[3], env)
+        a = evaluate(e[2], env, types)
+        b = evaluate(e[3], env, types)
+        ty = type_of(e[2], types)
+        if ty in BIT_TYPES and op in ("AND", "OR", "XOR"):
+            return {"AND": a & b, "OR": a | b, "XOR": a ^ b}[op]
         if op == "+":
-            return chk(a + b)
+            return chk(ty, a + b)
         if op == "-":
-            return chk(a - b)
+            return chk(ty, a - b)
         if op == "*":
-            return chk(a * b)
+            return chk(ty, a * b)
         if op == "/":
-            return iec_div(a, b)
+            return iec_div(ty, a, b)
         if op == "MOD":
-            return iec_mod(a, b)
+            return iec_mod(ty, a, b)
         if op == "<":
             return a < b
         if op == "<=":
@@ -205,9 +322,10 @@ def evaluate(e, env):
         raise ValueError(op)
     if k == "call":
         fn = e[1]
-        args = [evaluate(a, env) for a in e[2]]
+        args = [evaluate(a, env, types) for a in e[2]]
+        ty = type_of(e, types)
         if fn == "ABS":
-            return chk(abs(args[0]))
+            return chk(ty, abs(args[0]))
         if fn == "MIN":
             return min(args)
         if fn == "MAX":
@@ -223,43 +341,67 @@ def evaluate(e, env):
                 raise Undefined("MUX K out of range")
             return args[1 + kk]
         raise ValueError(fn)
+    if k == "conv":
+        return chk(e[2], evaluate(e[3], env, types))
+    if k == "shift":
+        fn, n = e[1], e[3]
+        ty = type_of(e, types)
+        w, mask = WIDTH[ty], RANGE[ty][1]
+        v = evaluate(e[2], env, types)
+        if fn == "SHL":
+            return (v << n) & mask
+        if fn == "SHR":
+            return v >> n
+        if fn == "ROL":
+            return ((v << n) | (v >> (w - n))) & mask if n else v
+        if fn == "ROR":
+            return ((v >> n) | (v << (w - n))) & mask if n else v
+        raise ValueError(fn)
     raise ValueError(k)
 
 
 # ----------------------------------------------------------------- statements
 # ("assign", name, expr) ("if", [(cond, [stmts])...], [else_stmts] or None)
-# ("case", expr, [(labels, [stmts])...], [else_stmts] or None)
+# ("case", expr, [((lo, hi), [stmts])...], [else_stmts] or None)
 # ("for", var, a, b, [stmts])  with constants a <= b
+
+PROFILES = {
+    "core": {
+        "inputs": [("i0", "INT"), ("i1", "INT"), ("b0", "BOOL")],
+        "outputs": [("o0", "INT"), ("o1", "INT"), ("o2", "INT"), ("q0", "BOOL"), ("q1", "BOOL")],
+        "internal": [("v0", "INT"), ("v1", "INT"), ("f0", "BOOL")],
+    },
+    "wide": {
+        "inputs": [("i0", "INT"), ("i1", "INT"), ("d0", "DINT"), ("u0", "UINT"), ("by0", "BYTE"), ("w0", "WORD"), ("b0", "BOOL")],
+        "outputs": [("o0", "INT"), ("o1", "INT"), ("od", "DINT"), ("ou", "UINT"), ("ob", "BYTE"), ("ow", "WORD"), ("q0", "BOOL"), ("q1", "BOOL")],
+        "internal": [("v0", "INT"), ("vd", "DINT"), ("vu", "UINT"), ("vb", "BYTE"), ("vw", "WORD"), ("f0", "BOOL")],
+    },
+}
 
 
 class ProgGen:
-    def __init__(self, rng, excl=(), n_in_int=2, n_in_bool=1, n_out_int=3, n_out_bool=2, n_var_int=2, n_var_bool=1):
+    def __init__(self, rng, profile="core", excl=()):
         self.rng = rng
-        self.excl = set(excl)
-        self.in_int = [f"i{k}" for k in range(n_in_int)]
-        self.in_bool = [f"b{k}" for k in range(n_in_bool)]
-        self.out_int = [f"o{k}" for k in range(n_out_int)]
-        self.out_bool = [f"q{k}" for k in range(n_out_bool)]
-        self.var_int = [f"v{k}" for k in range(n_var_int)]
-        self.var_bool = [f"f{k}" for k in range(n_var_bool)]
-        self.ints = self.in_int + self.out_int + self.var_int
-        self.bools = self.in_bool + self.out_bool + self.var_bool
-        self.writable_int = self.out_int + self.var_int
-        self.writable_bool = self.out_bool + self.var_bool
+        p = PROFILES[profile]
+        self.inputs, self.outputs, self.internal = p["inputs"], p["outputs"], p["internal"]
         self.loop_var = "ix"
+        self.types = {n: t for n, t in self.inputs + self.outputs + self.internal}
+        self.writable = self.outputs + self.internal
+        self.excl = set(excl)
 
     def stmts(self, n, depth, in_loop=False):
         return [self.stmt(depth, in_loop) for _ in range(n)]
 
     def stmt(self, depth, in_loop):
         r = self.rng
-        ints = self.ints + ([self.loop_var] if in_loop else [])
-        g = Gen(r, ints, self.bools, self.excl)
+        types = dict(self.types)
+        if in_loop:
+            types[self.loop_var] = "INT"
+        g = Gen(r, types, self.excl)
         k = r.random()
         if depth <= 0 or k < 0.55:
-            if r.random() < 0.65:
-                return ("assign", r.choice(self.writable_int), g.int_expr(3))
-            return ("assign", r.choice(self.writable_bool), g.bool_expr(3))
+            name, ty = r.choice(self.writable)
+            return ("assign", name, g.expr(ty, 3))
         if k < 0.75:
             branches = [(g.bool_expr(2), self.stmts(r.randint(1, 2), depth - 1, in_loop))
                         for _ in range(r.randint(1, 2))]
@@ -278,10 +420,11 @@ class ProgGen:
             if not labels:
                 labels = [((0, 0), self.stmts(1, depth - 1, in_loop))]
             els = self.stmts(1, depth - 1, in_loop) if r.random() < 0.6 else None
-            sel = ("var", r.choice(ints)) if "case_call" in self.excl else g.int_expr(2)
+            sel = ("var", r.choice(g.vars_of("INT"))) if "case_call" in self.excl else g.int_expr("INT", 2)
             return ("case", sel, labels, els)
         if in_loop:
-            return ("assign", r.choice(self.writable_int), g.int_expr(2))
+            name, ty = r.choice(self.writable)
+            return ("assign", name, g.expr(ty, 2))
         a = r.randint(-2, 2)
         b = a + r.randint(0, 3)
         return ("for", self.loop_var, a, b, self.stmts(r.randint(1, 2), depth - 1, True))
@@ -290,113 +433,125 @@ class ProgGen:
         return self.stmts(n_stmts, 2)
 
 
-def render_stmts(stmts, ind):
+def render_stmts(stmts, ind, excl=()):
     out = []
     pad = "  " * ind
     for s in stmts:
         k = s[0]
         if k == "assign":
-            out.append(f"{pad}{s[1]} := {render(s[2])};")
+            out.append(f"{pad}{s[1]} := {render(s[2], excl)};")
         elif k == "if":
             first = True
             for cond, body in s[1]:
-                out.append(f"{pad}{'IF' if first else 'ELSIF'} {render(cond)} THEN")
-                out += render_stmts(body, ind + 1)
+                out.append(f"{pad}{'IF' if first else 'ELSIF'} {render(cond, excl)} THEN")
+                out += render_stmts(body, ind + 1, excl)
                 first = False
             if s[2] is not None:
                 out.append(f"{pad}ELSE")
-                out += render_stmts(s[2], ind + 1)
+                out += render_stmts(s[2], ind + 1, excl)
             out.append(f"{pad}END_IF;")
         elif k == "case":
-            out.append(f"{pad}CASE {render(s[1])} OF")
+            out.append(f"{pad}CASE {render(s[1], excl)} OF")
             for (lo, hi), body in s[2]:
                 lab = f"{lo}" if lo == hi else f"{lo}..{hi}"
                 out.append(f"{pad}  {lab}:")
-                out += render_stmts(body, ind + 2)
+                out += render_stmts(body, ind + 2, excl)
             if s[3] is not None:
                 out.append(f"{pad}ELSE")
-                out += render_stmts(s[3], ind + 1)
+                out += render_stmts(s[3], ind + 1, excl)
             out.append(f"{pad}END_CASE;")
         elif k == "for":
             out.append(f"{pad}FOR {s[1]} := {s[2]} TO {s[3]} DO")
-            out += render_stmts(s[4], ind + 1)
+            out += render_stmts(s[4], ind + 1, excl)
             out.append(f"{pad}END_FOR;")
         else:
             raise ValueError(k)
     return out
 
 
-def exec_stmts(stmts, env):
+def exec_stmts(stmts, env, types):
     for s in stmts:
         k = s[0]
         if k == "assign":
-            env[s[1]] = evaluate(s[2], env)
+            env[s[1]] = evaluate(s[2], env, types)
         elif k == "if":
             for cond, body in s[1]:
-                if evaluate(cond, env):
-                    exec_stmts(body, env)
+                if evaluate(cond, env, types):
+                    exec_stmts(body, env, types)
                     break
             else:
                 if s[2] is not None:
-                    exec_stmts(s[2], env)
+                    exec_stmts(s[2], env, types)
         elif k == "case":
-            v = evaluate(s[1], env)
+            v = evaluate(s[1], env, types)
             for (lo, hi), body in s[2]:
                 if lo <= v <= hi:
-                    exec_stmts(body, env)
+                    exec_stmts(body, env, types)
                     break
             else:
                 if s[3] is not None:
-                    exec_stmts(s[3], env)
+                    exec_stmts(s[3], env, types)
         elif k == "for":
             for i in range(s[2], s[3] + 1):
                 env[s[1]] = i
-                exec_stmts(s[4], env)
+                exec_stmts(s[4], env, types)
             env.pop(s[1], None)
         else:
             raise ValueError(k)
 
 
-def fmt(v):
-    if isinstance(v, bool):
+def fmt(ty, v):
+    if ty == "BOOL":
         return "TRUE" if v else "FALSE"
+    if ty in BIT_TYPES:
+        return f"16#{v:0{WIDTH[ty] // 4}X}"
     return str(v)
 
 
-def make(seed, cycles, n_stmts=6, tries=200, excl=()):
+def make(seed, cycles, n_stmts=6, tries=200, excl=(), profile="core"):
     """Return (st_text, trace_text) for a seed, or None if every candidate
     program hit an undefined step."""
     rng = random.Random(seed)
     for attempt in range(tries):
-        pg = ProgGen(rng, excl)
+        pg = ProgGen(rng, profile, excl)
         body = pg.program(n_stmts)
-        env = {n: 0 for n in pg.ints} | {n: False for n in pg.bools}
+        types = dict(pg.types)
+        types[pg.loop_var] = "INT"
+        env = {n: (False if t == "BOOL" else 0) for n, t in pg.types.items()}
         records = []
         try:
             for c in range(cycles):
-                ins = {n: rng.randint(-50, 50) for n in pg.in_int} | {n: rng.choice([True, False]) for n in pg.in_bool}
+                ins = {}
+                for n, t in pg.inputs:
+                    if t == "BOOL":
+                        ins[n] = rng.choice([True, False])
+                    else:
+                        lo, hi = IN_RANGE[t]
+                        ins[n] = rng.randint(lo, hi)
                 env.update(ins)
-                exec_stmts(body, env)
-                outs = {n: env[n] for n in pg.out_int + pg.out_bool}
+                exec_stmts(body, env, types)
+                outs = {n: env[n] for n, _ in pg.outputs}
                 records.append((c, ins, outs))
         except Undefined:
             continue
-        st = ["(* generated by tools/fuzz/gen.py, seed %d, attempt %d *)" % (seed, attempt), "PROGRAM main", "  VAR_INPUT"]
-        st += [f"    {n} : INT;" for n in pg.in_int] + [f"    {n} : BOOL;" for n in pg.in_bool]
+        st = ["(* generated by tools/fuzz/gen.py, profile %s, seed %d, attempt %d *)" % (profile, seed, attempt),
+              "PROGRAM main", "  VAR_INPUT"]
+        st += [f"    {n} : {t};" for n, t in pg.inputs]
         st += ["  END_VAR", "  VAR_OUTPUT"]
-        st += [f"    {n} : INT;" for n in pg.out_int] + [f"    {n} : BOOL;" for n in pg.out_bool]
+        st += [f"    {n} : {t};" for n, t in pg.outputs]
         st += ["  END_VAR", "  VAR"]
-        st += [f"    {n} : INT;" for n in pg.var_int] + [f"    {n} : BOOL;" for n in pg.var_bool] + [f"    {pg.loop_var} : INT;"]
+        st += [f"    {n} : {t};" for n, t in pg.internal] + [f"    {pg.loop_var} : INT;"]
         st += ["  END_VAR"]
-        st += render_stmts(body, 1)
+        st += render_stmts(body, 1, excl)
         st += ["END_PROGRAM", ""]
-        tr = [f"# generated by tools/fuzz/gen.py, seed {seed}: expected values from the reference evaluator",
+        tr = [f"# generated by tools/fuzz/gen.py, profile {profile}, seed {seed}: expected values from the reference evaluator",
               "period_ms: 100", "program: main",
-              "inputs: " + " ".join(pg.in_int + pg.in_bool),
-              "outputs: " + " ".join(pg.out_int + pg.out_bool),
+              "inputs: " + " ".join(n for n, _ in pg.inputs),
+              "outputs: " + " ".join(n for n, _ in pg.outputs),
               "status: conformant", "---"]
         for c, ins, outs in records:
-            tr.append(f"{c} " + " ".join(f"{n}={fmt(v)}" for n, v in ins.items()) + " => " + " ".join(f"{n}={fmt(v)}" for n, v in outs.items()))
+            tr.append(f"{c} " + " ".join(f"{n}={fmt(pg.types[n], v)}" for n, v in ins.items()) + " => " +
+                      " ".join(f"{n}={fmt(pg.types[n], v)}" for n, v in outs.items()))
         return "\n".join(st), "\n".join(tr) + "\n"
     return None
 
@@ -406,10 +561,11 @@ def main():
     ap.add_argument("--seed", type=int, default=0)
     ap.add_argument("--cycles", type=int, default=5)
     ap.add_argument("--stmts", type=int, default=6)
+    ap.add_argument("--profile", choices=sorted(PROFILES), default="core")
     ap.add_argument("--exclude", default="", help="comma list of " + ", ".join(EXCLUDABLE))
     ap.add_argument("out_dir")
     a = ap.parse_args()
-    r = make(a.seed, a.cycles, a.stmts, excl=[x for x in a.exclude.split(",") if x])
+    r = make(a.seed, a.cycles, a.stmts, excl=[x for x in a.exclude.split(",") if x], profile=a.profile)
     if r is None:
         raise SystemExit("no well-defined program found for this seed")
     out = pathlib.Path(a.out_dir)

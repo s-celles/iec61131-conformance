@@ -285,3 +285,27 @@ Reported: https://github.com/ironplc/ironplc/issues/2549
 - `undefined/short_circuit`: `g AND f()` and `g OR f()` always call `f`
   (full evaluation), as do STruC++ and RuSTy; both matiecs short-circuit.
   Both are allowed by ed.3 7.3.2.
+
+## 25. (Defect) SHL keeps the bits shifted beyond the width of its input
+
+- Reported: https://github.com/ironplc/ironplc/issues/2553
+- Reproducer: `ops/shl_width.st`: `SHR(SHL(b, 7), 4)` with `b : BYTE :=
+  16#44` gives 16#20 (so `SHL(16#44, 7)` was 16#2200, not 16#00) and
+  `SHR(SHL(w, 12), 8)` with `w : WORD := 16#67CB` gives 16#7CB0; the
+  value is only masked when it finally reaches the BYTE/WORD variable.
+  `ROL` and `ROR` do work within the width (`b_rol`, `w_ror` pass), as
+  does `SHL` alone (`ops/bit_ops`). Ed.3 table 30 / ed.2 table 25: the
+  result of `SHL(IN, N)` has the type of `IN`. Found by `tools/fuzz`.
+
+## 26. (Defect) An untyped based literal is ANY_INT, not usable as a bit string
+
+- Reported: https://github.com/ironplc/ironplc/issues/2554
+- Reproducer: `ops/bit_literals.st`: `ob := 16#A5` with `ob : BYTE` is
+  `P4035 Assignment value type does not match (value_type=ANY_INT)`,
+  `b AND 16#0F` is `P4049 Operator is not defined for the operand types
+  (expected=ANY_BIT, actual=ANY_INT)`, `SHL(16#0001, n)` is `P4026`, and
+  `(w AND 16#00FF) = 16#0055` is `P4049`. Ed.3 6.3.2 table 5 (ed.2 2.2.1
+  table 2): a based literal takes its type from the context, bit-string
+  types included; the typed forms `BYTE#16#FF`, `WORD#16#1234` are
+  accepted. matiec, its fork and STruC++ accept the untyped form. Found
+  by `tools/fuzz`.

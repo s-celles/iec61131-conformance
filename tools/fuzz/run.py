@@ -79,6 +79,7 @@ def main():
     ap.add_argument("--cycles", type=int, default=5)
     ap.add_argument("--stmts", type=int, default=6)
     ap.add_argument("--exclude", default="", help="features to leave out, see gen.EXCLUDABLE (known upstream issues)")
+    ap.add_argument("--profile", choices=sorted(gen.PROFILES), default="core", help="type profile, see gen.PROFILES")
     ap.add_argument("--out", required=True)
     ap.add_argument("--ironplc-harness")
     ap.add_argument("--ironplcc")
@@ -100,7 +101,7 @@ def main():
     skipped = 0
     divergent = []
     for seed in seeds_of(a.seeds):
-        r = gen.make(seed, a.cycles, a.stmts, excl=[x for x in a.exclude.split(",") if x])
+        r = gen.make(seed, a.cycles, a.stmts, excl=[x for x in a.exclude.split(",") if x], profile=a.profile)
         if r is None:
             skipped += 1
             continue

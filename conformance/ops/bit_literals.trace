@@ -1,0 +1,24 @@
+# Based literals used as BYTE and WORD values.
+#
+# Derivation (ed.3 6.3.2 table 5: based integer literals, features 4-6,
+# "the data type of a literal is determined by the context"; feature 9
+# typed literals; ed.2 2.2.1 table 2 lists the same features and 2.3.1
+# table 10 the bit-string types; the operators are table 30 / ed.2 table
+# 24, SHL table 30 / ed.2 table 25):
+#   ob = 16#A5 always; ow = 2#1000_0000_0000_0001 = 16#8001 always.
+# cycle 0: b=16#3C w=16#1255 n=0 -> b_and=16#0C w_or=16#FF55 b_xor=16#C3
+#          w_shl=16#0001 lo55: 16#55 = 16#55 TRUE; tw FALSE
+# cycle 1: b=16#F0 w=16#1234 n=4 -> 16#00, 16#FF34, 16#0F, 16#0010, FALSE, TRUE
+# cycle 2: b=16#FF w=16#0055 n=15 -> 16#0F, 16#FF55, 16#00, 16#8000, TRUE, FALSE
+# cycle 3: b=16#00 w=16#FFFF n=1 -> 16#00, 16#FFFF, 16#FF, 16#0002, FALSE, FALSE
+period_ms: 100
+program: main
+inputs: b w n
+outputs: ob ow b_and w_or b_xor w_shl lo55 tw
+status: conformant
+reference: IEC 61131-3 ed.3 6.3.2 table 5 (literals), table 30 (bit-string operators, SHL); ed.2 2.2.1 table 2, tables 24-25
+---
+0 b=16#3C w=16#1255 n=0 => ob=16#A5 ow=16#8001 b_and=16#0C w_or=16#FF55 b_xor=16#C3 w_shl=16#0001 lo55=TRUE tw=FALSE
+1 b=16#F0 w=16#1234 n=4 => ob=16#A5 ow=16#8001 b_and=16#00 w_or=16#FF34 b_xor=16#0F w_shl=16#0010 lo55=FALSE tw=TRUE
+2 b=16#FF w=16#0055 n=15 => ob=16#A5 ow=16#8001 b_and=16#0F w_or=16#FF55 b_xor=16#00 w_shl=16#8000 lo55=TRUE tw=FALSE
+3 b=16#00 w=16#FFFF n=1 => ob=16#A5 ow=16#8001 b_and=16#00 w_or=16#FFFF b_xor=16#FF w_shl=16#0002 lo55=FALSE tw=FALSE
