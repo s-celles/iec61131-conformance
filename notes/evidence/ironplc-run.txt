@@ -11,7 +11,7 @@ FAIL    conformance/config/event_single.st
   [0m[36m│[0m         [0m[31m^^^^^^[0m [0m[31m2nd PROGRAM declaration; the compiler currently runs only one PROGRAM[0m
   [0m[36m│[0m
   [0m[36m=[0m Compile a single PROGRAM for now. Support for more than one PROGRAM is tracked in https://github.com/ironplc/ironplc/issues/1613
-  [0m[36m=[0m Learn more: https://www.ironplc.com/reference/compiler/problems/P9999.html?version=0.251.0&channel=cli&file=/Users/scelles/.rustup/toolchains/stable-aarch64-apple-darwin/lib/rustlib/src/rust/library/core/src/ops/function.rs&line=250
+  [0m[36m=[0m Learn more: https://www.ironplc.com/reference/compiler/problems/P9999.html?version=0.251.0&channel=cli&file=<file>&line=<n>
 
 Error: "Compile failed with 1 problem(s)"
 
@@ -28,7 +28,7 @@ FAIL    conformance/config/global_exchange.st
    [0m[36m│[0m         [0m[31m^^^^^^^^[0m [0m[31m2nd PROGRAM declaration; the compiler currently runs only one PROGRAM[0m
    [0m[36m│[0m
    [0m[36m=[0m Compile a single PROGRAM for now. Support for more than one PROGRAM is tracked in https://github.com/ironplc/ironplc/issues/1613
-   [0m[36m=[0m Learn more: https://www.ironplc.com/reference/compiler/problems/P9999.html?version=0.251.0&channel=cli&file=/Users/scelles/.rustup/toolchains/stable-aarch64-apple-darwin/lib/rustlib/src/rust/library/core/src/ops/function.rs&line=250
+   [0m[36m=[0m Learn more: https://www.ironplc.com/reference/compiler/problems/P9999.html?version=0.251.0&channel=cli&file=<file>&line=<n>
 
 Error: "Compile failed with 1 problem(s)"
 
@@ -51,7 +51,7 @@ FAIL    conformance/config/priority_order.st
    [0m[36m│[0m         [0m[31m^^^^^^[0m [0m[31m2nd PROGRAM declaration; the compiler currently runs only one PROGRAM[0m
    [0m[36m│[0m
    [0m[36m=[0m Compile a single PROGRAM for now. Support for more than one PROGRAM is tracked in https://github.com/ironplc/ironplc/issues/1613
-   [0m[36m=[0m Learn more: https://www.ironplc.com/reference/compiler/problems/P9999.html?version=0.251.0&channel=cli&file=/Users/scelles/.rustup/toolchains/stable-aarch64-apple-darwin/lib/rustlib/src/rust/library/core/src/ops/function.rs&line=250
+   [0m[36m=[0m Learn more: https://www.ironplc.com/reference/compiler/problems/P9999.html?version=0.251.0&channel=cli&file=<file>&line=<n>
 
 Error: "Compile failed with 1 problem(s)"
 
@@ -68,7 +68,7 @@ FAIL    conformance/config/two_periods.st
   [0m[36m│[0m         [0m[31m^^^^[0m [0m[31m2nd PROGRAM declaration; the compiler currently runs only one PROGRAM[0m
   [0m[36m│[0m
   [0m[36m=[0m Compile a single PROGRAM for now. Support for more than one PROGRAM is tracked in https://github.com/ironplc/ironplc/issues/1613
-  [0m[36m=[0m Learn more: https://www.ironplc.com/reference/compiler/problems/P9999.html?version=0.251.0&channel=cli&file=/Users/scelles/.rustup/toolchains/stable-aarch64-apple-darwin/lib/rustlib/src/rust/library/core/src/ops/function.rs&line=250
+  [0m[36m=[0m Learn more: https://www.ironplc.com/reference/compiler/problems/P9999.html?version=0.251.0&channel=cli&file=<file>&line=<n>
 
 Error: "Compile failed with 1 problem(s)"
 
@@ -242,7 +242,7 @@ FAIL    conformance/data/struct_internal.st
 [0m[36m37[0m [0m[36m│[0m   r.tl [0m[31m:=[0m q;
    [0m[36m│[0m        [0m[31m^^[0m [0m[31mStatement code generation does not support yet[0m
    [0m[36m│[0m
-   [0m[36m=[0m Learn more: https://www.ironplc.com/reference/compiler/problems/P9999.html?version=0.251.0&channel=cli&file=codegen/src/body/mod.rs&line=66
+   [0m[36m=[0m Learn more: https://www.ironplc.com/reference/compiler/problems/P9999.html?version=0.251.0&channel=cli&file=<file>&line=<n>
 
 Error: "Compile failed with 1 problem(s)"
 
@@ -442,7 +442,7 @@ FAIL    conformance/pou/fb_var_temp.st
 [0m[36m11[0m [0m[36m│[0m     [0m[31mt[0m : INT;
    [0m[36m│[0m     [0m[31m^[0m [0m[31mStarting value code generation does not support yet[0m
    [0m[36m│[0m
-   [0m[36m=[0m Learn more: https://www.ironplc.com/reference/compiler/problems/P9999.html?version=0.251.0&channel=cli&file=codegen/src/body/mod.rs&line=80
+   [0m[36m=[0m Learn more: https://www.ironplc.com/reference/compiler/problems/P9999.html?version=0.251.0&channel=cli&file=<file>&line=<n>
 
 Error: "Compile failed with 1 problem(s)"
 
@@ -640,7 +640,7 @@ DIFFERS conformance/undefined/tasks_same_priority.st (implementation-defined)
    [0m[36m│[0m         [0m[31m^^^^^^[0m [0m[31m2nd PROGRAM declaration; the compiler currently runs only one PROGRAM[0m
    [0m[36m│[0m
    [0m[36m=[0m Compile a single PROGRAM for now. Support for more than one PROGRAM is tracked in https://github.com/ironplc/ironplc/issues/1613
-   [0m[36m=[0m Learn more: https://www.ironplc.com/reference/compiler/problems/P9999.html?version=0.251.0&channel=cli&file=/Users/scelles/.rustup/toolchains/stable-aarch64-apple-darwin/lib/rustlib/src/rust/library/core/src/ops/function.rs&line=250
+   [0m[36m=[0m Learn more: https://www.ironplc.com/reference/compiler/problems/P9999.html?version=0.251.0&channel=cli&file=<file>&line=<n>
 
 Error: "Compile failed with 1 problem(s)"
 
