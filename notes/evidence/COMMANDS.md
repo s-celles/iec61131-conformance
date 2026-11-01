@@ -6,7 +6,7 @@ All run from the suite root unless noted. Checkouts live in a sibling
 ```sh
 # IronPLC 5ea0610
 git clone --depth 1 https://github.com/ironplc/ironplc scratch/ironplc
-(cd scratch/ironplc/compiler && cargo build --release -p ironplcc -p ironplcvm)
+(cd scratch/ironplc/compiler && cargo build --release --bin ironplcc)
 ln -s $PWD/scratch/ironplc ironplc-src
 (cd harness/ironplc && cargo build --release)
 ./harness/ironplc/target/release/iec61131-conformance-ironplc \

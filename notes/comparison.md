@@ -130,8 +130,22 @@ hand. CI checks the table is in sync with the evidence.
 | undefined/string_truncate | SAME | **DIFFERS** (compile) | **DIFFERS** (compile) | **DIFFERS** (compile) | SAME | IronPLC truncates to the declared length; matiec cannot declare `STRING[n]` (see declared_length) |
 | undefined/string_conversions | SAME | SAME | SAME | **DIFFERS** (compile) | SAME | plain decimal, leading minus, on all |
 | undefined/tasks_same_priority | **DIFFERS** (compile) | SAME | SAME | SAME | **ERROR** (configuration) | records matiec (IronPLC cannot run two instances): declaration order |
+| control-flow/continue | **FAIL** (compile) | PASS | PASS | **FAIL** (compile) | PASS | ed.3 CONTINUE: matiec and the fork have it; IronPLC (findings #20) and STruC++ (STruC++ #10) do not parse it |
+| control-flow/for_step | PASS | PASS | PASS | PASS | PASS | negative BY, overshooting BY, empty range: all agree |
+| control-flow/return | PASS | PASS | PASS | PASS | PASS | RETURN in an FB and in a function, on all |
+| data/array_2d | **FAIL** (compile) | PASS | **FAIL** (compile) | PASS | PASS | two-dimensional array and array of a named array type with a nested initialiser: IronPLC rejects the nested initialiser (findings #22), the OpenPLC fork crashes on it (fork #6) |
+| data/array_of_struct | **FAIL** (compile) | PASS | **FAIL** (compile) | PASS | PASS | structure initialisers inside an array initialiser: IronPLC (findings #22) and the OpenPLC fork (fork #7) reject the syntax |
+| data/defaults | PASS | PASS | PASS | **FAIL** (cycles 0-1) | **FAIL** (cycles 0-1) | default initial values: STruC++ (STruC++ #9) and RuSTy (RuSTy #7) start a subrange at 0 instead of its lower limit; everything else agrees |
+| ops/date_time | PASS | **ERROR** (build) | PASS | **FAIL** (compile) | PASS | IronPLC and the OpenPLC fork compute all of table 30; upstream matiec does not build (`_____time_sub`, beremiz/matiec#40); STruC++ types `TOD - TOD` as TOD (STruC++ #8) |
+| ops/trunc | PASS | PASS | PASS | PASS | PASS | TRUNC toward zero on all |
+| pou/fb_in_out | **FAIL** (compile) | PASS | PASS | PASS | PASS | IronPLC does not lower VAR_IN_OUT of an FB (findings #21); upstream matiec does not build the function with VAR_IN_OUT (matiec #13) |
+| pou/fb_method | **FAIL** (compile) | **FAIL** (compile) | **FAIL** (compile) | PASS | PASS | ed.3 METHOD: STruC++ only; IronPLC (findings #20) and both matiecs are ed.2 |
+| pou/function_input_default | **FAIL** (compile) | PASS | PASS | PASS | PASS | IronPLC requires every function input (P4018, findings #23); the others apply the initial value |
+| pou/function_var_output | PASS | PASS | PASS | PASS | PASS | function VAR_OUTPUT read with `=>`: upstream matiec does not build it (matiec #13) |
+| undefined/short_circuit | SAME | **DIFFERS** (cycles 0-2) | **DIFFERS** (cycles 0-2) | SAME | SAME | records IronPLC (full evaluation); the OpenPLC fork short-circuits (fork #8); upstream matiec does not build it (matiec #13) |
+| undefined/subrange_out_of_range | SAME | SAME | SAME | SAME | SAME | records IronPLC: stored unchecked; same on all that run it |
 
-Totals (67 tests, 51 with `status: conformant`): conformant tests passed, IronPLC 38/51; matiec 43/51; OpenPLC's matiec 44/51; STruC++ 41/51; RuSTy 39/51. 33 of the 67 tests have the same result on all five runtimes.
+Totals (81 tests, 63 with `status: conformant`): conformant tests passed, IronPLC 44/63; matiec 53/63; OpenPLC's matiec 53/63; STruC++ 50/63; RuSTy 50/63. 38 of the 81 tests have the same result on all five runtimes.
 
 <!-- results:end -->
 
@@ -283,6 +297,10 @@ in `conformance/` and the output in `notes/evidence/rusty-run.txt`:
    (`libs/stdlib/iec61131-st/bistable_functionblocks.st`), so programs
    written with the standard's `S1`/`R` and `S`/`R1` (ed.3 table 42) fail to
    compile with `E048 Could not resolve reference to S1`.
+7. **A subrange variable starts at 0, not at its lower limit**
+   (`data/defaults`, `SMALL : INT (5..10)` reads 0 where ed.3 6.4.4.4.3 gives
+   5; IronPLC and both matiecs give 5, STruC++ also 0). Every other lot 4
+   test passes on RuSTy, CONTINUE and METHOD included.
 
 Also observed, not a deviation: `TIME` is 32-bit milliseconds in this
 build (so `T#500ms` in a trace is the integer 500 in the generated code),

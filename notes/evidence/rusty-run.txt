@@ -25,6 +25,12 @@ ERROR   conformance/config/two_periods.st
 8 x=-11 => branch=13 neg=FALSE cnt=5
 9 x=8 => branch=10 neg=FALSE cnt=5
 PASS    conformance/control-flow/case_expr.st
+### conformance/control-flow/continue.st
+0 n=5 => odd_sum=9 w_count=4 inner=6
+1 n=0 => odd_sum=0 w_count=0 inner=6
+2 n=6 => odd_sum=9 w_count=5 inner=6
+3 n=1 => odd_sum=1 w_count=1 inner=6
+PASS    conformance/control-flow/continue.st
 ### conformance/control-flow/for_exit.st
 0 n=0 => sum=0 last=0 count=0 down_count=4 down_sum=22
 1 n=-2 => sum=0 last=0 count=0 down_count=4 down_sum=22
@@ -36,6 +42,12 @@ PASS    conformance/control-flow/case_expr.st
 7 n=32767 => sum=15 last=5 count=5 down_count=4 down_sum=22
 8 n=2 => sum=3 last=2 count=2 down_count=4 down_sum=22
 PASS    conformance/control-flow/for_exit.st
+### conformance/control-flow/for_step.st
+0 lo=1 hi=3 => down_sum=22 down_n=4 by4_sum=15 by4_n=3 empty_n=0 up_n=3
+1 lo=3 hi=3 => down_sum=22 down_n=4 by4_sum=15 by4_n=3 empty_n=0 up_n=1
+2 lo=4 hi=3 => down_sum=22 down_n=4 by4_sum=15 by4_n=3 empty_n=0 up_n=0
+3 lo=-2 hi=2 => down_sum=22 down_n=4 by4_sum=15 by4_n=3 empty_n=0 up_n=5
+PASS    conformance/control-flow/for_step.st
 ### conformance/control-flow/if_case.st
 0 x=-5 => sign=-1 bucket=0
 1 x=0 => sign=0 bucket=0
@@ -58,6 +70,12 @@ PASS    conformance/control-flow/if_case.st
 4 n=-3 => outer=3 inner=0 w=6
 5 n=1 => outer=3 inner=3 w=6
 PASS    conformance/control-flow/nested_exit.st
+### conformance/control-flow/return.st
+0 x=3 => y=6 calls=1 c=103
+1 x=-1 => y=6 calls=2 c=99
+2 x=15 => y=30 calls=3 c=10
+3 x=0 => y=0 calls=4 c=100
+PASS    conformance/control-flow/return.st
 ### conformance/control-flow/while.st
 0 n=0 => iters=0 acc=0 rep=1
 1 n=1 => iters=1 acc=1 rep=1
@@ -143,6 +161,12 @@ PASS    conformance/counters/ctud.st
 9 cu=FALSE r=TRUE => qu=FALSE qd=TRUE cv=0
 10 r=FALSE => qu=FALSE qd=TRUE cv=0
 PASS    conformance/counters/ctud_bounds.st
+### conformance/data/array_2d.st
+0 i=0 j=0 => m_ij=1 a_ij=10 rsum=6 csum=50
+1 i=1 j=2 => m_ij=6 a_ij=60 rsum=15 csum=90
+2 i=0 j=1 => m_ij=2 a_ij=20 rsum=6 csum=70
+3 i=1 j=0 => m_ij=4 a_ij=40 rsum=15 csum=50
+PASS    conformance/data/array_2d.st
 ### conformance/data/array_init.st
 0 => s_list=24 s_rep=20 z=0 f=TRUE
 1 => s_list=24 s_rep=20 z=0 f=TRUE
@@ -154,6 +178,18 @@ PASS    conformance/data/array_init.st
 3 idx=0 val=1 => sum=98 at_idx=1 lo=1 hi=-3
 4 idx=4 val=0 => sum=101 at_idx=0 lo=1 hi=0
 PASS    conformance/data/array_internal.st
+### conformance/data/array_of_struct.st
+0 k=1 => sum_x=7 sum_y=60 px=3 copy_y=30
+1 k=0 => sum_x=7 sum_y=60 px=3 copy_y=30
+2 k=5 => sum_x=12 sum_y=60 px=8 copy_y=30
+3 k=-8 => sum_x=4 sum_y=60 px=0 copy_y=30
+PASS    conformance/data/array_of_struct.st
+### conformance/data/defaults.st
+0 => b=FALSE i=0 d=0 u=0 bt=16#00 w=16#0000 dw=16#00000000 r=0 lr=0 t=T#0ms s='' slen=0 is_red=TRUE lo_lim=0 arr=0 pa=0 pb=FALSE
+1 => b=FALSE i=0 d=0 u=0 bt=16#00 w=16#0000 dw=16#00000000 r=0 lr=0 t=T#0ms s='' slen=0 is_red=TRUE lo_lim=0 arr=0 pa=0 pb=FALSE
+FAIL    conformance/data/defaults.st
+        cycle 0 (trace line 18): lo_lim expected 5, got 0
+        cycle 1 (trace line 19): lo_lim expected 5, got 0
 ### conformance/data/enum.st
 0 pick=-1 => code=1 is_green=FALSE same=TRUE
 1 pick=1 => code=2 is_green=TRUE same=FALSE
@@ -202,29 +238,29 @@ PASS    conformance/edge/r_trig.st
 ### conformance/edge/sr_rs.st
 FAIL    conformance/edge/sr_rs.st
         plc failed to compile the program:
-[0m[1m[38;5;9merror[E089][0m[1m: Invalid call parameters[0m
-   [0m[34m┌─[0m /tmp/rusty-sr_rs-v2hev94b/prog.st:16:12
-   [0m[34m│[0m
-[0m[34m16[0m [0m[34m│[0m   latch_sr([0m[31mS1 := s[0m, R := r);
-   [0m[34m│[0m            [0m[31m^^^^^^^[0m [0m[31mInvalid call parameters[0m
+error[E089]: Invalid call parameters
+   ┌─ <tmpdir>/prog.st:16:12
+   │
+16 │   latch_sr(S1 := s, R := r);
+   │            ^^^^^^^ Invalid call parameters
 
-[0m[1m[38;5;9merror[E048][0m[1m: Could not resolve reference to S1[0m
-   [0m[34m┌─[0m /tmp/rusty-sr_rs-v2hev94b/prog.st:16:12
-   [0m[34m│[0m
-[0m[34m16[0m [0m[34m│[0m   latch_sr([0m[31mS1[0m := s, R := r);
-   [0m[34m│[0m            [0m[31m^^[0m [0m[31mCould not resolve reference to S1[0m
+error[E048]: Could not resolve reference to S1
+   ┌─ <tmpdir>/prog.st:16:12
+   │
+16 │   latch_sr(S1 := s, R := r);
+   │            ^^ Could not resolve reference to S1
 
-[0m[1m[38;5;9merror[E089][0m[1m: Invalid call parameters[0m
-   [0m[34m┌─[0m /tmp/rusty-sr_rs-v2hev94b/prog.st:17:12
-   [0m[34m│[0m
-[0m[34m17[0m [0m[34m│[0m   latch_rs([0m[31mS := s[0m, R1 := r);
-   [0m[34m│[0m            [0m[31m^^^^^^[0m [0m[31mInvalid call parameters[0m
+error[E089]: Invalid call parameters
+   ┌─ <tmpdir>/prog.st:17:12
+   │
+17 │   latch_rs(S := s, R1 := r);
+   │            ^^^^^^ Invalid call parameters
 
-[0m[1m[38;5;9merror[E048][0m[1m: Could not resolve reference to S[0m
-   [0m[34m┌─[0m /tmp/rusty-sr_rs-v2hev94b/prog.st:17:12
-   [0m[34m│[0m
-[0m[34m17[0m [0m[34m│[0m   latch_rs([0m[31mS[0m := s, R1 := r);
-   [0m[34m│[0m            [0m[31m^[0m [0m[31mCould not resolve reference to S[0m
+error[E048]: Could not resolve reference to S
+   ┌─ <tmpdir>/prog.st:17:12
+   │
+17 │   latch_rs(S := s, R1 := r);
+   │            ^ Could not resolve reference to S
 
 error: Compilation aborted due to critical errors.
 Hint: You can use `plc explain <ErrorCode>` for more information
@@ -242,6 +278,10 @@ PASS    conformance/ops/bit_ops.st
 2 i=-32768 ip=32767 d=32767 dp=65535 u=32767 ub=1 => i2d=-32768 i2u=32767 d2i=32767 d2u=65535 u2i=32767 u2d=1
 3 i=-1 ip=1 d=-32768 dp=0 u=0 ub=65535 => i2d=-1 i2u=1 d2i=-32768 d2u=0 u2i=0 u2d=65535
 PASS    conformance/ops/conversions.st
+### conformance/ops/date_time.st
+0 => d_sub=T#259200000ms tod_sub=T#8069500ms dt_sub=T#45001000ms tod_add=T#48600000ms tod_min=T#1800000ms dt_add=T#90000000ms dt_min=T#84600000ms same_d=TRUE same_t=TRUE before=TRUE
+1 => d_sub=T#259200000ms tod_sub=T#8069500ms dt_sub=T#45001000ms tod_add=T#48600000ms tod_min=T#1800000ms dt_add=T#90000000ms dt_min=T#84600000ms same_d=TRUE same_t=TRUE before=TRUE
+PASS    conformance/ops/date_time.st
 ### conformance/ops/literals.st
 0 => hex=255 bin=170 oct=15 under=1000000 typed=-5 neg=-16 tu=65535 dh=2147483647
 1 => hex=255 bin=170 oct=15 under=1000000 typed=-5 neg=-16 tu=65535 dh=2147483647
@@ -306,17 +346,17 @@ PASS    conformance/ops/std_functions.st
 ### conformance/ops/std_functions_ext.st
 FAIL    conformance/ops/std_functions_ext.st
         plc failed to compile the program:
-[0m[1m[38;5;9merror[E089][0m[1m: Invalid call parameters[0m
-   [0m[34m┌─[0m /tmp/rusty-std_functions_ext-ayhp4pzn/prog.st:22:17
-   [0m[34m│[0m
-[0m[34m22[0m [0m[34m│[0m   lim  := LIMIT([0m[31mMN := b[0m, IN := a, MX := c);
-   [0m[34m│[0m                 [0m[31m^^^^^^^[0m [0m[31mInvalid call parameters[0m
+error[E089]: Invalid call parameters
+   ┌─ <tmpdir>/prog.st:22:17
+   │
+22 │   lim  := LIMIT(MN := b, IN := a, MX := c);
+   │                 ^^^^^^^ Invalid call parameters
 
-[0m[1m[38;5;9merror[E048][0m[1m: Could not resolve reference to MN[0m
-   [0m[34m┌─[0m /tmp/rusty-std_functions_ext-ayhp4pzn/prog.st:22:17
-   [0m[34m│[0m
-[0m[34m22[0m [0m[34m│[0m   lim  := LIMIT([0m[31mMN[0m := b, IN := a, MX := c);
-   [0m[34m│[0m                 [0m[31m^^[0m [0m[31mCould not resolve reference to MN[0m
+error[E048]: Could not resolve reference to MN
+   ┌─ <tmpdir>/prog.st:22:17
+   │
+22 │   lim  := LIMIT(MN := b, IN := a, MX := c);
+   │                 ^^ Could not resolve reference to MN
 
 error: Compilation aborted due to critical errors.
 Hint: You can use `plc explain <ErrorCode>` for more information
@@ -327,30 +367,45 @@ Hint: You can use `plc explain <ErrorCode>` for more information
 2 t1=T#100ms t2=T#100ms => sum=T#200ms diff=T#0ms is_lt=FALSE is_gt=FALSE is_le=TRUE is_eq=TRUE lit1=T#90000ms lit2=T#3723004ms lit3=T#1500ms lit4=T#500ms lit5=T#172800000ms
 3 t1=T#3600000ms t2=T#1ms => sum=T#3600001ms diff=T#3599999ms is_lt=FALSE is_gt=TRUE is_le=FALSE is_eq=FALSE lit1=T#90000ms lit2=T#3723004ms lit3=T#1500ms lit4=T#500ms lit5=T#172800000ms
 PASS    conformance/ops/time_arith.st
+### conformance/ops/trunc.st
+0 r=3.7 => t=3
+1 r=-3.7 => t=-3
+2 r=2.5 => t=2
+3 r=-2.5 => t=-2
+4 r=0.99 => t=0
+5 r=-0.99 => t=0
+6 r=100.0 => t=100
+PASS    conformance/ops/trunc.st
 ### conformance/pou/fb_en_eno.st
 FAIL    conformance/pou/fb_en_eno.st
         plc failed to compile the program:
-[0m[1m[38;5;9merror[E089][0m[1m: Invalid call parameters[0m
-   [0m[34m┌─[0m /tmp/rusty-fb_en_eno-lrkknnvl/prog.st:25:5
-   [0m[34m│[0m
-[0m[34m25[0m [0m[34m│[0m   c([0m[31mEN := run_it[0m, inc := inc);
-   [0m[34m│[0m     [0m[31m^^^^^^^^^^^^[0m [0m[31mInvalid call parameters[0m
+error[E089]: Invalid call parameters
+   ┌─ <tmpdir>/prog.st:25:5
+   │
+25 │   c(EN := run_it, inc := inc);
+   │     ^^^^^^^^^^^^ Invalid call parameters
 
-[0m[1m[38;5;9merror[E048][0m[1m: Could not resolve reference to EN[0m
-   [0m[34m┌─[0m /tmp/rusty-fb_en_eno-lrkknnvl/prog.st:25:5
-   [0m[34m│[0m
-[0m[34m25[0m [0m[34m│[0m   c([0m[31mEN[0m := run_it, inc := inc);
-   [0m[34m│[0m     [0m[31m^^[0m [0m[31mCould not resolve reference to EN[0m
+error[E048]: Could not resolve reference to EN
+   ┌─ <tmpdir>/prog.st:25:5
+   │
+25 │   c(EN := run_it, inc := inc);
+   │     ^^ Could not resolve reference to EN
 
-[0m[1m[38;5;9merror[E048][0m[1m: Could not resolve reference to ENO[0m
-   [0m[34m┌─[0m /tmp/rusty-fb_en_eno-lrkknnvl/prog.st:27:14
-   [0m[34m│[0m
-[0m[34m27[0m [0m[34m│[0m   done  := c.[0m[31mENO[0m;
-   [0m[34m│[0m              [0m[31m^^^[0m [0m[31mCould not resolve reference to ENO[0m
+error[E048]: Could not resolve reference to ENO
+   ┌─ <tmpdir>/prog.st:27:14
+   │
+27 │   done  := c.ENO;
+   │              ^^^ Could not resolve reference to ENO
 
 error: Compilation aborted due to critical errors.
 Hint: You can use `plc explain <ErrorCode>` for more information
 
+### conformance/pou/fb_in_out.st
+0 inc=5 => total=5 p=2 q=1 ok=TRUE
+1 inc=3 => total=8 p=1 q=2 ok=TRUE
+2 inc=0 => total=8 p=2 q=1 ok=TRUE
+3 inc=-8 => total=0 p=1 q=2 ok=TRUE
+PASS    conformance/pou/fb_in_out.st
 ### conformance/pou/fb_input_defaults.st
 0 => total=11 untouched=7 base=6
 1 => total=12 untouched=7 base=7
@@ -369,6 +424,12 @@ PASS    conformance/pou/fb_input_defaults.st
 9 set_inc=TRUE set_enable=TRUE new_inc=100 new_enable=TRUE => total=108
 10 set_inc=FALSE set_enable=FALSE => total=208
 PASS    conformance/pou/fb_input_retention.st
+### conformance/pou/fb_method.st
+0 n=2 rst=FALSE => ret=2 cv=2
+1 n=3 rst=FALSE => ret=5 cv=5
+2 n=1 rst=TRUE => ret=1 cv=1
+3 n=0 rst=FALSE => ret=1 cv=1
+PASS    conformance/pou/fb_method.st
 ### conformance/pou/fb_two_instances.st
 0 enable_a=TRUE inc_a=5 enable_b=FALSE inc_b=100 => tot_a=5 tot_b=0 calls_a=1 calls_b=1
 1 => tot_a=10 tot_b=0 calls_a=2 calls_b=2
@@ -393,12 +454,23 @@ PASS    conformance/pou/fb_var_temp.st
 4 x=200 d=-200 => y=10 e=0
 5 x=0 d=2147483647 => y=0 e=2147483647
 PASS    conformance/pou/function_call.st
+### conformance/pou/function_input_default.st
+0 x=4 => dflt=11 with_k=39 all=13
+1 x=0 => dflt=-1 with_k=-1 all=5
+2 x=-2 => dflt=-7 with_k=-21 all=1
+PASS    conformance/pou/function_input_default.st
 ### conformance/pou/function_var_not_retained.st
 0 x=3 => f=3
 1 x=4 => f=4
 2 x=0 => f=0
 3 x=-5 => f=-5
 PASS    conformance/pou/function_var_not_retained.st
+### conformance/pou/function_var_output.st
+0 a=7 b=2 => ok=TRUE q=3 r=1
+1 a=7 b=0 => ok=FALSE q=0 r=0
+2 a=-7 b=2 => ok=TRUE q=-3 r=-1
+3 a=9 b=3 => ok=TRUE q=3 r=0
+PASS    conformance/pou/function_var_output.st
 ### conformance/strings/compare.st
 0 => e1=TRUE e2=FALSE l1=TRUE l2=TRUE l3=TRUE l4=TRUE g1=TRUE n1=TRUE
 1 => e1=TRUE e2=FALSE l1=TRUE l2=TRUE l3=TRUE l4=TRUE g1=TRUE n1=TRUE
@@ -562,6 +634,11 @@ DIFFERS conformance/undefined/real_to_int_ties.st
         cycle 3 (trace line 22): d expected -3, got -4
         cycle 4 (trace line 23): i expected 0, got 1
         cycle 4 (trace line 23): d expected 0, got 1
+### conformance/undefined/short_circuit.st
+0 g=FALSE => a=FALSE o=TRUE n_and=1 n_or=1
+1 g=TRUE => a=TRUE o=TRUE n_and=1 n_or=1
+2 g=FALSE => a=FALSE o=TRUE n_and=1 n_or=1
+SAME    conformance/undefined/short_circuit.st
 ### conformance/undefined/string_conversions.st
 0 i=42 => s_i='42' back=42 s_d='-2147483648'
 1 i=-7 => s_i='-7' back=42 s_d='-2147483648'
@@ -571,6 +648,12 @@ SAME    conformance/undefined/string_conversions.st
 0 => s3='abc' n3=3 c2='ab' n2=2
 1 => s3='abc' n3=3 c2='ab' n2=2
 SAME    conformance/undefined/string_truncate.st
+### conformance/undefined/subrange_out_of_range.st
+0 v=7 => s=7
+1 v=20 => s=20
+2 v=-3 => s=-3
+3 v=10 => s=10
+SAME    conformance/undefined/subrange_out_of_range.st
 ### conformance/undefined/tasks_same_priority.st
 ERROR   conformance/undefined/tasks_same_priority.st
         the .st has a CONFIGURATION (SPEC.md version 2); RuSTy compiles a single program and this harness does not schedule tasks
@@ -606,5 +689,5 @@ DIFFERS conformance/undefined/ton_pt_change.st
         cycle 8 (trace line 34): q expected TRUE, got FALSE
         cycle 9 (trace line 35): q expected TRUE, got FALSE
 
-67 tests: 39 pass, 7 fail, 11 same, 4 differs, 6 error
+81 tests: 50 pass, 8 fail, 13 same, 4 differs, 6 error
 exit 1

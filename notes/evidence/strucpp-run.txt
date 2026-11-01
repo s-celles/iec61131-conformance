@@ -47,6 +47,42 @@ PASS    conformance/config/two_periods.st
 8 x=-11 => branch=13 neg=FALSE cnt=5
 9 x=8 => branch=10 neg=FALSE cnt=5
 PASS    conformance/control-flow/case_expr.st
+### conformance/control-flow/continue.st
+FAIL    conformance/control-flow/continue.st
+        strucpp failed to compile the program:
+Compiling prog.st...
+
+Compilation failed:
+
+prog.st:21:7: error: Unexpected identifier `CONTINUE` after `THEN` while parsing a statement.
+  21 |       CONTINUE;
+     |       ^
+     | note: Statements start with an assignment (`:=`), a function call, or a block keyword (IF / CASE / FOR / WHILE / REPEAT / RETURN / EXIT).  Did you forget `:=` after the identifier?
+
+prog.st:21:7: error: Expected `END_IF`, found identifier `CONTINUE`.
+  21 |       CONTINUE;
+     |       ^
+     | note: IF blocks need `IF <cond> THEN <stmt>; <stmt>; END_IF;`.  ELSIF / ELSE branches are optional.
+
+prog.st:21:7: error: Unexpected identifier `CONTINUE` after `THEN` while parsing a statement.
+  21 |       CONTINUE;
+     |       ^
+     | note: Statements start with an assignment (`:=`), a function call, or a block keyword (IF / CASE / FOR / WHILE / REPEAT / RETURN / EXIT).  Did you forget `:=` after the identifier?
+
+prog.st:21:7: error: Expected `END_FOR`, found identifier `CONTINUE`.
+  21 |       CONTINUE;
+     |       ^
+
+prog.st:21:7: error: Unexpected identifier `CONTINUE` after `THEN` while parsing a statement.
+  21 |       CONTINUE;
+     |       ^
+     | note: Statements start with an assignment (`:=`), a function call, or a block keyword (IF / CASE / FOR / WHILE / REPEAT / RETURN / EXIT).  Did you forget `:=` after the identifier?
+
+prog.st:21:7: error: Expected `END_PROGRAM`, found identifier `CONTINUE`.
+  21 |       CONTINUE;
+     |       ^
+
+
 ### conformance/control-flow/for_exit.st
 0 n=0 => sum=0 last=0 count=0 down_count=4 down_sum=22
 1 n=-2 => sum=0 last=0 count=0 down_count=4 down_sum=22
@@ -58,6 +94,12 @@ PASS    conformance/control-flow/case_expr.st
 7 n=32767 => sum=15 last=5 count=5 down_count=4 down_sum=22
 8 n=2 => sum=3 last=2 count=2 down_count=4 down_sum=22
 PASS    conformance/control-flow/for_exit.st
+### conformance/control-flow/for_step.st
+0 lo=1 hi=3 => down_sum=22 down_n=4 by4_sum=15 by4_n=3 empty_n=0 up_n=3
+1 lo=3 hi=3 => down_sum=22 down_n=4 by4_sum=15 by4_n=3 empty_n=0 up_n=1
+2 lo=4 hi=3 => down_sum=22 down_n=4 by4_sum=15 by4_n=3 empty_n=0 up_n=0
+3 lo=-2 hi=2 => down_sum=22 down_n=4 by4_sum=15 by4_n=3 empty_n=0 up_n=5
+PASS    conformance/control-flow/for_step.st
 ### conformance/control-flow/if_case.st
 0 x=-5 => sign=-1 bucket=0
 1 x=0 => sign=0 bucket=0
@@ -80,6 +122,12 @@ PASS    conformance/control-flow/if_case.st
 4 n=-3 => outer=3 inner=0 w=6
 5 n=1 => outer=3 inner=3 w=6
 PASS    conformance/control-flow/nested_exit.st
+### conformance/control-flow/return.st
+0 x=3 => y=6 calls=1 c=103
+1 x=-1 => y=6 calls=2 c=99
+2 x=15 => y=30 calls=3 c=10
+3 x=0 => y=0 calls=4 c=100
+PASS    conformance/control-flow/return.st
 ### conformance/control-flow/while.st
 0 n=0 => iters=0 acc=0 rep=1
 1 n=1 => iters=1 acc=1 rep=1
@@ -171,6 +219,12 @@ FAIL    conformance/counters/ctud.st
 9 cu=FALSE r=TRUE => qu=FALSE qd=TRUE cv=0
 10 r=FALSE => qu=FALSE qd=TRUE cv=0
 PASS    conformance/counters/ctud_bounds.st
+### conformance/data/array_2d.st
+0 i=0 j=0 => m_ij=1 a_ij=10 rsum=6 csum=50
+1 i=1 j=2 => m_ij=6 a_ij=60 rsum=15 csum=90
+2 i=0 j=1 => m_ij=2 a_ij=20 rsum=6 csum=70
+3 i=1 j=0 => m_ij=4 a_ij=40 rsum=15 csum=50
+PASS    conformance/data/array_2d.st
 ### conformance/data/array_init.st
 0 => s_list=24 s_rep=20 z=0 f=TRUE
 1 => s_list=24 s_rep=20 z=0 f=TRUE
@@ -182,6 +236,18 @@ PASS    conformance/data/array_init.st
 3 idx=0 val=1 => sum=98 at_idx=1 lo=1 hi=-3
 4 idx=4 val=0 => sum=101 at_idx=0 lo=1 hi=0
 PASS    conformance/data/array_internal.st
+### conformance/data/array_of_struct.st
+0 k=1 => sum_x=7 sum_y=60 px=3 copy_y=30
+1 k=0 => sum_x=7 sum_y=60 px=3 copy_y=30
+2 k=5 => sum_x=12 sum_y=60 px=8 copy_y=30
+3 k=-8 => sum_x=4 sum_y=60 px=0 copy_y=30
+PASS    conformance/data/array_of_struct.st
+### conformance/data/defaults.st
+0 => b=FALSE i=0 d=0 u=0 bt=16#00 w=16#0000 dw=16#00000000 r=0 lr=0 t=T#0ms s='' slen=0 is_red=TRUE lo_lim=0 arr=0 pa=0 pb=FALSE
+1 => b=FALSE i=0 d=0 u=0 bt=16#00 w=16#0000 dw=16#00000000 r=0 lr=0 t=T#0ms s='' slen=0 is_red=TRUE lo_lim=0 arr=0 pa=0 pb=FALSE
+FAIL    conformance/data/defaults.st
+        cycle 0 (trace line 18): lo_lim expected 5, got 0
+        cycle 1 (trace line 19): lo_lim expected 5, got 0
 ### conformance/data/enum.st
 0 pick=-1 => code=1 is_green=FALSE same=TRUE
 1 pick=1 => code=2 is_green=TRUE same=FALSE
@@ -253,6 +319,30 @@ PASS    conformance/ops/bit_ops.st
 2 i=-32768 ip=32767 d=32767 dp=65535 u=32767 ub=1 => i2d=-32768 i2u=32767 d2i=32767 d2u=65535 u2i=32767 u2d=1
 3 i=-1 ip=1 d=-32768 dp=0 u=0 ub=65535 => i2d=-1 i2u=1 d2i=-32768 d2u=0 u2i=0 u2d=65535
 PASS    conformance/ops/conversions.st
+### conformance/ops/date_time.st
+FAIL    conformance/ops/date_time.st
+        strucpp failed to compile the program:
+Compiling prog.st...
+
+Compilation failed:
+
+prog.st:29:14: error: Cannot assign TIME_OF_DAY to TIME
+  29 |   tod_add := (TOD#12:00:00 + T#90m) - TOD#00:00:00;
+     |              ^
+
+prog.st:30:14: error: Cannot assign TIME_OF_DAY to TIME
+  30 |   tod_min := (TOD#01:00:00 - T#30m) - TOD#00:00:00;
+     |              ^
+
+prog.st:31:14: error: Cannot assign DATE_AND_TIME to TIME
+  31 |   dt_add  := (DT#2024-02-28-23:00:00 + T#2h) - DT#2024-02-28-00:00:00;
+     |              ^
+
+prog.st:32:14: error: Cannot assign DATE_AND_TIME to TIME
+  32 |   dt_min  := (DT#2024-03-01-00:30:00 - T#1h) - DT#2024-02-29-00:00:00;
+     |              ^
+
+
 ### conformance/ops/literals.st
 FAIL    conformance/ops/literals.st
         strucpp failed to compile the program:
@@ -328,6 +418,15 @@ PASS    conformance/ops/std_functions_ext.st
 2 t1=T#100ms t2=T#100ms => sum=T#200ms diff=T#0ms is_lt=FALSE is_gt=FALSE is_le=TRUE is_eq=TRUE lit1=T#90000ms lit2=T#3723004ms lit3=T#1500ms lit4=T#500ms lit5=T#172800000ms
 3 t1=T#3600000ms t2=T#1ms => sum=T#3600001ms diff=T#3599999ms is_lt=FALSE is_gt=TRUE is_le=FALSE is_eq=FALSE lit1=T#90000ms lit2=T#3723004ms lit3=T#1500ms lit4=T#500ms lit5=T#172800000ms
 PASS    conformance/ops/time_arith.st
+### conformance/ops/trunc.st
+0 r=3.7 => t=3
+1 r=-3.7 => t=-3
+2 r=2.5 => t=2
+3 r=-2.5 => t=-2
+4 r=0.99 => t=0
+5 r=-0.99 => t=0
+6 r=100.0 => t=100
+PASS    conformance/ops/trunc.st
 ### conformance/pou/fb_en_eno.st
 0 run_it=TRUE inc=5 => total=5 done=TRUE
 1 run_it=FALSE => total=5 done=FALSE
@@ -336,6 +435,12 @@ PASS    conformance/ops/time_arith.st
 4 inc=-5 => total=100 done=TRUE
 5 run_it=FALSE => total=100 done=FALSE
 PASS    conformance/pou/fb_en_eno.st
+### conformance/pou/fb_in_out.st
+0 inc=5 => total=5 p=2 q=1 ok=TRUE
+1 inc=3 => total=8 p=1 q=2 ok=TRUE
+2 inc=0 => total=8 p=2 q=1 ok=TRUE
+3 inc=-8 => total=0 p=1 q=2 ok=TRUE
+PASS    conformance/pou/fb_in_out.st
 ### conformance/pou/fb_input_defaults.st
 0 => total=11 untouched=7 base=6
 1 => total=12 untouched=7 base=7
@@ -354,6 +459,12 @@ PASS    conformance/pou/fb_input_defaults.st
 9 set_inc=TRUE set_enable=TRUE new_inc=100 new_enable=TRUE => total=108
 10 set_inc=FALSE set_enable=FALSE => total=208
 PASS    conformance/pou/fb_input_retention.st
+### conformance/pou/fb_method.st
+0 n=2 rst=FALSE => ret=2 cv=2
+1 n=3 rst=FALSE => ret=5 cv=5
+2 n=1 rst=TRUE => ret=1 cv=1
+3 n=0 rst=FALSE => ret=1 cv=1
+PASS    conformance/pou/fb_method.st
 ### conformance/pou/fb_two_instances.st
 0 enable_a=TRUE inc_a=5 enable_b=FALSE inc_b=100 => tot_a=5 tot_b=0 calls_a=1 calls_b=1
 1 => tot_a=10 tot_b=0 calls_a=2 calls_b=2
@@ -381,12 +492,23 @@ FAIL    conformance/pou/fb_var_temp.st
 4 x=200 d=-200 => y=10 e=0
 5 x=0 d=2147483647 => y=0 e=2147483647
 PASS    conformance/pou/function_call.st
+### conformance/pou/function_input_default.st
+0 x=4 => dflt=11 with_k=39 all=13
+1 x=0 => dflt=-1 with_k=-1 all=5
+2 x=-2 => dflt=-7 with_k=-21 all=1
+PASS    conformance/pou/function_input_default.st
 ### conformance/pou/function_var_not_retained.st
 0 x=3 => f=3
 1 x=4 => f=4
 2 x=0 => f=0
 3 x=-5 => f=-5
 PASS    conformance/pou/function_var_not_retained.st
+### conformance/pou/function_var_output.st
+0 a=7 b=2 => ok=TRUE q=3 r=1
+1 a=7 b=0 => ok=FALSE q=0 r=0
+2 a=-7 b=2 => ok=TRUE q=-3 r=-1
+3 a=9 b=3 => ok=TRUE q=3 r=0
+PASS    conformance/pou/function_var_output.st
 ### conformance/strings/compare.st
 ERROR   conformance/strings/compare.st
         g++ failed:
@@ -636,6 +758,11 @@ DIFFERS conformance/undefined/real_to_int_ties.st
         cycle 3 (trace line 22): d expected -3, got -4
         cycle 4 (trace line 23): i expected 0, got 1
         cycle 4 (trace line 23): d expected 0, got 1
+### conformance/undefined/short_circuit.st
+0 g=FALSE => a=FALSE o=TRUE n_and=1 n_or=1
+1 g=TRUE => a=TRUE o=TRUE n_and=1 n_or=1
+2 g=FALSE => a=FALSE o=TRUE n_and=1 n_or=1
+SAME    conformance/undefined/short_circuit.st
 ### conformance/undefined/string_conversions.st
 DIFFERS conformance/undefined/string_conversions.st
         strucpp failed to compile the program:
@@ -668,6 +795,12 @@ prog.st:5:5: error: Expected `END_PROGRAM`, found identifier `N3`.
      |     ^
 
 
+### conformance/undefined/subrange_out_of_range.st
+0 v=7 => s=7
+1 v=20 => s=20
+2 v=-3 => s=-3
+3 v=10 => s=10
+SAME    conformance/undefined/subrange_out_of_range.st
 ### conformance/undefined/tasks_same_priority.st
 0 => marks=12
 1 => marks=1212
@@ -708,5 +841,5 @@ DIFFERS conformance/undefined/ton_pt_change.st
         cycle 10 (trace line 36): et expected T#800ms, got T#200ms
         cycle 11 (trace line 37): et expected T#800ms, got T#200ms
 
-67 tests: 41 pass, 7 fail, 10 same, 6 differs, 3 error
+81 tests: 50 pass, 10 fail, 12 same, 6 differs, 3 error
 exit 1
