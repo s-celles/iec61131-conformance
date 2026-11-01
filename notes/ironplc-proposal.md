@@ -1,11 +1,12 @@
 # Proposal to IronPLC: an open, runtime-agnostic IEC 61131-3 conformance trace suite
 
-Draft of the issue to open on ironplc/ironplc once #2545 and #2546 have
-been looked at. Supersedes the earlier `ISSUE_FINAL.md`.
+Posted as https://github.com/ironplc/ironplc/issues/2547 on 2026-11-01, after
+#2545 and #2546. The text below is what was posted.
 
-**Title:** Proposal: an open, runtime-agnostic IEC 61131-3 conformance trace suite (18 tests, CC0)
+**Title:** Proposal: an open, runtime-agnostic IEC 61131-3 conformance trace suite (20 tests, CC0)
 
 ---
+
 
 ## What
 
@@ -15,7 +16,7 @@ paired with plain-text expected I/O traces, one record per scan cycle
 `t = cycle * period`). No dependency on IronPLC: the same files run against
 matiec and RuSTy.
 
-- 12 `status: conformant` tests: TON, TOF, TP, R_TRIG, F_TRIG, SR/RS, CTU,
+- 14 `status: conformant` tests: TON, TOF, TP, R_TRIG, F_TRIG, SR/RS, CTU, CTD, CTUD,
   IF/CASE, FOR+EXIT, WHILE/REPEAT, function calls, a function block with
   two instances. Scope BOOL/INT/DINT/UINT/TIME, one program, one cyclic
   task. Expected values derived by hand from the standard's bodies and
@@ -34,12 +35,12 @@ matiec and RuSTy.
 Running it on `5ea0610` found #2545 (TOF off-delay at power-up) and #2546
 (TP retrigger with IN held, ET not cleared). Both were locked in by existing
 tests, which is the kind of thing an independent oracle catches. The other
-ten conformant tests pass. With #2288 (ADR-0060, standard blocks generated
+twelve conformant tests pass. With #2288 (ADR-0060, standard blocks generated
 by lowering) ahead, a runtime-independent regression set for exactly those
 blocks seems timely.
 
-Differential results (`notes/comparison.md`): IronPLC 10/12, matiec 10/12,
-RuSTy 8/12; the three disagree on timer edges, `F_TRIG` start-up, `SR`/`RS`
+Differential results (`notes/comparison.md`): IronPLC 12/14, matiec 10/14,
+RuSTy 10/14; the three disagree on timer edges, `F_TRIG` start-up, `SR`/`RS`
 input names and `CTU` above `PV`.
 
 ## How the suite drives IronPLC today
@@ -50,7 +51,7 @@ refuses `setVariable`, and the MCP `run` tool's `stimuli` is specified
 `ironplc_vm` crate directly (`harness/ironplc`, ~300 lines):
 `write_variable_raw` per input, `run_round(cycle * period)`,
 `read_variable_raw` per output, names resolved through
-`DebugSection::program_variable`. The 18 tests run in well under a second.
+`DebugSection::program_variable`. The 20 tests run in well under a second.
 
 ## Questions
 
