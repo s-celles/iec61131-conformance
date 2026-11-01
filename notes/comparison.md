@@ -80,9 +80,9 @@ Legend: PASS/FAIL for `status: conformant` traces; SAME/DIFFERS for
 | pou/fb_var_temp | **FAIL** (compile) | PASS | PASS | IronPLC: VAR_TEMP in an FB is P9999 not implemented (findings #10, ironplc#1969) |
 | ops/precedence | PASS | PASS | PASS | |
 | ops/std_functions | PASS | PASS | PASS | |
-| ops/std_functions_ext | **FAIL** (compile) | PASS | **FAIL** (compile) | IronPLC: MAX and MIN with three inputs are P4018 (findings #11); RuSTy: formal argument names on a standard function (`LIMIT(MN := ..)`) are E048 "Could not resolve reference to MN" (other runtimes #4) |
+| ops/std_functions_ext | **FAIL** (compile) | PASS | **FAIL** (compile) | IronPLC: MAX and MIN with three inputs are P4018 (findings #11, ironplc#2548); RuSTy: formal argument names on a standard function (`LIMIT(MN := ..)`) are E048 "Could not resolve reference to MN" (other runtimes #4) |
 | ops/conversions | PASS | PASS | PASS | |
-| ops/time_arith | PASS | **ERROR** (build) | PASS | matiec emits `_____time_add`/`_____time_sub` for `+`/`-` on TIME (`print_binary_function` adds `___` to a name that already starts with `__`), a symbol that does not exist, so the program never builds (to be reported upstream) |
+| ops/time_arith | PASS | **ERROR** (build) | PASS | matiec emits `_____time_add`/`_____time_sub` for `+`/`-` on TIME (`print_binary_function` adds `___` to a name that already starts with `__`), a symbol that does not exist, so the program never builds (beremiz/matiec#40) |
 | ops/literals | PASS | PASS | PASS | |
 | undefined/int_overflow | SAME | SAME | SAME | all three wrap in two's complement |
 | undefined/div_zero | SAME | SAME | SAME | IronPLC: VM trap "divide by zero"; matiec and RuSTy: native integer division, the process receives SIGFPE (the drivers report it as `trap`). All stop the scan; none computes `MOD`. matiec's `/` is a bare C division, so on AArch64 it returns 0 instead of trapping (beremiz/matiec#38); its `MOD` and `DIV()` are guarded |

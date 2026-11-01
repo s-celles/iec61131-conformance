@@ -138,6 +138,7 @@ Reported together with item 3: https://github.com/ironplc/ironplc/issues/2546
   ("Fixes #2332" in the description of the planned follow-up); the 16-bit
   counting it describes is not in `5ea0610`, where `container/src/fb_type.rs`
   still says `CTU` and `CTU_INT` count with the 32-bit id.
+  Reported there: https://github.com/ironplc/ironplc/issues/2332#issuecomment-6555649250
 
 ## 10. VAR_TEMP in a function block does not compile
 
@@ -148,6 +149,8 @@ Reported together with item 3: https://github.com/ironplc/ironplc/issues/2546
 - Known: ironplc#1969 (open).
 
 ## 11. MAX and MIN accept only two inputs
+
+Reported: https://github.com/ironplc/ironplc/issues/2548
 
 - Reproducer: `conformance/ops/std_functions_ext.st`: `P4018 Function call
   has wrong number of arguments (function=MAX, expected=2, actual=3)`,
