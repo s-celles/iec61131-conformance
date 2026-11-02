@@ -1,3 +1,5 @@
+<p align="center"><img src="assets/brand/scanard-banner.svg" alt="SCANard: expected vs. observed, one scan at a time"></p>
+
 # IEC 61131-3 conformance traces
 
 [![CI](https://github.com/s-celles/iec61131-conformance/actions/workflows/ci.yml/badge.svg)](https://github.com/s-celles/iec61131-conformance/actions/workflows/ci.yml)
