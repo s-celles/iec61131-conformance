@@ -122,18 +122,18 @@ ERROR   conformance/data/defaults.st
 ### conformance/data/enum.st
 FAIL    conformance/data/enum.st
         4diac IDE failed to export the FB:
-        [fordiac.exportProjectFBs] L/FB_CONFORMANCE_DATA_ENUM/FB_CONFORMANCE_DATA_ENUM.fbt
+        ... 15 more
+        <tmpdir>/export.xml:4: Could not export without errors
+        Caused by: <tmpdir>/export.xml:4: Could not export without errors
+        Root exception:
+        [fordiac.exportProjectFBs] FB_CONFORMANCE_DATA_ENUM: FB_CONFORMANCE_DATA_ENUM at 10: The variable GREEN is undefined
+        [fordiac.exportProjectFBs] FB_CONFORMANCE_DATA_ENUM: FB_CONFORMANCE_DATA_ENUM at 11: The variable BLUE is undefined
+        [fordiac.exportProjectFBs] FB_CONFORMANCE_DATA_ENUM: FB_CONFORMANCE_DATA_ENUM at 13: The variable GREEN is undefined
         [fordiac.exportProjectFBs] FB_CONFORMANCE_DATA_ENUM: FB_CONFORMANCE_DATA_ENUM at 4: The variable RED is undefined
         [fordiac.exportProjectFBs] FB_CONFORMANCE_DATA_ENUM: FB_CONFORMANCE_DATA_ENUM at 5: The variable GREEN is undefined
         [fordiac.exportProjectFBs] FB_CONFORMANCE_DATA_ENUM: FB_CONFORMANCE_DATA_ENUM at 6: The variable BLUE is undefined
         [fordiac.exportProjectFBs] FB_CONFORMANCE_DATA_ENUM: FB_CONFORMANCE_DATA_ENUM at 9: The variable RED is undefined
-        [fordiac.exportProjectFBs] FB_CONFORMANCE_DATA_ENUM: FB_CONFORMANCE_DATA_ENUM at 10: The variable GREEN is undefined
-        [fordiac.exportProjectFBs] FB_CONFORMANCE_DATA_ENUM: FB_CONFORMANCE_DATA_ENUM at 11: The variable BLUE is undefined
-        [fordiac.exportProjectFBs] FB_CONFORMANCE_DATA_ENUM: FB_CONFORMANCE_DATA_ENUM at 13: The variable GREEN is undefined
-        Caused by: <tmpdir>/export.xml:4: Could not export without errors
-        ... 15 more
-        Root exception:
-        <tmpdir>/export.xml:4: Could not export without errors
+        [fordiac.exportProjectFBs] L/FB_CONFORMANCE_DATA_ENUM/FB_CONFORMANCE_DATA_ENUM.fbt
 ### conformance/data/struct_internal.st
 0 a=3 b=4 => qx=3 qy=4 px=0 area=12
 1 a=-2 b=5 => qx=-2 qy=5 px=0 area=-10
@@ -280,29 +280,27 @@ ERROR   conformance/ops/std_functions_expr.st
 ### conformance/ops/std_functions_ext.st
 FAIL    conformance/ops/std_functions_ext.st
         4diac IDE failed to export the FB:
-        [fordiac.exportProjectFBs] L/FB_CONFORMANCE_OPS_STD_FUNCTIONS_EXT/FB_CONFORMANCE_OPS_STD_FUNCTIONS_EXT.fbt
-        [fordiac.exportProjectFBs] FB_CONFORMANCE_OPS_STD_FUNCTIONS_EXT: FB_CONFORMANCE_OPS_STD_FUNCTIONS_EXT at 6: The parameter MN is undefined for the callable LIMIT
-        [fordiac.exportProjectFBs] FB_CONFORMANCE_OPS_STD_FUNCTIONS_EXT: FB_CONFORMANCE_OPS_STD_FUNCTIONS_EXT at 6: The parameter IN is undefined for the callable LIMIT
-        [fordiac.exportProjectFBs] FB_CONFORMANCE_OPS_STD_FUNCTIONS_EXT: FB_CONFORMANCE_OPS_STD_FUNCTIONS_EXT at 6: The parameter MX is undefined for the callable LIMIT
-        [fordiac.exportProjectFBs] FB_CONFORMANCE_OPS_STD_FUNCTIONS_EXT: FB_CONFORMANCE_OPS_STD_FUNCTIONS_EXT at 7: The parameter G is undefined for the callable SEL
-        [fordiac.exportProjectFBs] FB_CONFORMANCE_OPS_STD_FUNCTIONS_EXT: FB_CONFORMANCE_OPS_STD_FUNCTIONS_EXT at 6: Attempting to call standard function LIMIT with formal arguments
-        [fordiac.exportProjectFBs] FB_CONFORMANCE_OPS_STD_FUNCTIONS_EXT: FB_CONFORMANCE_OPS_STD_FUNCTIONS_EXT at 7: Attempting to call standard function SEL with formal arguments
-        Caused by: <tmpdir>/export.xml:4: Could not export without errors
         ... 15 more
-        Root exception:
         <tmpdir>/export.xml:4: Could not export without errors
-        !MESSAGE The workspace will exit with unsaved changes in this session.
+        Caused by: <tmpdir>/export.xml:4: Could not export without errors
+        Root exception:
+        [fordiac.exportProjectFBs] FB_CONFORMANCE_OPS_STD_FUNCTIONS_EXT: FB_CONFORMANCE_OPS_STD_FUNCTIONS_EXT at 6: Attempting to call standard function LIMIT with formal arguments
+        [fordiac.exportProjectFBs] FB_CONFORMANCE_OPS_STD_FUNCTIONS_EXT: FB_CONFORMANCE_OPS_STD_FUNCTIONS_EXT at 6: The parameter IN is undefined for the callable LIMIT
+        [fordiac.exportProjectFBs] FB_CONFORMANCE_OPS_STD_FUNCTIONS_EXT: FB_CONFORMANCE_OPS_STD_FUNCTIONS_EXT at 6: The parameter MN is undefined for the callable LIMIT
+        [fordiac.exportProjectFBs] FB_CONFORMANCE_OPS_STD_FUNCTIONS_EXT: FB_CONFORMANCE_OPS_STD_FUNCTIONS_EXT at 6: The parameter MX is undefined for the callable LIMIT
+        [fordiac.exportProjectFBs] FB_CONFORMANCE_OPS_STD_FUNCTIONS_EXT: FB_CONFORMANCE_OPS_STD_FUNCTIONS_EXT at 7: Attempting to call standard function SEL with formal arguments
+        [fordiac.exportProjectFBs] FB_CONFORMANCE_OPS_STD_FUNCTIONS_EXT: FB_CONFORMANCE_OPS_STD_FUNCTIONS_EXT at 7: The parameter G is undefined for the callable SEL
+        [fordiac.exportProjectFBs] L/FB_CONFORMANCE_OPS_STD_FUNCTIONS_EXT/FB_CONFORMANCE_OPS_STD_FUNCTIONS_EXT.fbt
 ### conformance/ops/time_arith.st
 FAIL    conformance/ops/time_arith.st
         4diac IDE failed to export the FB:
-        [fordiac.exportProjectFBs] L/FB_CONFORMANCE_OPS_TIME_ARITH/FB_CONFORMANCE_OPS_TIME_ARITH.fbt
+        ... 15 more
+        <tmpdir>/export.xml:4: Could not export without errors
+        Caused by: <tmpdir>/export.xml:4: Could not export without errors
+        Root exception:
         [fordiac.exportProjectFBs] FB_CONFORMANCE_OPS_TIME_ARITH: FB_CONFORMANCE_OPS_TIME_ARITH at 10: mismatched input '1' expecting RULE_TIME_VALUE
         [fordiac.exportProjectFBs] FB_CONFORMANCE_OPS_TIME_ARITH: FB_CONFORMANCE_OPS_TIME_ARITH at 10: no viable alternative at input '5s'
-        Caused by: <tmpdir>/export.xml:4: Could not export without errors
-        ... 15 more
-        Root exception:
-        <tmpdir>/export.xml:4: Could not export without errors
-        !MESSAGE The workspace will exit with unsaved changes in this session.
+        [fordiac.exportProjectFBs] L/FB_CONFORMANCE_OPS_TIME_ARITH/FB_CONFORMANCE_OPS_TIME_ARITH.fbt
 ### conformance/ops/time_functions.st
 ERROR   conformance/ops/time_functions.st
         c++ failed:
@@ -314,27 +312,25 @@ ERROR   conformance/ops/time_functions.st
 ### conformance/ops/time_mul.st
 FAIL    conformance/ops/time_mul.st
         4diac IDE failed to export the FB:
-        [fordiac.exportProjectFBs] L/FB_CONFORMANCE_OPS_TIME_MUL/FB_CONFORMANCE_OPS_TIME_MUL.fbt
+        ... 15 more
+        <tmpdir>/export.xml:4: Could not export without errors
+        Caused by: <tmpdir>/export.xml:4: Could not export without errors
+        Root exception:
         [fordiac.exportProjectFBs] FB_CONFORMANCE_OPS_TIME_MUL: FB_CONFORMANCE_OPS_TIME_MUL at 2: mismatched input '*' expecting '#'
         [fordiac.exportProjectFBs] FB_CONFORMANCE_OPS_TIME_MUL: FB_CONFORMANCE_OPS_TIME_MUL at 5: mismatched input '*' expecting '#'
         [fordiac.exportProjectFBs] FB_CONFORMANCE_OPS_TIME_MUL: FB_CONFORMANCE_OPS_TIME_MUL at 5: mismatched input '=' expecting '#'
-        Caused by: <tmpdir>/export.xml:4: Could not export without errors
-        ... 15 more
-        Root exception:
-        <tmpdir>/export.xml:4: Could not export without errors
-        !MESSAGE The workspace will exit with unsaved changes in this session.
+        [fordiac.exportProjectFBs] L/FB_CONFORMANCE_OPS_TIME_MUL/FB_CONFORMANCE_OPS_TIME_MUL.fbt
 ### conformance/ops/trunc.st
 FAIL    conformance/ops/trunc.st
         4diac IDE failed to export the FB:
-        [fordiac.exportProjectFBs] L/FB_CONFORMANCE_OPS_TRUNC/FB_CONFORMANCE_OPS_TRUNC.fbt
-        [fordiac.exportProjectFBs] FB_CONFORMANCE_OPS_TRUNC: FB_CONFORMANCE_OPS_TRUNC at 2: mismatched input ':=' expecting '#'
-        [fordiac.exportProjectFBs] FB_CONFORMANCE_OPS_TRUNC: FB_CONFORMANCE_OPS_TRUNC at 2: The callable TRUNC(REAL) is undefined
-        [fordiac.exportProjectFBs] FB_CONFORMANCE_OPS_TRUNC: FB_CONFORMANCE_OPS_TRUNC at 2: Not possible to assign a value to the left side of this assignment
-        Caused by: <tmpdir>/export.xml:4: Could not export without errors
         ... 15 more
-        Root exception:
         <tmpdir>/export.xml:4: Could not export without errors
-        !MESSAGE The workspace will exit with unsaved changes in this session.
+        Caused by: <tmpdir>/export.xml:4: Could not export without errors
+        Root exception:
+        [fordiac.exportProjectFBs] FB_CONFORMANCE_OPS_TRUNC: FB_CONFORMANCE_OPS_TRUNC at 2: Not possible to assign a value to the left side of this assignment
+        [fordiac.exportProjectFBs] FB_CONFORMANCE_OPS_TRUNC: FB_CONFORMANCE_OPS_TRUNC at 2: The callable TRUNC(REAL) is undefined
+        [fordiac.exportProjectFBs] FB_CONFORMANCE_OPS_TRUNC: FB_CONFORMANCE_OPS_TRUNC at 2: mismatched input ':=' expecting '#'
+        [fordiac.exportProjectFBs] L/FB_CONFORMANCE_OPS_TRUNC/FB_CONFORMANCE_OPS_TRUNC.fbt
 ### conformance/pou/fb_en_eno.st
 ERROR   conformance/pou/fb_en_eno.st
         FUNCTION_BLOCK is outside this harness's scope (one PROGRAM over elementary types)
@@ -498,15 +494,14 @@ ERROR   conformance/undefined/short_circuit.st
 ### conformance/undefined/string_conversions.st
 DIFFERS conformance/undefined/string_conversions.st
         4diac IDE failed to export the FB:
-        [fordiac.exportProjectFBs] L/FB_CONFORMANCE_UNDEFINED_STRING_CONVERSIONS/FB_CONFORMANCE_UNDEFINED_STRING_CONVERSIONS.fbt
+        ... 15 more
+        <tmpdir>/export.xml:4: Could not export without errors
+        Caused by: <tmpdir>/export.xml:4: Could not export without errors
+        Root exception:
         [fordiac.exportProjectFBs] FB_CONFORMANCE_UNDEFINED_STRING_CONVERSIONS: FB_CONFORMANCE_UNDEFINED_STRING_CONVERSIONS at 2: The callable INT_TO_STRING(INT) is undefined
         [fordiac.exportProjectFBs] FB_CONFORMANCE_UNDEFINED_STRING_CONVERSIONS: FB_CONFORMANCE_UNDEFINED_STRING_CONVERSIONS at 3: The callable STRING_TO_INT(STRING) is undefined
         [fordiac.exportProjectFBs] FB_CONFORMANCE_UNDEFINED_STRING_CONVERSIONS: FB_CONFORMANCE_UNDEFINED_STRING_CONVERSIONS at 4: The callable DINT_TO_STRING(DINT) is undefined
-        Caused by: <tmpdir>/export.xml:4: Could not export without errors
-        ... 15 more
-        Root exception:
-        <tmpdir>/export.xml:4: Could not export without errors
-        !MESSAGE The workspace will exit with unsaved changes in this session.
+        [fordiac.exportProjectFBs] L/FB_CONFORMANCE_UNDEFINED_STRING_CONVERSIONS/FB_CONFORMANCE_UNDEFINED_STRING_CONVERSIONS.fbt
 ### conformance/undefined/string_truncate.st
 ERROR   conformance/undefined/string_truncate.st
         STRING[n] is not a 4diac type
