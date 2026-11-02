@@ -395,17 +395,17 @@ Documented choices that make a conformant test fail to compile:
 4. **`DATE - DATE`, `TOD +/- TIME`, `TIME * INT` are refused** (`E0305`;
    `docs/time-and-dates.md`: "only durations of the same type add and
    subtract"), all in ed.3 table 30 (`ops/date_time`, `ops/time_mul`).
-5. **MIN/MAX take two inputs only** ("no overload of 'MAX' takes 3
+5. **MIN/MAX take two inputs only** (adclz/rk#116; "no overload of 'MAX' takes 3
    parameters"), where table 32 makes them extensible; and `LT`, `GT`, ...
    exist only as operators (`ops/std_functions_ext`, `ops/time_functions`).
 6. **No EN/ENO** on a function block call (`pou/fb_en_eno`).
 7. **No SINGLE tasks**: "event-driven tasks (SINGLE) are not supported"
    (`E1410`, `config/event_single`).
-8. **A negative based literal is a syntax error**: `-16#10` gives
+8. **A negative based literal is a syntax error** (adclz/rk#115): `-16#10` gives
    "unexpected token(s): '# 1 0'" (`ops/literals`); `-(16#10)` is accepted.
    Not documented, and the only lexer defect met.
 9. **`MUX` has no overload for unsigned integers, `SINT`, bit strings or
-   dates** (`stdlib/Selection.st`: BOOL, INT, DINT, LINT, REAL, LREAL, TIME,
+   dates** (adclz/rk#114) (`stdlib/Selection.st`: BOOL, INT, DINT, LINT, REAL, LREAL, TIME,
    STRING), while `SEL` has them all and table 32 declares both on ANY;
    `MUX(k, a, b)` on UINT is `E0809` "ambiguous overloaded call"
    (`ops/mux_types`, found by `tools/fuzz`). The help text of that error
@@ -413,10 +413,10 @@ Documented choices that make a conformant test fail to compile:
 
 Semantic differences in what runs:
 
-10. **The counters follow the FDIS 2001 bodies** (`CV < PV`, `CV > 0`), as
+10. **The counters follow the FDIS 2001 bodies** (adclz/rk#117) (`CV < PV`, `CV > 0`), as
    matiec and STruC++ do (`counters/ctu`, `ctd`, `ctud`,
    `undefined/ctu_pv_zero`).
-11. **`F_TRIG` reports a falling edge on a first evaluation with CLK
+11. **`F_TRIG` reports a falling edge (adclz/rk#117) on a first evaluation with CLK
     FALSE** (the ed.2 body with `M` initially FALSE), as upstream matiec
     (`edge/f_trig`, `notes/findings.md` #6).
 12. **Untyped real literals are REAL**: `1.0E15 + 1.0` assigned to an LREAL
