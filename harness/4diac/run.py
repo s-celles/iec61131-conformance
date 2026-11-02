@@ -338,6 +338,10 @@ def export_all(opts, work, projects):
                     and not x.startswith("java.") and "BootLoader" not in x and "arguments:" not in x
                     and not x.strip().startswith("at ") and "!ENTRY" not in x and "!STACK" not in x
                     and "!MESSAGE Application error" not in x]
+            # The IDE walks the project in file-system order (dir.listFiles(),
+            # unsorted), so which file's errors come first differs between
+            # machines; sorted and de-duplicated, the report is the same.
+            msgs = sorted(set(m for m in msgs if not m.startswith("!MESSAGE")))
             errors[name] = "\n".join(msgs[:12]) or "export produced no C++"
     return errors
 
