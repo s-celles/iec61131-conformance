@@ -215,7 +215,8 @@ PASS    conformance/data/struct_internal.st
 7 clk=TRUE => q=FALSE
 8 clk=FALSE => q=TRUE
 9 clk=FALSE => q=FALSE
-PASS    conformance/edge/f_trig.st
+FAIL    conformance/edge/f_trig.st
+        cycle 0 (trace line 23): q expected TRUE, got FALSE
 ### conformance/edge/power_on_clk_true.st
 0 clk=TRUE => qr=TRUE qf=FALSE
 1 => qr=FALSE qf=FALSE
@@ -743,5 +744,5 @@ DIFFERS conformance/undefined/ton_pt_change.st
         cycle 8 (trace line 34): q expected TRUE, got FALSE
         cycle 9 (trace line 35): q expected TRUE, got FALSE
 
-89 tests: 57 pass, 9 fail, 13 same, 4 differs, 6 error
+89 tests: 56 pass, 10 fail, 13 same, 4 differs, 6 error
 exit 1

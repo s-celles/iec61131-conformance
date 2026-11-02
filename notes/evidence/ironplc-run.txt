@@ -312,7 +312,8 @@ Error: "Compile failed with 1 problem(s)"
 7 clk=TRUE => q=FALSE
 8 clk=FALSE => q=TRUE
 9 clk=FALSE => q=FALSE
-PASS    conformance/edge/f_trig.st
+FAIL    conformance/edge/f_trig.st
+        cycle 0 (trace line 23): q expected TRUE, got FALSE
 ### conformance/edge/power_on_clk_true.st
 0 clk=TRUE => qr=TRUE qf=FALSE
 1 => qr=FALSE qf=FALSE
@@ -991,5 +992,5 @@ SAME    conformance/undefined/timer_pt_zero.st (implementation-defined)
 12 in=FALSE => q=FALSE et=T#0ms
 SAME    conformance/undefined/ton_pt_change.st (implementation-defined)
 
-89 tests: 49 pass, 22 fail, 17 same, 1 differs, 0 error
+89 tests: 48 pass, 23 fail, 17 same, 1 differs, 0 error
 exit 1

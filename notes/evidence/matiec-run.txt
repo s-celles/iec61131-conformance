@@ -128,8 +128,7 @@ PASS    conformance/control-flow/while.st
 12 ld=FALSE => q=FALSE cv=3
 13 cd=FALSE => q=FALSE cv=3
 14 cd=TRUE => q=FALSE cv=2
-FAIL    conformance/counters/ctd.st
-        cycle 10 (trace line 36): cv expected -1, got 0
+PASS    conformance/counters/ctd.st
 ### conformance/counters/ctd_bounds.st
 0 cd=FALSE ld=FALSE => q=TRUE cv=0
 1 ld=TRUE => q=TRUE cv=-32768
@@ -153,8 +152,7 @@ PASS    conformance/counters/ctd_bounds.st
 10 r=FALSE => q=FALSE cv=0
 11 cu=FALSE => q=FALSE cv=0
 12 cu=TRUE => q=FALSE cv=1
-FAIL    conformance/counters/ctu.st
-        cycle 8 (trace line 32): cv expected 4, got 3
+PASS    conformance/counters/ctu.st
 ### conformance/counters/ctud.st
 0 cu=FALSE cd=FALSE r=FALSE ld=FALSE => qu=FALSE qd=TRUE cv=0
 1 cu=TRUE => qu=FALSE qd=FALSE cv=1
@@ -177,11 +175,7 @@ FAIL    conformance/counters/ctu.st
 18 cd=TRUE => qu=FALSE qd=TRUE cv=0
 19 cd=FALSE => qu=FALSE qd=TRUE cv=0
 20 cu=TRUE => qu=FALSE qd=FALSE cv=1
-FAIL    conformance/counters/ctud.st
-        cycle 18 (trace line 54): cv expected -1, got 0
-        cycle 19 (trace line 55): cv expected -1, got 0
-        cycle 20 (trace line 57): qd expected TRUE, got FALSE
-        cycle 20 (trace line 57): cv expected 0, got 1
+PASS    conformance/counters/ctud.st
 ### conformance/counters/ctud_bounds.st
 0 cu=FALSE cd=FALSE r=FALSE ld=FALSE => qu=FALSE qd=TRUE cv=0
 1 ld=TRUE => qu=TRUE qd=FALSE cv=32767
@@ -247,8 +241,7 @@ PASS    conformance/data/struct_internal.st
 7 clk=TRUE => q=FALSE
 8 clk=FALSE => q=TRUE
 9 clk=FALSE => q=FALSE
-FAIL    conformance/edge/f_trig.st
-        cycle 0 (trace line 17): q expected FALSE, got TRUE
+PASS    conformance/edge/f_trig.st
 ### conformance/edge/power_on_clk_true.st
 0 clk=TRUE => qr=TRUE qf=FALSE
 1 => qr=FALSE qf=FALSE
@@ -828,5 +821,5 @@ DIFFERS conformance/undefined/ton_pt_change.st
         cycle 10 (trace line 36): et expected T#800ms, got T#200ms
         cycle 11 (trace line 37): et expected T#800ms, got T#200ms
 
-89 tests: 58 pass, 9 fail, 11 same, 7 differs, 4 error
+89 tests: 62 pass, 5 fail, 11 same, 7 differs, 4 error
 exit 1
