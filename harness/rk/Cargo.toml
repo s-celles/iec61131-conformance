@@ -1,0 +1,19 @@
+[package]
+name = "iec61131-conformance-rk"
+version = "0.1.0"
+edition = "2021"
+description = "Runs the IEC 61131-3 conformance traces against rk (Structured Text to WebAssembly)"
+license = "CC0-1.0"
+
+# rk compiles a workspace to one WebAssembly core module and ships no
+# runtime: the host provides the memory and the clocks, calls `__init`, then
+# the program bodies the `rk.schedule` section lists. This harness is that
+# host, on the wasmtime version `rk test` itself uses. Variables are read and
+# written by name through rk's own `debug_format` crate (Apache-2.0), pinned
+# to the compiler commit the evidence was recorded with (RK_SHA in ci.yml).
+[dependencies]
+debug_format = { git = "https://github.com/adclz/rk", rev = "20761dd5c3e559ef5962055490c42cf05dc3e43e" }
+wasmtime = "45.0.1"
+wasmparser = "0.244.0"
+
+[workspace]

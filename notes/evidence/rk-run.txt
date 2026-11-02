@@ -1,0 +1,1471 @@
+### conformance/config/event_single.st
+FAIL    conformance/config/event_single.st
+        rk failed to compile the program:
+        [E1410] Error: unschedulable TASK
+            ╭─[ src/main.st:25:10 ]
+            │
+         25 │     TASK t_ev(SINGLE := trig, PRIORITY := 0);
+            │          ──┬─  
+            │            ╰─── task 't_ev' cannot be scheduled: event-driven tasks (SINGLE) are not supported
+            │ 
+            │ Help: use a cyclic period, e.g. `INTERVAL := T#10ms`
+        ────╯
+        compilation failed: 1 error(s) found, cannot compile.
+        
+### conformance/config/global_exchange.st
+0 => cmd=1 p_cons.ack=1 p_cons.changes=1
+1 => cmd=1 p_cons.ack=1 p_cons.changes=1
+2 => cmd=2 p_cons.ack=2 p_cons.changes=2
+3 => cmd=2 p_cons.ack=2 p_cons.changes=2
+4 => cmd=3 p_cons.ack=3 p_cons.changes=3
+5 => cmd=3 p_cons.ack=3 p_cons.changes=3
+PASS    conformance/config/global_exchange.st
+### conformance/config/globals_external.st
+FAIL    conformance/config/globals_external.st
+        rk failed to compile the program:
+        [E0201] Error: unknown name
+            ╭─[ src/main.st:15:20 ]
+            │
+         15 │   g_sum := g_sum + INT_TO_DINT(g_in);
+            │                    ─────┬─────  
+            │                         ╰─────── no item 'INT_TO_DINT' found in scope
+            │ 
+            │ Note: items with similar names are in scope:
+            │       - BYTE_TO_DINT
+            │       - DATE_TO_DINT
+            │       - DINT_TO_INT
+            │       - DINT_TO_SINT
+            │       - DINT_TO_UDINT
+            │         ...
+        ────╯
+        compilation failed: 1 error(s) found, cannot compile.
+        
+### conformance/config/priority_order.st
+0 => g=10 p_reader.seen=10
+1 => g=20 p_reader.seen=20
+2 => g=30 p_reader.seen=30
+3 => g=40 p_reader.seen=40
+PASS    conformance/config/priority_order.st
+### conformance/config/two_periods.st
+0 => fast_n=1 slow_n=1
+1 => fast_n=2 slow_n=1
+2 => fast_n=3 slow_n=1
+3 => fast_n=4 slow_n=2
+4 => fast_n=5 slow_n=2
+5 => fast_n=6 slow_n=2
+6 => fast_n=7 slow_n=3
+7 => fast_n=8 slow_n=3
+PASS    conformance/config/two_periods.st
+### conformance/control-flow/case_expr.st
+0 x=5 => branch=11 neg=FALSE cnt=0
+1 x=-5 => branch=11 neg=TRUE cnt=1
+2 x=6 => branch=12 neg=FALSE cnt=1
+3 x=-6 => branch=12 neg=TRUE cnt=2
+4 x=7 => branch=13 neg=FALSE cnt=2
+5 x=-7 => branch=13 neg=TRUE cnt=3
+6 x=0 => branch=10 neg=FALSE cnt=4
+7 x=-10 => branch=12 neg=TRUE cnt=5
+8 x=-11 => branch=13 neg=FALSE cnt=5
+9 x=8 => branch=10 neg=FALSE cnt=5
+PASS    conformance/control-flow/case_expr.st
+### conformance/control-flow/continue.st
+0 n=5 => odd_sum=9 w_count=4 inner=6
+1 n=0 => odd_sum=0 w_count=0 inner=6
+2 n=6 => odd_sum=9 w_count=5 inner=6
+3 n=1 => odd_sum=1 w_count=1 inner=6
+PASS    conformance/control-flow/continue.st
+### conformance/control-flow/for_exit.st
+FAIL    conformance/control-flow/for_exit.st
+        rk failed to compile the program:
+        [E0201] Error: unknown name
+            ╭─[ src/main.st:26:18 ]
+            │
+         26 │     sum := sum + INT_TO_DINT(i);
+            │                  ─────┬─────  
+            │                       ╰─────── no item 'INT_TO_DINT' found in scope
+            │ 
+            │ Note: items with similar names are in scope:
+            │       - BYTE_TO_DINT
+            │       - DATE_TO_DINT
+            │       - DINT_TO_INT
+            │       - DINT_TO_SINT
+            │       - DINT_TO_UDINT
+            │         ...
+        ────╯
+        compilation failed: 1 error(s) found, cannot compile.
+        
+### conformance/control-flow/for_step.st
+0 lo=1 hi=3 => down_sum=22 down_n=4 by4_sum=15 by4_n=3 empty_n=0 up_n=3
+1 lo=3 hi=3 => down_sum=22 down_n=4 by4_sum=15 by4_n=3 empty_n=0 up_n=1
+2 lo=4 hi=3 => down_sum=22 down_n=4 by4_sum=15 by4_n=3 empty_n=0 up_n=0
+3 lo=-2 hi=2 => down_sum=22 down_n=4 by4_sum=15 by4_n=3 empty_n=0 up_n=5
+PASS    conformance/control-flow/for_step.st
+### conformance/control-flow/if_case.st
+0 x=-5 => sign=-1 bucket=0
+1 x=0 => sign=0 bucket=0
+2 x=1 => sign=1 bucket=10
+3 x=2 => sign=1 bucket=20
+4 x=3 => sign=1 bucket=20
+5 x=4 => sign=1 bucket=30
+6 x=5 => sign=1 bucket=30
+7 x=6 => sign=1 bucket=30
+8 x=7 => sign=1 bucket=0
+9 x=-1 => sign=-1 bucket=-10
+10 x=-32768 => sign=-1 bucket=0
+11 x=32767 => sign=1 bucket=0
+PASS    conformance/control-flow/if_case.st
+### conformance/control-flow/nested_exit.st
+0 n=0 => outer=3 inner=0 w=6
+1 n=4 => outer=3 inner=12 w=6
+2 n=10 => outer=3 inner=30 w=6
+3 n=15 => outer=3 inner=30 w=6
+4 n=-3 => outer=3 inner=0 w=6
+5 n=1 => outer=3 inner=3 w=6
+PASS    conformance/control-flow/nested_exit.st
+### conformance/control-flow/return.st
+0 x=3 => y=6 calls=1 c=103
+1 x=-1 => y=6 calls=2 c=99
+2 x=15 => y=30 calls=3 c=10
+3 x=0 => y=0 calls=4 c=100
+PASS    conformance/control-flow/return.st
+### conformance/control-flow/while.st
+FAIL    conformance/control-flow/while.st
+        rk failed to compile the program:
+        [E0201] Error: unknown name
+            ╭─[ src/main.st:19:18 ]
+            │
+         19 │     acc := acc + UINT_TO_DINT(k);
+            │                  ──────┬─────  
+            │                        ╰─────── no item 'UINT_TO_DINT' found in scope
+        ────╯
+        compilation failed: 1 error(s) found, cannot compile.
+        
+### conformance/counters/ctd.st
+0 cd=FALSE ld=FALSE => q=TRUE cv=0
+1 ld=TRUE => q=FALSE cv=3
+2 ld=FALSE => q=FALSE cv=3
+3 cd=TRUE => q=FALSE cv=2
+4 => q=FALSE cv=2
+5 cd=FALSE => q=FALSE cv=2
+6 cd=TRUE => q=FALSE cv=1
+7 cd=FALSE => q=FALSE cv=1
+8 cd=TRUE => q=TRUE cv=0
+9 cd=FALSE => q=TRUE cv=0
+10 cd=TRUE => q=TRUE cv=0
+11 ld=TRUE => q=FALSE cv=3
+12 ld=FALSE => q=FALSE cv=3
+13 cd=FALSE => q=FALSE cv=3
+14 cd=TRUE => q=FALSE cv=2
+FAIL    conformance/counters/ctd.st
+        cycle 10 (trace line 36): cv expected -1, got 0
+### conformance/counters/ctd_bounds.st
+0 cd=FALSE ld=FALSE => q=TRUE cv=0
+1 ld=TRUE => q=TRUE cv=-32768
+2 ld=FALSE => q=TRUE cv=-32768
+3 cd=TRUE => q=TRUE cv=-32768
+4 cd=FALSE => q=TRUE cv=-32768
+5 cd=TRUE => q=TRUE cv=-32768
+6 cd=FALSE => q=TRUE cv=-32768
+PASS    conformance/counters/ctd_bounds.st
+### conformance/counters/ctu.st
+0 cu=FALSE r=FALSE => q=FALSE cv=0
+1 cu=TRUE => q=FALSE cv=1
+2 => q=FALSE cv=1
+3 cu=FALSE => q=FALSE cv=1
+4 cu=TRUE => q=FALSE cv=2
+5 cu=FALSE => q=FALSE cv=2
+6 cu=TRUE => q=TRUE cv=3
+7 cu=FALSE => q=TRUE cv=3
+8 cu=TRUE => q=TRUE cv=3
+9 r=TRUE => q=FALSE cv=0
+10 r=FALSE => q=FALSE cv=0
+11 cu=FALSE => q=FALSE cv=0
+12 cu=TRUE => q=FALSE cv=1
+FAIL    conformance/counters/ctu.st
+        cycle 8 (trace line 32): cv expected 4, got 3
+### conformance/counters/ctud.st
+0 cu=FALSE cd=FALSE r=FALSE ld=FALSE => qu=FALSE qd=TRUE cv=0
+1 cu=TRUE => qu=FALSE qd=FALSE cv=1
+2 cu=FALSE => qu=FALSE qd=FALSE cv=1
+3 cu=TRUE => qu=TRUE qd=FALSE cv=2
+4 cu=FALSE => qu=TRUE qd=FALSE cv=2
+5 cd=TRUE => qu=FALSE qd=FALSE cv=1
+6 cd=FALSE => qu=FALSE qd=FALSE cv=1
+7 cu=TRUE cd=TRUE => qu=FALSE qd=FALSE cv=1
+8 cu=FALSE cd=FALSE => qu=FALSE qd=FALSE cv=1
+9 ld=TRUE cu=TRUE => qu=TRUE qd=FALSE cv=2
+10 ld=FALSE cu=FALSE => qu=TRUE qd=FALSE cv=2
+11 r=TRUE ld=TRUE => qu=FALSE qd=TRUE cv=0
+12 r=FALSE => qu=TRUE qd=FALSE cv=2
+13 ld=FALSE => qu=TRUE qd=FALSE cv=2
+14 cd=TRUE => qu=FALSE qd=FALSE cv=1
+15 cd=FALSE => qu=FALSE qd=FALSE cv=1
+16 cd=TRUE => qu=FALSE qd=TRUE cv=0
+17 cd=FALSE => qu=FALSE qd=TRUE cv=0
+18 cd=TRUE => qu=FALSE qd=TRUE cv=0
+19 cd=FALSE => qu=FALSE qd=TRUE cv=0
+20 cu=TRUE => qu=FALSE qd=FALSE cv=1
+FAIL    conformance/counters/ctud.st
+        cycle 18 (trace line 54): cv expected -1, got 0
+        cycle 19 (trace line 55): cv expected -1, got 0
+        cycle 20 (trace line 57): qd expected TRUE, got FALSE
+        cycle 20 (trace line 57): cv expected 0, got 1
+### conformance/counters/ctud_bounds.st
+0 cu=FALSE cd=FALSE r=FALSE ld=FALSE => qu=FALSE qd=TRUE cv=0
+1 ld=TRUE => qu=TRUE qd=FALSE cv=32767
+2 ld=FALSE => qu=TRUE qd=FALSE cv=32767
+3 cu=TRUE => qu=TRUE qd=FALSE cv=32767
+4 cu=FALSE => qu=TRUE qd=FALSE cv=32767
+5 cu=TRUE => qu=TRUE qd=FALSE cv=32767
+6 cu=FALSE cd=TRUE => qu=FALSE qd=FALSE cv=32766
+7 cd=FALSE => qu=FALSE qd=FALSE cv=32766
+8 cu=TRUE => qu=TRUE qd=FALSE cv=32767
+9 cu=FALSE r=TRUE => qu=FALSE qd=TRUE cv=0
+10 r=FALSE => qu=FALSE qd=TRUE cv=0
+PASS    conformance/counters/ctud_bounds.st
+### conformance/data/array_2d.st
+0 i=0 j=0 => m_ij=1 a_ij=10 rsum=6 csum=50
+1 i=1 j=2 => m_ij=6 a_ij=60 rsum=15 csum=90
+2 i=0 j=1 => m_ij=2 a_ij=20 rsum=6 csum=70
+3 i=1 j=0 => m_ij=4 a_ij=40 rsum=15 csum=50
+PASS    conformance/data/array_2d.st
+### conformance/data/array_init.st
+0 => s_list=24 s_rep=20 z=0 f=TRUE
+1 => s_list=24 s_rep=20 z=0 f=TRUE
+PASS    conformance/data/array_init.st
+### conformance/data/array_internal.st
+0 idx=0 val=10 => sum=10 at_idx=10 lo=10 hi=0
+1 idx=4 val=-3 => sum=7 at_idx=-3 lo=10 hi=-3
+2 idx=2 val=100 => sum=107 at_idx=100 lo=10 hi=-3
+3 idx=0 val=1 => sum=98 at_idx=1 lo=1 hi=-3
+4 idx=4 val=0 => sum=101 at_idx=0 lo=1 hi=0
+PASS    conformance/data/array_internal.st
+### conformance/data/array_of_struct.st
+0 k=1 => sum_x=7 sum_y=60 px=3 copy_y=30
+1 k=0 => sum_x=7 sum_y=60 px=3 copy_y=30
+2 k=5 => sum_x=12 sum_y=60 px=8 copy_y=30
+3 k=-8 => sum_x=4 sum_y=60 px=0 copy_y=30
+PASS    conformance/data/array_of_struct.st
+### conformance/data/defaults.st
+FAIL    conformance/data/defaults.st
+        rk failed to compile the program:
+        [E0301] Error: type mismatch
+            ╭─[ src/main.st:42:13 ]
+            │
+         29 │     slen   : INT;    (* LEN(s) *)
+            │     ──┬─  
+            │       ╰─── 'slen' is declared here
+            │ 
+         42 │   slen   := LEN(s);
+            │             ───┬──  
+            │                ╰──── expected 'INT', got 'UDINT'
+            │ 
+            │ Help: insert explicit cast 'UDINT_TO_INT(LEN(s))'
+        ────╯
+        [E0201] Error: unknown name
+            ╭─[ src/main.st:43:17 ]
+            │
+         43 │   is_red := c = RED;
+            │                 ─┬─  
+            │                  ╰─── no item 'RED' found in scope
+        ────╯
+        compilation failed: 2 error(s) found, cannot compile.
+        
+### conformance/data/enum.st
+FAIL    conformance/data/enum.st
+        rk failed to compile the program:
+        [E0201] Error: unknown name
+            ╭─[ src/main.st:23:13 ]
+            │
+         23 │     0: c := RED;
+            │             ─┬─  
+            │              ╰─── no item 'RED' found in scope
+        ────╯
+        [E0201] Error: unknown name
+            ╭─[ src/main.st:24:13 ]
+            │
+         24 │     1: c := GREEN;
+            │             ──┬──  
+            │               ╰──── no item 'GREEN' found in scope
+        ────╯
+        [E0201] Error: unknown name
+            ╭─[ src/main.st:25:13 ]
+            │
+         25 │     2: c := BLUE;
+            │             ──┬─  
+            │               ╰─── no item 'BLUE' found in scope
+        ────╯
+        [E0201] Error: unknown name
+            ╭─[ src/main.st:28:5 ]
+            │
+         28 │     RED:   code := 1;
+            │     ─┬─  
+            │      ╰─── no item 'RED' found in scope
+        ────╯
+        [E1205] Error: CASE label not constant
+            ╭─[ src/main.st:28:5 ]
+            │
+         28 │     RED:   code := 1;
+            │     ─┬─  
+            │      ╰─── the label is not a compile-time constant
+        ────╯
+        [E0201] Error: unknown name
+            ╭─[ src/main.st:29:5 ]
+            │
+         29 │     GREEN: code := 2;
+            │     ──┬──  
+            │       ╰──── no item 'GREEN' found in scope
+        ────╯
+        [E1205] Error: CASE label not constant
+            ╭─[ src/main.st:29:5 ]
+            │
+         29 │     GREEN: code := 2;
+            │     ──┬──  
+            │       ╰──── the label is not a compile-time constant
+        ────╯
+        [E0201] Error: unknown name
+            ╭─[ src/main.st:30:5 ]
+            │
+         30 │     BLUE:  code := 3;
+            │     ──┬─  
+            │       ╰─── no item 'BLUE' found in scope
+        ────╯
+        [E1205] Error: CASE label not constant
+            ╭─[ src/main.st:30:5 ]
+            │
+         30 │     BLUE:  code := 3;
+            │     ──┬─  
+            │       ╰─── the label is not a compile-time constant
+        ────╯
+        [E0201] Error: unknown name
+            ╭─[ src/main.st:32:19 ]
+            │
+         32 │   is_green := c = GREEN;
+            │                   ──┬──  
+            │                     ╰──── no item 'GREEN' found in scope
+        ────╯
+        compilation failed: 10 error(s) found, cannot compile.
+        
+### conformance/data/struct_internal.st
+0 a=3 b=4 => qx=3 qy=4 px=0 area=12
+1 a=-2 b=5 => qx=-2 qy=5 px=0 area=-10
+2 a=0 b=0 => qx=0 qy=0 px=0 area=0
+3 a=100 b=100 => qx=100 qy=100 px=0 area=10000
+PASS    conformance/data/struct_internal.st
+### conformance/edge/f_trig.st
+0 clk=FALSE => q=TRUE
+1 clk=TRUE => q=FALSE
+2 clk=FALSE => q=TRUE
+3 => q=FALSE
+4 clk=TRUE => q=FALSE
+5 clk=TRUE => q=FALSE
+6 clk=FALSE => q=TRUE
+7 clk=TRUE => q=FALSE
+8 clk=FALSE => q=TRUE
+9 clk=FALSE => q=FALSE
+FAIL    conformance/edge/f_trig.st
+        cycle 0 (trace line 17): q expected FALSE, got TRUE
+### conformance/edge/power_on_clk_true.st
+0 clk=TRUE => qr=TRUE qf=FALSE
+1 => qr=FALSE qf=FALSE
+2 clk=FALSE => qr=FALSE qf=TRUE
+3 => qr=FALSE qf=FALSE
+4 clk=TRUE => qr=TRUE qf=FALSE
+5 clk=FALSE => qr=FALSE qf=TRUE
+PASS    conformance/edge/power_on_clk_true.st
+### conformance/edge/r_trig.st
+0 clk=FALSE => q=FALSE
+1 clk=TRUE => q=TRUE
+2 => q=FALSE
+3 => q=FALSE
+4 clk=FALSE => q=FALSE
+5 clk=TRUE => q=TRUE
+6 clk=FALSE => q=FALSE
+7 clk=TRUE => q=TRUE
+8 clk=TRUE => q=FALSE
+PASS    conformance/edge/r_trig.st
+### conformance/edge/sr_rs.st
+0 s=FALSE r=FALSE => q_sr=FALSE q_rs=FALSE
+1 s=TRUE => q_sr=TRUE q_rs=TRUE
+2 s=FALSE => q_sr=TRUE q_rs=TRUE
+3 r=TRUE => q_sr=FALSE q_rs=FALSE
+4 r=FALSE => q_sr=FALSE q_rs=FALSE
+5 s=TRUE r=TRUE => q_sr=TRUE q_rs=FALSE
+6 s=FALSE r=FALSE => q_sr=TRUE q_rs=FALSE
+7 r=TRUE => q_sr=FALSE q_rs=FALSE
+8 r=FALSE => q_sr=FALSE q_rs=FALSE
+9 s=TRUE => q_sr=TRUE q_rs=TRUE
+10 r=TRUE => q_sr=TRUE q_rs=FALSE
+PASS    conformance/edge/sr_rs.st
+### conformance/ops/bit_expr_operands.st
+0 a=16#3C b=16#0F w=16#1234 n=0 => n_xor=16#CC n_and=16#FFCB s_or=16#3F r_xor=16#33 r_w=16#EDCB same=TRUE
+1 a=16#F0 b=16#F0 w=16#0000 n=4 => n_xor=16#FF n_and=16#FFFF s_or=16#00 r_xor=16#FF r_w=16#FFFF same=TRUE
+2 a=16#81 b=16#01 w=16#00FF n=1 => n_xor=16#7F n_and=16#FF00 s_or=16#02 r_xor=16#1D r_w=16#7F80 same=TRUE
+3 a=16#A5 b=16#5A w=16#8001 n=7 => n_xor=16#00 n_and=16#FFFE s_or=16#80 r_xor=16#55 r_w=16#FCFF same=TRUE
+PASS    conformance/ops/bit_expr_operands.st
+### conformance/ops/bit_literals.st
+0 b=16#3C w=16#1255 n=0 => ob=16#A5 ow=16#8001 b_and=16#0C w_or=16#FF55 b_xor=16#C3 w_shl=16#0001 lo55=TRUE tw=FALSE
+1 b=16#F0 w=16#1234 n=4 => ob=16#A5 ow=16#8001 b_and=16#00 w_or=16#FF34 b_xor=16#0F w_shl=16#0010 lo55=FALSE tw=TRUE
+2 b=16#FF w=16#0055 n=15 => ob=16#A5 ow=16#8001 b_and=16#0F w_or=16#FF55 b_xor=16#00 w_shl=16#8000 lo55=TRUE tw=FALSE
+3 b=16#00 w=16#FFFF n=1 => ob=16#A5 ow=16#8001 b_and=16#00 w_or=16#FFFF b_xor=16#FF w_shl=16#0002 lo55=FALSE tw=FALSE
+PASS    conformance/ops/bit_literals.st
+### conformance/ops/bit_ops.st
+0 b=16#F0 m=16#3C w=16#1234 d=16#80000001 n=4 => o_and=16#30 o_or=16#FC o_xor=16#CC o_not=16#0F w_shl=16#2340 w_shr=16#0123 w_rol=16#2341 w_ror=16#4123 d_shl=16#00000010 d_shr=16#08000000 d_rol=16#00000018 d_ror=16#18000000
+1 b=16#AA m=16#55 w=16#8001 d=16#00000001 n=1 => o_and=16#00 o_or=16#FF o_xor=16#FF o_not=16#55 w_shl=16#0002 w_shr=16#4000 w_rol=16#0003 w_ror=16#C000 d_shl=16#00000002 d_shr=16#00000000 d_rol=16#00000002 d_ror=16#80000000
+2 b=16#FF m=16#00 w=16#FFFF d=16#FFFFFFFF n=0 => o_and=16#00 o_or=16#FF o_xor=16#FF o_not=16#00 w_shl=16#FFFF w_shr=16#FFFF w_rol=16#FFFF w_ror=16#FFFF d_shl=16#FFFFFFFF d_shr=16#FFFFFFFF d_rol=16#FFFFFFFF d_ror=16#FFFFFFFF
+3 b=16#0F m=16#0F w=16#0001 d=16#80000000 n=15 => o_and=16#0F o_or=16#0F o_xor=16#00 o_not=16#F0 w_shl=16#8000 w_shr=16#0000 w_rol=16#8000 w_ror=16#0002 d_shl=16#00000000 d_shr=16#00010000 d_rol=16#00004000 d_ror=16#00010000
+4 b=16#00 m=16#00 w=16#1234 d=16#12345678 n=16 => o_and=16#00 o_or=16#00 o_xor=16#00 o_not=16#FF w_shl=16#0000 w_shr=16#0000 w_rol=16#1234 w_ror=16#1234 d_shl=16#56780000 d_shr=16#00001234 d_rol=16#56781234 d_ror=16#56781234
+PASS    conformance/ops/bit_ops.st
+### conformance/ops/conversions.st
+FAIL    conformance/ops/conversions.st
+        rk failed to compile the program:
+        [E0201] Error: unknown name
+            ╭─[ src/main.st:21:10 ]
+            │
+         21 │   i2d := INT_TO_DINT(i);
+            │          ─────┬─────  
+            │               ╰─────── no item 'INT_TO_DINT' found in scope
+            │ 
+            │ Note: items with similar names are in scope:
+            │       - BYTE_TO_DINT
+            │       - DATE_TO_DINT
+            │       - DINT_TO_INT
+            │       - DINT_TO_SINT
+            │       - DINT_TO_UDINT
+            │         ...
+        ────╯
+        [E0201] Error: unknown name
+            ╭─[ src/main.st:26:10 ]
+            │
+         26 │   u2d := UINT_TO_DINT(ub);
+            │          ──────┬─────  
+            │                ╰─────── no item 'UINT_TO_DINT' found in scope
+        ────╯
+        compilation failed: 2 error(s) found, cannot compile.
+        
+### conformance/ops/date_time.st
+FAIL    conformance/ops/date_time.st
+        rk failed to compile the program:
+        [E0305] Error: operator not supported by the type
+            ╭─[ src/main.st:27:14 ]
+            │
+         27 │   d_sub   := d1 - d2;
+            │              ───┬───  
+            │                 ╰───── operator '-' cannot be applied to type 'DATE'
+        ────╯
+        [E0305] Error: operator not supported by the type
+            ╭─[ src/main.st:28:14 ]
+            │
+         28 │   tod_sub := t1 - t2;
+            │              ───┬───  
+            │                 ╰───── operator '-' cannot be applied to type 'TOD'
+        ────╯
+        [E0305] Error: operator not supported by the type
+            ╭─[ src/main.st:29:14 ]
+            │
+         29 │   dt_sub  := dt1 - dt2;
+            │              ────┬────  
+            │                  ╰────── operator '-' cannot be applied to type 'DT'
+        ────╯
+        [E0305] Error: operator not supported by the type
+            ╭─[ src/main.st:30:15 ]
+            │
+         30 │   tod_add := (TOD#12:00:00 + T#90m) - TOD#00:00:00;
+            │               ──────────┬─────────  
+            │                         ╰─────────── operator '+' cannot be applied to type 'TOD'
+        ────╯
+        [E0303] Error: types not addable
+            ╭─[ src/main.st:30:30 ]
+            │
+         30 │   tod_add := (TOD#12:00:00 + T#90m) - TOD#00:00:00;
+            │                              ──┬──  
+            │                                ╰──── cannot add 'TOD' with 'TIME'
+        ────╯
+        [E0305] Error: operator not supported by the type
+            ╭─[ src/main.st:31:15 ]
+            │
+         31 │   tod_min := (TOD#01:00:00 - T#30m) - TOD#00:00:00;
+            │               ──────────┬─────────  
+            │                         ╰─────────── operator '-' cannot be applied to type 'TOD'
+        ────╯
+        [E0303] Error: types not addable
+            ╭─[ src/main.st:31:30 ]
+            │
+         31 │   tod_min := (TOD#01:00:00 - T#30m) - TOD#00:00:00;
+            │                              ──┬──  
+            │                                ╰──── cannot subtract 'TOD' with 'TIME'
+        ────╯
+        [E0305] Error: operator not supported by the type
+            ╭─[ src/main.st:32:15 ]
+            │
+         32 │   dt_add  := (DT#2024-02-28-23:00:00 + T#2h) - DT#2024-02-28-00:00:00;
+            │               ──────────────┬──────────────  
+            │                             ╰──────────────── operator '+' cannot be applied to type 'DT'
+        ────╯
+        [E0303] Error: types not addable
+            ╭─[ src/main.st:32:40 ]
+            │
+         32 │   dt_add  := (DT#2024-02-28-23:00:00 + T#2h) - DT#2024-02-28-00:00:00;
+            │                                        ──┬─  
+            │                                          ╰─── cannot add 'DT' with 'TIME'
+        ────╯
+        [E0305] Error: operator not supported by the type
+            ╭─[ src/main.st:33:15 ]
+            │
+         33 │   dt_min  := (DT#2024-03-01-00:30:00 - T#1h) - DT#2024-02-29-00:00:00;
+            │               ──────────────┬──────────────  
+            │                             ╰──────────────── operator '-' cannot be applied to type 'DT'
+        ────╯
+        [E0303] Error: types not addable
+            ╭─[ src/main.st:33:40 ]
+            │
+         33 │   dt_min  := (DT#2024-03-01-00:30:00 - T#1h) - DT#2024-02-29-00:00:00;
+            │                                        ──┬─  
+            │                                          ╰─── cannot subtract 'DT' with 'TIME'
+        ────╯
+        compilation failed: 11 error(s) found, cannot compile.
+        
+### conformance/ops/limit_inverted.st
+0 mn=0 x=0 mx=-16 => l=-16
+1 mn=5 x=3 mx=1 => l=1
+2 mn=5 x=7 mx=1 => l=1
+3 mn=5 x=10 mx=1 => l=1
+4 mn=1 x=3 mx=5 => l=3
+5 mn=-2 x=-9 mx=-5 => l=-5
+PASS    conformance/ops/limit_inverted.st
+### conformance/ops/literals.st
+FAIL    conformance/ops/literals.st
+        rk failed to compile the program:
+        [E0001] Error: syntax error
+            ╭─[ src/main.st:19:15 ]
+            │
+         19 │   neg   := -16#10;
+            │               ─┬─  
+            │                ╰─── unexpected token(s): '# 1 0'
+        ────╯
+        compilation failed: 1 error(s) found, cannot compile.
+        
+### conformance/ops/lreal_precision.st
+0 a=0.1 b=0.2 => sum=0.30000000000000004 quot=0.5 prod=0.020000000000000004 sq=0.31622776601683794 big=999999986991104.0
+1 a=1.0 b=3.0 => sum=4.0 quot=0.3333333333333333 prod=3.0 sq=1.0 big=999999986991104.0
+2 a=2.0 b=1.0E300 => sum=1000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000.0 quot=0.000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000002 prod=2000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000.0 sq=1.4142135623730951 big=999999986991104.0
+3 a=1.0E16 b=1.0 => sum=10000000000000000.0 quot=10000000000000000.0 prod=10000000000000000.0 sq=100000000.0 big=999999986991104.0
+FAIL    conformance/ops/lreal_precision.st
+        cycle 0 (trace line 15): big expected 1000000000000001.0, got 999999986991104.0
+        cycle 1 (trace line 16): big expected 1000000000000001.0, got 999999986991104.0
+        cycle 2 (trace line 17): big expected 1000000000000001.0, got 999999986991104.0
+        cycle 3 (trace line 18): big expected 1000000000000001.0, got 999999986991104.0
+### conformance/ops/precedence.st
+0 a=7 b=2 c=3 p=TRUE q=FALSE r=TRUE => e1=13 e2=27 e3=2 e4=9 e5=-1 e6=3 e7=9 l1=TRUE l2=TRUE l3=FALSE l4=FALSE l5=FALSE l6=TRUE
+1 a=-9 b=4 c=-2 p=FALSE q=TRUE r=FALSE => e1=-17 e2=10 e3=-11 e4=4 e5=1 e6=2 e7=-5 l1=FALSE l2=TRUE l3=TRUE l4=FALSE l5=FALSE l6=TRUE
+2 a=1 b=2 c=3 p=TRUE q=TRUE r=TRUE => e1=7 e2=9 e3=-4 e4=0 e5=-1 e6=3 e7=3 l1=TRUE l2=TRUE l3=FALSE l4=TRUE l5=TRUE l6=FALSE
+3 a=5 b=3 c=1 p=FALSE q=FALSE r=FALSE => e1=8 e2=8 e3=1 e4=1 e5=-2 e6=2 e7=8 l1=FALSE l2=FALSE l3=FALSE l4=FALSE l5=FALSE l6=FALSE
+PASS    conformance/ops/precedence.st
+### conformance/ops/real_arith.st
+0 x=1.5 y=0.25 => sum=1.75 diff=1.25 prod=0.375 quot=6.0 neg=-1.5 lit1=1000.0 lit2=1.5 lit3=-0.025
+1 x=1.0 y=3.0 => sum=4.0 diff=-2.0 prod=3.0 quot=0.33333334 neg=-1.0 lit1=1000.0 lit2=1.5 lit3=-0.025
+2 x=0.1 y=0.2 => sum=0.3 diff=-0.1 prod=0.020000001 quot=0.5 neg=-0.1 lit1=1000.0 lit2=1.5 lit3=-0.025
+3 x=1.0E10 y=1.0E10 => sum=20000000000.0 diff=0.0 prod=100000000000000000000.0 quot=1.0 neg=-10000000000.0 lit1=1000.0 lit2=1.5 lit3=-0.025
+4 x=-2.5 y=4.0 => sum=1.5 diff=-6.5 prod=-10.0 quot=-0.625 neg=2.5 lit1=1000.0 lit2=1.5 lit3=-0.025
+PASS    conformance/ops/real_arith.st
+### conformance/ops/real_compare.st
+0 x=1.5 y=2.5 a=0.1 b=0.1 => r_lt=TRUE r_eq=FALSE r_ge=FALSE l_lt=FALSE l_eq=TRUE l_ne=FALSE
+1 x=2.5 y=2.5 a=1.0E-300 b=0.0 => r_lt=FALSE r_eq=TRUE r_ge=TRUE l_lt=FALSE l_eq=FALSE l_ne=TRUE
+2 x=-1.0E-5 y=0.0 a=-5.0 b=-5.0 => r_lt=TRUE r_eq=FALSE r_ge=FALSE l_lt=FALSE l_eq=TRUE l_ne=FALSE
+3 x=3.0 y=-3.0 a=1.0 b=1.0000000001 => r_lt=FALSE r_eq=FALSE r_ge=TRUE l_lt=TRUE l_eq=FALSE l_ne=TRUE
+PASS    conformance/ops/real_compare.st
+### conformance/ops/real_conversions.st
+FAIL    conformance/ops/real_conversions.st
+        rk failed to compile the program:
+        [E0201] Error: unknown name
+            ╭─[ src/main.st:21:10 ]
+            │
+         21 │   i2r := INT_TO_REAL(i);
+            │          ─────┬─────  
+            │               ╰─────── no item 'INT_TO_REAL' found in scope
+            │ 
+            │ Note: items with similar names are in scope:
+            │       - DINT_TO_REAL
+            │       - LINT_TO_LREAL
+            │       - LINT_TO_REAL
+            │       - UDINT_TO_REAL
+            │       - ULINT_TO_LREAL
+            │         ...
+        ────╯
+        [E0201] Error: unknown name
+            ╭─[ src/main.st:22:10 ]
+            │
+         22 │   d2l := DINT_TO_LREAL(d);
+            │          ──────┬──────  
+            │                ╰──────── no item 'DINT_TO_LREAL' found in scope
+        ────╯
+        [E0201] Error: unknown name
+            ╭─[ src/main.st:23:10 ]
+            │
+         23 │   u2r := UINT_TO_REAL(u);
+            │          ──────┬─────  
+            │                ╰─────── no item 'UINT_TO_REAL' found in scope
+        ────╯
+        [E0201] Error: unknown name
+            ╭─[ src/main.st:25:10 ]
+            │
+         25 │   r2l := REAL_TO_LREAL(x);
+            │          ──────┬──────  
+            │                ╰──────── no item 'REAL_TO_LREAL' found in scope
+        ────╯
+        compilation failed: 4 error(s) found, cannot compile.
+        
+### conformance/ops/real_functions.st
+0 x=4.0 => o_sqrt=2.0 o_abs=4.0 o_exp=54.598152 o_ln=1.3862944 o_sin=-0.7568025 o_cos=-0.6536436
+1 x=1.0 => o_sqrt=1.0 o_abs=1.0 o_exp=2.7182817 o_ln=0.0 o_sin=0.84147096 o_cos=0.5403023
+2 x=2.25 => o_sqrt=1.5 o_abs=2.25 o_exp=9.487736 o_ln=0.8109302 o_sin=0.7780732 o_cos=-0.62817365
+3 x=-3.0 => o_sqrt=1.7320508 o_abs=3.0 o_exp=0.049787067 o_ln=1.0986123 o_sin=-0.14112 o_cos=-0.9899925
+4 x=0.5 => o_sqrt=0.70710677 o_abs=0.5 o_exp=1.6487212 o_ln=-0.6931472 o_sin=0.47942555 o_cos=0.87758255
+PASS    conformance/ops/real_functions.st
+### conformance/ops/real_power.st
+0 x=2.0 n=10 => o_expt=1024.0 o_pow2=4.0
+1 x=-1.5 n=3 => o_expt=-3.375 o_pow2=2.25
+2 x=10.0 n=-2 => o_expt=0.01 o_pow2=100.0
+3 x=1.0 n=0 => o_expt=1.0 o_pow2=1.0
+4 x=0.5 n=4 => o_expt=0.0625 o_pow2=0.25
+PASS    conformance/ops/real_power.st
+### conformance/ops/shl_width.st
+0 b=16#44 w=16#67CB => b_back=16#00 b_rol=16#04 w_back=16#00B0 w_ror=16#00CB b_or=16#44
+1 b=16#77 w=16#444A => b_back=16#08 b_rol=16#07 w_back=16#00A0 w_ror=16#004A b_or=16#4C
+2 b=16#E9 w=16#F0E8 => b_back=16#08 b_rol=16#09 w_back=16#0080 w_ror=16#00E8 b_or=16#4C
+3 b=16#FF w=16#FFFF => b_back=16#08 b_rol=16#0F w_back=16#00F0 w_ror=16#00FF b_or=16#4C
+4 b=16#00 w=16#0010 => b_back=16#00 b_rol=16#00 w_back=16#0000 w_ror=16#0010 b_or=16#44
+PASS    conformance/ops/shl_width.st
+### conformance/ops/std_functions.st
+0 a=-5 b=3 c=9 k=0 g=FALSE da=-100000 db=7 => o_abs=5 o_min=-5 o_max=3 o_limit=3 o_sel=-5 o_mux=-5 d_abs=100000 d_min=-100000
+1 a=12 b=-4 c=20 k=1 g=TRUE da=2147483647 db=-2147483648 => o_abs=12 o_min=-4 o_max=12 o_limit=12 o_sel=-4 o_mux=-4 d_abs=2147483647 d_min=-2147483648
+2 a=0 b=0 c=0 k=2 g=FALSE da=0 db=0 => o_abs=0 o_min=0 o_max=0 o_limit=0 o_sel=0 o_mux=0 d_abs=0 d_min=0
+3 a=30000 b=-30000 c=100 k=2 g=TRUE da=-1 db=1 => o_abs=30000 o_min=-30000 o_max=30000 o_limit=100 o_sel=-30000 o_mux=100 d_abs=1 d_min=-1
+4 a=-32767 b=-32767 c=-32767 k=0 g=FALSE da=5 db=5 => o_abs=32767 o_min=-32767 o_max=-32767 o_limit=-32767 o_sel=-32767 o_mux=-32767 d_abs=5 d_min=5
+PASS    conformance/ops/std_functions.st
+### conformance/ops/std_functions_expr.st
+0 k=0 a=3 b=5 p=TRUE q=FALSE => m=8 s=2 n_eq=TRUE n_xor=FALSE n_cmp=FALSE n_and=FALSE
+1 k=1 a=3 b=5 p=TRUE q=TRUE => m=6 s=2 n_eq=TRUE n_xor=TRUE n_cmp=FALSE n_and=FALSE
+2 k=2 a=7 b=5 p=FALSE q=TRUE => m=7 s=2 n_eq=TRUE n_xor=FALSE n_cmp=TRUE n_and=TRUE
+3 k=2 a=5 b=5 p=FALSE q=FALSE => m=5 s=0 n_eq=FALSE n_xor=TRUE n_cmp=FALSE n_and=TRUE
+PASS    conformance/ops/std_functions_expr.st
+### conformance/ops/std_functions_ext.st
+FAIL    conformance/ops/std_functions_ext.st
+        rk failed to compile the program:
+        [E0801] Error: wrong number of arguments
+            ╭─[ src/main.st:19:11 ]
+            │
+         19 │   max3 := MAX(a, b, c);
+            │           ─┬─  
+            │            ╰─── no overload of 'MAX' takes 3 parameters
+        ────╯
+        [E0301] Error: type mismatch
+            ╭─[ src/main.st:19:11 ]
+            │
+         12 │     max3 : INT;
+            │     ──┬─  
+            │       ╰─── 'max3' is declared here
+            │ 
+         19 │   max3 := MAX(a, b, c);
+            │           ──────┬─────  
+            │                 ╰─────── expected 'INT', got 'LTIME'
+        ────╯
+        [E0301] Error: type mismatch
+             ╭─[ src/main.st:19:15 ]
+             │
+          19 │   max3 := MAX(a, b, c);
+             │               ┬  
+             │               ╰── expected 'LTIME', got 'INT'
+             │
+             ├─[ <rk-stdlib>/Selection.st:796:4 ]
+             │
+         796 │      IN1: LTIME;
+             │      ─┬─  
+             │       ╰─── 'IN1' is declared here
+        ─────╯
+        [E0301] Error: type mismatch
+             ╭─[ src/main.st:19:18 ]
+             │
+          19 │   max3 := MAX(a, b, c);
+             │                  ┬  
+             │                  ╰── expected 'LTIME', got 'INT'
+             │
+             ├─[ <rk-stdlib>/Selection.st:797:4 ]
+             │
+         797 │      IN2: LTIME;
+             │      ─┬─  
+             │       ╰─── 'IN2' is declared here
+        ─────╯
+        [E0801] Error: wrong number of arguments
+            ╭─[ src/main.st:20:11 ]
+            │
+         20 │   min3 := MIN(a, b, c);
+            │           ─┬─  
+            │            ╰─── no overload of 'MIN' takes 3 parameters
+        ────╯
+        [E0301] Error: type mismatch
+            ╭─[ src/main.st:20:11 ]
+            │
+         13 │     min3 : INT;
+            │     ──┬─  
+            │       ╰─── 'min3' is declared here
+            │ 
+         20 │   min3 := MIN(a, b, c);
+            │           ──────┬─────  
+            │                 ╰─────── expected 'INT', got 'LTIME'
+        ────╯
+        [E0301] Error: type mismatch
+             ╭─[ src/main.st:20:15 ]
+             │
+          20 │   min3 := MIN(a, b, c);
+             │               ┬  
+             │               ╰── expected 'LTIME', got 'INT'
+             │
+             ├─[ <rk-stdlib>/Selection.st:629:4 ]
+             │
+         629 │      IN1: LTIME;
+             │      ─┬─  
+             │       ╰─── 'IN1' is declared here
+        ─────╯
+        [E0301] Error: type mismatch
+             ╭─[ src/main.st:20:18 ]
+             │
+          20 │   min3 := MIN(a, b, c);
+             │                  ┬  
+             │                  ╰── expected 'LTIME', got 'INT'
+             │
+             ├─[ <rk-stdlib>/Selection.st:630:4 ]
+             │
+         630 │      IN2: LTIME;
+             │      ─┬─  
+             │       ╰─── 'IN2' is declared here
+        ─────╯
+        [E0201] Error: unknown name
+            ╭─[ src/main.st:21:11 ]
+            │
+         21 │   add3 := ADD(a, b, c);
+            │           ─┬─  
+            │            ╰─── no item 'ADD' found in scope
+            │ 
+            │ Note: 'ADD' has a item with a similar name:
+            │       - add3
+        ────╯
+        [E0201] Error: unknown name
+            ╭─[ src/main.st:22:11 ]
+            │
+         22 │   mul3 := MUL(a, b, c);
+            │           ─┬─  
+            │            ╰─── no item 'MUL' found in scope
+            │ 
+            │ Note 1: 'MUL' has a item with a similar name:
+            │         - mul3
+            │ 
+            │ Note 2: an item with a similar name is in scope:
+            │         - MUX
+        ────╯
+        compilation failed: 10 error(s) found, cannot compile.
+        
+### conformance/ops/time_arith.st
+0 t1=T#1500ms t2=T#500ms => sum=T#2000ms diff=T#1000ms is_lt=FALSE is_gt=TRUE is_le=FALSE is_eq=FALSE lit1=T#90000ms lit2=T#3723004ms lit3=T#1500ms lit4=T#500ms lit5=T#172800000ms
+1 t1=T#0ms t2=T#0ms => sum=T#0ms diff=T#0ms is_lt=FALSE is_gt=FALSE is_le=TRUE is_eq=TRUE lit1=T#90000ms lit2=T#3723004ms lit3=T#1500ms lit4=T#500ms lit5=T#172800000ms
+2 t1=T#100ms t2=T#100ms => sum=T#200ms diff=T#0ms is_lt=FALSE is_gt=FALSE is_le=TRUE is_eq=TRUE lit1=T#90000ms lit2=T#3723004ms lit3=T#1500ms lit4=T#500ms lit5=T#172800000ms
+3 t1=T#3600000ms t2=T#1ms => sum=T#3600001ms diff=T#3599999ms is_lt=FALSE is_gt=TRUE is_le=FALSE is_eq=FALSE lit1=T#90000ms lit2=T#3723004ms lit3=T#1500ms lit4=T#500ms lit5=T#172800000ms
+PASS    conformance/ops/time_arith.st
+### conformance/ops/time_functions.st
+FAIL    conformance/ops/time_functions.st
+        rk failed to compile the program:
+        [E0801] Error: wrong number of arguments
+            ╭─[ src/main.st:22:10 ]
+            │
+         22 │   hi  := MAX(a, b, T#1s);
+            │          ─┬─  
+            │           ╰─── no overload of 'MAX' takes 3 parameters
+        ────╯
+        [E0301] Error: type mismatch
+            ╭─[ src/main.st:22:10 ]
+            │
+         15 │     hi  : TIME;   (* MAX(a, b, T#1s) *)
+            │     ─┬  
+            │      ╰── 'hi' is declared here
+            │ 
+         22 │   hi  := MAX(a, b, T#1s);
+            │          ───────┬───────  
+            │                 ╰───────── expected 'TIME', got 'LTIME'
+            │ 
+            │ Help: insert explicit cast 'LTIME_TO_TIME(MAX(a, b, T#1s))'
+        ────╯
+        [E0201] Error: unknown name
+            ╭─[ src/main.st:26:12 ]
+            │
+         26 │   less  := LT(a, b);
+            │            ─┬  
+            │             ╰── no item 'LT' found in scope
+            │ 
+            │ Note 1: 'LT' has a item with a similar name:
+            │         - lo
+            │ 
+            │ Note 2: an item with a similar name is in scope:
+            │         - LN
+        ────╯
+        compilation failed: 3 error(s) found, cannot compile.
+        
+### conformance/ops/time_mul.st
+FAIL    conformance/ops/time_mul.st
+        rk failed to compile the program:
+        [E0305] Error: operator not supported by the type
+            ╭─[ src/main.st:18:11 ]
+            │
+          9 │     t : TIME;
+            │     ┬  
+            │     ╰── 't' is declared here
+            │ 
+         18 │   p    := t * n;
+            │           ──┬──  
+            │             ╰──── operator '*' cannot be applied to type 'TIME'
+        ────╯
+        [E0304] Error: types not multiplicable
+            ╭─[ src/main.st:18:15 ]
+            │
+          9 │     t : TIME;
+            │     ┬  
+            │     ╰── 't' is declared here
+            │ 
+         18 │   p    := t * n;
+            │               ┬  
+            │               ╰── cannot multiply 'TIME' with 'INT'
+        ────╯
+        [E0305] Error: operator not supported by the type
+            ╭─[ src/main.st:19:11 ]
+            │
+         19 │   p4   := T#700ms * 4;
+            │           ─────┬─────  
+            │                ╰─────── operator '*' cannot be applied to type 'TIME'
+        ────╯
+        [E0304] Error: types not multiplicable
+            ╭─[ src/main.st:19:21 ]
+            │
+         19 │   p4   := T#700ms * 4;
+            │                     ┬  
+            │                     ╰── cannot multiply 'TIME' with 'INT'
+        ────╯
+        [E0305] Error: operator not supported by the type
+            ╭─[ src/main.st:20:11 ]
+            │
+         20 │   p44  := T#71s487ms * 44;
+            │           ───────┬───────  
+            │                  ╰───────── operator '*' cannot be applied to type 'TIME'
+        ────╯
+        [E0304] Error: types not multiplicable
+            ╭─[ src/main.st:20:24 ]
+            │
+         20 │   p44  := T#71s487ms * 44;
+            │                        ─┬  
+            │                         ╰── cannot multiply 'TIME' with 'INT'
+        ────╯
+        [E0305] Error: operator not supported by the type
+            ╭─[ src/main.st:21:12 ]
+            │
+          9 │     t : TIME;
+            │     ┬  
+            │     ╰── 't' is declared here
+            │ 
+         21 │   back := (t * n) - t = t * (n - 1);
+            │            ──┬──  
+            │              ╰──── operator '*' cannot be applied to type 'TIME'
+        ────╯
+        [E0304] Error: types not multiplicable
+            ╭─[ src/main.st:21:16 ]
+            │
+          9 │     t : TIME;
+            │     ┬  
+            │     ╰── 't' is declared here
+            │ 
+         21 │   back := (t * n) - t = t * (n - 1);
+            │                ┬  
+            │                ╰── cannot multiply 'TIME' with 'INT'
+        ────╯
+        [E0305] Error: operator not supported by the type
+            ╭─[ src/main.st:21:25 ]
+            │
+          9 │     t : TIME;
+            │     ┬  
+            │     ╰── 't' is declared here
+            │ 
+         21 │   back := (t * n) - t = t * (n - 1);
+            │                         ─────┬─────  
+            │                              ╰─────── operator '*' cannot be applied to type 'TIME'
+        ────╯
+        [E0304] Error: types not multiplicable
+            ╭─[ src/main.st:21:29 ]
+            │
+          9 │     t : TIME;
+            │     ┬  
+            │     ╰── 't' is declared here
+            │ 
+         21 │   back := (t * n) - t = t * (n - 1);
+            │                             ───┬───  
+            │                                ╰───── cannot multiply 'TIME' with 'INT'
+        ────╯
+        compilation failed: 10 error(s) found, cannot compile.
+        
+### conformance/ops/trunc.st
+0 r=3.7 => t=3
+1 r=-3.7 => t=-3
+2 r=2.5 => t=2
+3 r=-2.5 => t=-2
+4 r=0.99 => t=0
+5 r=-0.99 => t=0
+6 r=100.0 => t=100
+PASS    conformance/ops/trunc.st
+### conformance/pou/fb_en_eno.st
+FAIL    conformance/pou/fb_en_eno.st
+        rk failed to compile the program:
+        [E0803] Error: unknown input parameter
+            ╭─[ src/main.st:26:5 ]
+            │
+         26 │   c(EN := run_it, inc := inc);
+            │     ─┬  
+            │      ╰── unknown input parameter 'EN'
+        ────╯
+        [E0202] Error: unknown field
+            ╭─[ src/main.st:28:14 ]
+            │
+          4 │ FUNCTION_BLOCK COUNT
+            │                ──┬──  
+            │                  ╰──── FUNCTION_BLOCK 'COUNT' is declared here
+            │ 
+         28 │   done  := c.ENO;
+            │              ─┬─  
+            │               ╰─── 'COUNT' has no field named 'ENO'
+        ────╯
+        compilation failed: 2 error(s) found, cannot compile.
+        
+### conformance/pou/fb_in_out.st
+0 inc=5 => total=5 p=2 q=1 ok=TRUE
+1 inc=3 => total=8 p=1 q=2 ok=TRUE
+2 inc=0 => total=8 p=2 q=1 ok=TRUE
+3 inc=-8 => total=0 p=1 q=2 ok=TRUE
+PASS    conformance/pou/fb_in_out.st
+### conformance/pou/fb_input_defaults.st
+0 => total=11 untouched=7 base=6
+1 => total=12 untouched=7 base=7
+2 => total=13 untouched=7 base=8
+PASS    conformance/pou/fb_input_defaults.st
+### conformance/pou/fb_input_retention.st
+0 set_inc=TRUE new_inc=1 set_enable=TRUE new_enable=TRUE => total=1
+1 set_inc=FALSE set_enable=FALSE => total=2
+2 set_inc=TRUE new_inc=5 => total=7
+3 set_inc=FALSE => total=12
+4 set_enable=TRUE new_enable=FALSE => total=12
+5 set_enable=FALSE => total=12
+6 set_inc=TRUE new_inc=-2 => total=12
+7 set_inc=FALSE set_enable=TRUE new_enable=TRUE => total=10
+8 set_enable=FALSE => total=8
+9 set_inc=TRUE set_enable=TRUE new_inc=100 new_enable=TRUE => total=108
+10 set_inc=FALSE set_enable=FALSE => total=208
+PASS    conformance/pou/fb_input_retention.st
+### conformance/pou/fb_method.st
+0 n=2 rst=FALSE => ret=2 cv=2
+1 n=3 rst=FALSE => ret=5 cv=5
+2 n=1 rst=TRUE => ret=1 cv=1
+3 n=0 rst=FALSE => ret=1 cv=1
+PASS    conformance/pou/fb_method.st
+### conformance/pou/fb_two_instances.st
+0 enable_a=TRUE inc_a=5 enable_b=FALSE inc_b=100 => tot_a=5 tot_b=0 calls_a=1 calls_b=1
+1 => tot_a=10 tot_b=0 calls_a=2 calls_b=2
+2 enable_b=TRUE => tot_a=15 tot_b=100 calls_a=3 calls_b=3
+3 enable_a=FALSE => tot_a=15 tot_b=200 calls_a=4 calls_b=4
+4 inc_a=-1000 => tot_a=15 tot_b=300 calls_a=5 calls_b=5
+5 enable_a=TRUE enable_b=FALSE => tot_a=-985 tot_b=300 calls_a=6 calls_b=6
+6 inc_b=-300 => tot_a=-1985 tot_b=300 calls_a=7 calls_b=7
+7 enable_b=TRUE => tot_a=-2985 tot_b=0 calls_a=8 calls_b=8
+PASS    conformance/pou/fb_two_instances.st
+### conformance/pou/fb_var_temp.st
+0 x=3 => y=3
+1 x=4 => y=4
+2 x=0 => y=0
+3 x=-5 => y=-5
+PASS    conformance/pou/fb_var_temp.st
+### conformance/pou/function_call.st
+FAIL    conformance/pou/function_call.st
+        rk failed to compile the program:
+        [E0201] Error: unknown name
+            ╭─[ src/main.st:42:20 ]
+            │
+         42 │   e := DOUBLE_PLUS(INT_TO_DINT(CLAMP(x, 0, 100)), d);
+            │                    ─────┬─────  
+            │                         ╰─────── no item 'INT_TO_DINT' found in scope
+            │ 
+            │ Note: items with similar names are in scope:
+            │       - BYTE_TO_DINT
+            │       - DATE_TO_DINT
+            │       - DINT_TO_INT
+            │       - DINT_TO_SINT
+            │       - DINT_TO_UDINT
+            │         ...
+        ────╯
+        compilation failed: 1 error(s) found, cannot compile.
+        
+### conformance/pou/function_input_default.st
+0 x=4 => dflt=11 with_k=39 all=13
+1 x=0 => dflt=-1 with_k=-1 all=5
+2 x=-2 => dflt=-7 with_k=-21 all=1
+PASS    conformance/pou/function_input_default.st
+### conformance/pou/function_var_not_retained.st
+0 x=3 => f=3
+1 x=4 => f=4
+2 x=0 => f=0
+3 x=-5 => f=-5
+PASS    conformance/pou/function_var_not_retained.st
+### conformance/pou/function_var_output.st
+0 a=7 b=2 => ok=TRUE q=3 r=1
+1 a=7 b=0 => ok=FALSE q=0 r=0
+2 a=-7 b=2 => ok=TRUE q=-3 r=-1
+3 a=9 b=3 => ok=TRUE q=3 r=0
+PASS    conformance/pou/function_var_output.st
+### conformance/strings/compare.st
+0 => e1=TRUE e2=FALSE l1=TRUE l2=TRUE l3=TRUE l4=TRUE g1=TRUE n1=TRUE
+1 => e1=TRUE e2=FALSE l1=TRUE l2=TRUE l3=TRUE l4=TRUE g1=TRUE n1=TRUE
+PASS    conformance/strings/compare.st
+### conformance/strings/concat_assign.st
+FAIL    conformance/strings/concat_assign.st
+        rk failed to compile the program:
+        [E0301] Error: type mismatch
+            ╭─[ src/main.st:19:8 ]
+            │
+         10 │     n    : INT;
+            │     ┬  
+            │     ╰── 'n' is declared here
+            │ 
+         19 │   n := LEN(acc);
+            │        ────┬───  
+            │            ╰───── expected 'INT', got 'UDINT'
+            │ 
+            │ Help: insert explicit cast 'UDINT_TO_INT(LEN(acc))'
+        ────╯
+        compilation failed: 1 error(s) found, cannot compile.
+        
+### conformance/strings/declared_length.st
+FAIL    conformance/strings/declared_length.st
+        rk failed to compile the program:
+        [E0301] Error: type mismatch
+            ╭─[ src/main.st:20:10 ]
+            │
+         13 │     n3  : INT;
+            │     ─┬  
+            │      ╰── 'n3' is declared here
+            │ 
+         20 │   n3  := LEN(s3);
+            │          ───┬───  
+            │             ╰───── expected 'INT', got 'UDINT'
+            │ 
+            │ Help: insert explicit cast 'UDINT_TO_INT(LEN(s3))'
+        ────╯
+        [E0301] Error: type mismatch
+            ╭─[ src/main.st:21:10 ]
+            │
+         14 │     n4  : INT;
+            │     ─┬  
+            │      ╰── 'n4' is declared here
+            │ 
+         21 │   n4  := LEN(s4);
+            │          ───┬───  
+            │             ╰───── expected 'INT', got 'UDINT'
+            │ 
+            │ Help: insert explicit cast 'UDINT_TO_INT(LEN(s4))'
+        ────╯
+        [E0301] Error: type mismatch
+            ╭─[ src/main.st:22:10 ]
+            │
+         15 │     n5  : INT;
+            │     ─┬  
+            │      ╰── 'n5' is declared here
+            │ 
+         22 │   n5  := LEN(s5);
+            │          ───┬───  
+            │             ╰───── expected 'INT', got 'UDINT'
+            │ 
+            │ Help: insert explicit cast 'UDINT_TO_INT(LEN(s5))'
+        ────╯
+        compilation failed: 3 error(s) found, cannot compile.
+        
+### conformance/strings/functions.st
+FAIL    conformance/strings/functions.st
+        rk failed to compile the program:
+        [E0301] Error: type mismatch
+            ╭─[ src/main.st:19:16 ]
+            │
+          8 │     o_len     : INT;
+            │     ──┬──  
+            │       ╰──── 'o_len' is declared here
+            │ 
+         19 │   o_len     := LEN('hello');
+            │                ──────┬─────  
+            │                      ╰─────── expected 'INT', got 'UDINT'
+            │ 
+            │ Help: insert explicit cast 'UDINT_TO_INT(LEN('hello'))'
+        ────╯
+        [E0301] Error: type mismatch
+             ╭─[ src/main.st:21:30 ]
+             │
+          21 │   o_left    := LEFT('hello', n);              (* L := n *)
+             │                              ┬  
+             │                              ╰── expected 'UDINT', got 'INT'
+             │
+             ├─[ <rk-stdlib>/Strings.st:117:4 ]
+             │
+         117 │      N: UDINT;
+             │      ┬  
+             │      ╰── 'N' is declared here
+             │ 
+             │ Help: insert explicit cast 'INT_TO_UDINT(n)'
+        ─────╯
+        [E0301] Error: type mismatch
+             ╭─[ src/main.st:22:31 ]
+             │
+          22 │   o_right   := RIGHT('hello', n);             (* L := n *)
+             │                               ┬  
+             │                               ╰── expected 'UDINT', got 'INT'
+             │
+             ├─[ <rk-stdlib>/Strings.st:136:4 ]
+             │
+         136 │      N: UDINT;
+             │      ┬  
+             │      ╰── 'N' is declared here
+             │ 
+             │ Help: insert explicit cast 'INT_TO_UDINT(n)'
+        ─────╯
+        [E0301] Error: type mismatch
+             ╭─[ src/main.st:23:29 ]
+             │
+          23 │   o_mid     := MID('hello', n, 2);            (* L := n, P := 2 *)
+             │                             ┬  
+             │                             ╰── expected 'UDINT', got 'INT'
+             │
+             ├─[ <rk-stdlib>/Strings.st:157:4 ]
+             │
+         157 │      N: UDINT;
+             │      ┬  
+             │      ╰── 'N' is declared here
+             │ 
+             │ Help: insert explicit cast 'INT_TO_UDINT(n)'
+        ─────╯
+        [E0301] Error: type mismatch
+             ╭─[ src/main.st:24:38 ]
+             │
+          24 │   o_insert  := INSERT('hello', 'XX', n);      (* after character P := n *)
+             │                                      ┬  
+             │                                      ╰── expected 'UDINT', got 'INT'
+             │
+             ├─[ <rk-stdlib>/Strings.st:180:4 ]
+             │
+         180 │      P: UDINT;
+             │      ┬  
+             │      ╰── 'P' is declared here
+             │ 
+             │ Help: insert explicit cast 'INT_TO_UDINT(n)'
+        ─────╯
+        [E0301] Error: type mismatch
+             ╭─[ src/main.st:25:32 ]
+             │
+          25 │   o_delete  := DELETE('hello', n, 2);         (* L := n from P := 2 *)
+             │                                ┬  
+             │                                ╰── expected 'UDINT', got 'INT'
+             │
+             ├─[ <rk-stdlib>/Strings.st:200:4 ]
+             │
+         200 │      N: UDINT;
+             │      ┬  
+             │      ╰── 'N' is declared here
+             │ 
+             │ Help: insert explicit cast 'INT_TO_UDINT(n)'
+        ─────╯
+        [E0301] Error: type mismatch
+             ╭─[ src/main.st:26:39 ]
+             │
+          26 │   o_replace := REPLACE('hello', 'YY', n, 2);  (* L := n at P := 2 *)
+             │                                       ┬  
+             │                                       ╰── expected 'UDINT', got 'INT'
+             │
+             ├─[ <rk-stdlib>/Strings.st:224:4 ]
+             │
+         224 │      N: UDINT;
+             │      ┬  
+             │      ╰── 'N' is declared here
+             │ 
+             │ Help: insert explicit cast 'INT_TO_UDINT(n)'
+        ─────╯
+        [E0301] Error: type mismatch
+            ╭─[ src/main.st:27:16 ]
+            │
+         16 │     o_find    : INT;
+            │     ───┬──  
+            │        ╰──── 'o_find' is declared here
+            │ 
+         27 │   o_find    := FIND('hello', 'll');
+            │                ─────────┬─────────  
+            │                         ╰─────────── expected 'INT', got 'UDINT'
+            │ 
+            │ Help: insert explicit cast 'UDINT_TO_INT(FIND('hello', 'll'))'
+        ────╯
+        [E0301] Error: type mismatch
+            ╭─[ src/main.st:28:16 ]
+            │
+         17 │     o_find0   : INT;
+            │     ───┬───  
+            │        ╰───── 'o_find0' is declared here
+            │ 
+         28 │   o_find0   := FIND('hello', 'zz');
+            │                ─────────┬─────────  
+            │                         ╰─────────── expected 'INT', got 'UDINT'
+            │ 
+            │ Help: insert explicit cast 'UDINT_TO_INT(FIND('hello', 'zz'))'
+        ────╯
+        compilation failed: 9 error(s) found, cannot compile.
+        
+### conformance/strings/literals_escapes.st
+FAIL    conformance/strings/literals_escapes.st
+        rk failed to compile the program:
+        [E0301] Error: type mismatch
+            ╭─[ src/main.st:23:9 ]
+            │
+         13 │     n1 : INT;
+            │     ─┬  
+            │      ╰── 'n1' is declared here
+            │ 
+         23 │   n1 := LEN(s1);
+            │         ───┬───  
+            │            ╰───── expected 'INT', got 'UDINT'
+            │ 
+            │ Help: insert explicit cast 'UDINT_TO_INT(LEN(s1))'
+        ────╯
+        compilation failed: 1 error(s) found, cannot compile.
+        
+### conformance/timers/tof.st
+0 in=FALSE => q=FALSE et=T#0ms
+1 in=TRUE => q=TRUE et=T#0ms
+2 => q=TRUE et=T#0ms
+3 in=FALSE => q=TRUE et=T#0ms
+4 => q=TRUE et=T#100ms
+5 => q=FALSE et=T#200ms
+6 => q=FALSE et=T#200ms
+7 in=TRUE => q=TRUE et=T#0ms
+8 in=FALSE => q=TRUE et=T#0ms
+9 in=TRUE => q=TRUE et=T#0ms
+10 in=FALSE => q=TRUE et=T#0ms
+11 => q=TRUE et=T#100ms
+12 => q=FALSE et=T#200ms
+PASS    conformance/timers/tof.st
+### conformance/timers/ton.st
+0 in=FALSE => q=FALSE et=T#0ms
+1 in=TRUE => q=FALSE et=T#0ms
+2 => q=FALSE et=T#100ms
+3 => q=FALSE et=T#200ms
+4 => q=TRUE et=T#300ms
+5 => q=TRUE et=T#300ms
+6 in=FALSE => q=FALSE et=T#0ms
+7 in=TRUE => q=FALSE et=T#0ms
+8 => q=FALSE et=T#100ms
+9 in=FALSE => q=FALSE et=T#0ms
+10 => q=FALSE et=T#0ms
+PASS    conformance/timers/ton.st
+### conformance/timers/tp.st
+0 in=FALSE => q=FALSE et=T#0ms
+1 in=TRUE => q=TRUE et=T#0ms
+2 in=FALSE => q=TRUE et=T#100ms
+3 => q=TRUE et=T#200ms
+4 => q=FALSE et=T#0ms
+5 => q=FALSE et=T#0ms
+6 in=TRUE => q=TRUE et=T#0ms
+7 => q=TRUE et=T#100ms
+8 => q=TRUE et=T#200ms
+9 => q=FALSE et=T#300ms
+10 => q=FALSE et=T#300ms
+11 => q=FALSE et=T#300ms
+12 in=FALSE => q=FALSE et=T#0ms
+13 in=TRUE => q=TRUE et=T#0ms
+14 in=FALSE => q=TRUE et=T#100ms
+15 in=TRUE => q=TRUE et=T#200ms
+16 => q=FALSE et=T#300ms
+17 => q=FALSE et=T#300ms
+18 in=FALSE => q=FALSE et=T#0ms
+PASS    conformance/timers/tp.st
+### conformance/undefined/abs_int_min.st
+0 x=-7 d=-7 => ax=7 nx=7 ad=7 nd=7
+1 x=-32768 d=-2147483648 => ax=-32768 nx=-32768 ad=-2147483648 nd=-2147483648
+SAME    conformance/undefined/abs_int_min.st (implementation-defined)
+### conformance/undefined/array_out_of_bounds.st
+0 idx=2 => v=20 ok=TRUE
+1 idx=3 => v=30 ok=TRUE
+2 idx=4 => trap   # thrown Wasm exception
+SAME    conformance/undefined/array_out_of_bounds.st (implementation-defined)
+### conformance/undefined/ctu_pv_zero.st
+0 cu=FALSE r=FALSE => q=TRUE cv=0
+1 cu=TRUE => q=TRUE cv=0
+2 cu=FALSE => q=TRUE cv=0
+3 cu=TRUE => q=TRUE cv=0
+4 r=TRUE => q=TRUE cv=0
+5 r=FALSE cu=FALSE => q=TRUE cv=0
+DIFFERS conformance/undefined/ctu_pv_zero.st (implementation-defined)
+        cycle 1 (trace line 22): cv expected 1, got 0
+        cycle 2 (trace line 23): cv expected 1, got 0
+        cycle 3 (trace line 24): cv expected 2, got 0
+### conformance/undefined/dint_to_int_overflow.st
+0 d=100 i=100 u=100 => d2i=100 d2u=100 i2u=100 u2i=100
+1 d=40000 i=-1 u=65535 => d2i=-25536 d2u=40000 i2u=65535 u2i=-1
+2 d=-40000 i=-32768 u=32768 => d2i=25536 d2u=25536 i2u=32768 u2i=-32768
+3 d=2147483647 i=32767 u=0 => d2i=-1 d2u=65535 i2u=32767 u2i=0
+4 d=65541 i=0 u=40000 => d2i=5 d2u=5 i2u=0 u2i=-25536
+SAME    conformance/undefined/dint_to_int_overflow.st (implementation-defined)
+### conformance/undefined/div_zero.st
+0 a=7 b=2 => q=3 m=1
+1 a=-7 b=2 => q=-3 m=-1
+2 a=7 b=0 => trap   # integer divide by zero
+SAME    conformance/undefined/div_zero.st (implementation-defined)
+### conformance/undefined/eval_order.st
+0 reset=TRUE => y=-19 c=2
+1 reset=TRUE => y=-19 c=2
+2 reset=FALSE => y=-37 c=4
+SAME    conformance/undefined/eval_order.st (implementation-defined)
+### conformance/undefined/for_bound_modified.st
+0 start_n=3 => count=3 n_after=6
+1 start_n=0 => count=0 n_after=0
+2 start_n=10 => count=10 n_after=20
+DIFFERS conformance/undefined/for_bound_modified.st (implementation-defined)
+        cycle 0 (trace line 21): count expected 50, got 3
+        cycle 0 (trace line 21): n_after expected 53, got 6
+        cycle 2 (trace line 24): count expected 50, got 10
+        cycle 2 (trace line 24): n_after expected 60, got 20
+### conformance/undefined/for_var_after_loop.st
+0 n=3 => i_after=4 sum=6
+1 n=0 => i_after=1 sum=0
+2 n=1 => i_after=2 sum=1
+3 n=-2 => i_after=1 sum=0
+SAME    conformance/undefined/for_var_after_loop.st (implementation-defined)
+### conformance/undefined/int_overflow.st
+0 a=1 b=2 => s=3 d=-1
+1 a=32767 b=1 => s=-32768 d=32766
+2 a=-32768 b=-1 => s=32767 d=-32767
+3 a=-32768 b=1 => s=-32767 d=32767
+4 a=32767 b=32767 => s=-2 d=0
+5 a=-32768 b=-32768 => s=0 d=0
+SAME    conformance/undefined/int_overflow.st (implementation-defined)
+### conformance/undefined/real_div_zero.st
+0 x=1.0 y=2.0 => q=0.5
+1 x=1.0 y=0.0 => q=inf
+2 x=-1.0 y=0.0 => q=-inf
+3 x=0.0 y=0.0 => q=nan
+4 x=1.0 y=2.0 => q=0.5
+SAME    conformance/undefined/real_div_zero.st (implementation-defined)
+### conformance/undefined/real_to_int_ties.st
+0 x=2.5 l=2.5 => i=2 d=2
+1 x=3.5 l=3.5 => i=4 d=4
+2 x=-2.5 l=-2.5 => i=-2 d=-2
+3 x=-3.5 l=-3.5 => i=-4 d=-4
+4 x=0.5 l=0.5 => i=0 d=0
+DIFFERS conformance/undefined/real_to_int_ties.st (implementation-defined)
+        cycle 1 (trace line 20): i expected 3, got 4
+        cycle 1 (trace line 20): d expected 3, got 4
+        cycle 3 (trace line 22): i expected -3, got -4
+        cycle 3 (trace line 22): d expected -3, got -4
+### conformance/undefined/short_circuit.st
+0 g=FALSE => a=FALSE o=TRUE n_and=1 n_or=1
+1 g=TRUE => a=TRUE o=TRUE n_and=1 n_or=1
+2 g=FALSE => a=FALSE o=TRUE n_and=1 n_or=1
+SAME    conformance/undefined/short_circuit.st (implementation-defined)
+### conformance/undefined/string_conversions.st
+DIFFERS conformance/undefined/string_conversions.st (implementation-defined)
+        rk failed to compile the program:
+        [E0201] Error: unknown name
+            ╭─[ src/main.st:13:11 ]
+            │
+         13 │   back := STRING_TO_INT('42');
+            │           ──────┬──────  
+            │                 ╰──────── no item 'STRING_TO_INT' found in scope
+        ────╯
+        compilation failed: 1 error(s) found, cannot compile.
+        
+### conformance/undefined/string_truncate.st
+DIFFERS conformance/undefined/string_truncate.st (implementation-defined)
+        rk failed to compile the program:
+        [E0314] Error: STRING literal over its capacity
+            ╭─[ src/main.st:10:9 ]
+            │
+         10 │   s3 := 'abcdef';
+            │         ────┬───  
+            │             ╰───── the literal is 6 bytes, over the capacity of 3
+            │ 
+            │ Help: declare it STRING[6], or shorten the literal
+        ────╯
+        [E0301] Error: type mismatch
+            ╭─[ src/main.st:11:9 ]
+            │
+          6 │     n3 : INT;
+            │     ─┬  
+            │      ╰── 'n3' is declared here
+            │ 
+         11 │   n3 := LEN(s3);
+            │         ───┬───  
+            │            ╰───── expected 'INT', got 'UDINT'
+            │ 
+            │ Help: insert explicit cast 'UDINT_TO_INT(LEN(s3))'
+        ────╯
+        [E0301] Error: type mismatch
+            ╭─[ src/main.st:13:9 ]
+            │
+          8 │     n2 : INT;
+            │     ─┬  
+            │      ╰── 'n2' is declared here
+            │ 
+         13 │   n2 := LEN(c2);
+            │         ───┬───  
+            │            ╰───── expected 'INT', got 'UDINT'
+            │ 
+            │ Help: insert explicit cast 'UDINT_TO_INT(LEN(c2))'
+        ────╯
+        compilation failed: 3 error(s) found, cannot compile.
+        
+### conformance/undefined/subrange_out_of_range.st
+0 v=7 => s=7
+1 v=20 => trap   # thrown Wasm exception
+DIFFERS conformance/undefined/subrange_out_of_range.st (implementation-defined)
+        cycle 1 (trace line 16): unexpected trap: thrown Wasm exception
+### conformance/undefined/tasks_same_priority.st
+0 => marks=12
+1 => marks=1212
+2 => marks=121212
+3 => marks=12121212
+4 => marks=1212121212
+SAME    conformance/undefined/tasks_same_priority.st (implementation-defined)
+### conformance/undefined/timer_pt_zero.st
+0 in=FALSE => q_ton=FALSE et_ton=T#0ms q_tof=FALSE et_tof=T#0ms q_tp=FALSE et_tp=T#0ms
+1 in=TRUE => q_ton=FALSE et_ton=T#0ms q_tof=TRUE et_tof=T#0ms q_tp=TRUE et_tp=T#0ms
+2 => q_ton=TRUE et_ton=T#0ms q_tof=TRUE et_tof=T#0ms q_tp=FALSE et_tp=T#0ms
+3 in=FALSE => q_ton=FALSE et_ton=T#0ms q_tof=TRUE et_tof=T#0ms q_tp=FALSE et_tp=T#0ms
+4 => q_ton=FALSE et_ton=T#0ms q_tof=FALSE et_tof=T#0ms q_tp=FALSE et_tp=T#0ms
+5 in=TRUE => q_ton=FALSE et_ton=T#0ms q_tof=TRUE et_tof=T#0ms q_tp=TRUE et_tp=T#0ms
+6 in=FALSE => q_ton=FALSE et_ton=T#0ms q_tof=TRUE et_tof=T#0ms q_tp=FALSE et_tp=T#0ms
+DIFFERS conformance/undefined/timer_pt_zero.st (implementation-defined)
+        cycle 0 (trace line 22): q_tof expected TRUE, got FALSE
+### conformance/undefined/ton_pt_change.st
+0 in=FALSE pt=T#500ms => q=FALSE et=T#0ms
+1 in=TRUE => q=FALSE et=T#0ms
+2 => q=FALSE et=T#100ms
+3 pt=T#200ms => q=TRUE et=T#200ms
+4 => q=TRUE et=T#200ms
+5 pt=T#800ms => q=TRUE et=T#800ms
+6 => q=TRUE et=T#800ms
+7 => q=TRUE et=T#800ms
+8 => q=TRUE et=T#800ms
+9 => q=TRUE et=T#800ms
+10 => q=TRUE et=T#800ms
+11 => q=TRUE et=T#800ms
+12 in=FALSE => q=FALSE et=T#0ms
+DIFFERS conformance/undefined/ton_pt_change.st (implementation-defined)
+        cycle 5 (trace line 31): et expected T#400ms, got T#800ms
+        cycle 6 (trace line 32): et expected T#500ms, got T#800ms
+        cycle 7 (trace line 33): et expected T#600ms, got T#800ms
+        cycle 8 (trace line 34): et expected T#700ms, got T#800ms
+
+88 tests: 46 pass, 24 fail, 10 same, 8 differs, 0 error
+exit 1

@@ -8,7 +8,7 @@ input/output traces, one record per scan cycle. Dedicated to the public
 domain under CC0 1.0 (see `LICENSE`).
 
 Status: 88 tests, run against IronPLC, matiec, OpenPLC's matiec fork, STruC++,
-4diac (IDE + FORTE, on the subset 61499 can pose) and RuSTy
+4diac (IDE + FORTE, on the subset 61499 can pose), rk and RuSTy
 (see `notes/comparison.md`), with a Lean 4 model of the function block
 semantics that the expected traces are proved to follow from.
 
@@ -96,6 +96,8 @@ harness/
   matiec/      Python: iec2c + generated C driver with simulated time (also
                drives the matiec fork bundled in OpenPLC_v3)
   strucpp/     Python: strucpp (ST -> C++) + generated C++ driver with simulated time
+  rk/          Rust: rk compile -> core.wasm, hosted on wasmtime with a simulated
+               clock, variables by name through rk's debug_format crate
   4diac/       Python: PROGRAM -> 61499 basic FB (.fbt), 4diac IDE headless export
                to C++ (forte_ng), generated driver against libforte (no clock)
   rusty/       Python: plc (RuSTy) + mock-time stdlib + C driver
@@ -143,6 +145,8 @@ located variables.
   to refresh the results table of `notes/comparison.md` (checked by CI).
 - `rusty`: same, on pull requests, weekly and on `workflow_dispatch` (needs
   LLVM 21 and a full RuSTy build; skipped on plain pushes to `main`).
+- `rk`: rk built from source at `RK_SHA` (cached), the wasmtime host in
+  `harness/rk`.
 - `fourdiac`: the 4diac IDE 3.3.0 Linux package and FORTE 3.3.0 built as
   shared libraries, both cached; the IDE runs under `xvfb-run`.
 
@@ -208,6 +212,22 @@ does (declaration order, priority ignored) and does not drive `SINGLE` tasks.
 ## Running against RuSTy
 
 See `harness/rusty/README.md`.
+
+## Running against rk
+
+rk (github.com/adclz/rk) compiles Structured Text to WebAssembly and ships
+no runtime; the harness is the host.
+
+```sh
+git clone https://github.com/adclz/rk scratch/rk
+(cd scratch/rk && git checkout 20761dd && cargo build --release -p rk)
+(cd harness/rk && cargo build --release)
+./harness/rk/target/release/iec61131-conformance-rk --rk scratch/rk/target/release/rk conformance
+```
+
+Each test becomes an rk workspace; the harness prepends one line of `USING`
+for rk's `Std.*` namespaces and appends a one-task CONFIGURATION to a bare
+PROGRAM (see `notes/comparison.md`, rk section).
 
 ## Running against 4diac
 

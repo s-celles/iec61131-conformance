@@ -24,6 +24,7 @@ env:
   STRUCPP_SHA: 72dfcb8b1c5a41a68bfbf4b133169189c58f04b3
   RUSTY_SHA: e911ee5e0bce0ba60086ff5269d74090a27c32d6
   FOURDIAC_VERSION: "3.3.0"   # 4diac IDE release and the 4diac-forte git tag
+  RK_SHA: 20761dd5c3e559ef5962055490c42cf05dc3e43e   # also harness/rk/Cargo.toml (debug_format)
 
 jobs:
   formal:
@@ -211,6 +212,52 @@ jobs:
         with:
           name: strucpp-run
           path: ${{ runner.temp }}/strucpp-run.txt
+          if-no-files-found: ignore
+
+  rk:
+    name: rk (vs evidence)
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/cache@v4
+        id: rk-cache
+        with:
+          path: ${{ runner.temp }}/rk-bin
+          key: rk-${{ env.RK_SHA }}-linux-x86_64
+
+      - name: Fetch rk at the pinned commit and build its CLI from source
+        if: steps.rk-cache.outputs.cache-hit != 'true'
+        run: |
+          git init -q "$RUNNER_TEMP/rk"
+          cd "$RUNNER_TEMP/rk"
+          git fetch -q --depth 1 https://github.com/adclz/rk "$RK_SHA"
+          git checkout -q FETCH_HEAD
+          cargo build --release -p rk   # rust-toolchain.toml pins the toolchain
+          mkdir -p "$RUNNER_TEMP/rk-bin"
+          cp target/release/rk "$RUNNER_TEMP/rk-bin/"
+
+      - uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cargo/registry
+            ~/.cargo/git
+            harness/rk/target
+          key: rk-harness-${{ hashFiles('harness/rk/Cargo.lock') }}
+
+      - name: Build the harness (wasmtime host)
+        run: cd harness/rk && cargo build --release
+
+      - name: Run suite and compare with notes/evidence/rk-run.txt
+        run: |
+          .github/scripts/check-evidence.sh notes/evidence/rk-run.txt -- \
+            ./harness/rk/target/release/iec61131-conformance-rk --rk "$RUNNER_TEMP/rk-bin/rk" --record conformance
+
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: rk-run
+          path: ${{ runner.temp }}/rk-run.txt
           if-no-files-found: ignore
 
   fourdiac:

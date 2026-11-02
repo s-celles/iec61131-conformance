@@ -38,6 +38,7 @@ RUNTIMES = [
     ("STruC++", "strucpp"),
     ("RuSTy", "rusty"),
     ("4diac", "4diac"),
+    ("rk", "rk"),
 ]
 
 BEGIN = "<!-- results:begin -->"
@@ -156,7 +157,7 @@ def build(text):
     lines += ["",
               f"Totals ({len(rows)} tests, {conformant} with `status: conformant`): "
               f"conformant tests passed, {totals}. "
-              f"{agree} of the {len(rows)} tests have the same result on all six runtimes.",
+              f"{agree} of the {len(rows)} tests have the same result on all seven runtimes.",
               "", END]
     return "\n".join(lines)
 

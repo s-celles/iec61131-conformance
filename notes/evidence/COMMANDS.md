@@ -54,6 +54,13 @@ cmake -S scratch/4diac-forte -B scratch/4diac-forte/build -DFORTE_ARCHITECTURE=P
 xvfb-run -a python3 -I harness/4diac/run.py --ide scratch/4diac-ide --forte-src scratch/4diac-forte \
     --forte-build scratch/4diac-forte/build --record conformance > notes/evidence/4diac-run.txt
 
+# rk 20761dd (adclz/rk, Rust 1.97.1 from its rust-toolchain.toml; 2026-11-02)
+git clone https://github.com/adclz/rk scratch/rk
+(cd scratch/rk && git checkout 20761dd5c3e559ef5962055490c42cf05dc3e43e && cargo build --release -p rk)
+(cd harness/rk && cargo build --release)
+./harness/rk/target/release/iec61131-conformance-rk --rk scratch/rk/target/release/rk --record conformance \
+    > notes/evidence/rk-run.txt
+
 # Lean 4.35.0 (elan)
 curl -sSfL https://github.com/leanprover/elan/releases/latest/download/elan-x86_64-unknown-linux-gnu.tar.gz | tar xz
 ./elan-init -y --default-toolchain stable

@@ -4,3 +4,4 @@ harness/matiec/build
 *.iplc
 formal/.lake
 __pycache__/
+harness/rk/target
