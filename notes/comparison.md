@@ -401,19 +401,28 @@ Documented choices that make a conformant test fail to compile:
 7. **No SINGLE tasks**: "event-driven tasks (SINGLE) are not supported"
    (`E1410`, `config/event_single`).
 8. **A negative based literal is a syntax error**: `-16#10` gives
-   "unexpected token(s): '# 1 0'" (`ops/literals`).
+   "unexpected token(s): '# 1 0'" (`ops/literals`); `-(16#10)` is accepted.
+   Not documented, and the only lexer defect met.
+9. **`MUX` has no overload for unsigned integers, `SINT`, bit strings or
+   dates** (`stdlib/Selection.st`: BOOL, INT, DINT, LINT, REAL, LREAL, TIME,
+   STRING), while `SEL` has them all and table 32 declares both on ANY;
+   `MUX(k, a, b)` on UINT is `E0809` "ambiguous overloaded call"
+   (`ops/mux_types`, found by `tools/fuzz`). The help text of that error
+   suggests `INT_TO_DINT(x)`, which rk does not declare (item 1).
 
 Semantic differences in what runs:
 
-9. **The counters follow the FDIS 2001 bodies** (`CV < PV`, `CV > 0`), as
+10. **The counters follow the FDIS 2001 bodies** (`CV < PV`, `CV > 0`), as
    matiec and STruC++ do (`counters/ctu`, `ctd`, `ctud`,
    `undefined/ctu_pv_zero`).
-10. **`F_TRIG` reports a falling edge on a first evaluation with CLK
+11. **`F_TRIG` reports a falling edge on a first evaluation with CLK
     FALSE** (the ed.2 body with `M` initially FALSE), as upstream matiec
     (`edge/f_trig`, `notes/findings.md` #6).
-11. **Untyped real literals are REAL**: `1.0E15 + 1.0` assigned to an LREAL
-    is computed in binary32 (`ops/lreal_precision`), as RuSTy (#2037).
-12. Corners the standard leaves open (`undefined/`): a value outside a
+12. **Untyped real literals are REAL**: `1.0E15 + 1.0` assigned to an LREAL
+    is computed in binary32 (`ops/lreal_precision`), as RuSTy (#2037); rk
+    documents it (`docs/math-operations.md`: "a literal computes at its own
+    type first", write `LREAL#`).
+13. Corners the standard leaves open (`undefined/`): a value outside a
     subrange raises a WebAssembly exception (rk's bounds checks; IronPLC
     stores it), real-to-integer ties round away from zero, a FOR bound is
     evaluated once, `TON` holds ET at the old PT when PT is raised after Q,

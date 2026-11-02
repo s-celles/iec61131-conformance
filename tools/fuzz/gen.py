@@ -59,7 +59,8 @@ EXCLUDABLE = {
     "typed_literals": "DINT#, UINT#, BYTE# and WORD# literals: plain decimal / 16# is written instead",
     "time_functions": "MIN MAX LIMIT SEL MUX on TIME (ironplc#2555)",
     "time_literal_ms": "TIME literals with a millisecond part: whole seconds are written instead (beremiz/matiec#44 on AArch64)",
-    "time_mul": "TIME * INT (beremiz/matiec#51)",
+    "time_mul": "TIME * INT (beremiz/matiec#51; rk refuses it)",
+    "mux_unsigned": "MUX on UINT (rk has no unsigned MUX overload)",
 }
 
 
@@ -187,6 +188,8 @@ class Gen:
             return ("call", fn, [self.arg(ty, depth - 1) for _ in range(3)])
         if fn == "SEL":
             return ("call", fn, [self.bool_expr(depth - 1), self.arg(ty, depth - 1), self.arg(ty, depth - 1)])
+        if ty == "UINT" and "mux_unsigned" in self.excl:
+            return ("call", "SEL", [self.bool_expr(depth - 1), self.arg(ty, depth - 1), self.arg(ty, depth - 1)])
         n = r.choice([2, 3, 4])
         # K is an INT kept in range by construction: ABS(k) MOD n
         k_expr = ("bin", "MOD", ("call", "ABS", [self.int_expr("INT", depth - 1)]), ("lit", "INT", n))

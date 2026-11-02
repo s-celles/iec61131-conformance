@@ -46,6 +46,8 @@ def runtimes(a):
         rts["strucpp"] = ["python3", "-I", str(ROOT / "harness/strucpp/run.py"), "--strucpp", a.strucpp, "--runtime-include", a.runtime_include]
     if a.plc and a.rusty_src:
         rts["rusty"] = ["python3", "-I", str(ROOT / "harness/rusty/run.py"), "--plc", a.plc, "--rusty-src", a.rusty_src]
+    if a.rk_harness and a.rk:
+        rts["rk"] = [a.rk_harness, "--rk", a.rk]
     return rts
 
 
@@ -91,6 +93,8 @@ def main():
     ap.add_argument("--runtime-include")
     ap.add_argument("--plc")
     ap.add_argument("--rusty-src")
+    ap.add_argument("--rk-harness", help="harness/rk/target/release/iec61131-conformance-rk")
+    ap.add_argument("--rk", help="the rk CLI")
     a = ap.parse_args()
     rts = runtimes(a)
     if not rts:

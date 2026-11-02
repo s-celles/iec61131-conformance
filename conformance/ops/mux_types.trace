@@ -1,0 +1,20 @@
+# MUX on UINT, BYTE, WORD, BOOL and TIME.
+#
+# Derivation (ed.3 table 32: MUX(K, IN0, ..., INn) is "multiplexer: select
+# one of N inputs depending on input K", declared on ANY for the inputs
+# and ANY_INT for K; ed.2 table 27 likewise): the result is IN_K, of the
+# inputs' type.
+# k=0 -> IN0: 10, 16#0F, 16#1234, TRUE,  T#1s
+# k=1 -> IN1: 65535, 16#F0, 16#FFFF, FALSE, T#250ms
+# k=2 -> IN2: 7, 16#AA, 16#0000, TRUE, T#0s
+period_ms: 100
+program: main
+inputs: k
+outputs: mu mb mw mx mt
+status: conformant
+reference: IEC 61131-3 ed.3 table 32 (MUX); ed.2 table 27
+---
+0 k=0 => mu=10 mb=16#0F mw=16#1234 mx=TRUE mt=T#1000ms
+1 k=1 => mu=65535 mb=16#F0 mw=16#FFFF mx=FALSE mt=T#250ms
+2 k=2 => mu=7 mb=16#AA mw=16#0000 mx=TRUE mt=T#0ms
+3 k=0 => mu=10 mb=16#0F mw=16#1234 mx=TRUE mt=T#1000ms
