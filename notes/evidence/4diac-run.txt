@@ -206,6 +206,14 @@ PASS    conformance/ops/literals.st
 2 a=2.0 b=1.0E300 => sum=1.0000000000000001e+300 quot=2.0000000000000001e-300 prod=2.0000000000000001e+300 sq=1.4142135623730951 big=1000000000000001
 3 a=1.0E16 b=1.0 => sum=10000000000000000 quot=10000000000000000 prod=10000000000000000 sq=100000000 big=1000000000000001
 PASS    conformance/ops/lreal_precision.st
+### conformance/ops/mux_types.st
+ERROR   conformance/ops/mux_types.st
+        c++ failed:
+        <tmpdir>/exported/FB_CONFORMANCE_OPS_MUX_TYPES/src/FB_CONFORMANCE_OPS_MUX_TYPES_fbt.cpp:21:10: fatal error: forte/iec61131_functions/func_MUX.h: No such file or directory
+           21 | #include "forte/iec61131_functions/func_MUX.h"
+              |          ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+        compilation terminated.
+        
 ### conformance/ops/precedence.st
 0 a=7 b=2 c=3 p=TRUE q=FALSE r=TRUE => e1=13 e2=27 e3=2 e4=9 e5=-1 e6=3 e7=9 l1=TRUE l2=TRUE l3=FALSE l4=FALSE l5=FALSE l6=TRUE
 1 a=-9 b=4 c=-2 p=FALSE q=TRUE r=FALSE => e1=-17 e2=10 e3=-11 e4=4 e5=1 e6=2 e7=-5 l1=FALSE l2=TRUE l3=TRUE l4=FALSE l5=FALSE l6=TRUE
@@ -515,5 +523,5 @@ ERROR   conformance/undefined/timer_pt_zero.st
 ERROR   conformance/undefined/ton_pt_change.st
         type TON is outside this harness's scope
 
-88 tests: 31 pass, 7 fail, 4 same, 6 differs, 40 error
+89 tests: 31 pass, 7 fail, 4 same, 6 differs, 41 error
 exit 1

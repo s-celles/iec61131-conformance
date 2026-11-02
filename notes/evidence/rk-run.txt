@@ -555,6 +555,250 @@ FAIL    conformance/ops/lreal_precision.st
         cycle 1 (trace line 16): big expected 1000000000000001.0, got 999999986991104.0
         cycle 2 (trace line 17): big expected 1000000000000001.0, got 999999986991104.0
         cycle 3 (trace line 18): big expected 1000000000000001.0, got 999999986991104.0
+### conformance/ops/mux_types.st
+FAIL    conformance/ops/mux_types.st
+        rk failed to compile the program:
+        [E0809] Error: ambiguous overloaded call
+              ╭─[ src/main.st:31:9 ]
+              │
+           31 │   mu := MUX(k, u0, u1, u2);
+              │         ─┬─  
+              │          ╰─── call to 'MUX' is ambiguous: 4 overloads accept these arguments
+              │
+              ├─[ <rk-stdlib>/Selection.st:936:11 ]
+              │
+          936 │   FUNCTION MUX: DINT
+              │            ─┬─  
+              │             ╰─── a candidate is declared here
+              │ 
+          987 │   FUNCTION MUX: LINT
+              │            ─┬─  
+              │             ╰─── a candidate is declared here
+              │ 
+         1038 │   FUNCTION MUX: REAL
+              │            ─┬─  
+              │             ╰─── a candidate is declared here
+              │ 
+         1089 │   FUNCTION MUX: LREAL
+              │            ─┬─  
+              │             ╰─── a candidate is declared here
+              │ 
+              │ Help: pick one with a typed literal or a conversion, such as `DINT#5` or `INT_TO_DINT(x)`
+              │ 
+              │ Note: an argument widens to each overload
+        ──────╯
+        [E0810] Error: no matching overload
+              ╭─[ src/main.st:32:9 ]
+              │
+           32 │   mb := MUX(k, b0, b1, b2);
+              │         ─┬─  
+              │          ╰─── no overload of 'MUX' accepts (INT, BYTE, BYTE, BYTE)
+              │
+              ├─[ <rk-stdlib>/Selection.st:820:11 ]
+              │
+          820 │   FUNCTION MUX: BOOL
+              │            ─┬─  
+              │             ╰─── overload accepting (INT, BOOL, BOOL)
+              │ 
+          834 │   FUNCTION MUX: BOOL
+              │            ─┬─  
+              │             ╰─── overload accepting (INT, BOOL, BOOL, BOOL)
+              │ 
+          851 │   FUNCTION MUX: BOOL
+              │            ─┬─  
+              │             ╰─── overload accepting (INT, BOOL, BOOL, BOOL, BOOL)
+              │ 
+          871 │   FUNCTION MUX: INT
+              │            ─┬─  
+              │             ╰─── overload accepting (INT, INT, INT)
+              │ 
+          885 │   FUNCTION MUX: INT
+              │            ─┬─  
+              │             ╰─── overload accepting (INT, INT, INT, INT)
+              │ 
+          902 │   FUNCTION MUX: INT
+              │            ─┬─  
+              │             ╰─── overload accepting (INT, INT, INT, INT, INT)
+              │ 
+          922 │   FUNCTION MUX: DINT
+              │            ─┬─  
+              │             ╰─── overload accepting (INT, DINT, DINT)
+              │ 
+          936 │   FUNCTION MUX: DINT
+              │            ─┬─  
+              │             ╰─── overload accepting (INT, DINT, DINT, DINT)
+              │ 
+          953 │   FUNCTION MUX: DINT
+              │            ─┬─  
+              │             ╰─── overload accepting (INT, DINT, DINT, DINT, DINT)
+              │ 
+          973 │   FUNCTION MUX: LINT
+              │            ─┬─  
+              │             ╰─── overload accepting (INT, LINT, LINT)
+              │ 
+          987 │   FUNCTION MUX: LINT
+              │            ─┬─  
+              │             ╰─── overload accepting (INT, LINT, LINT, LINT)
+              │ 
+         1004 │   FUNCTION MUX: LINT
+              │            ─┬─  
+              │             ╰─── overload accepting (INT, LINT, LINT, LINT, LINT)
+              │ 
+         1024 │   FUNCTION MUX: REAL
+              │            ─┬─  
+              │             ╰─── overload accepting (INT, REAL, REAL)
+              │ 
+         1038 │   FUNCTION MUX: REAL
+              │            ─┬─  
+              │             ╰─── overload accepting (INT, REAL, REAL, REAL)
+              │ 
+         1055 │   FUNCTION MUX: REAL
+              │            ─┬─  
+              │             ╰─── overload accepting (INT, REAL, REAL, REAL, REAL)
+              │ 
+         1075 │   FUNCTION MUX: LREAL
+              │            ─┬─  
+              │             ╰─── overload accepting (INT, LREAL, LREAL)
+              │ 
+         1089 │   FUNCTION MUX: LREAL
+              │            ─┬─  
+              │             ╰─── overload accepting (INT, LREAL, LREAL, LREAL)
+              │ 
+         1106 │   FUNCTION MUX: LREAL
+              │            ─┬─  
+              │             ╰─── overload accepting (INT, LREAL, LREAL, LREAL, LREAL)
+              │ 
+         1126 │   FUNCTION MUX: TIME
+              │            ─┬─  
+              │             ╰─── overload accepting (INT, TIME, TIME)
+              │ 
+         1140 │   FUNCTION MUX: TIME
+              │            ─┬─  
+              │             ╰─── overload accepting (INT, TIME, TIME, TIME)
+              │ 
+         1157 │   FUNCTION MUX: TIME
+              │            ─┬─  
+              │             ╰─── overload accepting (INT, TIME, TIME, TIME, TIME)
+              │ 
+         1177 │   FUNCTION MUX: STRING[255]
+              │            ─┬─  
+              │             ╰─── overload accepting (INT, STRING, STRING)
+              │ 
+         1191 │   FUNCTION MUX: STRING[255]
+              │            ─┬─  
+              │             ╰─── overload accepting (INT, STRING, STRING, STRING)
+              │ 
+         1208 │   FUNCTION MUX: STRING[255]
+              │            ─┬─  
+              │             ╰─── overload accepting (INT, STRING, STRING, STRING, STRING)
+        ──────╯
+        [E0810] Error: no matching overload
+              ╭─[ src/main.st:33:9 ]
+              │
+           33 │   mw := MUX(k, w0, w1, w2);
+              │         ─┬─  
+              │          ╰─── no overload of 'MUX' accepts (INT, WORD, WORD, WORD)
+              │
+              ├─[ <rk-stdlib>/Selection.st:820:11 ]
+              │
+          820 │   FUNCTION MUX: BOOL
+              │            ─┬─  
+              │             ╰─── overload accepting (INT, BOOL, BOOL)
+              │ 
+          834 │   FUNCTION MUX: BOOL
+              │            ─┬─  
+              │             ╰─── overload accepting (INT, BOOL, BOOL, BOOL)
+              │ 
+          851 │   FUNCTION MUX: BOOL
+              │            ─┬─  
+              │             ╰─── overload accepting (INT, BOOL, BOOL, BOOL, BOOL)
+              │ 
+          871 │   FUNCTION MUX: INT
+              │            ─┬─  
+              │             ╰─── overload accepting (INT, INT, INT)
+              │ 
+          885 │   FUNCTION MUX: INT
+              │            ─┬─  
+              │             ╰─── overload accepting (INT, INT, INT, INT)
+              │ 
+          902 │   FUNCTION MUX: INT
+              │            ─┬─  
+              │             ╰─── overload accepting (INT, INT, INT, INT, INT)
+              │ 
+          922 │   FUNCTION MUX: DINT
+              │            ─┬─  
+              │             ╰─── overload accepting (INT, DINT, DINT)
+              │ 
+          936 │   FUNCTION MUX: DINT
+              │            ─┬─  
+              │             ╰─── overload accepting (INT, DINT, DINT, DINT)
+              │ 
+          953 │   FUNCTION MUX: DINT
+              │            ─┬─  
+              │             ╰─── overload accepting (INT, DINT, DINT, DINT, DINT)
+              │ 
+          973 │   FUNCTION MUX: LINT
+              │            ─┬─  
+              │             ╰─── overload accepting (INT, LINT, LINT)
+              │ 
+          987 │   FUNCTION MUX: LINT
+              │            ─┬─  
+              │             ╰─── overload accepting (INT, LINT, LINT, LINT)
+              │ 
+         1004 │   FUNCTION MUX: LINT
+              │            ─┬─  
+              │             ╰─── overload accepting (INT, LINT, LINT, LINT, LINT)
+              │ 
+         1024 │   FUNCTION MUX: REAL
+              │            ─┬─  
+              │             ╰─── overload accepting (INT, REAL, REAL)
+              │ 
+         1038 │   FUNCTION MUX: REAL
+              │            ─┬─  
+              │             ╰─── overload accepting (INT, REAL, REAL, REAL)
+              │ 
+         1055 │   FUNCTION MUX: REAL
+              │            ─┬─  
+              │             ╰─── overload accepting (INT, REAL, REAL, REAL, REAL)
+              │ 
+         1075 │   FUNCTION MUX: LREAL
+              │            ─┬─  
+              │             ╰─── overload accepting (INT, LREAL, LREAL)
+              │ 
+         1089 │   FUNCTION MUX: LREAL
+              │            ─┬─  
+              │             ╰─── overload accepting (INT, LREAL, LREAL, LREAL)
+              │ 
+         1106 │   FUNCTION MUX: LREAL
+              │            ─┬─  
+              │             ╰─── overload accepting (INT, LREAL, LREAL, LREAL, LREAL)
+              │ 
+         1126 │   FUNCTION MUX: TIME
+              │            ─┬─  
+              │             ╰─── overload accepting (INT, TIME, TIME)
+              │ 
+         1140 │   FUNCTION MUX: TIME
+              │            ─┬─  
+              │             ╰─── overload accepting (INT, TIME, TIME, TIME)
+              │ 
+         1157 │   FUNCTION MUX: TIME
+              │            ─┬─  
+              │             ╰─── overload accepting (INT, TIME, TIME, TIME, TIME)
+              │ 
+         1177 │   FUNCTION MUX: STRING[255]
+              │            ─┬─  
+              │             ╰─── overload accepting (INT, STRING, STRING)
+              │ 
+         1191 │   FUNCTION MUX: STRING[255]
+              │            ─┬─  
+              │             ╰─── overload accepting (INT, STRING, STRING, STRING)
+              │ 
+         1208 │   FUNCTION MUX: STRING[255]
+              │            ─┬─  
+              │             ╰─── overload accepting (INT, STRING, STRING, STRING, STRING)
+        ──────╯
+        compilation failed: 3 error(s) found, cannot compile.
+        
 ### conformance/ops/precedence.st
 0 a=7 b=2 c=3 p=TRUE q=FALSE r=TRUE => e1=13 e2=27 e3=2 e4=9 e5=-1 e6=3 e7=9 l1=TRUE l2=TRUE l3=FALSE l4=FALSE l5=FALSE l6=TRUE
 1 a=-9 b=4 c=-2 p=FALSE q=TRUE r=FALSE => e1=-17 e2=10 e3=-11 e4=4 e5=1 e6=2 e7=-5 l1=FALSE l2=TRUE l3=TRUE l4=FALSE l5=FALSE l6=TRUE
@@ -1467,5 +1711,5 @@ DIFFERS conformance/undefined/ton_pt_change.st (implementation-defined)
         cycle 7 (trace line 33): et expected T#600ms, got T#800ms
         cycle 8 (trace line 34): et expected T#700ms, got T#800ms
 
-88 tests: 46 pass, 24 fail, 10 same, 8 differs, 0 error
+89 tests: 46 pass, 25 fail, 10 same, 8 differs, 0 error
 exit 1

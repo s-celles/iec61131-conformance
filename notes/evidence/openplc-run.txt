@@ -339,6 +339,12 @@ PASS    conformance/ops/literals.st
 2 a=2.0 b=1.0E300 => sum=1.0000000000000001e+300 quot=2.0000000000000001e-300 prod=2.0000000000000001e+300 sq=1.4142135623730951 big=1000000000000001
 3 a=1.0E16 b=1.0 => sum=10000000000000000 quot=10000000000000000 prod=10000000000000000 sq=100000000 big=1000000000000001
 PASS    conformance/ops/lreal_precision.st
+### conformance/ops/mux_types.st
+0 k=0 => mu=10 mb=16#0F mw=16#1234 mx=TRUE mt=T#1000ms
+1 k=1 => mu=65535 mb=16#F0 mw=16#FFFF mx=FALSE mt=T#250ms
+2 k=2 => mu=7 mb=16#AA mw=16#0000 mx=TRUE mt=T#0ms
+3 k=0 => mu=10 mb=16#0F mw=16#1234 mx=TRUE mt=T#1000ms
+PASS    conformance/ops/mux_types.st
 ### conformance/ops/precedence.st
 0 a=7 b=2 c=3 p=TRUE q=FALSE r=TRUE => e1=13 e2=27 e3=2 e4=9 e5=-1 e6=3 e7=9 l1=TRUE l2=TRUE l3=FALSE l4=FALSE l5=FALSE l6=TRUE
 1 a=-9 b=4 c=-2 p=FALSE q=TRUE r=FALSE => e1=-17 e2=10 e3=-11 e4=4 e5=1 e6=2 e7=-5 l1=FALSE l2=TRUE l3=TRUE l4=FALSE l5=FALSE l6=TRUE
@@ -776,5 +782,5 @@ DIFFERS conformance/undefined/ton_pt_change.st
         cycle 10 (trace line 36): et expected T#800ms, got T#200ms
         cycle 11 (trace line 37): et expected T#800ms, got T#200ms
 
-88 tests: 58 pass, 12 fail, 11 same, 7 differs, 0 error
+89 tests: 59 pass, 12 fail, 11 same, 7 differs, 0 error
 exit 1

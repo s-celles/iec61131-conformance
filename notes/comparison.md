@@ -153,8 +153,9 @@ hand. CI checks the table is in sync with the evidence.
 | ops/shl_width | **FAIL** (cycles 0-4) | PASS | PASS | PASS | PASS | PASS | PASS | SHL truncates to its input's width: IronPLC shifts in a 32-bit slot and masks only at the store, so SHR/OR of a SHL result sees the lost bits (findings #25, ironplc#2553); the others agree. Found by tools/fuzz |
 | ops/time_functions | **FAIL** (compile) | **ERROR** (build) | PASS | PASS | PASS | **ERROR** (see evidence) | **FAIL** (compile) | MIN/MAX/LIMIT/SEL/MUX/LT on TIME: IronPLC rejects MIN, MAX and LIMIT on TIME (findings #27, ironplc#2555); upstream matiec does not build the `a + b` (#40); the fork, STruC++ and RuSTy agree. Found by tools/fuzz |
 | ops/time_mul | PASS | **ERROR** (build) | **FAIL** (cycles 0-4) | PASS | PASS | **FAIL** (see evidence) | **FAIL** (compile) | TIME * n with large products: matiec's __time_mul overflows a 32-bit int (matiec #15, beremiz/matiec#51; upstream does not build TIME arithmetic, #40, the fork shows it, fork #10); IronPLC, STruC++ and RuSTy agree. Found by tools/fuzz |
+| ops/mux_types | PASS | PASS | PASS | PASS | PASS | **ERROR** (see evidence) | **FAIL** (compile) | MUX on UINT/BYTE/WORD/BOOL/TIME (table 32: ANY): rk has no unsigned or bit-string MUX overload (rk item 9); 4diac has no func_MUX.h (4diac item 3) |
 
-Totals (88 tests, 70 with `status: conformant`): conformant tests passed, IronPLC 48/70; matiec 57/70; OpenPLC's matiec 58/70; STruC++ 55/70; RuSTy 56/70; 4diac 31/70; rk 46/70. 19 of the 88 tests have the same result on all seven runtimes.
+Totals (89 tests, 71 with `status: conformant`): conformant tests passed, IronPLC 49/71; matiec 58/71; OpenPLC's matiec 59/71; STruC++ 56/71; RuSTy 57/71; 4diac 31/71; rk 46/71. 19 of the 89 tests have the same result on all seven runtimes.
 
 <!-- results:end -->
 

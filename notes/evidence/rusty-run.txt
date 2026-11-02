@@ -318,6 +318,12 @@ FAIL    conformance/ops/lreal_precision.st
         cycle 1 (trace line 16): big expected 1000000000000001.0, got 999999986991104
         cycle 2 (trace line 17): big expected 1000000000000001.0, got 999999986991104
         cycle 3 (trace line 18): big expected 1000000000000001.0, got 999999986991104
+### conformance/ops/mux_types.st
+0 k=0 => mu=10 mb=16#0F mw=16#1234 mx=TRUE mt=T#1000ms
+1 k=1 => mu=65535 mb=16#F0 mw=16#FFFF mx=FALSE mt=T#250ms
+2 k=2 => mu=7 mb=16#AA mw=16#0000 mx=TRUE mt=T#0ms
+3 k=0 => mu=10 mb=16#0F mw=16#1234 mx=TRUE mt=T#1000ms
+PASS    conformance/ops/mux_types.st
 ### conformance/ops/precedence.st
 0 a=7 b=2 c=3 p=TRUE q=FALSE r=TRUE => e1=13 e2=27 e3=2 e4=9 e5=-1 e6=3 e7=9 l1=TRUE l2=TRUE l3=FALSE l4=FALSE l5=FALSE l6=TRUE
 1 a=-9 b=4 c=-2 p=FALSE q=TRUE r=FALSE => e1=-17 e2=10 e3=-11 e4=4 e5=1 e6=2 e7=-5 l1=FALSE l2=TRUE l3=TRUE l4=FALSE l5=FALSE l6=TRUE
@@ -737,5 +743,5 @@ DIFFERS conformance/undefined/ton_pt_change.st
         cycle 8 (trace line 34): q expected TRUE, got FALSE
         cycle 9 (trace line 35): q expected TRUE, got FALSE
 
-88 tests: 56 pass, 9 fail, 13 same, 4 differs, 6 error
+89 tests: 57 pass, 9 fail, 13 same, 4 differs, 6 error
 exit 1
