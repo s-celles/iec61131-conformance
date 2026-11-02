@@ -71,18 +71,26 @@ Reported together with item 3: https://github.com/ironplc/ironplc/issues/2546
   documentation; a `--trap-on-overflow` compile option would make the
   behaviour explicit.
 
-## 6. (Uncertainty, not an IronPLC defect) F_TRIG initial state
+## 6. (Resolved 2026-11-02) F_TRIG initial state
 
-- Reproducer: `conformance/edge/f_trig.st`, cycle 0.
-- IronPLC: `q=FALSE` on a first evaluation with CLK = FALSE (its hidden `M`
-  starts at 0 and it computes `Q := NOT CLK AND M`, equivalent to the body
-  with `M := TRUE`). matiec: `q=TRUE` (body from the 2001 FDIS with `M`
-  default FALSE, `Q := NOT CLK AND NOT M`).
-- The trace follows the ed.3 table 43 body as I recall it (`M : BOOL :=
-  TRUE`). I do not have the standard text here, so this expectation is an
-  assumption, flagged in the summary. If a reader with the text finds that
-  ed.3 also leaves `M` at FALSE, the trace line for cycle 0 should become
-  `q=?` and matiec's result is conformant.
+- Reproducer: `conformance/edge/f_trig.st`, cycle 0 (CLK = FALSE on the
+  first evaluation).
+- The text settles it. IEC 61131-3 ed.3 6.6.3.5.3, table 45 declares
+  `F_TRIG` with `VAR M : BOOL; END_VAR` (no initial value, so FALSE) and the
+  body `Q := NOT CLK AND NOT M; M := NOT CLK;`, and the NOTE under the table
+  says that an `F_TRIG` "whose CLK input is disconnected or is connected to
+  a value of FALSE" has Q at BOOL#1 after its first execution following a
+  cold restart, BOOL#0 after that. So `q=TRUE` at cycle 0.
+- Until 2026-11-02 the trace assumed `M : BOOL := TRUE` ("as I recall it",
+  flagged here as the suite's main uncertainty) and expected `q=FALSE`;
+  adclz pointed at table 45 on adclz/rk#117, and the trace, its derivation
+  and the Lean model (`F_TRIG false`) were corrected from the table's text.
+- IronPLC computes `Q := NOT CLK AND M` with its hidden `M` at 0, which is
+  the `M := TRUE` reading: `q=FALSE` at cycle 0, a deviation from table 45.
+  matiec's FDIS-2001 body is the standard's.
+- The suite also cited the wrong tables for the standard function blocks:
+  table 43 of ed.3 is "Function block call"; the edge detectors are table
+  45 (6.6.3.5.3) and the counters table 46 (6.6.3.5.4).
 
 ## 7. CTU counts past PV (IronPLC) versus saturates at PV (matiec)
 

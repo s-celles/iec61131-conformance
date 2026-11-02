@@ -16,7 +16,10 @@ The standard text itself is not available in this repository; the
 transcription follows the derivations written in the `.trace` files. Two
 readings that depend on the edition are isolated as parameters:
 `CtuRule.pvMax` versus `CtuRule.pv` (ed.3 `CV < PVmax` versus FDIS 2001
-`CV < PV`) and `fTrigInitM` (ed.3 `M := TRUE` versus FDIS 2001 `M := FALSE`).
+`CV < PV`) and F_TRIG's initial `M`. For the latter ed.3 is settled: table 45
+declares `VAR M : BOOL;` (FALSE) and its NOTE gives Q = TRUE on a first
+execution with CLK FALSE; `M := TRUE` is kept only to model the runtimes
+that read it so.
 
 No dependency on Mathlib: only core Lean 4.
 -/
@@ -117,10 +120,10 @@ def rTrigStep (m : Bool) (clk : Bool) (_t : Nat) : Bool × Bool :=
 
 def R_TRIG : Block Bool Bool Bool := ⟨false, rTrigStep⟩
 
-/-- `Q := NOT CLK AND NOT M; M := NOT CLK;`. The initial value of M is the
-edition-dependent point: ed.3 initialises it to TRUE (no edge on a first
-evaluation with CLK FALSE), the FDIS 2001 text copied by matiec leaves it
-FALSE. -/
+/-- `Q := NOT CLK AND NOT M; M := NOT CLK;` (ed.3 6.6.3.5.3 table 45). The
+standard leaves M at FALSE (`VAR M : BOOL;`), so a first evaluation with CLK
+FALSE reports an edge, as the NOTE under table 45 states; `initM = true`
+models the runtimes that start M at TRUE. -/
 def fTrigStep (m : Bool) (clk : Bool) (_t : Nat) : Bool × Bool :=
   (!clk, !clk && !m)
 

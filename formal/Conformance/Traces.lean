@@ -144,7 +144,7 @@ def fTrigInputs : List (Nat × (Bool)) :=
 
 /-- conformance/edge/f_trig.trace: expected outputs per cycle (`none` = `?`). -/
 def fTrigExpected : List (Option Bool) :=
-  [some false,
+  [some true,
    some false,
    some true,
    some false,

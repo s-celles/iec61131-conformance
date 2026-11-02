@@ -49,11 +49,12 @@ theorem tof_trace : conforms (TOF 200) tofInputs tofExpected = true := by decide
 theorem tp_trace : conforms (TP 300) tpInputs tpExpected = true := by decide
 theorem r_trig_trace : conforms R_TRIG rTrigInputs rTrigExpected = true := by decide
 
-/-- With ed.3's `M := TRUE` the F_TRIG trace holds ... -/
-theorem f_trig_trace_ed3 : conforms (F_TRIG true) fTrigInputs fTrigExpected = true := by decide
-/-- ... and with the FDIS 2001 initial value it does not (this is exactly
-matiec's cycle-0 failure). -/
-theorem f_trig_trace_fdis : conforms (F_TRIG false) fTrigInputs fTrigExpected = false := by decide
+/-- With the standard's initial `M = FALSE` (ed.3 table 45) the F_TRIG
+trace holds ... -/
+theorem f_trig_trace : conforms (F_TRIG false) fTrigInputs fTrigExpected = true := by decide
+/-- ... and with `M := TRUE` it does not: that is the cycle-0 failure of the
+runtimes that start M at TRUE. -/
+theorem f_trig_trace_m_true : conforms (F_TRIG true) fTrigInputs fTrigExpected = false := by decide
 
 /-- SR and RS share the input list; the expected pairs are (SR.Q1, RS.Q1). -/
 def srRsExpectedSR : List (Option Bool) := srRsExpected.map (·.1)
@@ -82,13 +83,13 @@ theorem ctd_bounds_trace_ed3 : conforms (CTD .pvMax (-32768)) ctdBoundsInputs ct
 theorem ctd_bounds_trace_fdis : conforms (CTD .pv (-32768)) ctdBoundsInputs ctdBoundsExpected = true := by decide
 
 /-- Edge detectors started with CLK = TRUE: R_TRIG fires once, and F_TRIG's
-output no longer depends on its initial M, so the trace holds under both
-editions (unlike `edge/f_trig` cycle 0). -/
+output does not depend on its initial M here, so the trace holds for both
+values (unlike `edge/f_trig` cycle 0). -/
 def powerOnExpectedR : List (Option Bool) := powerOnExpected.map (·.1)
 def powerOnExpectedF : List (Option Bool) := powerOnExpected.map (·.2)
 theorem power_on_r_trig_trace : conforms R_TRIG powerOnInputs powerOnExpectedR = true := by decide
-theorem power_on_f_trig_trace_ed3 : conforms (F_TRIG true) powerOnInputs powerOnExpectedF = true := by decide
-theorem power_on_f_trig_trace_fdis : conforms (F_TRIG false) powerOnInputs powerOnExpectedF = true := by decide
+theorem power_on_f_trig_trace : conforms (F_TRIG false) powerOnInputs powerOnExpectedF = true := by decide
+theorem power_on_f_trig_trace_m_true : conforms (F_TRIG true) powerOnInputs powerOnExpectedF = true := by decide
 
 /-- Configurations (SPEC.md version 2): the task scheduler of
 `Semantics.lean`, with priority order and declaration order on ties,
@@ -184,9 +185,9 @@ theorem f_trig_no_two_consecutive (m clk clk' : Bool) (t t' : Nat) :
   intro hclk _
   simp [hclk]
 
-/-- F_TRIG, first evaluation with CLK = FALSE: no edge under ed.3's initial
-`M := TRUE`, an edge under the FDIS 2001 `M := FALSE`. This is the whole of
-the matiec/IronPLC disagreement on `edge/f_trig`. -/
+/-- F_TRIG, first evaluation with CLK = FALSE: an edge with the standard's
+`M = FALSE` (ed.3 table 45 and its NOTE), none with `M := TRUE`. This is the
+whole of the runtimes' disagreement on `edge/f_trig`. -/
 theorem f_trig_first_eval_depends_on_init_m (t : Nat) :
     (fTrigStep true false t).2 = false ∧ (fTrigStep false false t).2 = true := by
   simp [fTrigStep]

@@ -69,9 +69,9 @@ hand. CI checks the table is in sync with the evidence.
 | timers/tof | **FAIL** (cycle 0) | PASS | PASS | PASS | **FAIL** (cycles 5, 12) | **ERROR** (see evidence) | PASS | IronPLC starts an off-delay at power-up with IN never TRUE (findings #1); RuSTy drops Q one cycle late (other runtimes #1) |
 | timers/tp | **FAIL** (cycles 5, 10-18) | PASS | PASS | PASS | **FAIL** (cycles 4-8, 16) | **ERROR** (see evidence) | PASS | IronPLC retriggers while IN stays TRUE, and keeps ET = PT after the pulse with IN FALSE (findings #2, #3); RuSTy's pulse is one cycle long and, after a pulse that ended with IN already FALSE, the block is dead until IN goes TRUE then FALSE again (other runtimes #2) |
 | edge/r_trig | PASS | PASS | PASS | PASS | PASS | **ERROR** (see evidence) | PASS |  |
-| edge/f_trig | PASS | **FAIL** (cycle 0) | PASS | PASS | PASS | **ERROR** (see evidence) | **FAIL** (cycle 0) | matiec's F_TRIG has `M` initialised FALSE (ed.2 FDIS wording) so it reports a falling edge on the first evaluation with CLK = FALSE; the trace assumes ed.3's `M := TRUE` (findings #6, flagged as the suite's main uncertainty) |
+| edge/f_trig | PASS | **FAIL** (cycle 0) | PASS | PASS | PASS | **ERROR** (see evidence) | **FAIL** (cycle 0) | ed.3 table 45 declares `VAR M : BOOL;` (FALSE) and its NOTE gives Q = TRUE on a first execution with CLK FALSE (findings #6, corrected 2026-11-02 after adclz/rk#117); runtimes that start M at TRUE report no edge at cycle 0 |
 | edge/sr_rs | PASS | PASS | PASS | PASS | **FAIL** (compile) | **ERROR** (see evidence) | PASS | RuSTy names the bistable inputs `SET1`/`RESET` and `SET`/`RESET1` instead of the standard `S1`/`R` and `S`/`R1` (ed.3 table 42), so a conformant program does not compile (other runtimes #3) |
-| edge/power_on_clk_true | PASS | PASS | PASS | PASS | PASS | **ERROR** (see evidence) | PASS | R_TRIG fires on a first evaluation with CLK TRUE; F_TRIG's start-up ambiguity does not arise |
+| edge/power_on_clk_true | PASS | PASS | PASS | PASS | PASS | **ERROR** (see evidence) | PASS | R_TRIG fires on a first evaluation with CLK TRUE, as the NOTE under ed.3 table 45 says; F_TRIG reports nothing whatever its initial M |
 | counters/ctu | PASS | **FAIL** (cycle 8) | **FAIL** (cycle 8) | **FAIL** (cycle 8) | PASS | **ERROR** (see evidence) | **FAIL** (cycle 8) | matiec stops counting at CV = PV (`CV < PV`, ed.2 FDIS wording); the trace follows ed.3's `CV < PVmax` and counts to 4 (findings #7) |
 | counters/ctd | PASS | **FAIL** (cycle 10) | **FAIL** (cycle 10) | **FAIL** (cycle 10) | PASS | **ERROR** (see evidence) | **FAIL** (cycle 10) | matiec stops counting down at CV = 0 (`CV > 0`, ed.2 FDIS wording); the trace follows ed.3's `CV > PVmin` and counts to -1 (same edition difference as ctu) |
 | counters/ctud | PASS | **FAIL** (cycles 18-20) | **FAIL** (cycles 18-20) | **FAIL** (cycles 18-20) | PASS | **ERROR** (see evidence) | **FAIL** (cycles 18-20) | matiec stops at CV = 0 on the way down (cycle 18), so the later up-count lands on 1 instead of 0 (cycle 20). Priorities (R over LD over counting) and the cancelling of simultaneous edges agree on all runtimes |
@@ -164,7 +164,7 @@ Totals (89 tests, 71 with `status: conformant`): conformant tests passed, IronPL
 1. **TOF at power-up with IN = FALSE**: IronPLC Q = TRUE for PT; matiec Q = FALSE.
 2. **TP with IN held TRUE after the pulse**: IronPLC restarts the pulse every PT (free-running oscillator); matiec waits for a new rising edge.
 3. **TP ET after the pulse ends with IN FALSE**: IronPLC holds PT; matiec returns to 0.
-4. **F_TRIG first evaluation with CLK FALSE**: matiec Q = TRUE; IronPLC Q = FALSE.
+4. **F_TRIG first evaluation with CLK FALSE**: matiec Q = TRUE, as ed.3 table 45 and its NOTE say; IronPLC Q = FALSE (its M starts at TRUE).
 5. **CTU above PV, CTD/CTUD below 0**: IronPLC keeps counting to the INT bounds; matiec saturates at PV and at 0 (hence also no count at PV = 0).
 6. **TON ET after PT is raised past a Q that already rose**: IronPLC ET follows elapsed time up to the new PT; matiec holds the old PT.
 7. **Counters at the INT bounds**: IronPLC wraps (CTD at -32768 gives 32767, CTUD at 32767 gives -32768); matiec saturates.
@@ -180,7 +180,7 @@ Totals (89 tests, 71 with `status: conformant`): conformant tests passed, IronPL
 Items 1, 2, 3 are IronPLC deviations from the standard's timing diagrams
 (matiec's `lib/timer.txt` reproduces those diagrams in its comments). Item 5
 is matiec following the 2001 FDIS text rather than the published editions.
-Item 4 depends on which edition's `F_TRIG` body is taken as reference. Item
+Item 4 is an IronPLC deviation (ed.3 table 45, findings #6). Item
 6 is outside what the standard defines.
 
 ## OpenPLC's matiec fork (OpenPLC_v3 `b5d4135`, `utils/matiec_src`)
@@ -194,10 +194,11 @@ upstream matiec `3a41303`:
    common part. (`strings/compare`)
 2. **`FIND` returns `LEN(IN1) + 1` when `IN2` is absent** instead of 0:
    `FIND('hello', 'zz')` is 6. (`strings/functions`)
-3. **`F_TRIG` is the ed.3 reading**: `Q := NOT CLK AND M; M := CLK;` with `M`
-   initially FALSE, so no falling edge is reported on a first evaluation
-   with CLK FALSE; `edge/f_trig` passes here and fails on upstream, whose
-   body follows the FDIS 2001 text (`notes/findings.md` #6).
+3. **`F_TRIG` reports no edge on a first evaluation with CLK FALSE**: its body
+   is `Q := NOT CLK AND M; M := CLK;` with `M` initially FALSE, equivalent to
+   the table 45 body with `M` at TRUE; ed.3 table 45 and its NOTE give
+   Q = TRUE there (`edge/f_trig`, `notes/findings.md` #6). Upstream matiec
+   has the standard's body.
 4. **`+` and `-` on TIME build**: `print_binary_function()` has no `___`
    prefix in this snapshot, so beremiz/matiec#40 is a later regression;
    `ops/time_arith` passes on Linux x86-64. On macOS arm64 the same build
@@ -230,10 +231,10 @@ counters saturating at PV / 0, rounding to even, the `/` operator unguarded.
 
 ## STruC++ deviations (commit `72dfcb8`, v0.7.0)
 
-The timers, edge detectors and bistables pass every trace, `edge/f_trig`
-included (the bundled `iec-standard-fb` library takes the ed.3 reading of
-`F_TRIG`); the counters follow the FDIS 2001 bodies (`CV < PV`, `CV > 0`),
-as matiec's do. The failures are in the front end and the string codegen:
+The timers, `R_TRIG` and the bistables pass every trace; `F_TRIG` starts with
+its `M` at TRUE, so it reports no edge on a first evaluation with CLK FALSE
+where ed.3 table 45 and its NOTE give one (`edge/f_trig`); the counters
+follow the FDIS 2001 bodies (`CV < PV`, `CV > 0`), as matiec's do. The failures are in the front end and the string codegen:
 
 1. **A typed literal with a negative value is not lexed** (Autonomy-Logic/STruCpp#255): `INT#-5` and
    `DINT#-2147483648` stop the lexer with "unexpected character `#`"
@@ -416,9 +417,10 @@ Semantic differences in what runs:
 10. **The counters follow the FDIS 2001 bodies** (adclz/rk#117) (`CV < PV`, `CV > 0`), as
    matiec and STruC++ do (`counters/ctu`, `ctd`, `ctud`,
    `undefined/ctu_pv_zero`).
-11. **`F_TRIG` reports a falling edge (adclz/rk#117) on a first evaluation with CLK
-    FALSE** (the ed.2 body with `M` initially FALSE), as upstream matiec
-    (`edge/f_trig`, `notes/findings.md` #6).
+11. **`F_TRIG` is the standard's**: rk's body is ed.3 table 45's, with `M`
+    initially FALSE and Q = TRUE on a first evaluation with CLK FALSE as the
+    table's NOTE says; adclz pointed this out on adclz/rk#117, and the suite's
+    `edge/f_trig` trace was corrected (`notes/findings.md` #6).
 12. **Untyped real literals are REAL**: `1.0E15 + 1.0` assigned to an LREAL
     is computed in binary32 (`ops/lreal_precision`), as RuSTy (#2037); rk
     documents it (`docs/math-operations.md`: "a literal computes at its own

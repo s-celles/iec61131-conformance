@@ -22,9 +22,11 @@ semantics that the expected traces are proved to follow from.
   of its standard functions, the semantics clauses of ST). Each `.trace`
   states the derivation and the clause it rests on. That is one reading of
   the standard by one author; it is not a certification, and neither IEC
-  nor PLCopen is involved. Where the two editions differ (`F_TRIG` at
-  start-up, counters at `PV` and 0) the trace says which edition it follows
-  and the notes say which runtimes follow the other.
+  nor PLCopen is involved. Where the 2001 FDIS draft and ed.3 differ
+  (counters at `PV` and 0) the trace says which one it follows and the notes
+  say which runtimes follow the other. A reading can be wrong: `F_TRIG` at
+  start-up was, and was corrected from the text of ed.3 table 45 (see
+  `notes/findings.md` #6).
 - The suite was written with AI assistance (Claude Code; the commits say
   `Assisted-by: AI`). Every derivation was checked against the standard's
   text by the author, but an error in a trace is possible: a runtime that
@@ -269,16 +271,17 @@ order, declaration order on ties) applied to the `config/` tests.
 `status: conformant` trace of those blocks is exactly the model's output,
 and proves general properties (TON Q implies ET = PT, TOF never pulses at
 power-up, TP never retriggers while IN stays TRUE, edge detectors never fire
-twice in a row, SR/RS dominance, CTU reset dominance). The two points where
-IEC 61131-3 editions differ (`F_TRIG` initial `M`, `CTU` upper bound) are
-parameters of the model, and both readings are proved to give different
-traces.
+twice in a row, SR/RS dominance, CTU reset dominance). Two readings are
+parameters of the model, and both are proved to give different traces:
+`CTU`'s upper bound (ed.3 `PVmax` versus FDIS `PV`) and `F_TRIG`'s initial
+`M` (the standard's FALSE, per ed.3 table 45, versus the TRUE some runtimes
+use).
 
 What the proofs do not do: they do not prove the model is the standard. The
 standard text is not in this repository; the model transcribes the
 derivations written in the `.trace` comments, with the assumptions named
-there (`F_TRIG` initial `M := TRUE` per ed.3, discrete-time evaluation at
-`t = cycle * period`).
+there (`F_TRIG` initial `M` FALSE per ed.3 table 45, discrete-time evaluation
+at `t = cycle * period`).
 
 ## Writing a new test
 
