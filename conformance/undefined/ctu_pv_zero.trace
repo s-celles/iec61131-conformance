@@ -1,6 +1,6 @@
 # CTU with PV = 0.
 #
-# What the standard says: the CTU body (ed.3 table 44) ends with
+# What the standard says: the CTU body (ed.3 table 46) ends with
 # Q := (CV >= PV); with PV = 0 and CV starting at 0 this gives Q = TRUE
 # from the very first evaluation, before any count and also right after a
 # reset. So the body, read literally, defines this case. It is kept under
@@ -16,7 +16,7 @@ program: main
 inputs: cu r
 outputs: q cv
 status: implementation-defined
-reference: IEC 61131-3 ed.3 6.6.3.5.3 table 44 (CTU body)
+reference: IEC 61131-3 ed.3 6.6.3.5.4 table 46 (CTU body)
 ---
 0 cu=FALSE r=FALSE => q=TRUE cv=0
 1 cu=TRUE => q=TRUE cv=1

@@ -1,6 +1,6 @@
 # CTUD, PV = 2, period 100 ms (time is irrelevant).
 #
-# Derivation: ST body in the standard (ed.3 table 44 / ed.2 table 36):
+# Derivation: ST body in the standard (ed.3 6.6.3.5.4 table 46):
 #   VAR_INPUT CU, CD : BOOL R_EDGE; R, LD : BOOL; PV : INT; END_VAR
 #   VAR_OUTPUT QU, QD : BOOL; CV : INT; END_VAR
 #   IF R THEN CV := 0;
@@ -16,16 +16,20 @@
 #   QD := (CV <= 0);
 # Priorities exercised: R over LD (cycle 11), LD over counting (cycle 9),
 # rising edges on CU and CD in the same cycle cancel each other (cycle 7).
-# Edge memories are updated on every evaluation, as in ctu.trace. CV goes
-# below 0 at cycle 18 (ed.3: bound is PVmin); the FDIS 2001 body (`CV > 0`,
-# as in matiec) stops at 0 instead, and its `CV < PV` bound is not reached
-# by this trace.
+# Edge memories are updated on every evaluation, as in ctu.trace.
+# The NOTE under ed.3 table 46: "The numerical values of the limit
+# variables PVmin and PVmax are implementer specific." This trace assumes
+# only that the limits do not cut into the range between 0 and PV the
+# outputs are defined over (PVmin <= min(0, PV), PVmax >= max(0, PV));
+# whether CV goes below 0 at cycle 18 depends on PVmin, so cv is not
+# checked on cycles 18 to 20, nor QD on cycle 20 (CV back to 0 or up to 1);
+# QD is TRUE on 18 and 19 and QU FALSE on 18 to 20 either way.
 period_ms: 100
 program: main
 inputs: cu cd r ld
 outputs: qu qd cv
 status: conformant
-reference: IEC 61131-3 ed.3 6.6.3.5.3 table 44 (CTUD body)
+reference: IEC 61131-3 ed.3 6.6.3.5.4 table 46 (CTUD body and NOTE)
 ---
 0  cu=FALSE cd=FALSE r=FALSE ld=FALSE => qu=FALSE qd=TRUE  cv=0
 1  cu=TRUE                            => qu=FALSE qd=FALSE cv=1
@@ -50,8 +54,8 @@ reference: IEC 61131-3 ed.3 6.6.3.5.3 table 44 (CTUD body)
 15 cd=FALSE                           => qu=FALSE qd=FALSE cv=1
 16 cd=TRUE                            => qu=FALSE qd=TRUE  cv=0
 17 cd=FALSE                           => qu=FALSE qd=TRUE  cv=0
-# counting continues below 0 (ed.3: bound is PVmin)
-18 cd=TRUE                            => qu=FALSE qd=TRUE  cv=-1
-19 cd=FALSE                           => qu=FALSE qd=TRUE  cv=-1
-# back up from -1
-20 cu=TRUE                            => qu=FALSE qd=TRUE  cv=0
+# below 0: CV is -1 or 0 depending on PVmin (implementer specific)
+18 cd=TRUE                            => qu=FALSE qd=TRUE  cv=?
+19 cd=FALSE                           => qu=FALSE qd=TRUE  cv=?
+# one up: CV is 0 or 1, so QD is TRUE or FALSE
+20 cu=TRUE                            => qu=FALSE qd=?     cv=?

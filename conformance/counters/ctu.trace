@@ -1,6 +1,6 @@
 # CTU, PV = 3, period 100 ms (time is irrelevant).
 #
-# Derivation: ST body in the standard (ed.3 table 44 / ed.2 table 36):
+# Derivation: ST body in the standard (ed.3 6.6.3.5.4 table 46):
 #   VAR_INPUT CU : BOOL R_EDGE; R : BOOL; PV : INT; END_VAR
 #   VAR_OUTPUT Q : BOOL; CV : INT; END_VAR
 #   IF R THEN CV := 0;
@@ -10,14 +10,19 @@
 # (ed.3 writes the edge detection as an explicit R_TRIG on CU with the
 # same effect). The edge memory is updated on every evaluation, including
 # while R is TRUE, so a CU that stays TRUE across a reset does not count
-# again when R drops (cycle 10). CV keeps counting past PV (cycle 8);
-# Q is simply CV >= PV.
+# again when R drops (cycle 10). Q is simply CV >= PV.
+# The NOTE under ed.3 table 46: "The numerical values of the limit
+# variables PVmin and PVmax are implementer specific." This trace assumes
+# only that the limits do not cut into the range between 0 and PV the
+# outputs are defined over (PVmin <= min(0, PV), PVmax >= max(0, PV));
+# whether CV counts past PV (cycle 8: 4 if PVmax > 3, 3 if PVmax = 3)
+# depends on PVmax, so cv is not checked there; Q is TRUE either way.
 period_ms: 100
 program: main
 inputs: cu r
 outputs: q cv
 status: conformant
-reference: IEC 61131-3 ed.3 6.6.3.5.3 table 44 (CTU body)
+reference: IEC 61131-3 ed.3 6.6.3.5.4 table 46 (CTU body and NOTE)
 ---
 0  cu=FALSE r=FALSE => q=FALSE cv=0
 1  cu=TRUE          => q=FALSE cv=1
@@ -28,8 +33,8 @@ reference: IEC 61131-3 ed.3 6.6.3.5.3 table 44 (CTU body)
 5  cu=FALSE         => q=FALSE cv=2
 6  cu=TRUE          => q=TRUE  cv=3
 7  cu=FALSE         => q=TRUE  cv=3
-# counting continues above PV
-8  cu=TRUE          => q=TRUE  cv=4
+# above PV: CV is 4 or 3 depending on PVmax (implementer specific)
+8  cu=TRUE          => q=TRUE  cv=?
 # reset dominates; CU is TRUE during the reset
 9  r=TRUE           => q=FALSE cv=0
 # R released with CU still TRUE: no rising edge, no count

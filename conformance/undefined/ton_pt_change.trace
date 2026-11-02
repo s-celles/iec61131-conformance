@@ -18,7 +18,7 @@ program: main
 inputs: in pt
 outputs: q et
 status: implementation-defined
-reference: IEC 61131-3 ed.3 6.6.3.5.4 table 46 (TON timing diagram)
+reference: IEC 61131-3 ed.3 6.6.3.5.5 table 47, figure 17 b (TON timing diagram)
 ---
 0 in=FALSE pt=T#500ms => q=FALSE et=T#0ms
 # rising edge at t = 100

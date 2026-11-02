@@ -1,5 +1,5 @@
 # Timers with PT = 0, period 100 ms. Implementation-defined: the timing
-# diagrams (ed.3 table 46) assume PT > 0. Reading them at the limit:
+# diagrams (ed.3 figure 17) assume PT > 0. Reading them at the limit:
 #   TON: Q rises as soon as the elapsed time reaches PT, i.e. on the cycle
 #        of the rising edge (Q = IN);
 #   TOF: Q falls as soon as t - t_fall >= PT, i.e. on the cycle of the
@@ -17,7 +17,7 @@ program: main
 inputs: in
 outputs: q_ton et_ton q_tof et_tof q_tp et_tp
 status: implementation-defined
-reference: IEC 61131-3 ed.3 6.6.3.5.4 table 46 (timer diagrams, PT > 0 assumed)
+reference: IEC 61131-3 ed.3 6.6.3.5.5 table 47, figure 17 (timer diagrams, PT > 0 assumed)
 ---
 0 in=FALSE => q_ton=FALSE et_ton=T#0ms q_tof=TRUE  et_tof=T#0ms q_tp=FALSE et_tp=T#0ms
 1 in=TRUE  => q_ton=FALSE et_ton=T#0ms q_tof=TRUE  et_tof=T#0ms q_tp=TRUE  et_tp=T#0ms

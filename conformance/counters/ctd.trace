@@ -1,6 +1,6 @@
 # CTD, PV = 3, period 100 ms (time is irrelevant).
 #
-# Derivation: ST body in the standard (ed.3 table 44 / ed.2 table 36):
+# Derivation: ST body in the standard (ed.3 6.6.3.5.4 table 46):
 #   VAR_INPUT CD : BOOL R_EDGE; LD : BOOL; PV : INT; END_VAR
 #   VAR_OUTPUT Q : BOOL; CV : INT; END_VAR
 #   IF LD THEN CV := PV;
@@ -10,15 +10,19 @@
 # Same conventions as ctu.trace: the edge memory is updated on every
 # evaluation, including while LD is TRUE, so a CD that stays TRUE across a
 # load does not count again when LD drops (cycle 12). CV starts at 0, so Q
-# is TRUE before the first load (cycle 0). CV keeps counting below 0 down
-# to PVmin (cycle 10): the FDIS 2001 body (`CV > 0`, as in matiec) stops at
-# 0 instead; that cycle is the only place where the two editions differ.
+# is TRUE before the first load (cycle 0).
+# The NOTE under ed.3 table 46: "The numerical values of the limit
+# variables PVmin and PVmax are implementer specific." This trace assumes
+# only that the limits do not cut into the range between 0 and PV the
+# outputs are defined over (PVmin <= min(0, PV), PVmax >= max(0, PV));
+# whether CV goes below 0 (cycle 10: -1 if PVmin < 0, 0 if PVmin = 0)
+# depends on PVmin, so cv is not checked there; Q is TRUE either way.
 period_ms: 100
 program: main
 inputs: cd ld
 outputs: q cv
 status: conformant
-reference: IEC 61131-3 ed.3 6.6.3.5.3 table 44 (CTD body)
+reference: IEC 61131-3 ed.3 6.6.3.5.4 table 46 (CTD body and NOTE)
 ---
 # initial CV = 0 gives Q = TRUE before any load
 0  cd=FALSE ld=FALSE => q=TRUE  cv=0
@@ -32,8 +36,8 @@ reference: IEC 61131-3 ed.3 6.6.3.5.3 table 44 (CTD body)
 7  cd=FALSE         => q=FALSE cv=1
 8  cd=TRUE          => q=TRUE  cv=0
 9  cd=FALSE         => q=TRUE  cv=0
-# counting continues below 0 (ed.3: bound is PVmin)
-10 cd=TRUE          => q=TRUE  cv=-1
+# below 0: CV is -1 or 0 depending on PVmin (implementer specific)
+10 cd=TRUE          => q=TRUE  cv=?
 # load dominates; CD is TRUE during the load
 11 ld=TRUE          => q=FALSE cv=3
 # LD released with CD still TRUE: no rising edge, no count

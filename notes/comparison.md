@@ -72,9 +72,9 @@ hand. CI checks the table is in sync with the evidence.
 | edge/f_trig | PASS | **FAIL** (cycle 0) | PASS | PASS | PASS | **ERROR** (see evidence) | **FAIL** (cycle 0) | ed.3 table 45 declares `VAR M : BOOL;` (FALSE) and its NOTE gives Q = TRUE on a first execution with CLK FALSE (findings #6, corrected 2026-11-02 after adclz/rk#117); runtimes that start M at TRUE report no edge at cycle 0 |
 | edge/sr_rs | PASS | PASS | PASS | PASS | **FAIL** (compile) | **ERROR** (see evidence) | PASS | RuSTy names the bistable inputs `SET1`/`RESET` and `SET`/`RESET1` instead of the standard `S1`/`R` and `S`/`R1` (ed.3 table 42), so a conformant program does not compile (other runtimes #3) |
 | edge/power_on_clk_true | PASS | PASS | PASS | PASS | PASS | **ERROR** (see evidence) | PASS | R_TRIG fires on a first evaluation with CLK TRUE, as the NOTE under ed.3 table 45 says; F_TRIG reports nothing whatever its initial M |
-| counters/ctu | PASS | **FAIL** (cycle 8) | **FAIL** (cycle 8) | **FAIL** (cycle 8) | PASS | **ERROR** (see evidence) | **FAIL** (cycle 8) | matiec stops counting at CV = PV (`CV < PV`, ed.2 FDIS wording); the trace follows ed.3's `CV < PVmax` and counts to 4 (findings #7) |
-| counters/ctd | PASS | **FAIL** (cycle 10) | **FAIL** (cycle 10) | **FAIL** (cycle 10) | PASS | **ERROR** (see evidence) | **FAIL** (cycle 10) | matiec stops counting down at CV = 0 (`CV > 0`, ed.2 FDIS wording); the trace follows ed.3's `CV > PVmin` and counts to -1 (same edition difference as ctu) |
-| counters/ctud | PASS | **FAIL** (cycles 18-20) | **FAIL** (cycles 18-20) | **FAIL** (cycles 18-20) | PASS | **ERROR** (see evidence) | **FAIL** (cycles 18-20) | matiec stops at CV = 0 on the way down (cycle 18), so the later up-count lands on 1 instead of 0 (cycle 20). Priorities (R over LD over counting) and the cancelling of simultaneous edges agree on all runtimes |
+| counters/ctu | PASS | **FAIL** (cycle 8) | **FAIL** (cycle 8) | **FAIL** (cycle 8) | PASS | **ERROR** (see evidence) | **FAIL** (cycle 8) | CV past PV depends on PVmax, which the NOTE under ed.3 table 46 leaves implementer specific: IronPLC and RuSTy count to 4, the others stop at PV; CV is not checked on that cycle (findings #7) |
+| counters/ctd | PASS | **FAIL** (cycle 10) | **FAIL** (cycle 10) | **FAIL** (cycle 10) | PASS | **ERROR** (see evidence) | **FAIL** (cycle 10) | CV below 0 depends on PVmin (implementer specific, NOTE under ed.3 table 46): IronPLC and RuSTy go to -1, the others stop at 0; CV is not checked on that cycle |
+| counters/ctud | PASS | **FAIL** (cycles 18-20) | **FAIL** (cycles 18-20) | **FAIL** (cycles 18-20) | PASS | **ERROR** (see evidence) | **FAIL** (cycles 18-20) | as ctd for CV below 0 (PVmin implementer specific, not checked); priorities (R over LD over counting) and the cancelling of simultaneous edges agree on all runtimes |
 | counters/ctd_bounds | **FAIL** (cycles 3-6) | PASS | PASS | PASS | PASS | **ERROR** (see evidence) | PASS | IronPLC wraps -32768 to 32767 on a CD edge (findings #9, ironplc#2332) |
 | counters/ctud_bounds | **FAIL** (cycles 3-8) | PASS | PASS | PASS | PASS | **ERROR** (see evidence) | PASS | IronPLC wraps 32767 to -32768 on a CU edge (findings #9) |
 | control-flow/if_case | PASS | PASS | PASS | PASS | PASS | PASS | PASS |  |
@@ -165,9 +165,9 @@ Totals (89 tests, 71 with `status: conformant`): conformant tests passed, IronPL
 2. **TP with IN held TRUE after the pulse**: IronPLC restarts the pulse every PT (free-running oscillator); matiec waits for a new rising edge.
 3. **TP ET after the pulse ends with IN FALSE**: IronPLC holds PT; matiec returns to 0.
 4. **F_TRIG first evaluation with CLK FALSE**: matiec Q = TRUE, as ed.3 table 45 and its NOTE say; IronPLC Q = FALSE (its M starts at TRUE).
-5. **CTU above PV, CTD/CTUD below 0**: IronPLC keeps counting to the INT bounds; matiec saturates at PV and at 0 (hence also no count at PV = 0).
+5. **CTU above PV, CTD/CTUD below 0**: IronPLC keeps counting to the INT bounds; matiec stops at PV and at 0 (hence also no count at PV = 0). Both are permitted: PVmax and PVmin are implementer specific (NOTE under ed.3 table 46).
 6. **TON ET after PT is raised past a Q that already rose**: IronPLC ET follows elapsed time up to the new PT; matiec holds the old PT.
-7. **Counters at the INT bounds**: IronPLC wraps (CTD at -32768 gives 32767, CTUD at 32767 gives -32768); matiec saturates.
+7. **Counters at the INT bounds**: IronPLC wraps (CTD at -32768 gives 32767, CTUD at 32767 gives -32768), a defect whatever the limits; matiec stays at the bound.
 8. **`+` and `-` on TIME**: matiec's generated C does not build (`_____time_add`); IronPLC computes them.
 9. **Timers with PT = 0**: IronPLC switches one cycle after the input edge, matiec on the edge's own cycle.
 10. **`STRING[n]` declarations**: matiec rejects them after parsing ("not declared in this scope", beremiz/matiec#42); IronPLC and RuSTy accept them.
@@ -179,7 +179,7 @@ Totals (89 tests, 71 with `status: conformant`): conformant tests passed, IronPL
 
 Items 1, 2, 3 are IronPLC deviations from the standard's timing diagrams
 (matiec's `lib/timer.txt` reproduces those diagrams in its comments). Item 5
-is matiec following the 2001 FDIS text rather than the published editions.
+is a choice the standard leaves open (ed.3 table 46, NOTE).
 Item 4 is an IronPLC deviation (ed.3 table 45, findings #6). Item
 6 is outside what the standard defines.
 
@@ -227,14 +227,15 @@ upstream matiec `3a41303`:
     `ops/time_mul`: `T#700ms * 4` is 2147 ms).
 
 Shared with upstream: `REPLACE` (#41), `STRING[n]` (#42), task order (#43),
-counters saturating at PV / 0, rounding to even, the `/` operator unguarded.
+counters stopping at PV / 0 (permitted), rounding to even, the `/` operator unguarded.
 
 ## STruC++ deviations (commit `72dfcb8`, v0.7.0)
 
 The timers, `R_TRIG` and the bistables pass every trace; `F_TRIG` starts with
 its `M` at TRUE, so it reports no edge on a first evaluation with CLK FALSE
 where ed.3 table 45 and its NOTE give one (`edge/f_trig`); the counters
-follow the FDIS 2001 bodies (`CV < PV`, `CV > 0`), as matiec's do. The failures are in the front end and the string codegen:
+stop at PV and 0, as matiec's do, which the implementer-specific limits of
+ed.3 table 46 permit. The failures are in the front end and the string codegen:
 
 1. **A typed literal with a negative value is not lexed** (Autonomy-Logic/STruCpp#255): `INT#-5` and
    `DINT#-2147483648` stop the lexer with "unexpected character `#`"
@@ -414,9 +415,10 @@ Documented choices that make a conformant test fail to compile:
 
 Semantic differences in what runs:
 
-10. **The counters follow the FDIS 2001 bodies** (adclz/rk#117) (`CV < PV`, `CV > 0`), as
-   matiec and STruC++ do (`counters/ctu`, `ctd`, `ctud`,
-   `undefined/ctu_pv_zero`).
+10. **The counters stop at PV and 0** (`CV < PV`, `CV > 0`), as matiec and
+   STruC++ do: permitted, since the NOTE under ed.3 table 46 leaves PVmax and
+   PVmin to the implementer (raised on adclz/rk#117, withdrawn; only
+   `undefined/ctu_pv_zero` still differs from the IronPLC record).
 11. **`F_TRIG` is the standard's**: rk's body is ed.3 table 45's, with `M`
     initially FALSE and Q = TRUE on a first evaluation with CLK FALSE as the
     table's NOTE says; adclz pointed this out on adclz/rk#117, and the suite's

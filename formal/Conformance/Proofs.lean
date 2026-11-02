@@ -62,21 +62,19 @@ def srRsExpectedRS : List (Option Bool) := srRsExpected.map (·.2)
 theorem sr_trace : conforms SR srRsInputs srRsExpectedSR = true := by decide
 theorem rs_trace : conforms RS srRsInputs srRsExpectedRS = true := by decide
 
-/-- With ed.3's `CV < PVmax` the CTU trace holds ... -/
-theorem ctu_trace_ed3 : conforms (CTU .pvMax 3) ctuInputs ctuExpected = true := by decide
-/-- ... and with the FDIS 2001 `CV < PV` it does not (matiec's cycle-8 failure). -/
-theorem ctu_trace_fdis : conforms (CTU .pv 3) ctuInputs ctuExpected = false := by decide
+/-- PVmin and PVmax are implementer specific (NOTE under ed.3 table 46), so
+the counter traces leave CV unchecked where it depends on them; they then
+hold for the INT limits (`.pvMax`) and for limits at PV and 0 (`.pv`, the
+FDIS 2001 bodies matiec copies) alike. -/
+theorem ctu_trace_int_limits : conforms (CTU .pvMax 3) ctuInputs ctuExpected = true := by decide
+theorem ctu_trace_pv_limits : conforms (CTU .pv 3) ctuInputs ctuExpected = true := by decide
+theorem ctd_trace_int_limits : conforms (CTD .pvMax 3) ctdInputs ctdExpected = true := by decide
+theorem ctd_trace_pv_limits : conforms (CTD .pv 3) ctdInputs ctdExpected = true := by decide
+theorem ctud_trace_int_limits : conforms (CTUD .pvMax 2) ctudInputs ctudExpected = true := by decide
+theorem ctud_trace_pv_limits : conforms (CTUD .pv 2) ctudInputs ctudExpected = true := by decide
 
-/-- CTD and CTUD likewise hold under ed.3's bounds and fail under the FDIS
-2001 ones, each at the single cycle where CV goes below 0. -/
-theorem ctd_trace_ed3 : conforms (CTD .pvMax 3) ctdInputs ctdExpected = true := by decide
-theorem ctd_trace_fdis : conforms (CTD .pv 3) ctdInputs ctdExpected = false := by decide
-theorem ctud_trace_ed3 : conforms (CTUD .pvMax 2) ctudInputs ctudExpected = true := by decide
-theorem ctud_trace_fdis : conforms (CTUD .pv 2) ctudInputs ctudExpected = false := by decide
-
-/-- At the INT bounds the two editions' conditions coincide (`CV < PVmax`
-with PV = PVmax, `CV > PVmin` with PV = PVmin), so these traces hold under
-both. IronPLC wraps instead (`findings.md`). -/
+/-- At the INT bounds no choice of the limits within INT allows a count, so
+these traces hold for both. IronPLC wraps instead (`findings.md`). -/
 theorem ctud_bounds_trace_ed3 : conforms (CTUD .pvMax 32767) ctudBoundsInputs ctudBoundsExpected = true := by decide
 theorem ctud_bounds_trace_fdis : conforms (CTUD .pv 32767) ctudBoundsInputs ctudBoundsExpected = true := by decide
 theorem ctd_bounds_trace_ed3 : conforms (CTD .pvMax (-32768)) ctdBoundsInputs ctdBoundsExpected = true := by decide

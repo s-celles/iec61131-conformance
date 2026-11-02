@@ -1,6 +1,6 @@
 # TON, PT = 300 ms, period 100 ms.
 #
-# Derivation (IEC 61131-3 ed.3 table 46 / ed.2 figure 20, TON timing
+# Derivation (IEC 61131-3 ed.3 figure 17 / ed.2 figure 20, TON timing
 # diagram; the standard defines TON by diagram, not by an ST body):
 #   - while IN is FALSE: Q = FALSE, ET = 0;
 #   - at the rising edge of IN, timing starts from 0;
@@ -15,7 +15,7 @@ program: main
 inputs: in
 outputs: q et
 status: conformant
-reference: IEC 61131-3 ed.3 6.6.3.5.4 table 46 (TON timing diagram)
+reference: IEC 61131-3 ed.3 6.6.3.5.5 table 47, figure 17 b (TON timing diagram)
 ---
 0  in=FALSE => q=FALSE et=T#0ms
 # rising edge seen at t = 100 ms

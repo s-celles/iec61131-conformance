@@ -22,11 +22,11 @@ semantics that the expected traces are proved to follow from.
   of its standard functions, the semantics clauses of ST). Each `.trace`
   states the derivation and the clause it rests on. That is one reading of
   the standard by one author; it is not a certification, and neither IEC
-  nor PLCopen is involved. Where the 2001 FDIS draft and ed.3 differ
-  (counters at `PV` and 0) the trace says which one it follows and the notes
-  say which runtimes follow the other. A reading can be wrong: `F_TRIG` at
-  start-up was, and was corrected from the text of ed.3 table 45 (see
-  `notes/findings.md` #6).
+  nor PLCopen is involved. Where the text leaves a value to the
+  implementer (the counters' limits PVmin and PVmax, NOTE under ed.3 table
+  46) the trace does not check it. A reading can be wrong: `F_TRIG` at
+  start-up and the counters' limits were, and were corrected from the text
+  of ed.3 tables 45 and 46 (`notes/findings.md` #6, #7).
 - The suite was written with AI assistance (Claude Code; the commits say
   `Assisted-by: AI`). Every derivation was checked against the standard's
   text by the author, but an error in a trace is possible: a runtime that
@@ -273,7 +273,7 @@ and proves general properties (TON Q implies ET = PT, TOF never pulses at
 power-up, TP never retriggers while IN stays TRUE, edge detectors never fire
 twice in a row, SR/RS dominance, CTU reset dominance). Two readings are
 parameters of the model, and both are proved to give different traces:
-`CTU`'s upper bound (ed.3 `PVmax` versus FDIS `PV`) and `F_TRIG`'s initial
+the counters' limits (the INT range, or PV and 0; ed.3 table 46 leaves them to the implementer) and `F_TRIG`'s initial
 `M` (the standard's FALSE, per ed.3 table 45, versus the TRUE some runtimes
 use).
 

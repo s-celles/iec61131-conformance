@@ -209,7 +209,7 @@ def ctuExpected : List (Option Bool × Option Nat) :=
    (some false, some 2),
    (some true, some 3),
    (some true, some 3),
-   (some true, some 4),
+   (some true, none),
    (some false, some 0),
    (some false, some 0),
    (some false, some 0),
@@ -245,7 +245,7 @@ def ctdExpected : List (Option Bool × Option Int) :=
    (some false, some 1),
    (some true, some 0),
    (some true, some 0),
-   (some true, some (-1)),
+   (some true, none),
    (some false, some 3),
    (some false, some 3),
    (some false, some 3),
@@ -465,8 +465,8 @@ def ctudExpected : List (Option Bool × Option Bool × Option Int) :=
    (some false, some false, some 1),
    (some false, some true, some 0),
    (some false, some true, some 0),
-   (some false, some true, some (-1)),
-   (some false, some true, some (-1)),
-   (some false, some true, some 0)]
+   (some false, some true, none),
+   (some false, some true, none),
+   (some false, none, none)]
 
 end Conformance.Traces

@@ -92,15 +92,18 @@ Reported together with item 3: https://github.com/ironplc/ironplc/issues/2546
   table 43 of ed.3 is "Function block call"; the edge detectors are table
   45 (6.6.3.5.3) and the counters table 46 (6.6.3.5.4).
 
-## 7. CTU counts past PV (IronPLC) versus saturates at PV (matiec)
+## 7. (Not a defect) CTU counts past PV (IronPLC) or stops at PV (matiec)
 
 - Reproducer: `conformance/counters/ctu.st`, cycle 8; `undefined/ctu_pv_zero.st`.
-- IronPLC: CV = 4 with PV = 3 (saturation only at the type maximum,
-  `CounterValue::up` uses `saturating_add`). This matches the ed.3 body
-  (`CV < PVmax`) as I recall it. matiec implements the 2001 FDIS body
-  (`CV < PV`). Recorded as an IronPLC-conformant behaviour; the point is
-  that the two open-source runtimes disagree, which is exactly what a
-  conformance suite should pin down.
+- IronPLC: CV = 4 with PV = 3 (saturation only at the type maximum).
+  matiec, its OpenPLC fork, STruC++ and rk stop at PV (`CV < PV`, the 2001
+  FDIS body), and at 0 counting down.
+- Both are permitted. The ed.3 bodies (6.6.3.5.4, table 46) count while
+  `CV < PVmax` and `CV > PVmin`, and the NOTE under the table says "The
+  numerical values of the limit variables PVmin and PVmax are implementer
+  specific." Until 2026-11-02 the counter traces assumed the INT range and
+  reported the runtimes that stop at PV or 0 as failing; they now leave CV
+  unchecked on the cycles where the limits decide (Q, QU, QD still checked).
 
 ## 8. Division by zero is a VM trap that ends the scan
 
@@ -138,10 +141,10 @@ Reported together with item 3: https://github.com/ironplc/ironplc/issues/2546
 - Reproducer: `conformance/counters/ctd_bounds.st` (LD with PV = -32768,
   then a CD edge: CV = 32767) and `ctud_bounds.st` (LD with PV = 32767,
   then a CU edge: CV = -32768, then -32767).
-- Expected: the ed.3 bodies count up only while `CV < PVmax` and down only
-  while `CV > PVmin`; at the bound CV is unchanged. At PV = PVmax (or PVmin)
-  the FDIS 2001 condition `CV < PV` (`CV > 0`) is false too, so both
-  editions agree and matiec and RuSTy pass.
+- Expected: the ed.3 bodies (table 46) count up only while `CV < PVmax` and
+  down only while `CV > PVmin`. The limits are implementer specific but are
+  values of CV's type, so at CV = 32767 (-32768) no choice allows a count:
+  CV is unchanged. A wrap is a defect whatever the limits.
 - This is ironplc#2332, closed on 2026-10-17 by the prefactoring PR #2346
   ("Fixes #2332" in the description of the planned follow-up); the 16-bit
   counting it describes is not in `5ea0610`, where `container/src/fb_type.rs`

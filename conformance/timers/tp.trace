@@ -1,6 +1,6 @@
 # TP, PT = 300 ms, period 100 ms.
 #
-# Derivation (ed.3 table 46 / ed.2 figure 20, TP timing diagram):
+# Derivation (ed.3 figure 17 / ed.2 figure 20, TP timing diagram):
 #   - at a rising edge of IN while no pulse is running, Q becomes TRUE and
 #     timing starts; ET = min(PT, t - t_rise);
 #   - the pulse lasts exactly PT regardless of IN: IN falling during the
@@ -17,7 +17,7 @@ program: main
 inputs: in
 outputs: q et
 status: conformant
-reference: IEC 61131-3 ed.3 6.6.3.5.4 table 46 (TP timing diagram)
+reference: IEC 61131-3 ed.3 6.6.3.5.5 table 47, figure 17 a (TP timing diagram)
 ---
 0  in=FALSE => q=FALSE et=T#0ms
 # rising edge at t = 100: pulse starts

@@ -1,6 +1,6 @@
 # SR and RS bistables, period 100 ms (time is irrelevant).
 #
-# Derivation: ST bodies in the standard (ed.3 table 42 / ed.2 table 34):
+# Derivation: ST bodies in the standard (ed.3 table 44 / ed.2 table 34):
 #   SR:  Q1 := S1 OR (NOT R AND Q1);     set dominant
 #   RS:  Q1 := NOT R1 AND (S OR Q1);     reset dominant
 # Q1 starts FALSE (default initial value).
@@ -9,7 +9,7 @@ program: main
 inputs: s r
 outputs: q_sr q_rs
 status: conformant
-reference: IEC 61131-3 ed.3 6.6.3.5.1 table 42 (SR, RS bodies)
+reference: IEC 61131-3 ed.3 6.6.3.5.2 table 44 (SR, RS bodies)
 ---
 0 s=FALSE r=FALSE => q_sr=FALSE q_rs=FALSE
 1 s=TRUE          => q_sr=TRUE  q_rs=TRUE

@@ -13,13 +13,14 @@ block sees the inputs of the cycle, is evaluated at the cycle's time
 the input has its new value.
 
 The standard text itself is not available in this repository; the
-transcription follows the derivations written in the `.trace` files. Two
-readings that depend on the edition are isolated as parameters:
-`CtuRule.pvMax` versus `CtuRule.pv` (ed.3 `CV < PVmax` versus FDIS 2001
-`CV < PV`) and F_TRIG's initial `M`. For the latter ed.3 is settled: table 45
-declares `VAR M : BOOL;` (FALSE) and its NOTE gives Q = TRUE on a first
-execution with CLK FALSE; `M := TRUE` is kept only to model the runtimes
-that read it so.
+transcription follows the derivations written in the `.trace` files, which
+quote IEC 61131-3 ed.3. Two readings are parameters of the model:
+`CtuRule.pvMax` versus `CtuRule.pv`, the counters' limits PVmax/PVmin, which
+the NOTE under ed.3 table 46 leaves implementer specific, taken as the INT
+range or as PV and 0 (the FDIS 2001 bodies); and F_TRIG's initial `M`, which
+ed.3 table 45 settles (`VAR M : BOOL;`, so FALSE, and its NOTE gives Q = TRUE
+on a first execution with CLK FALSE), `M := TRUE` being kept only to model
+the runtimes that start it so.
 
 No dependency on Mathlib: only core Lean 4.
 -/
