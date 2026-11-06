@@ -1,0 +1,22 @@
+# A function invocation in an expression is one evaluation of the function
+# (ed.3 7.3.2: an expression is evaluated by applying the operators to the
+# values of its operands; 6.6.1.7: a function is executed once per
+# invocation, its VAR_IN_OUT referring to the caller's variable). Each
+# occurrence of BUMP(calls) therefore adds exactly 1 to calls and returns 2,
+# so a cycle adds 2. calls is a VAR_OUTPUT of the program and keeps its value
+# between cycles (initial value 0). Integer / truncates toward zero, MOD
+# takes the sign of the dividend (table 30, as in ops/precedence).
+#
+# cycle 0: a=7   q = 7/2 = 3    m = 7 MOD 2 = 1     calls = 0+2 = 2
+# cycle 1: a=-7  q = -7/2 = -3  m = -7 MOD 2 = -1   calls = 4
+# cycle 2: a=10  q = 5          m = 0               calls = 6
+period_ms: 100
+program: main
+inputs: a
+outputs: q m calls
+status: conformant
+reference: IEC 61131-3 ed.3 7.3.2, 6.6.1.7, table 30
+---
+0 a=7 => q=3 m=1 calls=2
+1 a=-7 => q=-3 m=-1 calls=4
+2 a=10 => q=5 m=0 calls=6

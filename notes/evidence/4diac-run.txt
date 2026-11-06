@@ -181,6 +181,9 @@ PASS    conformance/ops/conversions.st
 0 => d_sub=T#259200000ms tod_sub=T#8069500ms dt_sub=T#45001000ms tod_add=T#48600000ms tod_min=T#1800000ms dt_add=T#90000000ms dt_min=T#84600000ms same_d=TRUE same_t=TRUE before=TRUE
 1 => d_sub=T#259200000ms tod_sub=T#8069500ms dt_sub=T#45001000ms tod_add=T#48600000ms tod_min=T#1800000ms dt_add=T#90000000ms dt_min=T#84600000ms same_d=TRUE same_t=TRUE before=TRUE
 PASS    conformance/ops/date_time.st
+### conformance/ops/div_call_divisor.st
+ERROR   conformance/ops/div_call_divisor.st
+        FUNCTION BUMP: VAR_IN_OUT on a function is outside this harness's scope
 ### conformance/ops/limit_inverted.st
 ERROR   conformance/ops/limit_inverted.st
         c++ failed:
@@ -518,5 +521,5 @@ ERROR   conformance/undefined/timer_pt_zero.st
 ERROR   conformance/undefined/ton_pt_change.st
         type TON is outside this harness's scope
 
-89 tests: 31 pass, 7 fail, 4 same, 6 differs, 41 error
+90 tests: 31 pass, 7 fail, 4 same, 6 differs, 42 error
 exit 1

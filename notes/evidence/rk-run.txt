@@ -518,6 +518,11 @@ FAIL    conformance/ops/date_time.st
         ────╯
         compilation failed: 11 error(s) found, cannot compile.
         
+### conformance/ops/div_call_divisor.st
+0 a=7 => q=3 m=1 calls=2
+1 a=-7 => q=-3 m=-1 calls=4
+2 a=10 => q=5 m=0 calls=6
+PASS    conformance/ops/div_call_divisor.st
 ### conformance/ops/limit_inverted.st
 0 mn=0 x=0 mx=-16 => l=-16
 1 mn=5 x=3 mx=1 => l=1
@@ -1704,5 +1709,5 @@ DIFFERS conformance/undefined/ton_pt_change.st (implementation-defined)
         cycle 7 (trace line 33): et expected T#600ms, got T#800ms
         cycle 8 (trace line 34): et expected T#700ms, got T#800ms
 
-89 tests: 50 pass, 21 fail, 10 same, 8 differs, 0 error
+90 tests: 51 pass, 21 fail, 10 same, 8 differs, 0 error
 exit 1

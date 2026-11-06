@@ -430,6 +430,11 @@ PASS    conformance/ops/conversions.st
 0 => d_sub=T#259200000ms tod_sub=T#8069500ms dt_sub=T#45001000ms tod_add=T#48600000ms tod_min=T#1800000ms dt_add=T#90000000ms dt_min=T#84600000ms same_d=TRUE same_t=TRUE before=TRUE
 1 => d_sub=T#259200000ms tod_sub=T#8069500ms dt_sub=T#45001000ms tod_add=T#48600000ms tod_min=T#1800000ms dt_add=T#90000000ms dt_min=T#84600000ms same_d=TRUE same_t=TRUE before=TRUE
 PASS    conformance/ops/date_time.st
+### conformance/ops/div_call_divisor.st
+0 a=7 => q=3 m=1 calls=2
+1 a=-7 => q=-3 m=-1 calls=4
+2 a=10 => q=5 m=0 calls=6
+PASS    conformance/ops/div_call_divisor.st
 ### conformance/ops/limit_inverted.st
 0 mn=0 x=0 mx=-16 => l=-16
 1 mn=5 x=3 mx=1 => l=1
@@ -992,5 +997,5 @@ SAME    conformance/undefined/timer_pt_zero.st (implementation-defined)
 12 in=FALSE => q=FALSE et=T#0ms
 SAME    conformance/undefined/ton_pt_change.st (implementation-defined)
 
-89 tests: 48 pass, 23 fail, 17 same, 1 differs, 0 error
+90 tests: 49 pass, 23 fail, 17 same, 1 differs, 0 error
 exit 1

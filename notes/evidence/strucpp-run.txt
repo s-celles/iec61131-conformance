@@ -350,6 +350,11 @@ prog.st:32:14: error: Cannot assign DATE_AND_TIME to TIME
      |              ^
 
 
+### conformance/ops/div_call_divisor.st
+0 a=7 => q=3 m=1 calls=2
+1 a=-7 => q=-3 m=-1 calls=4
+2 a=10 => q=5 m=0 calls=6
+PASS    conformance/ops/div_call_divisor.st
 ### conformance/ops/limit_inverted.st
 0 mn=0 x=0 mx=-16 => l=-16
 1 mn=5 x=3 mx=1 => l=5
@@ -918,5 +923,5 @@ DIFFERS conformance/undefined/ton_pt_change.st
         cycle 10 (trace line 36): et expected T#800ms, got T#200ms
         cycle 11 (trace line 37): et expected T#800ms, got T#200ms
 
-89 tests: 58 pass, 9 fail, 12 same, 6 differs, 4 error
+90 tests: 59 pass, 9 fail, 12 same, 6 differs, 4 error
 exit 1

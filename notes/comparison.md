@@ -154,8 +154,9 @@ hand. CI checks the table is in sync with the evidence.
 | ops/time_functions | **FAIL** (compile) | **ERROR** (build) | PASS | PASS | PASS | **ERROR** (see evidence) | **FAIL** (compile) | MIN/MAX/LIMIT/SEL/MUX/LT on TIME: IronPLC rejects MIN, MAX and LIMIT on TIME (findings #27, ironplc#2555); upstream matiec does not build the `a + b` (#40); the fork, STruC++ and RuSTy agree. Found by tools/fuzz |
 | ops/time_mul | PASS | **ERROR** (build) | **FAIL** (cycles 0-4) | PASS | PASS | **FAIL** (see evidence) | **FAIL** (compile) | TIME * n with large products: matiec's __time_mul overflows a 32-bit int (matiec #15, beremiz/matiec#51; upstream does not build TIME arithmetic, #40, the fork shows it, fork #10); IronPLC, STruC++ and RuSTy agree. Found by tools/fuzz |
 | ops/mux_types | PASS | PASS | PASS | PASS | PASS | **ERROR** (see evidence) | **FAIL** (compile) | MUX on UINT/BYTE/WORD/BOOL/TIME (table 32: ANY): rk has no unsigned or bit-string MUX overload (rk item 9); 4diac has no func_MUX.h (4diac item 3) |
+| ops/div_call_divisor | PASS | **ERROR** (build) | **ERROR** (build) | PASS | **ERROR** (see evidence) | **ERROR** (see evidence) | PASS | `a / BUMP(calls)` and `a MOD BUMP(calls)` with BUMP's VAR_IN_OUT: one call each. matiec and its fork generate the MOD divisor twice and the C does not link (matiec item 16, fix in beremiz/matiec#47); 4diac has no VAR_IN_OUT on a function. Found in the review of beremiz/matiec#47 |
 
-Totals (89 tests, 71 with `status: conformant`): conformant tests passed, IronPLC 48/71; matiec 62/71; OpenPLC's matiec 61/71; STruC++ 58/71; RuSTy 56/71; 4diac 31/71; rk 50/71. 19 of the 89 tests have the same result on all seven runtimes.
+Totals (90 tests, 72 with `status: conformant`): conformant tests passed, IronPLC 49/72; matiec 62/72; OpenPLC's matiec 61/72; STruC++ 59/72; RuSTy 56/72; 4diac 31/72; rk 51/72. 19 of the 90 tests have the same result on all seven runtimes.
 
 <!-- results:end -->
 
@@ -176,6 +177,7 @@ Totals (89 tests, 71 with `status: conformant`): conformant tests passed, IronPL
 13. **Functions with VAR_OUTPUT or VAR_IN_OUT call an undeclared function** (beremiz/matiec#49): for such a function matiec emits a per-call `static inline` wrapper (`__MAIN_DIVMOD1`) outside the `#ifndef __POUS_INIT_ONLY__` guard, while the function's prototype is inside it; `config.c` includes `POUS.c` with that macro defined, so the wrapper calls `___DIVMOD` before any declaration (`pou/function_var_output`, `pou/fb_in_out` (`SWAP`), `undefined/short_circuit`). With gcc 13 (CI) that is a warning and the three tests run correctly; with clang, or gcc 14 where implicit declarations are errors, the build fails, as with beremiz/matiec#39. The OpenPLC fork has no guard.
 14. **`LIMIT` with MN > MX returns MN** (beremiz/matiec#50): matiec's `LIMIT` tests `IN <= MN` first, so `LIMIT(5, 3, 1)` is 5 where the standard's formula `MIN(MAX(IN, MN), MX)` (ed.3 table 32) gives 1; IronPLC follows the formula (`ops/limit_inverted`, found by `tools/fuzz`; the suite's other LIMIT tests keep MN <= MX). The OpenPLC fork (item 9), STruC++ (item 13) and RuSTy (item 8) do the same.
 15. **`TIME * n` overflows a 32-bit intermediate** (beremiz/matiec#51): `lib/C/iec_std_lib.h` `__time_mul` computes `(int)((LREAL)IN1.tv_nsec * IN2)`, so once the nanosecond part times the factor exceeds 2^31 (`T#700ms * 4`, `T#999ms * 3`) the product is wrong (`ops/time_mul`: 2147 ms instead of 2800); upstream does not build it (#40) but has the same line, the OpenPLC fork shows it. Found by `tools/fuzz` (profile `time`).
+16. **The divisor of `MOD` is generated twice** (fix proposed in beremiz/matiec#47): stage 4 prints `MOD` as `((b == 0)?0:(a % b))`, so `b` is evaluated twice; when `b` is a call to a function with VAR_OUTPUT or VAR_IN_OUT, each pass numbers a new wrapper (`__MAIN_BUMP3`, `__MAIN_BUMP4`, see item 13) but only one is generated, and the C does not link (`ops/div_call_divisor`); any other call in the divisor would run twice. The `/` operator is unguarded (bare C division, #38), so its divisor is generated once; the first version of #47 guarded it the same way and had the same defect (found in its review), the current one prints `__div_<type>(a, b)` and `__mod_<type>(a, b)` and passes the test. The OpenPLC fork has the same `MOD`.
 
 Items 1, 2, 3 are IronPLC deviations from the standard's timing diagrams
 (matiec's `lib/timer.txt` reproduces those diagrams in its comments). Item 5
@@ -225,6 +227,8 @@ upstream matiec `3a41303`:
    `ops/limit_inverted`).
 10. **`TIME * n` overflows a 32-bit intermediate**, as upstream (item 15;
     `ops/time_mul`: `T#700ms * 4` is 2147 ms).
+11. **The divisor of `MOD` is generated twice**, as upstream (item 16;
+    `ops/div_call_divisor` does not link).
 
 Shared with upstream: `REPLACE` (#41), `STRING[n]` (#42), task order (#43),
 counters stopping at PV / 0 (permitted), rounding to even, the `/` operator unguarded.

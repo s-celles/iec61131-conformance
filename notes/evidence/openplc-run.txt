@@ -313,6 +313,13 @@ PASS    conformance/ops/conversions.st
 0 => d_sub=T#259200000ms tod_sub=T#8069500ms dt_sub=T#45001000ms tod_add=T#48600000ms tod_min=T#1800000ms dt_add=T#90000000ms dt_min=T#84600000ms same_d=TRUE same_t=TRUE before=TRUE
 1 => d_sub=T#259200000ms tod_sub=T#8069500ms dt_sub=T#45001000ms tod_add=T#48600000ms tod_min=T#1800000ms dt_add=T#90000000ms dt_min=T#84600000ms same_d=TRUE same_t=TRUE before=TRUE
 PASS    conformance/ops/date_time.st
+### conformance/ops/div_call_divisor.st
+ERROR   conformance/ops/div_call_divisor.st
+        gcc failed:
+/usr/bin/ld: <obj>: in function `MAIN_body__':
+res0.c:(.text+<off>): undefined reference to `__MAIN_BUMP3'
+collect2: error: ld returned 1 exit status
+
 ### conformance/ops/limit_inverted.st
 0 mn=0 x=0 mx=-16 => l=0
 1 mn=5 x=3 mx=1 => l=5
@@ -777,5 +784,5 @@ DIFFERS conformance/undefined/ton_pt_change.st
         cycle 10 (trace line 36): et expected T#800ms, got T#200ms
         cycle 11 (trace line 37): et expected T#800ms, got T#200ms
 
-89 tests: 61 pass, 10 fail, 11 same, 7 differs, 0 error
+90 tests: 61 pass, 10 fail, 11 same, 7 differs, 1 error
 exit 1
