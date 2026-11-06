@@ -73,6 +73,8 @@ Reported together with item 3: https://github.com/ironplc/ironplc/issues/2546
 
 ## 6. (Resolved 2026-11-02) F_TRIG initial state
 
+Reported: https://github.com/ironplc/ironplc/issues/2565
+
 - Reproducer: `conformance/edge/f_trig.st`, cycle 0 (CLK = FALSE on the
   first evaluation).
 - The text settles it. IEC 61131-3 ed.3 6.6.3.5.3, table 45 declares
