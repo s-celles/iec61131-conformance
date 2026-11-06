@@ -1,6 +1,6 @@
 # Findings: IronPLC behaviours that differ from the standard or from matiec
 
-IronPLC commit `5ea0610` (0.251.0). Every item has a reproducer in
+IronPLC commit `6e40df2` (0.252.0; until 2026-11-06 `5ea0610`, 0.251.0). Every item has a reproducer in
 `conformance/` and the actual output in `notes/evidence/ironplc-run.txt`.
 Classification of the two failing conformant tests: both are **IronPLC
 behaviours**, not harness or test bugs (the same harness passes the other 10
@@ -147,7 +147,7 @@ Reported together with item 3: https://github.com/ironplc/ironplc/issues/2546
   CV is unchanged. A wrap is a defect whatever the limits.
 - This is ironplc#2332, closed on 2026-10-17 by the prefactoring PR #2346
   ("Fixes #2332" in the description of the planned follow-up); the 16-bit
-  counting it describes is not in `5ea0610`, where `container/src/fb_type.rs`
+  counting it describes is not in `5ea0610` nor in `6e40df2` (0.252.0), where `container/src/fb_type.rs`
   still says `CTU` and `CTU_INT` count with the 32-bit id.
   Reported there: https://github.com/ironplc/ironplc/issues/2332#issuecomment-6555649250
 
@@ -159,10 +159,11 @@ Reported together with item 3: https://github.com/ironplc/ironplc/issues/2546
   VAR section (`pou/function_var_not_retained`) compile and pass.
 - Known: ironplc#1969 (open).
 
-## 11. MAX and MIN accept only two inputs
+## 11. (Resolved in 0.252.0) MAX and MIN accept only two inputs
 
 Reported: https://github.com/ironplc/ironplc/issues/2548
-Fix proposed: https://github.com/ironplc/ironplc/pull/2551
+Fixed by https://github.com/ironplc/ironplc/pull/2551 (merged; in 0.252.0,
+`6e40df2`): `ops/std_functions_ext` passes.
 
 - Reproducer: `conformance/ops/std_functions_ext.st`: `P4018 Function call
   has wrong number of arguments (function=MAX, expected=2, actual=3)`,

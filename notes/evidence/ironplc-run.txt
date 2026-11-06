@@ -11,7 +11,7 @@ error[P9999]: Capability is not implemented (yet!)
   │         ^^^^^^ 2nd PROGRAM declaration; the compiler currently runs only one PROGRAM
   │
   = Compile a single PROGRAM for now. Support for more than one PROGRAM is tracked in https://github.com/ironplc/ironplc/issues/1613
-  = Learn more: https://www.ironplc.com/reference/compiler/problems/P9999.html?version=0.251.0&channel=cli&file=<file>&line=<n>
+  = Learn more: https://www.ironplc.com/reference/compiler/problems/P9999.html?version=0.252.0&channel=cli&file=<file>&line=<n>
 
 Error: "Compile failed with 1 problem(s)"
 
@@ -28,7 +28,7 @@ error[P9999]: Capability is not implemented (yet!)
    │         ^^^^^^^^ 2nd PROGRAM declaration; the compiler currently runs only one PROGRAM
    │
    = Compile a single PROGRAM for now. Support for more than one PROGRAM is tracked in https://github.com/ironplc/ironplc/issues/1613
-   = Learn more: https://www.ironplc.com/reference/compiler/problems/P9999.html?version=0.251.0&channel=cli&file=<file>&line=<n>
+   = Learn more: https://www.ironplc.com/reference/compiler/problems/P9999.html?version=0.252.0&channel=cli&file=<file>&line=<n>
 
 Error: "Compile failed with 1 problem(s)"
 
@@ -51,7 +51,7 @@ error[P9999]: Capability is not implemented (yet!)
    │         ^^^^^^ 2nd PROGRAM declaration; the compiler currently runs only one PROGRAM
    │
    = Compile a single PROGRAM for now. Support for more than one PROGRAM is tracked in https://github.com/ironplc/ironplc/issues/1613
-   = Learn more: https://www.ironplc.com/reference/compiler/problems/P9999.html?version=0.251.0&channel=cli&file=<file>&line=<n>
+   = Learn more: https://www.ironplc.com/reference/compiler/problems/P9999.html?version=0.252.0&channel=cli&file=<file>&line=<n>
 
 Error: "Compile failed with 1 problem(s)"
 
@@ -68,7 +68,7 @@ error[P9999]: Capability is not implemented (yet!)
   │         ^^^^ 2nd PROGRAM declaration; the compiler currently runs only one PROGRAM
   │
   = Compile a single PROGRAM for now. Support for more than one PROGRAM is tracked in https://github.com/ironplc/ironplc/issues/1613
-  = Learn more: https://www.ironplc.com/reference/compiler/problems/P9999.html?version=0.251.0&channel=cli&file=<file>&line=<n>
+  = Learn more: https://www.ironplc.com/reference/compiler/problems/P9999.html?version=0.252.0&channel=cli&file=<file>&line=<n>
 
 Error: "Compile failed with 1 problem(s)"
 
@@ -93,7 +93,7 @@ error[P0002]: Syntax error
 21 │       CONTINUE;
    │               ^ Expected ' ' (space) | '\t' (tab) | '(' | '(* ... *)' (comment) | '.' | ':=' | 'REF' | '[' | '\n' (new line) | '^' | '{ ... }' (pragma) | R | REF | S. Found text ';' that matched token ';'
    │
-   = Learn more: https://www.ironplc.com/reference/compiler/problems/P0002.html?version=0.251.0&channel=cli
+   = Learn more: https://www.ironplc.com/reference/compiler/problems/P0002.html?version=0.252.0&channel=cli
 
 Error: "Compile failed with 1 problem(s)"
 
@@ -248,7 +248,7 @@ error[P0002]: Syntax error
 21 │     a : ARRAY[0..1] OF ROW := [[10, 20, 30], [40, 50, 60]];
    │                                ^ Expected "..." (double byte string) | ' ' (space) | '\t' (tab) | '(* ... *)' (comment) | '+' | '-' | '...' (single byte string) | 'ANY' | 'ANY_BIT' | 'ANY_DATE' | 'ANY_DERIVED' | 'ANY_ELEMENTARY' | 'ANY_INT' | 'ANY_MAGNITUDE' | 'ANY_NUM' | 'ANY_REAL' | 'ANY_STRING' | 'BOOL' | 'BYTE' | 'DATE' | 'D' | 'DATE_AND_TIME' | 'DT' | 'DINT' | 'DWORD' | 'FALSE' | 'F_EDGE' | 'INT' | 'LDATE' | 'LDATE_AND_TIME' | 'LDT' | 'LINT' | 'LREAL' | 'LTIME' | 'LTIME_OF_DAY' | 'LTOD' | 'LWORD' | 'ON' | 'REAL' | 'R_EDGE' | 'SINT' | 'STEP' | 'STRING' | 'TIME' | 'TIME_OF_DAY' | 'TOD' | 'TRUE' | 'UDINT' | 'UINT' | 'ULINT' | 'USINT' | 'WORD' | 'WSTRING' | '\n' (new line) | ']' | '{ ... }' (pragma) | (fixed point) | (floating point) | (identifier) | 16#[0-9A-F][0-9A-F_]* (hexadecimal bit string) | 2#[0-1][0-1]* (binary bit string) | 8#[0-7][0-7]* (octal bit string) | D | T | [0-9][0-9_]* (integer). Found text '[' that matched token '['
    │
-   = Learn more: https://www.ironplc.com/reference/compiler/problems/P0002.html?version=0.251.0&channel=cli
+   = Learn more: https://www.ironplc.com/reference/compiler/problems/P0002.html?version=0.252.0&channel=cli
 
 Error: "Compile failed with 1 problem(s)"
 
@@ -272,7 +272,7 @@ error[P0002]: Syntax error
 22 │     pts : ARRAY[1..3] OF POINT := [(x := 1, y := 10), (x := 2, y := 20), (x := 3, y := 30)];
    │                                    ^ Expected "..." (double byte string) | ' ' (space) | '\t' (tab) | '(* ... *)' (comment) | '+' | '-' | '...' (single byte string) | 'ANY' | 'ANY_BIT' | 'ANY_DATE' | 'ANY_DERIVED' | 'ANY_ELEMENTARY' | 'ANY_INT' | 'ANY_MAGNITUDE' | 'ANY_NUM' | 'ANY_REAL' | 'ANY_STRING' | 'BOOL' | 'BYTE' | 'DATE' | 'D' | 'DATE_AND_TIME' | 'DT' | 'DINT' | 'DWORD' | 'FALSE' | 'F_EDGE' | 'INT' | 'LDATE' | 'LDATE_AND_TIME' | 'LDT' | 'LINT' | 'LREAL' | 'LTIME' | 'LTIME_OF_DAY' | 'LTOD' | 'LWORD' | 'ON' | 'REAL' | 'R_EDGE' | 'SINT' | 'STEP' | 'STRING' | 'TIME' | 'TIME_OF_DAY' | 'TOD' | 'TRUE' | 'UDINT' | 'UINT' | 'ULINT' | 'USINT' | 'WORD' | 'WSTRING' | '\n' (new line) | ']' | '{ ... }' (pragma) | (fixed point) | (floating point) | (identifier) | 16#[0-9A-F][0-9A-F_]* (hexadecimal bit string) | 2#[0-1][0-1]* (binary bit string) | 8#[0-7][0-7]* (octal bit string) | D | T | [0-9][0-9_]* (integer). Found text '(' that matched token '('
    │
-   = Learn more: https://www.ironplc.com/reference/compiler/problems/P0002.html?version=0.251.0&channel=cli
+   = Learn more: https://www.ironplc.com/reference/compiler/problems/P0002.html?version=0.252.0&channel=cli
 
 Error: "Compile failed with 1 problem(s)"
 
@@ -297,7 +297,7 @@ error[P9999]: Capability is not implemented (yet!)
 37 │   r.tl := q;
    │        ^^ Statement code generation does not support yet
    │
-   = Learn more: https://www.ironplc.com/reference/compiler/problems/P9999.html?version=0.251.0&channel=cli&file=<file>&line=<n>
+   = Learn more: https://www.ironplc.com/reference/compiler/problems/P9999.html?version=0.252.0&channel=cli&file=<file>&line=<n>
 
 Error: "Compile failed with 1 problem(s)"
 
@@ -361,7 +361,7 @@ error[P4035]: Assignment value type does not match assignment target type (targe
 24 │   ob    := 16#A5;
    │            ^^^^^ Assignment value
    │
-   = Learn more: https://www.ironplc.com/reference/compiler/problems/P4035.html?version=0.251.0&channel=cli
+   = Learn more: https://www.ironplc.com/reference/compiler/problems/P4035.html?version=0.252.0&channel=cli
 
 error[P4035]: Assignment value type does not match assignment target type (target=ow, target_type=word, value_type=ANY_INT)
    ┌─ <root>/conformance/ops/bit_literals.st:25:12
@@ -369,7 +369,7 @@ error[P4035]: Assignment value type does not match assignment target type (targe
 25 │   ow    := 2#1000_0000_0000_0001;
    │            ^^^^^^^^^^^^^^^^^^^^^ Assignment value
    │
-   = Learn more: https://www.ironplc.com/reference/compiler/problems/P4035.html?version=0.251.0&channel=cli
+   = Learn more: https://www.ironplc.com/reference/compiler/problems/P4035.html?version=0.252.0&channel=cli
 
 error[P4026]: Function call argument type does not match parameter type (function=SHL, parameter=IN, expected=ANY_BIT, actual=ANY_INT)
    ┌─ <root>/conformance/ops/bit_literals.st:29:12
@@ -377,7 +377,7 @@ error[P4026]: Function call argument type does not match parameter type (functio
 29 │   w_shl := SHL(16#0001, n);
    │            ^^^ Function call
    │
-   = Learn more: https://www.ironplc.com/reference/compiler/problems/P4026.html?version=0.251.0&channel=cli
+   = Learn more: https://www.ironplc.com/reference/compiler/problems/P4026.html?version=0.252.0&channel=cli
 
 error[P4049]: Operator is not defined for the operand types (operator=AND, expected=ANY_BIT, actual=ANY_INT)
    ┌─ <root>/conformance/ops/bit_literals.st:26:18
@@ -385,7 +385,7 @@ error[P4049]: Operator is not defined for the operand types (operator=AND, expec
 26 │   b_and := b AND 16#0F;
    │                  ^^^^^ Operand
    │
-   = Learn more: https://www.ironplc.com/reference/compiler/problems/P4049.html?version=0.251.0&channel=cli
+   = Learn more: https://www.ironplc.com/reference/compiler/problems/P4049.html?version=0.252.0&channel=cli
 
 error[P4049]: Operator is not defined for the operand types (operator=OR, expected=ANY_BIT, actual=ANY_INT)
    ┌─ <root>/conformance/ops/bit_literals.st:27:17
@@ -393,7 +393,7 @@ error[P4049]: Operator is not defined for the operand types (operator=OR, expect
 27 │   w_or  := w OR 16#FF00;
    │                 ^^^^^^^ Operand
    │
-   = Learn more: https://www.ironplc.com/reference/compiler/problems/P4049.html?version=0.251.0&channel=cli
+   = Learn more: https://www.ironplc.com/reference/compiler/problems/P4049.html?version=0.252.0&channel=cli
 
 error[P4049]: Operator is not defined for the operand types (operator=AND, expected=ANY_BIT, actual=ANY_INT)
    ┌─ <root>/conformance/ops/bit_literals.st:30:19
@@ -401,7 +401,7 @@ error[P4049]: Operator is not defined for the operand types (operator=AND, expec
 30 │   lo55  := (w AND 16#00FF) = 16#0055;
    │                   ^^^^^^^ Operand
    │
-   = Learn more: https://www.ironplc.com/reference/compiler/problems/P4049.html?version=0.251.0&channel=cli
+   = Learn more: https://www.ironplc.com/reference/compiler/problems/P4049.html?version=0.252.0&channel=cli
 
 error[P4049]: Operator is not defined for the operand types (operator==, left=WORD, right=ANY_INT)
    ┌─ <root>/conformance/ops/bit_literals.st:30:12
@@ -409,7 +409,7 @@ error[P4049]: Operator is not defined for the operand types (operator==, left=WO
 30 │   lo55  := (w AND 16#00FF) = 16#0055;
    │            ^^^^^^^^^^^^^^^^^^^^^^^^^ Expression
    │
-   = Learn more: https://www.ironplc.com/reference/compiler/problems/P4049.html?version=0.251.0&channel=cli
+   = Learn more: https://www.ironplc.com/reference/compiler/problems/P4049.html?version=0.252.0&channel=cli
 
 Error: "Compile failed with 7 problem(s)"
 
@@ -537,26 +537,11 @@ PASS    conformance/ops/std_functions.st
 3 k=2 a=5 b=5 p=FALSE q=FALSE => m=5 s=0 n_eq=FALSE n_xor=TRUE n_cmp=FALSE n_and=TRUE
 PASS    conformance/ops/std_functions_expr.st
 ### conformance/ops/std_functions_ext.st
-FAIL    conformance/ops/std_functions_ext.st
-        ironplcc failed to compile the program:
-error[P4018]: Function call has wrong number of arguments (function=MAX, expected=2, actual=3)
-   ┌─ <root>/conformance/ops/std_functions_ext.st:18:11
-   │
-18 │   max3 := MAX(a, b, c);
-   │           ^^^ Function call
-   │
-   = Learn more: https://www.ironplc.com/reference/compiler/problems/P4018.html?version=0.251.0&channel=cli
-
-error[P4018]: Function call has wrong number of arguments (function=MIN, expected=2, actual=3)
-   ┌─ <root>/conformance/ops/std_functions_ext.st:19:11
-   │
-19 │   min3 := MIN(a, b, c);
-   │           ^^^ Function call
-   │
-   = Learn more: https://www.ironplc.com/reference/compiler/problems/P4018.html?version=0.251.0&channel=cli
-
-Error: "Compile failed with 2 problem(s)"
-
+0 a=1 b=2 c=3 g=FALSE => max3=3 min3=1 add3=6 mul3=6 lim=2 selv=1
+1 a=-7 b=-7 c=10 g=TRUE => max3=10 min3=-7 add3=-4 mul3=490 lim=-7 selv=-7
+2 a=100 b=-100 c=2 g=FALSE => max3=100 min3=-100 add3=2 mul3=-20000 lim=2 selv=100
+3 a=0 b=0 c=0 g=TRUE => max3=0 min3=0 add3=0 mul3=0 lim=0 selv=0
+PASS    conformance/ops/std_functions_ext.st
 ### conformance/ops/time_arith.st
 0 t1=T#1500ms t2=T#500ms => sum=T#2000ms diff=T#1000ms is_lt=FALSE is_gt=TRUE is_le=FALSE is_eq=FALSE lit1=T#90000ms lit2=T#3723004ms lit3=T#1500ms lit4=T#500ms lit5=T#172800000ms
 1 t1=T#0ms t2=T#0ms => sum=T#0ms diff=T#0ms is_lt=FALSE is_gt=FALSE is_le=TRUE is_eq=TRUE lit1=T#90000ms lit2=T#3723004ms lit3=T#1500ms lit4=T#500ms lit5=T#172800000ms
@@ -566,21 +551,13 @@ PASS    conformance/ops/time_arith.st
 ### conformance/ops/time_functions.st
 FAIL    conformance/ops/time_functions.st
         ironplcc failed to compile the program:
-error[P4018]: Function call has wrong number of arguments (function=MAX, expected=2, actual=3)
-   ┌─ <root>/conformance/ops/time_functions.st:21:10
-   │
-21 │   hi  := MAX(a, b, T#1s);
-   │          ^^^ Function call
-   │
-   = Learn more: https://www.ironplc.com/reference/compiler/problems/P4018.html?version=0.251.0&channel=cli
-
 error[P4026]: Function call argument type does not match parameter type (function=MIN, parameter=IN1, expected=ANY_NUM, actual=time)
    ┌─ <root>/conformance/ops/time_functions.st:20:10
    │
 20 │   lo  := MIN(a, b);
    │          ^^^ Function call
    │
-   = Learn more: https://www.ironplc.com/reference/compiler/problems/P4026.html?version=0.251.0&channel=cli
+   = Learn more: https://www.ironplc.com/reference/compiler/problems/P4026.html?version=0.252.0&channel=cli
 
 error[P4026]: Function call argument type does not match parameter type (function=MIN, parameter=IN2, expected=ANY_NUM, actual=time)
    ┌─ <root>/conformance/ops/time_functions.st:20:10
@@ -588,7 +565,7 @@ error[P4026]: Function call argument type does not match parameter type (functio
 20 │   lo  := MIN(a, b);
    │          ^^^ Function call
    │
-   = Learn more: https://www.ironplc.com/reference/compiler/problems/P4026.html?version=0.251.0&channel=cli
+   = Learn more: https://www.ironplc.com/reference/compiler/problems/P4026.html?version=0.252.0&channel=cli
 
 error[P4026]: Function call argument type does not match parameter type (function=MAX, parameter=IN1, expected=ANY_NUM, actual=time)
    ┌─ <root>/conformance/ops/time_functions.st:21:10
@@ -596,7 +573,7 @@ error[P4026]: Function call argument type does not match parameter type (functio
 21 │   hi  := MAX(a, b, T#1s);
    │          ^^^ Function call
    │
-   = Learn more: https://www.ironplc.com/reference/compiler/problems/P4026.html?version=0.251.0&channel=cli
+   = Learn more: https://www.ironplc.com/reference/compiler/problems/P4026.html?version=0.252.0&channel=cli
 
 error[P4026]: Function call argument type does not match parameter type (function=MAX, parameter=IN2, expected=ANY_NUM, actual=time)
    ┌─ <root>/conformance/ops/time_functions.st:21:10
@@ -604,7 +581,15 @@ error[P4026]: Function call argument type does not match parameter type (functio
 21 │   hi  := MAX(a, b, T#1s);
    │          ^^^ Function call
    │
-   = Learn more: https://www.ironplc.com/reference/compiler/problems/P4026.html?version=0.251.0&channel=cli
+   = Learn more: https://www.ironplc.com/reference/compiler/problems/P4026.html?version=0.252.0&channel=cli
+
+error[P4026]: Function call argument type does not match parameter type (function=MAX, parameter=IN3, expected=ANY_NUM, actual=time)
+   ┌─ <root>/conformance/ops/time_functions.st:21:10
+   │
+21 │   hi  := MAX(a, b, T#1s);
+   │          ^^^ Function call
+   │
+   = Learn more: https://www.ironplc.com/reference/compiler/problems/P4026.html?version=0.252.0&channel=cli
 
 error[P4026]: Function call argument type does not match parameter type (function=LIMIT, parameter=MN, expected=ANY_NUM, actual=time)
    ┌─ <root>/conformance/ops/time_functions.st:22:12
@@ -612,7 +597,7 @@ error[P4026]: Function call argument type does not match parameter type (functio
 22 │   clamp := LIMIT(T#100ms, a, T#5s);
    │            ^^^^^ Function call
    │
-   = Learn more: https://www.ironplc.com/reference/compiler/problems/P4026.html?version=0.251.0&channel=cli
+   = Learn more: https://www.ironplc.com/reference/compiler/problems/P4026.html?version=0.252.0&channel=cli
 
 error[P4026]: Function call argument type does not match parameter type (function=LIMIT, parameter=IN, expected=ANY_NUM, actual=time)
    ┌─ <root>/conformance/ops/time_functions.st:22:12
@@ -620,7 +605,7 @@ error[P4026]: Function call argument type does not match parameter type (functio
 22 │   clamp := LIMIT(T#100ms, a, T#5s);
    │            ^^^^^ Function call
    │
-   = Learn more: https://www.ironplc.com/reference/compiler/problems/P4026.html?version=0.251.0&channel=cli
+   = Learn more: https://www.ironplc.com/reference/compiler/problems/P4026.html?version=0.252.0&channel=cli
 
 error[P4026]: Function call argument type does not match parameter type (function=LIMIT, parameter=MX, expected=ANY_NUM, actual=time)
    ┌─ <root>/conformance/ops/time_functions.st:22:12
@@ -628,7 +613,7 @@ error[P4026]: Function call argument type does not match parameter type (functio
 22 │   clamp := LIMIT(T#100ms, a, T#5s);
    │            ^^^^^ Function call
    │
-   = Learn more: https://www.ironplc.com/reference/compiler/problems/P4026.html?version=0.251.0&channel=cli
+   = Learn more: https://www.ironplc.com/reference/compiler/problems/P4026.html?version=0.252.0&channel=cli
 
 Error: "Compile failed with 8 problem(s)"
 
@@ -655,9 +640,9 @@ error[P0002]: Syntax error
    ┌─ <root>/conformance/pou/fb_en_eno.st:25:5
    │
 25 │   c(EN := run_it, inc := inc);
-   │     ^^ Expected "..." (double byte string) | %[IQM]([XBWDL])?([0-9](\.[0-9])*) (direct address) | ' ' (space) | '\t' (tab) | '(' | '(* ... *)' (comment) | ')' | '+' | '-' | '...' (single byte string) | 'AND' | '&' | 'BOOL' | 'BYTE' | 'DATE' | 'D' | 'DATE_AND_TIME' | 'DT' | 'DINT' | 'DWORD' | 'FALSE' | 'F_EDGE' | 'INT' | 'LDATE' | 'LDATE_AND_TIME' | 'LDT' | 'LINT' | 'LREAL' | 'LTIME' | 'LTIME_OF_DAY' | 'LTOD' | 'LWORD' | 'MOD' | 'NOT' | 'NULL' | 'ON' | 'OR' | 'REAL' | 'REF' | 'R_EDGE' | 'SINT' | 'STEP' | 'STRING' | 'SUPER' | 'THIS' | 'TIME' | 'TIME_OF_DAY' | 'TOD' | 'TRUE' | 'UDINT' | 'UINT' | 'ULINT' | 'USINT' | 'WORD' | 'WSTRING' | 'XOR' | '\n' (new line) | '{ ... }' (pragma) | (fixed point) | (floating point) | (identifier) | 16#[0-9A-F][0-9A-F_]* (hexadecimal bit string) | 2#[0-1][0-1]* (binary bit string) | 8#[0-7][0-7]* (octal bit string) | D | T | [0-9][0-9_]* (integer). Found text 'EN' that matched token 'EN'
+   │     ^^ Expected "..." (double byte string) | %[IQM][XBWDL]?[0-9](_?[0-9])*(\.[0-9](_?[0-9])*)* (direct address) | ' ' (space) | '\t' (tab) | '(' | '(* ... *)' (comment) | ')' | '+' | '-' | '...' (single byte string) | 'AND' | '&' | 'BOOL' | 'BYTE' | 'DATE' | 'D' | 'DATE_AND_TIME' | 'DT' | 'DINT' | 'DWORD' | 'FALSE' | 'F_EDGE' | 'INT' | 'LDATE' | 'LDATE_AND_TIME' | 'LDT' | 'LINT' | 'LREAL' | 'LTIME' | 'LTIME_OF_DAY' | 'LTOD' | 'LWORD' | 'MOD' | 'NOT' | 'NULL' | 'ON' | 'OR' | 'REAL' | 'REF' | 'R_EDGE' | 'SINT' | 'STEP' | 'STRING' | 'SUPER' | 'THIS' | 'TIME' | 'TIME_OF_DAY' | 'TOD' | 'TRUE' | 'UDINT' | 'UINT' | 'ULINT' | 'USINT' | 'WORD' | 'WSTRING' | 'XOR' | '\n' (new line) | '{ ... }' (pragma) | (fixed point) | (floating point) | (identifier) | 16#[0-9A-F][0-9A-F_]* (hexadecimal bit string) | 2#[0-1][0-1]* (binary bit string) | 8#[0-7][0-7]* (octal bit string) | D | T | [0-9][0-9_]* (integer). Found text 'EN' that matched token 'EN'
    │
-   = Learn more: https://www.ironplc.com/reference/compiler/problems/P0002.html?version=0.251.0&channel=cli
+   = Learn more: https://www.ironplc.com/reference/compiler/problems/P0002.html?version=0.252.0&channel=cli
 
 Error: "Compile failed with 1 problem(s)"
 
@@ -670,7 +655,7 @@ error[P9999]: Capability is not implemented (yet!)
 11 │   acc := acc + inc;
    │       ^^ Not implemented at lowering/src/program.rs#L581
    │
-   = Learn more: https://www.ironplc.com/reference/compiler/problems/P9999.html?version=0.251.0&channel=cli&file=<file>&line=<n>
+   = Learn more: https://www.ironplc.com/reference/compiler/problems/P9999.html?version=0.252.0&channel=cli&file=<file>&line=<n>
 
 error[P9999]: Capability is not implemented (yet!)
    ┌─ <root>/conformance/pou/fb_in_out.st:43:3
@@ -678,7 +663,7 @@ error[P9999]: Capability is not implemented (yet!)
 43 │   add_fb(inc := inc, acc := total);
    │   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ Not implemented at lowering/src/program.rs#L581
    │
-   = Learn more: https://www.ironplc.com/reference/compiler/problems/P9999.html?version=0.251.0&channel=cli&file=<file>&line=<n>
+   = Learn more: https://www.ironplc.com/reference/compiler/problems/P9999.html?version=0.252.0&channel=cli&file=<file>&line=<n>
 
 Error: "Compile failed with 2 problem(s)"
 
@@ -709,7 +694,7 @@ error[P0002]: Syntax error
 11 │   METHOD BUMP : INT
    │          ^^^^ Expected ' ' (space) | '\t' (tab) | '(' | '(* ... *)' (comment) | '.' | ':=' | 'REF' | '[' | '\n' (new line) | '^' | '{ ... }' (pragma) | R | REF | S. Found text 'BUMP' that matched token (identifier)
    │
-   = Learn more: https://www.ironplc.com/reference/compiler/problems/P0002.html?version=0.251.0&channel=cli
+   = Learn more: https://www.ironplc.com/reference/compiler/problems/P0002.html?version=0.252.0&channel=cli
 
 Error: "Compile failed with 1 problem(s)"
 
@@ -732,7 +717,7 @@ error[P9999]: Capability is not implemented (yet!)
 11 │     t : INT;
    │     ^ Starting value code generation does not support yet
    │
-   = Learn more: https://www.ironplc.com/reference/compiler/problems/P9999.html?version=0.251.0&channel=cli&file=<file>&line=<n>
+   = Learn more: https://www.ironplc.com/reference/compiler/problems/P9999.html?version=0.252.0&channel=cli&file=<file>&line=<n>
 
 Error: "Compile failed with 1 problem(s)"
 
@@ -753,7 +738,7 @@ error[P4018]: Function call has wrong number of arguments (function=SCALE, expec
 22 │   dflt   := SCALE(x := x);
    │             ^^^^^ Function call
    │
-   = Learn more: https://www.ironplc.com/reference/compiler/problems/P4018.html?version=0.251.0&channel=cli
+   = Learn more: https://www.ironplc.com/reference/compiler/problems/P4018.html?version=0.252.0&channel=cli
 
 error[P4018]: Function call has wrong number of arguments (function=SCALE, expected=3, actual=2)
    ┌─ <root>/conformance/pou/function_input_default.st:23:13
@@ -761,7 +746,7 @@ error[P4018]: Function call has wrong number of arguments (function=SCALE, expec
 23 │   with_k := SCALE(x := x, k := 10);
    │             ^^^^^ Function call
    │
-   = Learn more: https://www.ironplc.com/reference/compiler/problems/P4018.html?version=0.251.0&channel=cli
+   = Learn more: https://www.ironplc.com/reference/compiler/problems/P4018.html?version=0.252.0&channel=cli
 
 Error: "Compile failed with 2 problem(s)"
 
@@ -968,7 +953,7 @@ error[P9999]: Capability is not implemented (yet!)
    │         ^^^^^^ 2nd PROGRAM declaration; the compiler currently runs only one PROGRAM
    │
    = Compile a single PROGRAM for now. Support for more than one PROGRAM is tracked in https://github.com/ironplc/ironplc/issues/1613
-   = Learn more: https://www.ironplc.com/reference/compiler/problems/P9999.html?version=0.251.0&channel=cli&file=<file>&line=<n>
+   = Learn more: https://www.ironplc.com/reference/compiler/problems/P9999.html?version=0.252.0&channel=cli&file=<file>&line=<n>
 
 Error: "Compile failed with 1 problem(s)"
 
@@ -997,5 +982,5 @@ SAME    conformance/undefined/timer_pt_zero.st (implementation-defined)
 12 in=FALSE => q=FALSE et=T#0ms
 SAME    conformance/undefined/ton_pt_change.st (implementation-defined)
 
-90 tests: 49 pass, 23 fail, 17 same, 1 differs, 0 error
+90 tests: 50 pass, 22 fail, 17 same, 1 differs, 0 error
 exit 1

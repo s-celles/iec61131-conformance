@@ -45,7 +45,7 @@ checksum = "3d52eff69cd5e647efe296129160853a42795992097e8af39800e1060caeea9b"
 
 [[package]]
 name = "container_derive"
-version = "0.251.0"
+version = "0.252.0"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -98,7 +98,7 @@ dependencies = [
 
 [[package]]
 name = "ironplc-container"
-version = "0.251.0"
+version = "0.252.0"
 dependencies = [
  "blake3",
  "container_derive",
@@ -107,11 +107,11 @@ dependencies = [
 
 [[package]]
 name = "ironplc-spec-requirements-gen"
-version = "0.251.0"
+version = "0.252.0"
 
 [[package]]
 name = "ironplc-vm"
-version = "0.251.0"
+version = "0.252.0"
 dependencies = [
  "csv",
  "ironplc-container",

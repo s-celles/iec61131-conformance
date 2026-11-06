@@ -4,7 +4,7 @@ All run from the suite root unless noted. Checkouts live in a sibling
 `scratch/` directory; `ironplc-src` is a symlink to `scratch/ironplc`.
 
 ```sh
-# IronPLC 5ea0610
+# IronPLC 6e40df2 (0.252.0, 2026-11-06)
 git clone --depth 1 https://github.com/ironplc/ironplc scratch/ironplc
 (cd scratch/ironplc/compiler && cargo build --release --bin ironplcc)
 ln -s $PWD/scratch/ironplc ironplc-src

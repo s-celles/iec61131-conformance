@@ -6,7 +6,7 @@ Date: 2026-10-31. Same 18 `.st` + `.trace` pairs, three runtimes.
 
 | runtime | version | how it was driven |
 |---|---|---|
-| IronPLC | commit `5ea0610`, workspace 0.251.0, `ironplcc compile` + `ironplc_vm` crate | `harness/ironplc` (Rust): `write_variable_raw` per cycle, `run_round(uptime_us)` with simulated time |
+| IronPLC | commit `6e40df2`, workspace 0.252.0, `ironplcc compile` + `ironplc_vm` crate | `harness/ironplc` (Rust): `write_variable_raw` per cycle, `run_round(uptime_us)` with simulated time |
 | OpenPLC's matiec | OpenPLC_v3 commit `b5d4135`, `utils/matiec_src` (an older matiec snapshot), its `iec2c` and `lib` | `harness/matiec` with `--iec2c`/`--matiec-lib` pointing at the fork |
 | STruC++ | Autonomy-Logic/STruCpp commit `72dfcb8` (v0.7.0), the ST to C++14 compiler of OpenPLC Runtime v4, built from source | `harness/strucpp` (Python): generated C++ driver, `IECVar::set/get`, `__CURRENT_TIME_NS` set per step |
 | matiec (iec2c) | commit `3a41303` (2026-09-22), built from source with `./configure && make` after `apt-get install flex` | `harness/matiec/run.py`: `iec2c -I lib prog.st` on the test plus a generated `CONFIGURATION` (one task, `INTERVAL := T#<period>ms`), a generated C driver sets `__CURRENT_TIME` and the `RES0__INST0.<VAR>.value` fields, calls `config_run__(tick)` once per record |
@@ -91,7 +91,7 @@ hand. CI checks the table is in sync with the evidence.
 | pou/fb_en_eno | **FAIL** (compile) | PASS | PASS | PASS | **FAIL** (compile) | **ERROR** (see evidence) | **FAIL** (compile) | IronPLC: `EN :=` in an FB invocation is a syntax error P0002 (findings #14, ironplc#2549); RuSTy: E048 "Could not resolve reference to EN" (other runtimes #5) |
 | ops/precedence | PASS | PASS | PASS | PASS | PASS | PASS | PASS |  |
 | ops/std_functions | PASS | PASS | PASS | PASS | PASS | **ERROR** (see evidence) | PASS |  |
-| ops/std_functions_ext | **FAIL** (compile) | PASS | PASS | PASS | **FAIL** (compile) | **FAIL** (see evidence) | **FAIL** (compile) | IronPLC: MAX and MIN with three inputs are P4018 (findings #11, ironplc#2548, fix in PR #2551); RuSTy: formal argument names on a standard function (`LIMIT(MN := ..)`) are E048 "Could not resolve reference to MN" (other runtimes #4) |
+| ops/std_functions_ext | PASS | PASS | PASS | PASS | **FAIL** (compile) | **FAIL** (see evidence) | **FAIL** (compile) | IronPLC passes since 0.252.0 (MAX and MIN with three inputs were P4018, findings #11, fixed by ironplc#2551); RuSTy: formal argument names on a standard function (`LIMIT(MN := ..)`) are E048 "Could not resolve reference to MN" (other runtimes #4) |
 | ops/conversions | PASS | PASS | PASS | PASS | PASS | PASS | **FAIL** (compile) |  |
 | ops/time_arith | PASS | **ERROR** (build) | PASS | PASS | PASS | **FAIL** (see evidence) | PASS | matiec emits `_____time_add`/`_____time_sub` for `+`/`-` on TIME (`print_binary_function` adds `___` to a name that already starts with `__`), a symbol that does not exist, so the program never builds (beremiz/matiec#40, fix in PR #45); with #40 fixed, `T#1h2m3s4ms` is still 1 ns short (beremiz/matiec#44) |
 | ops/literals | PASS | PASS | PASS | **FAIL** (compile) | PASS | PASS | **FAIL** (compile) |  |
@@ -156,7 +156,7 @@ hand. CI checks the table is in sync with the evidence.
 | ops/mux_types | PASS | PASS | PASS | PASS | PASS | **ERROR** (see evidence) | **FAIL** (compile) | MUX on UINT/BYTE/WORD/BOOL/TIME (table 32: ANY): rk has no unsigned or bit-string MUX overload (rk item 9); 4diac has no func_MUX.h (4diac item 3) |
 | ops/div_call_divisor | PASS | **ERROR** (build) | **ERROR** (build) | PASS | **ERROR** (see evidence) | **ERROR** (see evidence) | PASS | `a / BUMP(calls)` and `a MOD BUMP(calls)` with BUMP's VAR_IN_OUT: one call each. matiec and its fork generate the MOD divisor twice and the C does not link (matiec item 16, fix in beremiz/matiec#47); 4diac has no VAR_IN_OUT on a function. Found in the review of beremiz/matiec#47 |
 
-Totals (90 tests, 72 with `status: conformant`): conformant tests passed, IronPLC 49/72; matiec 62/72; OpenPLC's matiec 61/72; STruC++ 59/72; RuSTy 56/72; 4diac 31/72; rk 51/72. 19 of the 90 tests have the same result on all seven runtimes.
+Totals (90 tests, 72 with `status: conformant`): conformant tests passed, IronPLC 50/72; matiec 62/72; OpenPLC's matiec 61/72; STruC++ 59/72; RuSTy 56/72; 4diac 31/72; rk 51/72. 19 of the 90 tests have the same result on all seven runtimes.
 
 <!-- results:end -->
 

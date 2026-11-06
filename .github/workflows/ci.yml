@@ -18,7 +18,7 @@ concurrency:
 # Runtime commits the evidence files in notes/evidence/ were recorded with
 # (see notes/evidence/COMMANDS.md). Bump together with the evidence files.
 env:
-  IRONPLC_SHA: 5ea0610a0620dd84e5864c96ecb805001d88bc4d
+  IRONPLC_SHA: 6e40df279fc208fc1f3ee6efa11db7a4d9c10c65
   MATIEC_SHA: 3a41303bcb4e50403417bc39c63f88981d7d961e
   OPENPLC_SHA: b5d41356dab4aeadca0dd7ca64ba542f870b595d
   STRUCPP_SHA: 72dfcb8b1c5a41a68bfbf4b133169189c58f04b3
