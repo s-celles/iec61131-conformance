@@ -416,6 +416,11 @@ PASS    conformance/ops/real_power.st
 3 b=16#FF w=16#FFFF => b_back=16#08 b_rol=16#0F w_back=16#00F0 w_ror=16#00FF b_or=16#4C
 4 b=16#00 w=16#0010 => b_back=16#00 b_rol=16#00 w_back=16#0000 w_ror=16#0010 b_or=16#44
 PASS    conformance/ops/shl_width.st
+### conformance/ops/std_formal_order.st
+0 i0=5 g=TRUE => l1=5 l2=5 s1=20 m1=200 x1=3
+1 i0=-4 g=FALSE => l1=0 l2=0 s1=10 m1=200 x1=3
+2 i0=42 g=TRUE => l1=10 l2=10 s1=20 m1=200 x1=3
+PASS    conformance/ops/std_formal_order.st
 ### conformance/ops/std_functions.st
 0 a=-5 b=3 c=9 k=0 g=FALSE da=-100000 db=7 => o_abs=5 o_min=-5 o_max=3 o_limit=3 o_sel=-5 o_mux=-5 d_abs=100000 d_min=-100000
 1 a=12 b=-4 c=20 k=1 g=TRUE da=2147483647 db=-2147483648 => o_abs=12 o_min=-4 o_max=12 o_limit=12 o_sel=-4 o_mux=-4 d_abs=2147483647 d_min=-2147483648
@@ -602,6 +607,18 @@ PASS    conformance/pou/function_var_not_retained.st
 2 a=-7 b=2 => ok=TRUE q=-3 r=-1
 3 a=9 b=3 => ok=TRUE q=3 r=0
 PASS    conformance/pou/function_var_output.st
+### conformance/pou/inout_call_in_std_arg.st
+ERROR   conformance/pou/inout_call_in_std_arg.st
+        gcc failed:
+/usr/bin/ld: <obj>: in function `MAIN_body__':
+res0.c:(.text+<off>): undefined reference to `__MAIN_BUMP1'
+/usr/bin/ld: res0.c:(.text+<off>): undefined reference to `__MAIN_BUMP2'
+/usr/bin/ld: res0.c:(.text+<off>): undefined reference to `__MAIN_BUMP3'
+/usr/bin/ld: res0.c:(.text+<off>): undefined reference to `__MAIN_SPLIT4'
+/usr/bin/ld: res0.c:(.text+<off>): undefined reference to `__MAIN_BUMP6'
+/usr/bin/ld: res0.c:(.text+<off>): undefined reference to `__MAIN_SPLIT5'
+collect2: error: ld returned 1 exit status
+
 ### conformance/strings/compare.st
 0 => e1=TRUE e2=FALSE l1=TRUE l2=TRUE l3=TRUE l4=TRUE g1=TRUE n1=TRUE
 1 => e1=TRUE e2=FALSE l1=TRUE l2=TRUE l3=TRUE l4=TRUE g1=TRUE n1=TRUE
@@ -828,5 +845,5 @@ DIFFERS conformance/undefined/ton_pt_change.st
         cycle 10 (trace line 36): et expected T#800ms, got T#200ms
         cycle 11 (trace line 37): et expected T#800ms, got T#200ms
 
-90 tests: 62 pass, 5 fail, 11 same, 7 differs, 5 error
+92 tests: 63 pass, 5 fail, 11 same, 7 differs, 6 error
 exit 1

@@ -1,0 +1,25 @@
+# Each call is evaluated once per occurrence (ed.3 7.3.2, 6.6.1.7); a
+# function's VAR_IN_OUT refers to the caller's variable and its VAR_OUTPUT is
+# assigned to the variable after "=>" (6.6.1.7.1, table 20). A function
+# invocation may be an argument of another function (7.3.2, table 71). The
+# standard functions evaluate to ABS(IN) = |IN|, MIN(IN1, IN2) = the smaller,
+# SEL(G, IN0, IN1) = IN1 if G, MUX(K, IN0, IN1) = INK (table 32). Integer /
+# truncates toward zero, MOD takes the sign of the dividend (table 30).
+# one, zero and yes are constants 1, 0 and TRUE held in variables.
+# calls (a VAR_OUTPUT of the program, initially 0) goes up by one per BUMP
+# call, four per cycle, so BUMP returns 4c+1 .. 4c+4 on cycle c.
+#
+# cycle 0, i0=25: a = |1-10| = 9; m = MIN(25, 2) = 2; s = 3;
+#   x = SPLIT(25) = 2 (r = 5); q = SPLIT(4*10+7 = 47) = 4, r = 7 (last write);
+#   calls = 4
+# cycle 1, i0=-31: a = |5-10| = 5; m = MIN(-31, 6) = -31; s = 7;
+#   x = SPLIT(-31) = -3 (r = -1); q = SPLIT(87) = 8, r = 7; calls = 8
+period_ms: 100
+program: main
+inputs: i0
+outputs: a m s x q r calls
+status: conformant
+reference: IEC 61131-3 ed.3 7.3.2, 6.6.1.7, tables 20, 30, 32
+---
+0 i0=25 => a=9 m=2 s=3 x=2 q=4 r=7 calls=4
+1 i0=-31 => a=5 m=-31 s=7 x=-3 q=8 r=7 calls=8

@@ -155,8 +155,10 @@ hand. CI checks the table is in sync with the evidence.
 | ops/time_mul | PASS | **ERROR** (build) | **FAIL** (cycles 0-4) | PASS | PASS | **FAIL** (see evidence) | **FAIL** (compile) | TIME * n with large products: matiec's __time_mul overflows a 32-bit int (matiec #15, beremiz/matiec#51; upstream does not build TIME arithmetic, #40, the fork shows it, fork #10); IronPLC, STruC++ and RuSTy agree. Found by tools/fuzz |
 | ops/mux_types | PASS | PASS | PASS | PASS | PASS | **ERROR** (see evidence) | **FAIL** (compile) | MUX on UINT/BYTE/WORD/BOOL/TIME (table 32: ANY): rk has no unsigned or bit-string MUX overload (rk item 9); 4diac has no func_MUX.h (4diac item 3) |
 | ops/div_call_divisor | PASS | **ERROR** (build) | **ERROR** (build) | PASS | **ERROR** (see evidence) | **ERROR** (see evidence) | PASS | `a / BUMP(calls)` and `a MOD BUMP(calls)` with BUMP's VAR_IN_OUT: one call each. matiec and its fork generate the MOD divisor twice and the C does not link (matiec item 16, fix in beremiz/matiec#47); 4diac has no VAR_IN_OUT on a function. Found in the review of beremiz/matiec#47 |
+| ops/std_formal_order | PASS | PASS | PASS | **FAIL** (cycles 0-2) | **ERROR** (see evidence) | **FAIL** (see evidence) | PASS | LIMIT, SEL, MUX called formally with the arguments in another order: STruC++ passes them in written order (STruC++ #14); 4diac names the parameters differently (4diac item 5, 4diac-ide#3132); RuSTy rejects formal names on standard functions (rusty#2035, expected). Found by tools/fuzz |
+| pou/inout_call_in_std_arg | PASS | **ERROR** (build) | **ERROR** (build) | PASS | **ERROR** (see evidence) | **ERROR** (see evidence) | PASS | a VAR_IN_OUT / VAR_OUTPUT call as argument of ABS, MIN, SEL, MUX and of another function: matiec and its fork never generate its wrapper and do not link (matiec item 17, fork item 12); 4diac has no VAR_IN_OUT on a function. Found by tools/fuzz |
 
-Totals (90 tests, 72 with `status: conformant`): conformant tests passed, IronPLC 50/72; matiec 62/72; OpenPLC's matiec 61/72; STruC++ 59/72; RuSTy 56/72; 4diac 31/72; rk 51/72. 19 of the 90 tests have the same result on all seven runtimes.
+Totals (92 tests, 74 with `status: conformant`): conformant tests passed, IronPLC 52/74; matiec 63/74; OpenPLC's matiec 62/74; STruC++ 60/74; RuSTy 56/74; 4diac 31/74; rk 53/74. 19 of the 92 tests have the same result on all seven runtimes.
 
 <!-- results:end -->
 
@@ -178,6 +180,7 @@ Totals (90 tests, 72 with `status: conformant`): conformant tests passed, IronPL
 14. **`LIMIT` with MN > MX returns MN** (beremiz/matiec#50): matiec's `LIMIT` tests `IN <= MN` first, so `LIMIT(5, 3, 1)` is 5 where the standard's formula `MIN(MAX(IN, MN), MX)` (ed.3 table 32) gives 1; IronPLC follows the formula (`ops/limit_inverted`, found by `tools/fuzz`; the suite's other LIMIT tests keep MN <= MX). The OpenPLC fork (item 9), STruC++ (item 13) and RuSTy (item 8) do the same.
 15. **`TIME * n` overflows a 32-bit intermediate** (beremiz/matiec#51): `lib/C/iec_std_lib.h` `__time_mul` computes `(int)((LREAL)IN1.tv_nsec * IN2)`, so once the nanosecond part times the factor exceeds 2^31 (`T#700ms * 4`, `T#999ms * 3`) the product is wrong (`ops/time_mul`: 2147 ms instead of 2800); upstream does not build it (#40) but has the same line, the OpenPLC fork shows it. Found by `tools/fuzz` (profile `time`).
 16. **The divisor of `MOD` is generated twice** (fix proposed in beremiz/matiec#47): stage 4 prints `MOD` as `((b == 0)?0:(a % b))`, so `b` is evaluated twice; when `b` is a call to a function with VAR_OUTPUT or VAR_IN_OUT, each pass numbers a new wrapper (`__MAIN_BUMP3`, `__MAIN_BUMP4`, see item 13) but only one is generated, and the C does not link (`ops/div_call_divisor`); any other call in the divisor would run twice. The `/` operator is unguarded (bare C division, #38), so its divisor is generated once; the first version of #47 guarded it the same way and had the same defect (found in its review), the current one prints `__div_<type>(a, b)` and `__mod_<type>(a, b)` and passes the test. The OpenPLC fork has the same `MOD`.
+17. **A call with VAR_IN_OUT or VAR_OUTPUT inside the argument of another call does not link**: `ABS(BUMP(n))`, `MIN(i0, BUMP(n))`, `SEL`, `MUX`, `*_TO_*`, or a user function's input: `generate_c_st` numbers and calls the call's per-call wrapper (`__MAIN_BUMP1`), but `generate_c_inlinefcall.cc` never visits the arguments of a call (its `parameter_assignment->accept` is commented out), so the wrapper is not generated (`pou/inout_call_in_std_arg`; as an operand, `i0 + BUMP(n)`, it works). A fix that visits the calls nested in each argument, in parameter order, with a non-printing finder passes the test and changes no other result. Found by `tools/fuzz` (profile `calls`). The OpenPLC fork has the same behaviour.
 
 Items 1, 2, 3 are IronPLC deviations from the standard's timing diagrams
 (matiec's `lib/timer.txt` reproduces those diagrams in its comments). Item 5
@@ -229,6 +232,8 @@ upstream matiec `3a41303`:
     `ops/time_mul`: `T#700ms * 4` is 2147 ms).
 11. **The divisor of `MOD` is generated twice**, as upstream (item 16;
     `ops/div_call_divisor` does not link).
+12. **A call with VAR_IN_OUT or VAR_OUTPUT inside another call's argument
+    does not link**, as upstream (item 17; `pou/inout_call_in_std_arg`).
 
 Shared with upstream: `REPLACE` (#41), `STRING[n]` (#42), task order (#43),
 counters stopping at PV / 0 (permitted), rounding to even, the `/` operator unguarded.
@@ -311,6 +316,15 @@ ed.3 table 46 permit. The failures are in the front end and the string codegen:
 13. **`LIMIT` with MN > MX returns MN** (`IN < MN ? MN : ...`), like matiec
     item 14 (`ops/limit_inverted`); `LIMIT(0, 0, -16)` is -16 here where
     matiec gives 0 (`IN <= MN`).
+14. **Formal calls of standard functions ignore the parameter names**: the
+    arguments are passed in the order they are written, so
+    `LIMIT(MX := 10, IN := i0, MN := 0)` is `LIMIT(10, i0, 0)` (10 for
+    i0 = 5), `SEL(IN1 := 20, G := g, IN0 := 10)` gives 10 whatever g, and
+    `MUX` with `K` not first gives the wrong input or does not compile
+    (`ops/std_formal_order`; ed.3 6.6.1.7.1, 7.2.3.1). `src/backend/codegen.ts`
+    maps standard-function arguments in written order; the reordering of
+    named arguments is done for user functions only (still so on `fcccfbd`).
+    Found by `tools/fuzz` (profile `calls`).
 
 ## 4diac (IDE 3.3.0 and FORTE 3.3.0)
 

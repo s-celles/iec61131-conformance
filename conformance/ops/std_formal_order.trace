@@ -1,0 +1,22 @@
+# A formal call assigns each argument to the parameter it names, whatever the
+# order of the assignments (ed.3 6.6.1.7.1 and 7.2.3.1: "the order of the
+# formal input parameters is not significant"; ed.2 2.5.1.1). The parameter
+# names are those of table 32: LIMIT(MN, IN, MX) = MIN(MAX(IN, MN), MX),
+# SEL(G, IN0, IN1) = IN0 if G is FALSE else IN1, MUX(K, IN0, ..., INn-1)
+# = INK. l1 is the declaration order, l2 the same call in another order.
+#
+# cycle 0: i0=5 g=TRUE    l1 = l2 = MIN(MAX(5, 0), 10) = 5; s1 = IN1 = 20;
+#          m1 = IN1 = 200; x1 = IN2 = 3
+# cycle 1: i0=-4 g=FALSE  l1 = l2 = MIN(MAX(-4, 0), 10) = 0; s1 = IN0 = 10
+# cycle 2: i0=42 g=TRUE   l1 = l2 = MIN(MAX(42, 0), 10) = 10; s1 = 20
+# m1 and x1 do not depend on the inputs.
+period_ms: 100
+program: main
+inputs: i0 g
+outputs: l1 l2 s1 m1 x1
+status: conformant
+reference: IEC 61131-3 ed.3 6.6.1.7.1, 7.2.3.1, table 32
+---
+0 i0=5 g=TRUE => l1=5 l2=5 s1=20 m1=200 x1=3
+1 i0=-4 g=FALSE => l1=0 l2=0 s1=10 m1=200 x1=3
+2 i0=42 g=TRUE => l1=10 l2=10 s1=20 m1=200 x1=3

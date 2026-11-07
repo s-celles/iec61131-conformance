@@ -9,7 +9,7 @@ Text runtimes: plain `.st` programs paired with plain-text expected
 input/output traces, one record per scan cycle. Dedicated to the public
 domain under CC0 1.0 (see `LICENSE`).
 
-Status: 90 tests, run against IronPLC, matiec, OpenPLC's matiec fork, STruC++,
+Status: 92 tests, run against IronPLC, matiec, OpenPLC's matiec fork, STruC++,
 4diac (IDE + FORTE, on the subset 61499 can pose), rk and RuSTy
 (see `notes/comparison.md`), with a Lean 4 model of the function block
 semantics that the expected traces are proved to follow from.
@@ -71,6 +71,7 @@ conformance/
                time_mul time_functions          TIME * INT with large products, MIN/MAX/LIMIT/SEL/MUX/LT on TIME (from tools/fuzz)
                mux_types                        MUX on UINT, BYTE, WORD, BOOL, TIME
                div_call_divisor                 / and MOD with a VAR_IN_OUT call as divisor (from the review of beremiz/matiec#47)
+               std_formal_order                 LIMIT SEL MUX called formally, arguments in another order (from tools/fuzz)
   data/        array_internal array_init        arrays (negative bounds, initialisers)
                struct_internal enum             structures (copy, nesting), enumerations
                array_2d array_of_struct         2-D array, array of a named array type, array of structures
@@ -89,6 +90,7 @@ conformance/
                fb_en_eno                        implicit EN/ENO on a function block
                fb_in_out function_var_output    VAR_IN_OUT (FB and function), function VAR_OUTPUT (=>)
                function_input_default fb_method omitted function inputs, METHOD (ed.3)
+               inout_call_in_std_arg            a VAR_IN_OUT/VAR_OUTPUT call as argument of ABS MIN SEL MUX (from tools/fuzz)
   undefined/   int_overflow div_zero eval_order ton_pt_change
                for_bound_modified ctu_pv_zero   corners the standard leaves open
                for_var_after_loop timer_pt_zero

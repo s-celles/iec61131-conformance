@@ -264,6 +264,21 @@ PASS    conformance/ops/real_power.st
 3 b=16#FF w=16#FFFF => b_back=16#08 b_rol=16#0F w_back=16#00F0 w_ror=16#00FF b_or=16#4C
 4 b=16#00 w=16#0010 => b_back=16#00 b_rol=16#00 w_back=16#0000 w_ror=16#0010 b_or=16#44
 PASS    conformance/ops/shl_width.st
+### conformance/ops/std_formal_order.st
+FAIL    conformance/ops/std_formal_order.st
+        4diac IDE failed to export the FB:
+        ... 15 more
+        <tmpdir>/export.xml:4: Could not export without errors
+        Caused by: <tmpdir>/export.xml:4: Could not export without errors
+        Root exception:
+        [fordiac.exportProjectFBs] FB_CONFORMANCE_OPS_STD_FORMAL_ORDER: FB_CONFORMANCE_OPS_STD_FORMAL_ORDER at 2: Attempting to call standard function LIMIT with formal arguments
+        [fordiac.exportProjectFBs] FB_CONFORMANCE_OPS_STD_FORMAL_ORDER: FB_CONFORMANCE_OPS_STD_FORMAL_ORDER at 2: The parameter IN is undefined for the callable LIMIT
+        [fordiac.exportProjectFBs] FB_CONFORMANCE_OPS_STD_FORMAL_ORDER: FB_CONFORMANCE_OPS_STD_FORMAL_ORDER at 2: The parameter MN is undefined for the callable LIMIT
+        [fordiac.exportProjectFBs] FB_CONFORMANCE_OPS_STD_FORMAL_ORDER: FB_CONFORMANCE_OPS_STD_FORMAL_ORDER at 2: The parameter MX is undefined for the callable LIMIT
+        [fordiac.exportProjectFBs] FB_CONFORMANCE_OPS_STD_FORMAL_ORDER: FB_CONFORMANCE_OPS_STD_FORMAL_ORDER at 3: Attempting to call standard function LIMIT with formal arguments
+        [fordiac.exportProjectFBs] FB_CONFORMANCE_OPS_STD_FORMAL_ORDER: FB_CONFORMANCE_OPS_STD_FORMAL_ORDER at 3: The parameter IN is undefined for the callable LIMIT
+        [fordiac.exportProjectFBs] FB_CONFORMANCE_OPS_STD_FORMAL_ORDER: FB_CONFORMANCE_OPS_STD_FORMAL_ORDER at 3: The parameter MN is undefined for the callable LIMIT
+        [fordiac.exportProjectFBs] FB_CONFORMANCE_OPS_STD_FORMAL_ORDER: FB_CONFORMANCE_OPS_STD_FORMAL_ORDER at 3: The parameter MX is undefined for the callable LIMIT
 ### conformance/ops/std_functions.st
 ERROR   conformance/ops/std_functions.st
         c++ failed:
@@ -386,6 +401,9 @@ PASS    conformance/pou/function_var_not_retained.st
 2 a=-7 b=2 => ok=TRUE q=-3 r=-1
 3 a=9 b=3 => ok=TRUE q=3 r=0
 PASS    conformance/pou/function_var_output.st
+### conformance/pou/inout_call_in_std_arg.st
+ERROR   conformance/pou/inout_call_in_std_arg.st
+        FUNCTION BUMP: VAR_IN_OUT on a function is outside this harness's scope
 ### conformance/strings/compare.st
 0 => e1=TRUE e2=FALSE l1=TRUE l2=TRUE l3=TRUE l4=TRUE g1=TRUE n1=TRUE
 1 => e1=TRUE e2=FALSE l1=TRUE l2=TRUE l3=TRUE l4=TRUE g1=TRUE n1=TRUE
@@ -521,5 +539,5 @@ ERROR   conformance/undefined/timer_pt_zero.st
 ERROR   conformance/undefined/ton_pt_change.st
         type TON is outside this harness's scope
 
-90 tests: 31 pass, 7 fail, 4 same, 6 differs, 42 error
+92 tests: 31 pass, 8 fail, 4 same, 6 differs, 43 error
 exit 1
