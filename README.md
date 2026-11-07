@@ -325,7 +325,11 @@ of the repository, a harness should:
 
 `tools/fuzz/gen.py` generates small, well-defined ST programs (profile
 `core`: INT and BOOL; profile `time`: also TIME; profile `wide`: also DINT,
-UINT, BYTE and WORD with the conversions, bit-string operators and shifts; IF/CASE/FOR; the
+UINT, BYTE and WORD with the conversions, bit-string operators and shifts;
+profile `calls`: user FUNCTIONs with VAR_IN_OUT and VAR_OUTPUT and a function
+block instance used inside expressions, and formal calls of the standard
+functions in any argument order, keeping each expression independent of
+evaluation order and short-circuiting; IF/CASE/FOR; the
 operators and standard functions whose meaning the standard fixes
 completely) with the expected trace from a reference evaluator; `tools/fuzz/run.py` runs them through the local harnesses and
 prints the divergences, keeping the programs for reduction. `--exclude`
