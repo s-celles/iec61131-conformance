@@ -1,6 +1,8 @@
 # Differential run: IronPLC vs matiec vs RuSTy (and Beremiz)
 
-Date: 2026-10-31. Same 18 `.st` + `.trace` pairs, three runtimes.
+Updated: 2026-11-07. The same `.st` + `.trace` pairs across the pinned
+runtimes below; missing evidence is shown as ERROR, not inferred from
+another runtime. See `notes/fuzz-2026-11-07.md` for the latest search.
 
 ## Runtimes actually run
 
@@ -157,8 +159,17 @@ hand. CI checks the table is in sync with the evidence.
 | ops/div_call_divisor | PASS | **ERROR** (build) | **ERROR** (build) | PASS | **ERROR** (see evidence) | **ERROR** (see evidence) | PASS | `a / BUMP(calls)` and `a MOD BUMP(calls)` with BUMP's VAR_IN_OUT: one call each. matiec and its fork generate the MOD divisor twice and the C does not link (matiec item 16, fix in beremiz/matiec#47); 4diac has no VAR_IN_OUT on a function. Found in the review of beremiz/matiec#47 |
 | ops/std_formal_order | PASS | PASS | PASS | **FAIL** (cycles 0-2) | **ERROR** (see evidence) | **FAIL** (see evidence) | PASS | LIMIT, SEL, MUX called formally with the arguments in another order: STruC++ passes them in written order (STruC++ #14); 4diac names the parameters differently (4diac item 5, 4diac-ide#3132); RuSTy rejects formal names on standard functions (rusty#2035, expected). Found by tools/fuzz |
 | pou/inout_call_in_std_arg | PASS | **ERROR** (build) | **ERROR** (build) | PASS | **ERROR** (see evidence) | **ERROR** (see evidence) | PASS | a VAR_IN_OUT / VAR_OUTPUT call as argument of ABS, MIN, SEL, MUX and of another function: matiec and its fork never generate its wrapper and do not link (matiec item 17, fork item 12); 4diac has no VAR_IN_OUT on a function. Found by tools/fuzz |
+| strings/compare_le_ge | PASS | PASS | **FAIL** (cycles 0-1) | **ERROR** (build) | **ERROR** (see evidence) | PASS | PASS | <= and >= between STRING variables: STruC++ has no such operators on IECStringVar (STruC++ #16); the OpenPLC fork compares only up to the shorter length, so 'abc' <= 'ab' (fork #1). Found by tools/fuzz |
+| strings/len_int | PASS | PASS | PASS | **FAIL** (cycle 0) | **ERROR** (see evidence) | PASS | **FAIL** (compile) | LEN combined with negative INTs (MAX, MIN, >): STruC++'s LEN is size_t, so MAX(LEN(''), -11) is -11 (STruC++ #15); rk's LEN is UDINT and MAX(LEN(s), i0) is ambiguous (rk #3). Found by tools/fuzz |
+| ops/minmax_ext_expr | PASS | PASS | PASS | **ERROR** (build) | **ERROR** (see evidence) | PASS | **FAIL** (compile) | three-input MIN/MAX with an INT expression first, second or last: STruC++ builds only with the expression last (its variadic overload needs the first two C++ types equal, STruC++ #20); rk has two-input MIN/MAX only (adclz/rk#116). Found by tools/fuzz (`calls`, seed 166) |
+| strings/concat_ext | **FAIL** (compile) | PASS | PASS | **ERROR** (build) | **ERROR** (see evidence) | PASS | **FAIL** (compile) | CONCAT with three and four STRING variables: IronPLC registers CONCAT with two inputs, P4018 (finding 28); STruC++'s variadic overload takes IECString, not the IECStringVar it generates (STruC++ #19); rk declares a two-input CONCAT |
+| strings/find_int | PASS | PASS | **FAIL** (cycles 0-1) | **FAIL** (cycle 0) | **ERROR** (see evidence) | PASS | **FAIL** (compile) | FIND as a signed INT in MAX, MIN, > and -: STruC++'s FIND is size_t, so MAX(FIND(src,part), -11) is -11 (STruC++ #15); the OpenPLC fork returns 4 instead of 0 for an absent IN2 (already documented); rk's FIND is UDINT and MAX is ambiguous |
+| strings/insert_positions | PASS | PASS | PASS | **FAIL** (cycles 0-3) | **ERROR** (see evidence) | PASS | **FAIL** (compile) | INSERT(src, part, P) for P = 1, 2, 4, 5 on variables: STruC++ inserts before character P instead of after it (STruC++ #17); rk's P is UDINT and an INT is refused |
+| strings/min_max_limit | **FAIL** (compile) | PASS | PASS | **ERROR** (build) | **ERROR** (see evidence) | PASS | **FAIL** (compile) | MIN, MAX, LIMIT on STRING variables (ANY_ELEMENTARY, table 32): IronPLC restricts them to ANY_NUM, P4026 (finding 27); STruC++'s string classes lack the ANY_ELEMENTARY trait (STruC++ #18); rk has no STRING overloads |
+| pou/inout_array_element | **FAIL** (compile) | **ERROR** (build) | **ERROR** (build) | PASS | **ERROR** (see evidence) | **ERROR** (see evidence) | PASS | `BUMP(arr[i], 5)` and `BUMP(n := arr[3], d := 1)`, n a VAR_IN_OUT: IronPLC P9999, only a named variable is passed by reference (finding 29); matiec and its fork print the subscripts bare in the call wrapper (`tabledata__`, matiec item 18, fork item 13); 4diac has no VAR_IN_OUT on a function. Found by tools/fuzz (`array_calls`) |
+| pou/output_array_element | PASS | **ERROR** (build) | **ERROR** (build) | PASS | **ERROR** (see evidence) | PASS | PASS | `m => arr[i]` and `m => arr[3]` on a function's VAR_OUTPUT: matiec and its fork print the subscripts bare in the call wrapper (matiec item 18, fork item 13); a function block's output to an element builds. Found by tools/fuzz (`array_calls`) |
 
-Totals (92 tests, 74 with `status: conformant`): conformant tests passed, IronPLC 52/74; matiec 63/74; OpenPLC's matiec 62/74; STruC++ 60/74; RuSTy 56/74; 4diac 31/74; rk 53/74. 19 of the 92 tests have the same result on all seven runtimes.
+Totals (101 tests, 83 with `status: conformant`): conformant tests passed, IronPLC 58/83; matiec 70/83; OpenPLC's matiec 67/83; STruC++ 62/83; RuSTy 56/83; 4diac 39/83; rk 56/83. 19 of the 101 tests have the same result on all seven runtimes.
 
 <!-- results:end -->
 
@@ -181,6 +192,7 @@ Totals (92 tests, 74 with `status: conformant`): conformant tests passed, IronPL
 15. **`TIME * n` overflows a 32-bit intermediate** (beremiz/matiec#51): `lib/C/iec_std_lib.h` `__time_mul` computes `(int)((LREAL)IN1.tv_nsec * IN2)`, so once the nanosecond part times the factor exceeds 2^31 (`T#700ms * 4`, `T#999ms * 3`) the product is wrong (`ops/time_mul`: 2147 ms instead of 2800); upstream does not build it (#40) but has the same line, the OpenPLC fork shows it. Found by `tools/fuzz` (profile `time`).
 16. **The divisor of `MOD` is generated twice** (fix proposed in beremiz/matiec#47): stage 4 prints `MOD` as `((b == 0)?0:(a % b))`, so `b` is evaluated twice; when `b` is a call to a function with VAR_OUTPUT or VAR_IN_OUT, each pass numbers a new wrapper (`__MAIN_BUMP3`, `__MAIN_BUMP4`, see item 13) but only one is generated, and the C does not link (`ops/div_call_divisor`); any other call in the divisor would run twice. The `/` operator is unguarded (bare C division, #38), so its divisor is generated once; the first version of #47 guarded it the same way and had the same defect (found in its review), the current one prints `__div_<type>(a, b)` and `__mod_<type>(a, b)` and passes the test. The OpenPLC fork has the same `MOD`.
 17. **A call with VAR_IN_OUT or VAR_OUTPUT inside the argument of another call does not link**: `ABS(BUMP(n))`, `MIN(i0, BUMP(n))`, `SEL`, `MUX`, `*_TO_*`, or a user function's input: `generate_c_st` numbers and calls the call's per-call wrapper (`__MAIN_BUMP1`), but `generate_c_inlinefcall.cc` never visits the arguments of a call (its `parameter_assignment->accept` is commented out), so the wrapper is not generated (`pou/inout_call_in_std_arg`; as an operand, `i0 + BUMP(n)`, it works). A fix that visits the calls nested in each argument, in parameter order, with a non-printing finder passes the test and changes no other result. Found by `tools/fuzz` (profile `calls`). The OpenPLC fork has the same behaviour.
+18. **An array element as a function's VAR_IN_OUT or VAR_OUTPUT does not build**: `BUMP(arr[i], 5)` and `DIVMOD(a := x, b := 4, m => arr[i])` give invalid C, "`__ARRAY_OF_INT_3` has no member named `tabledata__`" (`pou/inout_array_element`, `pou/output_array_element`); a literal subscript gives `table__ULINT_LITERAL(0)` (fuzz seed 13, `a0[0]`). The per-call wrapper of item 13 prints the element with `generate_c_inlinefcall_c::visit(array_variable_c)`, which writes `.table` and then visits the subscript list, but that class has no `visit(subscript_list_c)` (`generate_c_st.cc` has one, printing `[(i) - (lo)]`), so the subscripts are printed bare after `table`. A function block's output to an element, `d(x := 3, y => arr[i])`, builds and runs. Found by `tools/fuzz` (profile `array_calls`). The OpenPLC fork fails too ("assignment to expression with array type").
 
 Items 1, 2, 3 are IronPLC deviations from the standard's timing diagrams
 (matiec's `lib/timer.txt` reproduces those diagrams in its comments). Item 5
@@ -234,6 +246,9 @@ upstream matiec `3a41303`:
     `ops/div_call_divisor` does not link).
 12. **A call with VAR_IN_OUT or VAR_OUTPUT inside another call's argument
     does not link**, as upstream (item 17; `pou/inout_call_in_std_arg`).
+13. **An array element as a function's VAR_IN_OUT or VAR_OUTPUT does not
+    build**, as upstream (item 18; `pou/inout_array_element`,
+    `pou/output_array_element`).
 
 Shared with upstream: `REPLACE` (#41), `STRING[n]` (#42), task order (#43),
 counters stopping at PV / 0 (permitted), rounding to even, the `/` operator unguarded.
@@ -325,6 +340,43 @@ ed.3 table 46 permit. The failures are in the front end and the string codegen:
     maps standard-function arguments in written order; the reordering of
     named arguments is done for user functions only (still so on `fcccfbd`).
     Found by `tools/fuzz` (profile `calls`).
+15. **`LEN` and `FIND` return `size_t`**: the runtime's functions
+    (`iec_string.hpp`) are unsigned while the registry types them `INT`, so C++
+    compares and selects in unsigned arithmetic: `MAX(LEN(''), -11)` is
+    -11, `MIN(LEN('abc'), -11)` is 3, `LEN('') > -11` is FALSE
+    (`strings/len_int`; `LEN(t) - 5` is right). Still so on `fcccfbd`.
+    `FIND(src,part)=2` has the same problem: with i0=-11,
+    `MAX(FIND(src,part),i0)` is -11, MIN is 2 and `FIND(src,part)>i0`
+    is FALSE (`strings/find_int`). Found by `tools/fuzz` (profile
+    `strings`) and a follow-up of the unsigned-result finding.
+16. **No `<=` / `>=` between two STRING variables**: the free operators on
+    `IECStringVar` exist for `<` and `>` only, so `a <= b` does not compile
+    ("no match for operator<=", `strings/compare_le_ge`). Still so on
+    `fcccfbd`. Found by `tools/fuzz` (profile `strings`).
+17. **`INSERT` inserts before character P instead of after it**:
+    `INSERT(src, part, 2)` with `src='abcde'`, `part='XY'` gives
+    `'aXYbcde'`, expected `'abXYcde'` (`strings/insert_positions`).
+    `iec_string.hpp` passes `P - 1` to its zero-based `insert`, as for
+    DELETE/REPLACE, although INSERT's P names the last preceding character
+    (ed.3 table 34). Variable arguments expose the result hidden by the
+    literal-argument build failure in `strings/functions`.
+18. **MIN/MAX/LIMIT do not compile on STRING variables**: their C++
+    templates require `is_any_elementary`, but neither `IECString` nor
+    `IECStringVar` has that trait (`iec_traits.hpp`,
+    `strings/min_max_limit`). Ed.3 table 32 includes STRING through
+    ANY_ELEMENTARY; matiec, its fork and 4diac pass.
+19. **Extensible CONCAT does not compile on STRING variables**:
+    `CONCAT(a,b,c)` and `CONCAT(a,b,c,d)` fail C++ overload deduction;
+    only the two-input overloads accept `IECStringVar`, while the variadic
+    one requires `IECString` (`strings/concat_ext`, ed.3 table 34).
+    Nested two-input CONCAT works; matiec accepts the extensible call.
+20. **Extensible MIN/MAX with expressions depend on argument position**:
+    `MAX(a*2,b,c)` and `MIN(a,a-10,c)` do not build, although all inputs
+    are INT (`ops/minmax_ext_expr`, ed.3 table 32). The variadic C++
+    overload requires its first two arguments to share a C++ type;
+    arithmetic with constants is promoted to `int`, variables remain `IECVar<short>`.
+    An expression in the third position is accepted through the mixed-type
+    two-argument overload. Found by `tools/fuzz` (`calls`, seed 166).
 
 ## 4diac (IDE 3.3.0 and FORTE 3.3.0)
 
@@ -344,6 +396,7 @@ form), `VAR_IN_OUT` on a function. The totals are in the table. What differs:
 2. **`func_LIMIT.h` does not include `func_MAX.h` / `func_MIN.h`** (4diac-forte#1134), so an
    algorithm that uses LIMIT without also using MAX or MIN does not compile
    (`ops/limit_inverted`: "use of undeclared identifier 'func_MAX'").
+   Fixed upstream by 4diac-forte#1155 (merged 2026-11-06), after 3.3.0.
 3. **No `func_MUX.h` in FORTE 3.3.0** (4diac-forte#1135) while the IDE 3.3.0 exports
    `#include "forte/iec61131_functions/func_MUX.h"` for `MUX`
    (`ops/std_functions`, `ops/std_functions_expr`, `ops/time_functions`
@@ -430,6 +483,14 @@ Documented choices that make a conformant test fail to compile:
    `MUX(k, a, b)` on UINT is `E0809` "ambiguous overloaded call"
    (`ops/mux_types`, found by `tools/fuzz`). The help text of that error
    suggests `INT_TO_DINT(x)`, which rk does not declare (item 1).
+
+Also found on 2026-11-07: **CONCAT accepts exactly two inputs**
+(`strings/concat_ext`), although ed.3 table 34 makes it extensible, and
+**MIN/MAX/LIMIT have no STRING overloads** (`strings/min_max_limit`,
+table 32's ANY_ELEMENTARY). Both are refusals to compile, not wrong
+results. `FIND` returns UDINT and INSERT's P is UDINT as well, so
+`strings/find_int` and `strings/insert_positions` meet the same signed-type
+restriction as item 3.
 
 Semantic differences in what runs:
 

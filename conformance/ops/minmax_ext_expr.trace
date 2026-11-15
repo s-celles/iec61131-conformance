@@ -1,0 +1,22 @@
+# MIN and MAX are extensible (ed.3 6.6.2.5.2 table 32, 6.6.1.7.3;
+# ed.2 2.5.1.5.3 table 27): all three inputs here are INT, including
+# a * 2 and a - 10 (ed.3 table 30). Permuting their positions does not
+# change the selected minimum or maximum.
+# a=3, b=7: MAX(6,7,2)=7; MIN(-7,3,2)=-7.
+# a=-5,b=2: MAX(-10,2,2)=2; MIN(-15,-5,2)=-15.
+# a=8,b=-3: MAX(16,-3,2)=16; MIN(-2,8,2)=-2.
+# No intermediate overflows and no side effects or literal arguments.
+# IronPLC and matiec follow this derivation. STruC++ 72dfcb8 promotes the
+# arithmetic with a constant to C++ int but keeps variables as IECVar<short>; its variadic
+# MIN/MAX require identical C++ types for the first two arguments, so
+# the calls with an expression first or second do not compile.
+period_ms: 100
+program: main
+inputs: a b
+outputs: max_first max_second max_last min_first min_second min_last
+status: conformant
+reference: IEC 61131-3 ed.3 6.6.2.5.2 table 32, 6.6.1.7.3, table 30
+---
+0 a=3 b=7 => max_first=7 max_second=7 max_last=7 min_first=-7 min_second=-7 min_last=-7
+1 a=-5 b=2 => max_first=2 max_second=2 max_last=2 min_first=-15 min_second=-15 min_last=-15
+2 a=8 b=-3 => max_first=16 max_second=16 max_last=16 min_first=-2 min_second=-2 min_last=-2

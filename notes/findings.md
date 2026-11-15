@@ -324,7 +324,7 @@ Reported: https://github.com/ironplc/ironplc/issues/2549
   accepted. matiec, its fork and STruC++ accept the untyped form. Found
   by `tools/fuzz`.
 
-## 27. (Defect) MIN, MAX and LIMIT do not accept TIME
+## 27. (Defect) MIN, MAX and LIMIT do not accept TIME or STRING
 
 - Reported: https://github.com/ironplc/ironplc/issues/2555
 - Reproducer: `ops/time_functions.st`: `MIN(a, b)` with `a, b : TIME` is
@@ -335,3 +335,46 @@ Reported: https://github.com/ironplc/ironplc/issues/2549
   / ed.2 table 28; `LT(a, b)` and `a < b` on TIME are accepted). `SEL` and
   `MUX` on TIME are accepted. matiec's OpenPLC fork and STruC++ compute
   the test. Found by `tools/fuzz` (profile `time`).
+
+- The same restriction rejects STRING (`strings/min_max_limit`, added
+  2026-11-07): `MIN(a,b)`, `MAX(a,b)` and `LIMIT(a,c,b)` on STRING
+  variables are P4026, expected ANY_NUM. Equal-length strings 'abc', 'abd',
+  'abe' avoid any prefix-order corner. matiec, its OpenPLC fork and 4diac
+  compute the trace. This extends the same finding, not a separate cause.
+
+## 28. (Defect) CONCAT accepts only two inputs
+
+- Local finding, no upstream issue created. Reproducer:
+  `conformance/strings/concat_ext.st` / `.trace`.
+- `CONCAT(a,b,c)` and `CONCAT(a,b,c,d)` with STRING variables give P4018,
+  expected=2, actual=3/4 on `6e40df2` (0.252.0). The nested form
+  `CONCAT(CONCAT(a,b),c)` is the equivalent two-input control.
+- Expected: CONCAT is extensible (ed.3 6.6.2.5.3 table 34,
+  extensible invocation 6.6.1.7.3; ed.2 table 29). Concatenating 'ab',
+  'CD', 'ef', 'GH' in parameter order gives 'abCDefGH'. matiec accepts
+  the call. This remains after the MIN/MAX extensibility fix in #2551.
+- Cause: `analyzer/src/intermediates/stdlib_function.rs` registers CONCAT
+  with `FunctionSignature::stdlib`, listing only IN1 and IN2. Its signature
+  is not extensible; rejection happens before string code generation.
+- STruC++ accepts the ST but its variadic runtime overload cannot deduce
+  STRING variable wrappers; rk also declares a two-input CONCAT only.
+
+## 29. (Defect) An array element cannot be passed to a function's VAR_IN_OUT
+
+- Local finding, no upstream issue created. Reproducer:
+  `conformance/pou/inout_array_element.st` / `.trace`.
+- `r := BUMP(arr[i], 5)` and `s := BUMP(n := arr[3], d := 1)`, with
+  `arr : ARRAY[1..3] OF INT` and BUMP's `n : INT` a VAR_IN_OUT, are
+  P9999 "Statement code generation does not support yet" on `6e40df2`
+  (0.252.0). A scalar variable as the argument works (`pou/fb_in_out`),
+  and so does an element as the target of a VAR_OUTPUT
+  (`pou/output_array_element`, `m => arr[i]`).
+- Expected: a VAR_IN_OUT refers to the caller's variable (ed.3 6.6.2.3,
+  6.6.1.7.1 table 20), and an array element is a variable (ed.3 6.4.4.3,
+  7.3.1; ed.2 2.4.1.2). The trace gives 5/1, 6/7, 5/8 with the array
+  updated in place. STruC++ and rk compute it.
+- Cause: `codegen/src/body/mod.rs` `args_can_emit` accepts an
+  `Arg::Ref` only when `place::variable_name` resolves it to a named
+  variable, which an indexed place is not; still so on `main` of
+  2026-11-15. Found by `tools/fuzz` (profile `array_calls`).
+

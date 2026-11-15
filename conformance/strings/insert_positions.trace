@@ -1,0 +1,19 @@
+# INSERT(IN1, IN2, P) inserts IN2 after the P-th character of IN1
+# (ed.3 6.6.2.5.3 table 34 / ed.2 2.5.1.5.5 table 29). Unlike MID,
+# DELETE and REPLACE, P is not the position of the first affected character.
+# With IN1 = 'abcde', IN2 = 'XY': split after 1, 2, 4, 5 characters,
+# concatenate the prefix, 'XY', and the remaining suffix. P = LEN(IN1)
+# appends. Every P is in 1..LEN(IN1), no truncation or invalid position.
+# IronPLC and matiec follow this derivation; STruC++ 72dfcb8 inserts before
+# character P (it passes P - 1 to its zero-based insert).
+period_ms: 100
+program: main
+inputs: pos
+outputs: inserted
+status: conformant
+reference: IEC 61131-3 ed.3 6.6.2.5.3 table 34 (INSERT)
+---
+0 pos=1 => inserted='aXYbcde'
+1 pos=2 => inserted='abXYcde'
+2 pos=4 => inserted='abcdXYe'
+3 pos=5 => inserted='abcdeXY'

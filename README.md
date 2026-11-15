@@ -9,7 +9,7 @@ Text runtimes: plain `.st` programs paired with plain-text expected
 input/output traces, one record per scan cycle. Dedicated to the public
 domain under CC0 1.0 (see `LICENSE`).
 
-Status: 92 tests, run against IronPLC, matiec, OpenPLC's matiec fork, STruC++,
+Status: 101 tests, run against IronPLC, matiec, OpenPLC's matiec fork, STruC++,
 4diac (IDE + FORTE, on the subset 61499 can pose), rk and RuSTy
 (see `notes/comparison.md`), with a Lean 4 model of the function block
 semantics that the expected traces are proved to follow from.
@@ -70,6 +70,7 @@ conformance/
                shl_width                        SHL truncates to the width of its input (from tools/fuzz)
                time_mul time_functions          TIME * INT with large products, MIN/MAX/LIMIT/SEL/MUX/LT on TIME (from tools/fuzz)
                mux_types                        MUX on UINT, BYTE, WORD, BOOL, TIME
+               minmax_ext_expr                  three-input MIN/MAX with expressions in each position (from tools/fuzz)
                div_call_divisor                 / and MOD with a VAR_IN_OUT call as divisor (from the review of beremiz/matiec#47)
                std_formal_order                 LIMIT SEL MUX called formally, arguments in another order (from tools/fuzz)
   data/        array_internal array_init        arrays (negative bounds, initialisers)
@@ -78,6 +79,9 @@ conformance/
                defaults                         default initial values of every type
   strings/     literals_escapes declared_length STRING literals and $ escapes, STRING[n]
                functions compare concat_assign  LEN CONCAT LEFT RIGHT MID INSERT DELETE REPLACE FIND, < =, copies
+               compare_le_ge len_int            <= >= between STRING variables, LEN as an INT (from tools/fuzz)
+               insert_positions find_int        INSERT after position P, FIND as a signed INT
+               concat_ext min_max_limit         extensible CONCAT, MIN/MAX/LIMIT on STRING variables
   config/      globals_external                 VAR_GLOBAL / VAR_EXTERNAL (SPEC version 2: the .st has
                two_periods priority_order       its CONFIGURATION); task intervals, PRIORITY order,
                global_exchange event_single     producer/consumer through a global, SINGLE task
@@ -91,6 +95,8 @@ conformance/
                fb_in_out function_var_output    VAR_IN_OUT (FB and function), function VAR_OUTPUT (=>)
                function_input_default fb_method omitted function inputs, METHOD (ed.3)
                inout_call_in_std_arg            a VAR_IN_OUT/VAR_OUTPUT call as argument of ABS MIN SEL MUX (from tools/fuzz)
+               inout_array_element              an array element as a function's VAR_IN_OUT / VAR_OUTPUT (from tools/fuzz)
+               output_array_element
   undefined/   int_overflow div_zero eval_order ton_pt_change
                for_bound_modified ctu_pv_zero   corners the standard leaves open
                for_var_after_loop timer_pt_zero
@@ -119,11 +125,11 @@ notes/
   evidence/         full harness outputs
 ```
 
-Each test is `<name>.st` + `<name>.trace`. Seventy-one tests under the first
+Each test is `<name>.st` + `<name>.trace`. Eighty-three tests under the first
 nine categories are `status: conformant`: their expected values were derived
 by hand from the standard's function block bodies and timing diagrams, and
 the derivation is written as a comment at the top of each `.trace` file.
-The sixteen tests under `undefined/` are `status: implementation-defined`: the
+The eighteen tests under `undefined/` are `status: implementation-defined`: the
 trace records what IronPLC actually does, and the comment states what the
 standard says or leaves open; a mismatch on another runtime is a documented
 difference, not a failure.
@@ -331,12 +337,23 @@ UINT, BYTE and WORD with the conversions, bit-string operators and shifts;
 profile `calls`: user FUNCTIONs with VAR_IN_OUT and VAR_OUTPUT and a function
 block instance used inside expressions, and formal calls of the standard
 functions in any argument order, keeping each expression independent of
-evaluation order and short-circuiting; IF/CASE/FOR; the
+evaluation order and short-circuiting; profile `strings`: STRING variables
+and literals with the table 34 functions (including CONCAT with two to four
+inputs) and the comparisons, every L and P
+in range; profile `arrays`: one- and two-dimensional INT arrays with
+non-zero lower bounds and an initialiser, read and written with computed
+subscripts, also inside FOR loops (an execution that reaches a subscript
+outside its subrange is discarded); IF/CASE/FOR; the
 operators and standard functions whose meaning the standard fixes
 completely) with the expected trace from a reference evaluator; `tools/fuzz/run.py` runs them through the local harnesses and
 prints the divergences, keeping the programs for reduction. `--exclude`
 leaves out constructs with known upstream issues so that new ones show.
 This is a search tool, not part of the suite or of CI.
+
+Run `python3 -I tools/fuzz/test_gen.py` to check the string and array evaluator against
+table examples and its range guards. The search campaign and reduced cases
+of 2026-11-07 are recorded in `notes/fuzz-2026-11-07.md`; local upstream bug
+drafts are in `upstream-bugs.md`.
 
 ## Citing
 

@@ -1,4 +1,4 @@
-# Commands that produced the evidence (2026-10-31)
+# Commands that produced the evidence (updated 2026-11-07)
 
 All run from the suite root unless noted. Checkouts live in a sibling
 `scratch/` directory; `ironplc-src` is a symlink to `scratch/ironplc`.
@@ -69,3 +69,45 @@ python3 -I formal/gen_traces.py
 ```
 
 Beremiz: cloned (`scratch/beremiz`) and inspected only; see notes/comparison.md.
+
+## Refresh of 2026-11-07
+
+The six locally available runtimes above were run over all 99 tests with
+their pinned revisions unchanged. Checkouts were in sibling `../scratch/`,
+so compiler/library options used absolute paths from `realpath ../scratch`.
+RuSTy was not installed locally; its evidence file was left unchanged.
+
+C/C++ build-error cases were rerun after fixing diagnostic normalisation:
+the matiec and STruC++ harnesses now replace the library root with
+`<matiec-lib>` / `<strucpp-runtime>` before truncating stderr. The other
+normalisations remain those in `.github/scripts/check-evidence.sh` (suite
+root, temporary paths, ANSI colours, object offsets, Eclipse timestamps).
+All 94 pre-existing verdicts were checked against the captured full run
+for each available runtime; only new tests and build-error excerpts changed.
+The new results have hand derivations in their `.trace` headers.
+
+See `notes/fuzz-2026-11-07.md` for the fuzz commands and their results.
+
+## Refresh of 2026-11-15
+
+The 2026-11-07 refresh had added `strings/compare_le_ge` and
+`strings/len_int` only, and its build-error excerpts predated the
+`<matiec-lib>` / `<strucpp-runtime>` masking. The same six runtimes, at the
+same pinned revisions, were rerun over all 99 tests with absolute
+`../scratch` paths, and the outputs normalised as `check-evidence.sh` does
+(with `RUNNER_TEMP` set to the scratch directory). For IronPLC, matiec,
+the OpenPLC fork, STruC++ and rk, every pre-existing verdict is unchanged;
+the files differ only by the five new tests and by the masked, re-cut
+build diagnostics.
+
+For 4diac, only the blocks of the five new tests were inserted into the
+existing file. Locally, the IDE fails `data/enum` on `COLOR.dtp` ("Unknown
+source type EnumeratedType") instead of the CI's undefined-variable
+messages: the verdict (FAIL) is the same, but the local diagnostic was not
+recorded in place of the CI one.
+
+Later the same day `pou/inout_array_element` and `pou/output_array_element`
+were added (101 tests). The five runtimes were rerun over the whole suite
+in the same way: only those two blocks and the summary lines changed. For
+4diac, the two blocks of a run on those two tests were inserted, and its
+summary line counted them (one PASS, one ERROR).

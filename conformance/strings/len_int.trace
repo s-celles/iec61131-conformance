@@ -1,0 +1,17 @@
+# LEN(IN) is the number of characters of IN, an integer (ed.3 6.6.2.5.3
+# table 34; ed.2 2.5.1.5.5 table 29 gives its type as INT), so it combines
+# with INT values as the number it is: MAX/MIN (table 32), > (table 28),
+# - (table 30). LEN(s) = LEN('') = 0, LEN(abc) = LEN('abc') = 3.
+# cycle 0: i0=-11  m = MAX(0, -11) = 0; n = MIN(3, -11) = -11;
+#          c = 0 > -11 = TRUE; d = 3 - 5 = -2
+# cycle 1: i0=7    m = MAX(0, 7) = 7;   n = MIN(3, 7) = 3;
+#          c = 0 > 7 = FALSE;  d = -2
+period_ms: 100
+program: main
+inputs: i0
+outputs: m n c d
+status: conformant
+reference: IEC 61131-3 ed.3 6.6.2.5.3 table 34, tables 28, 30, 32
+---
+0 i0=-11 => m=0 n=-11 c=TRUE d=-2
+1 i0=7 => m=7 n=3 c=FALSE d=-2

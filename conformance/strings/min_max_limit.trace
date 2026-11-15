@@ -1,0 +1,20 @@
+# MIN, MAX and LIMIT accept ANY_ELEMENTARY, including STRING (ed.3
+# 6.6.2.5.2 table 32 / ed.2 2.5.1.5.3 table 27). String order is lexical
+# (ed.3 6.4.2, comparison functions table 28). These equal-length strings
+# differ only in their third character: 'abc' < 'abd' < 'abe'.
+# MIN(a,b)=a; MAX(a,b)=b; LIMIT(MN,IN,MX)=MIN(MAX(IN,MN),MX):
+# LIMIT(b,a,c)=b; LIMIT(a,b,c)=b; LIMIT(a,c,b)=b.
+# Bounds are ordered in every call; no literals passed as arguments,
+# unequal-length comparisons, empty strings, or truncation.
+# matiec and its OpenPLC fork follow this derivation. IronPLC 6e40df2
+# restricts the inputs to ANY_NUM; STruC++ 72dfcb8 omits its string types
+# from the ANY_ELEMENTARY trait used by the C++ templates.
+period_ms: 100
+program: main
+inputs:
+outputs: lo hi at_low within at_high
+status: conformant
+reference: IEC 61131-3 ed.3 6.6.2.5.2 table 32 (MIN, MAX, LIMIT), table 28
+---
+0 => lo='abc' hi='abd' at_low='abd' within='abd' at_high='abd'
+1 => lo='abc' hi='abd' at_low='abd' within='abd' at_high='abd'

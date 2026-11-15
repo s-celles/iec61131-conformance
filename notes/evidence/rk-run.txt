@@ -553,6 +553,275 @@ FAIL    conformance/ops/lreal_precision.st
         cycle 1 (trace line 16): big expected 1000000000000001.0, got 999999986991104.0
         cycle 2 (trace line 17): big expected 1000000000000001.0, got 999999986991104.0
         cycle 3 (trace line 18): big expected 1000000000000001.0, got 999999986991104.0
+### conformance/ops/minmax_ext_expr.st
+FAIL    conformance/ops/minmax_ext_expr.st
+        rk failed to compile the program:
+        [E0801] Error: wrong number of arguments
+            ╭─[ src/main.st:19:16 ]
+            │
+         19 │   max_first := MAX(a * 2, b, c);
+            │                ─┬─  
+            │                 ╰─── no overload of 'MAX' takes 3 parameters
+        ────╯
+        [E0301] Error: type mismatch
+            ╭─[ src/main.st:19:16 ]
+            │
+          9 │     max_first : INT;
+            │     ────┬────  
+            │         ╰────── 'max_first' is declared here
+            │ 
+         19 │   max_first := MAX(a * 2, b, c);
+            │                ────────┬───────  
+            │                        ╰───────── expected 'INT', got 'LTIME'
+        ────╯
+        [E0301] Error: type mismatch
+             ╭─[ src/main.st:19:20 ]
+             │
+          19 │   max_first := MAX(a * 2, b, c);
+             │                    ──┬──  
+             │                      ╰──── expected 'LTIME', got 'INT'
+             │
+             ├─[ <rk-stdlib>/Selection.st:796:4 ]
+             │
+         796 │      IN1: LTIME;
+             │      ─┬─  
+             │       ╰─── 'IN1' is declared here
+        ─────╯
+        [E0301] Error: type mismatch
+             ╭─[ src/main.st:19:27 ]
+             │
+          19 │   max_first := MAX(a * 2, b, c);
+             │                           ┬  
+             │                           ╰── expected 'LTIME', got 'INT'
+             │
+             ├─[ <rk-stdlib>/Selection.st:797:4 ]
+             │
+         797 │      IN2: LTIME;
+             │      ─┬─  
+             │       ╰─── 'IN2' is declared here
+        ─────╯
+        [E0801] Error: wrong number of arguments
+            ╭─[ src/main.st:20:17 ]
+            │
+         20 │   max_second := MAX(b, a * 2, c);
+            │                 ─┬─  
+            │                  ╰─── no overload of 'MAX' takes 3 parameters
+        ────╯
+        [E0301] Error: type mismatch
+            ╭─[ src/main.st:20:17 ]
+            │
+         10 │     max_second : INT;
+            │     ─────┬────  
+            │          ╰────── 'max_second' is declared here
+            │ 
+         20 │   max_second := MAX(b, a * 2, c);
+            │                 ────────┬───────  
+            │                         ╰───────── expected 'INT', got 'LTIME'
+        ────╯
+        [E0301] Error: type mismatch
+             ╭─[ src/main.st:20:21 ]
+             │
+          20 │   max_second := MAX(b, a * 2, c);
+             │                     ┬  
+             │                     ╰── expected 'LTIME', got 'INT'
+             │
+             ├─[ <rk-stdlib>/Selection.st:796:4 ]
+             │
+         796 │      IN1: LTIME;
+             │      ─┬─  
+             │       ╰─── 'IN1' is declared here
+        ─────╯
+        [E0301] Error: type mismatch
+             ╭─[ src/main.st:20:24 ]
+             │
+          20 │   max_second := MAX(b, a * 2, c);
+             │                        ──┬──  
+             │                          ╰──── expected 'LTIME', got 'INT'
+             │
+             ├─[ <rk-stdlib>/Selection.st:797:4 ]
+             │
+         797 │      IN2: LTIME;
+             │      ─┬─  
+             │       ╰─── 'IN2' is declared here
+        ─────╯
+        [E0801] Error: wrong number of arguments
+            ╭─[ src/main.st:21:15 ]
+            │
+         21 │   max_last := MAX(b, c, a * 2);
+            │               ─┬─  
+            │                ╰─── no overload of 'MAX' takes 3 parameters
+        ────╯
+        [E0301] Error: type mismatch
+            ╭─[ src/main.st:21:15 ]
+            │
+         11 │     max_last : INT;
+            │     ────┬───  
+            │         ╰───── 'max_last' is declared here
+            │ 
+         21 │   max_last := MAX(b, c, a * 2);
+            │               ────────┬───────  
+            │                       ╰───────── expected 'INT', got 'LTIME'
+        ────╯
+        [E0301] Error: type mismatch
+             ╭─[ src/main.st:21:19 ]
+             │
+          21 │   max_last := MAX(b, c, a * 2);
+             │                   ┬  
+             │                   ╰── expected 'LTIME', got 'INT'
+             │
+             ├─[ <rk-stdlib>/Selection.st:796:4 ]
+             │
+         796 │      IN1: LTIME;
+             │      ─┬─  
+             │       ╰─── 'IN1' is declared here
+        ─────╯
+        [E0301] Error: type mismatch
+             ╭─[ src/main.st:21:22 ]
+             │
+          21 │   max_last := MAX(b, c, a * 2);
+             │                      ┬  
+             │                      ╰── expected 'LTIME', got 'INT'
+             │
+             ├─[ <rk-stdlib>/Selection.st:797:4 ]
+             │
+         797 │      IN2: LTIME;
+             │      ─┬─  
+             │       ╰─── 'IN2' is declared here
+        ─────╯
+        [E0801] Error: wrong number of arguments
+            ╭─[ src/main.st:22:16 ]
+            │
+         22 │   min_first := MIN(a - 10, a, c);
+            │                ─┬─  
+            │                 ╰─── no overload of 'MIN' takes 3 parameters
+        ────╯
+        [E0301] Error: type mismatch
+            ╭─[ src/main.st:22:16 ]
+            │
+         12 │     min_first : INT;
+            │     ────┬────  
+            │         ╰────── 'min_first' is declared here
+            │ 
+         22 │   min_first := MIN(a - 10, a, c);
+            │                ────────┬────────  
+            │                        ╰────────── expected 'INT', got 'LTIME'
+        ────╯
+        [E0301] Error: type mismatch
+             ╭─[ src/main.st:22:20 ]
+             │
+          22 │   min_first := MIN(a - 10, a, c);
+             │                    ───┬──  
+             │                       ╰──── expected 'LTIME', got 'INT'
+             │
+             ├─[ <rk-stdlib>/Selection.st:629:4 ]
+             │
+         629 │      IN1: LTIME;
+             │      ─┬─  
+             │       ╰─── 'IN1' is declared here
+        ─────╯
+        [E0301] Error: type mismatch
+             ╭─[ src/main.st:22:28 ]
+             │
+          22 │   min_first := MIN(a - 10, a, c);
+             │                            ┬  
+             │                            ╰── expected 'LTIME', got 'INT'
+             │
+             ├─[ <rk-stdlib>/Selection.st:630:4 ]
+             │
+         630 │      IN2: LTIME;
+             │      ─┬─  
+             │       ╰─── 'IN2' is declared here
+        ─────╯
+        [E0801] Error: wrong number of arguments
+            ╭─[ src/main.st:23:17 ]
+            │
+         23 │   min_second := MIN(a, a - 10, c);
+            │                 ─┬─  
+            │                  ╰─── no overload of 'MIN' takes 3 parameters
+        ────╯
+        [E0301] Error: type mismatch
+            ╭─[ src/main.st:23:17 ]
+            │
+         13 │     min_second : INT;
+            │     ─────┬────  
+            │          ╰────── 'min_second' is declared here
+            │ 
+         23 │   min_second := MIN(a, a - 10, c);
+            │                 ────────┬────────  
+            │                         ╰────────── expected 'INT', got 'LTIME'
+        ────╯
+        [E0301] Error: type mismatch
+             ╭─[ src/main.st:23:21 ]
+             │
+          23 │   min_second := MIN(a, a - 10, c);
+             │                     ┬  
+             │                     ╰── expected 'LTIME', got 'INT'
+             │
+             ├─[ <rk-stdlib>/Selection.st:629:4 ]
+             │
+         629 │      IN1: LTIME;
+             │      ─┬─  
+             │       ╰─── 'IN1' is declared here
+        ─────╯
+        [E0301] Error: type mismatch
+             ╭─[ src/main.st:23:24 ]
+             │
+          23 │   min_second := MIN(a, a - 10, c);
+             │                        ───┬──  
+             │                           ╰──── expected 'LTIME', got 'INT'
+             │
+             ├─[ <rk-stdlib>/Selection.st:630:4 ]
+             │
+         630 │      IN2: LTIME;
+             │      ─┬─  
+             │       ╰─── 'IN2' is declared here
+        ─────╯
+        [E0801] Error: wrong number of arguments
+            ╭─[ src/main.st:24:15 ]
+            │
+         24 │   min_last := MIN(a, c, a - 10);
+            │               ─┬─  
+            │                ╰─── no overload of 'MIN' takes 3 parameters
+        ────╯
+        [E0301] Error: type mismatch
+            ╭─[ src/main.st:24:15 ]
+            │
+         14 │     min_last : INT;
+            │     ────┬───  
+            │         ╰───── 'min_last' is declared here
+            │ 
+         24 │   min_last := MIN(a, c, a - 10);
+            │               ────────┬────────  
+            │                       ╰────────── expected 'INT', got 'LTIME'
+        ────╯
+        [E0301] Error: type mismatch
+             ╭─[ src/main.st:24:19 ]
+             │
+          24 │   min_last := MIN(a, c, a - 10);
+             │                   ┬  
+             │                   ╰── expected 'LTIME', got 'INT'
+             │
+             ├─[ <rk-stdlib>/Selection.st:629:4 ]
+             │
+         629 │      IN1: LTIME;
+             │      ─┬─  
+             │       ╰─── 'IN1' is declared here
+        ─────╯
+        [E0301] Error: type mismatch
+             ╭─[ src/main.st:24:22 ]
+             │
+          24 │   min_last := MIN(a, c, a - 10);
+             │                      ┬  
+             │                      ╰── expected 'LTIME', got 'INT'
+             │
+             ├─[ <rk-stdlib>/Selection.st:630:4 ]
+             │
+         630 │      IN2: LTIME;
+             │      ─┬─  
+             │       ╰─── 'IN2' is declared here
+        ─────╯
+        compilation failed: 24 error(s) found, cannot compile.
+        
 ### conformance/ops/mux_types.st
 FAIL    conformance/ops/mux_types.st
         rk failed to compile the program:
@@ -1270,14 +1539,28 @@ PASS    conformance/pou/function_var_not_retained.st
 2 a=-7 b=2 => ok=TRUE q=-3 r=-1
 3 a=9 b=3 => ok=TRUE q=3 r=0
 PASS    conformance/pou/function_var_output.st
+### conformance/pou/inout_array_element.st
+0 i=1 => r=5 s=1 e1=5 e2=0 e3=1
+1 i=3 => r=6 s=7 e1=5 e2=0 e3=7
+2 i=2 => r=5 s=8 e1=5 e2=5 e3=8
+PASS    conformance/pou/inout_array_element.st
 ### conformance/pou/inout_call_in_std_arg.st
 0 i0=25 => a=9 m=2 s=3 x=2 q=4 r=7 calls=4
 1 i0=-31 => a=5 m=-31 s=7 x=-3 q=8 r=7 calls=8
 PASS    conformance/pou/inout_call_in_std_arg.st
+### conformance/pou/output_array_element.st
+0 i=1 x=9 => q=2 q2=2 e1=1 e2=0 e3=2
+1 i=2 x=7 => q=1 q2=2 e1=1 e2=3 e3=0
+2 i=3 x=6 => q=1 q2=1 e1=1 e2=3 e3=3
+PASS    conformance/pou/output_array_element.st
 ### conformance/strings/compare.st
 0 => e1=TRUE e2=FALSE l1=TRUE l2=TRUE l3=TRUE l4=TRUE g1=TRUE n1=TRUE
 1 => e1=TRUE e2=FALSE l1=TRUE l2=TRUE l3=TRUE l4=TRUE g1=TRUE n1=TRUE
 PASS    conformance/strings/compare.st
+### conformance/strings/compare_le_ge.st
+0 => le1=TRUE le2=TRUE le3=FALSE ge1=FALSE ge2=TRUE ge3=TRUE
+1 => le1=TRUE le2=TRUE le3=FALSE ge1=FALSE ge2=TRUE ge3=TRUE
+PASS    conformance/strings/compare_le_ge.st
 ### conformance/strings/concat_assign.st
 FAIL    conformance/strings/concat_assign.st
         rk failed to compile the program:
@@ -1295,6 +1578,25 @@ FAIL    conformance/strings/concat_assign.st
             │ Help: insert explicit cast 'UDINT_TO_INT(LEN(acc))'
         ────╯
         compilation failed: 1 error(s) found, cannot compile.
+        
+### conformance/strings/concat_ext.st
+FAIL    conformance/strings/concat_ext.st
+        rk failed to compile the program:
+        [E0801] Error: wrong number of arguments
+            ╭─[ src/main.st:15:14 ]
+            │
+         15 │   joined3 := CONCAT(a, b, c);
+            │              ───┬──  
+            │                 ╰──── 'CONCAT' expects 2 parameters, but got 3
+        ────╯
+        [E0801] Error: wrong number of arguments
+            ╭─[ src/main.st:16:14 ]
+            │
+         16 │   joined4 := CONCAT(a, b, c, d);
+            │              ───┬──  
+            │                 ╰──── 'CONCAT' expects 2 parameters, but got 4
+        ────╯
+        compilation failed: 2 error(s) found, cannot compile.
         
 ### conformance/strings/declared_length.st
 FAIL    conformance/strings/declared_length.st
@@ -1339,6 +1641,88 @@ FAIL    conformance/strings/declared_length.st
             │ Help: insert explicit cast 'UDINT_TO_INT(LEN(s5))'
         ────╯
         compilation failed: 3 error(s) found, cannot compile.
+        
+### conformance/strings/find_int.st
+FAIL    conformance/strings/find_int.st
+        rk failed to compile the program:
+        [E0809] Error: ambiguous overloaded call
+             ╭─[ src/main.st:19:8 ]
+             │
+          19 │   m := MAX(FIND(src, part), i0);
+             │        ─┬─  
+             │         ╰─── call to 'MAX' is ambiguous: 2 overloads accept these arguments
+             │
+             ├─[ <rk-stdlib>/Selection.st:690:11 ]
+             │
+         690 │   FUNCTION MAX: LINT
+             │            ─┬─  
+             │             ╰─── a candidate is declared here
+             │ 
+         768 │   FUNCTION MAX: LREAL
+             │            ─┬─  
+             │             ╰─── a candidate is declared here
+             │ 
+             │ Help: pick one with a typed literal or a conversion, such as `DINT#5` or `INT_TO_DINT(x)`
+             │ 
+             │ Note: an argument widens to each overload
+        ─────╯
+        [E0809] Error: ambiguous overloaded call
+             ╭─[ src/main.st:20:8 ]
+             │
+          20 │   n := MIN(FIND(src, part), i0);
+             │        ─┬─  
+             │         ╰─── call to 'MIN' is ambiguous: 2 overloads accept these arguments
+             │
+             ├─[ <rk-stdlib>/Selection.st:523:11 ]
+             │
+         523 │   FUNCTION MIN: LINT
+             │            ─┬─  
+             │             ╰─── a candidate is declared here
+             │ 
+         601 │   FUNCTION MIN: LREAL
+             │            ─┬─  
+             │             ╰─── a candidate is declared here
+             │ 
+             │ Help: pick one with a typed literal or a conversion, such as `DINT#5` or `INT_TO_DINT(x)`
+             │ 
+             │ Note: an argument widens to each overload
+        ─────╯
+        [E0302] Error: types not comparable
+            ╭─[ src/main.st:21:26 ]
+            │
+         21 │   c := FIND(src, part) > i0;
+            │                          ─┬  
+            │                           ╰── cannot compare 'UDINT' with 'INT'
+            │ 
+            │ Help: insert explicit cast 'INT_TO_UDINT(i0)'
+        ────╯
+        [E0301] Error: type mismatch
+            ╭─[ src/main.st:22:8 ]
+            │
+         11 │     d : INT;
+            │     ┬  
+            │     ╰── 'd' is declared here
+            │ 
+         22 │   d := FIND(src, part) - 5;
+            │        ─────────┬─────────  
+            │                 ╰─────────── expected 'INT', got 'UDINT'
+            │ 
+            │ Help: insert explicit cast 'UDINT_TO_INT(FIND(src, part) - 5)'
+        ────╯
+        [E0301] Error: type mismatch
+            ╭─[ src/main.st:23:13 ]
+            │
+         12 │     absent : INT;
+            │     ───┬──  
+            │        ╰──── 'absent' is declared here
+            │ 
+         23 │   absent := FIND(src, missing);
+            │             ─────────┬────────  
+            │                      ╰────────── expected 'INT', got 'UDINT'
+            │ 
+            │ Help: insert explicit cast 'UDINT_TO_INT(FIND(src, missing))'
+        ────╯
+        compilation failed: 5 error(s) found, cannot compile.
         
 ### conformance/strings/functions.st
 FAIL    conformance/strings/functions.st
@@ -1474,6 +1858,95 @@ FAIL    conformance/strings/functions.st
         ────╯
         compilation failed: 9 error(s) found, cannot compile.
         
+### conformance/strings/insert_positions.st
+FAIL    conformance/strings/insert_positions.st
+        rk failed to compile the program:
+        [E0301] Error: type mismatch
+             ╭─[ src/main.st:15:33 ]
+             │
+          15 │   inserted := INSERT(src, part, pos);
+             │                                 ─┬─  
+             │                                  ╰─── expected 'UDINT', got 'INT'
+             │
+             ├─[ <rk-stdlib>/Strings.st:180:4 ]
+             │
+         180 │      P: UDINT;
+             │      ┬  
+             │      ╰── 'P' is declared here
+             │ 
+             │ Help: insert explicit cast 'INT_TO_UDINT(pos)'
+        ─────╯
+        compilation failed: 1 error(s) found, cannot compile.
+        
+### conformance/strings/len_int.st
+FAIL    conformance/strings/len_int.st
+        rk failed to compile the program:
+        [E0809] Error: ambiguous overloaded call
+             ╭─[ src/main.st:17:8 ]
+             │
+          17 │   m := MAX(LEN(s), i0);
+             │        ─┬─  
+             │         ╰─── call to 'MAX' is ambiguous: 2 overloads accept these arguments
+             │
+             ├─[ <rk-stdlib>/Selection.st:690:11 ]
+             │
+         690 │   FUNCTION MAX: LINT
+             │            ─┬─  
+             │             ╰─── a candidate is declared here
+             │ 
+         768 │   FUNCTION MAX: LREAL
+             │            ─┬─  
+             │             ╰─── a candidate is declared here
+             │ 
+             │ Help: pick one with a typed literal or a conversion, such as `DINT#5` or `INT_TO_DINT(x)`
+             │ 
+             │ Note: an argument widens to each overload
+        ─────╯
+        [E0809] Error: ambiguous overloaded call
+             ╭─[ src/main.st:18:8 ]
+             │
+          18 │   n := MIN(LEN(abc), i0);
+             │        ─┬─  
+             │         ╰─── call to 'MIN' is ambiguous: 2 overloads accept these arguments
+             │
+             ├─[ <rk-stdlib>/Selection.st:523:11 ]
+             │
+         523 │   FUNCTION MIN: LINT
+             │            ─┬─  
+             │             ╰─── a candidate is declared here
+             │ 
+         601 │   FUNCTION MIN: LREAL
+             │            ─┬─  
+             │             ╰─── a candidate is declared here
+             │ 
+             │ Help: pick one with a typed literal or a conversion, such as `DINT#5` or `INT_TO_DINT(x)`
+             │ 
+             │ Note: an argument widens to each overload
+        ─────╯
+        [E0302] Error: types not comparable
+            ╭─[ src/main.st:19:17 ]
+            │
+         19 │   c := LEN(s) > i0;
+            │                 ─┬  
+            │                  ╰── cannot compare 'UDINT' with 'INT'
+            │ 
+            │ Help: insert explicit cast 'INT_TO_UDINT(i0)'
+        ────╯
+        [E0301] Error: type mismatch
+            ╭─[ src/main.st:20:8 ]
+            │
+         11 │     d : INT;
+            │     ┬  
+            │     ╰── 'd' is declared here
+            │ 
+         20 │   d := LEN(abc) - 5;
+            │        ──────┬─────  
+            │              ╰─────── expected 'INT', got 'UDINT'
+            │ 
+            │ Help: insert explicit cast 'UDINT_TO_INT(LEN(abc) - 5)'
+        ────╯
+        compilation failed: 4 error(s) found, cannot compile.
+        
 ### conformance/strings/literals_escapes.st
 FAIL    conformance/strings/literals_escapes.st
         rk failed to compile the program:
@@ -1491,6 +1964,296 @@ FAIL    conformance/strings/literals_escapes.st
             │ Help: insert explicit cast 'UDINT_TO_INT(LEN(s1))'
         ────╯
         compilation failed: 1 error(s) found, cannot compile.
+        
+### conformance/strings/min_max_limit.st
+FAIL    conformance/strings/min_max_limit.st
+        rk failed to compile the program:
+        [E0810] Error: no matching overload
+             ╭─[ src/main.st:16:9 ]
+             │
+          16 │   lo := MIN(a, b);
+             │         ─┬─  
+             │          ╰─── no overload of 'MIN' accepts (STRING, STRING)
+             │
+             ├─[ <rk-stdlib>/Selection.st:484:11 ]
+             │
+         484 │   FUNCTION MIN: SINT
+             │            ─┬─  
+             │             ╰─── overload accepting (SINT, SINT)
+             │ 
+         497 │   FUNCTION MIN: INT
+             │            ─┬─  
+             │             ╰─── overload accepting (INT, INT)
+             │ 
+         510 │   FUNCTION MIN: DINT
+             │            ─┬─  
+             │             ╰─── overload accepting (DINT, DINT)
+             │ 
+         523 │   FUNCTION MIN: LINT
+             │            ─┬─  
+             │             ╰─── overload accepting (LINT, LINT)
+             │ 
+         536 │   FUNCTION MIN: USINT
+             │            ─┬─  
+             │             ╰─── overload accepting (USINT, USINT)
+             │ 
+         549 │   FUNCTION MIN: UINT
+             │            ─┬─  
+             │             ╰─── overload accepting (UINT, UINT)
+             │ 
+         562 │   FUNCTION MIN: UDINT
+             │            ─┬─  
+             │             ╰─── overload accepting (UDINT, UDINT)
+             │ 
+         575 │   FUNCTION MIN: ULINT
+             │            ─┬─  
+             │             ╰─── overload accepting (ULINT, ULINT)
+             │ 
+         588 │   FUNCTION MIN: REAL
+             │            ─┬─  
+             │             ╰─── overload accepting (REAL, REAL)
+             │ 
+         601 │   FUNCTION MIN: LREAL
+             │            ─┬─  
+             │             ╰─── overload accepting (LREAL, LREAL)
+             │ 
+         614 │   FUNCTION MIN: TIME
+             │            ─┬─  
+             │             ╰─── overload accepting (TIME, TIME)
+             │ 
+         627 │   FUNCTION MIN: LTIME
+             │            ─┬─  
+             │             ╰─── overload accepting (LTIME, LTIME)
+        ─────╯
+        [E0810] Error: no matching overload
+             ╭─[ src/main.st:17:9 ]
+             │
+          17 │   hi := MAX(a, b);
+             │         ─┬─  
+             │          ╰─── no overload of 'MAX' accepts (STRING, STRING)
+             │
+             ├─[ <rk-stdlib>/Selection.st:651:11 ]
+             │
+         651 │   FUNCTION MAX: SINT
+             │            ─┬─  
+             │             ╰─── overload accepting (SINT, SINT)
+             │ 
+         664 │   FUNCTION MAX: INT
+             │            ─┬─  
+             │             ╰─── overload accepting (INT, INT)
+             │ 
+         677 │   FUNCTION MAX: DINT
+             │            ─┬─  
+             │             ╰─── overload accepting (DINT, DINT)
+             │ 
+         690 │   FUNCTION MAX: LINT
+             │            ─┬─  
+             │             ╰─── overload accepting (LINT, LINT)
+             │ 
+         703 │   FUNCTION MAX: USINT
+             │            ─┬─  
+             │             ╰─── overload accepting (USINT, USINT)
+             │ 
+         716 │   FUNCTION MAX: UINT
+             │            ─┬─  
+             │             ╰─── overload accepting (UINT, UINT)
+             │ 
+         729 │   FUNCTION MAX: UDINT
+             │            ─┬─  
+             │             ╰─── overload accepting (UDINT, UDINT)
+             │ 
+         742 │   FUNCTION MAX: ULINT
+             │            ─┬─  
+             │             ╰─── overload accepting (ULINT, ULINT)
+             │ 
+         755 │   FUNCTION MAX: REAL
+             │            ─┬─  
+             │             ╰─── overload accepting (REAL, REAL)
+             │ 
+         768 │   FUNCTION MAX: LREAL
+             │            ─┬─  
+             │             ╰─── overload accepting (LREAL, LREAL)
+             │ 
+         781 │   FUNCTION MAX: TIME
+             │            ─┬─  
+             │             ╰─── overload accepting (TIME, TIME)
+             │ 
+         794 │   FUNCTION MAX: LTIME
+             │            ─┬─  
+             │             ╰─── overload accepting (LTIME, LTIME)
+        ─────╯
+        [E0810] Error: no matching overload
+             ╭─[ src/main.st:18:13 ]
+             │
+          18 │   at_low := LIMIT(b, a, c);
+             │             ──┬──  
+             │               ╰──── no overload of 'LIMIT' accepts (STRING, STRING, STRING)
+             │
+             ├─[ <rk-stdlib>/Selection.st:268:11 ]
+             │
+         268 │   FUNCTION LIMIT: SINT
+             │            ──┬──  
+             │              ╰──── overload accepting (SINT, SINT, SINT)
+             │ 
+         285 │   FUNCTION LIMIT: INT
+             │            ──┬──  
+             │              ╰──── overload accepting (INT, INT, INT)
+             │ 
+         302 │   FUNCTION LIMIT: DINT
+             │            ──┬──  
+             │              ╰──── overload accepting (DINT, DINT, DINT)
+             │ 
+         319 │   FUNCTION LIMIT: LINT
+             │            ──┬──  
+             │              ╰──── overload accepting (LINT, LINT, LINT)
+             │ 
+         336 │   FUNCTION LIMIT: USINT
+             │            ──┬──  
+             │              ╰──── overload accepting (USINT, USINT, USINT)
+             │ 
+         353 │   FUNCTION LIMIT: UINT
+             │            ──┬──  
+             │              ╰──── overload accepting (UINT, UINT, UINT)
+             │ 
+         370 │   FUNCTION LIMIT: UDINT
+             │            ──┬──  
+             │              ╰──── overload accepting (UDINT, UDINT, UDINT)
+             │ 
+         387 │   FUNCTION LIMIT: ULINT
+             │            ──┬──  
+             │              ╰──── overload accepting (ULINT, ULINT, ULINT)
+             │ 
+         404 │   FUNCTION LIMIT: REAL
+             │            ──┬──  
+             │              ╰──── overload accepting (REAL, REAL, REAL)
+             │ 
+         421 │   FUNCTION LIMIT: LREAL
+             │            ──┬──  
+             │              ╰──── overload accepting (LREAL, LREAL, LREAL)
+             │ 
+         438 │   FUNCTION LIMIT: TIME
+             │            ──┬──  
+             │              ╰──── overload accepting (TIME, TIME, TIME)
+             │ 
+         455 │   FUNCTION LIMIT: LTIME
+             │            ──┬──  
+             │              ╰──── overload accepting (LTIME, LTIME, LTIME)
+        ─────╯
+        [E0810] Error: no matching overload
+             ╭─[ src/main.st:19:13 ]
+             │
+          19 │   within := LIMIT(a, b, c);
+             │             ──┬──  
+             │               ╰──── no overload of 'LIMIT' accepts (STRING, STRING, STRING)
+             │
+             ├─[ <rk-stdlib>/Selection.st:268:11 ]
+             │
+         268 │   FUNCTION LIMIT: SINT
+             │            ──┬──  
+             │              ╰──── overload accepting (SINT, SINT, SINT)
+             │ 
+         285 │   FUNCTION LIMIT: INT
+             │            ──┬──  
+             │              ╰──── overload accepting (INT, INT, INT)
+             │ 
+         302 │   FUNCTION LIMIT: DINT
+             │            ──┬──  
+             │              ╰──── overload accepting (DINT, DINT, DINT)
+             │ 
+         319 │   FUNCTION LIMIT: LINT
+             │            ──┬──  
+             │              ╰──── overload accepting (LINT, LINT, LINT)
+             │ 
+         336 │   FUNCTION LIMIT: USINT
+             │            ──┬──  
+             │              ╰──── overload accepting (USINT, USINT, USINT)
+             │ 
+         353 │   FUNCTION LIMIT: UINT
+             │            ──┬──  
+             │              ╰──── overload accepting (UINT, UINT, UINT)
+             │ 
+         370 │   FUNCTION LIMIT: UDINT
+             │            ──┬──  
+             │              ╰──── overload accepting (UDINT, UDINT, UDINT)
+             │ 
+         387 │   FUNCTION LIMIT: ULINT
+             │            ──┬──  
+             │              ╰──── overload accepting (ULINT, ULINT, ULINT)
+             │ 
+         404 │   FUNCTION LIMIT: REAL
+             │            ──┬──  
+             │              ╰──── overload accepting (REAL, REAL, REAL)
+             │ 
+         421 │   FUNCTION LIMIT: LREAL
+             │            ──┬──  
+             │              ╰──── overload accepting (LREAL, LREAL, LREAL)
+             │ 
+         438 │   FUNCTION LIMIT: TIME
+             │            ──┬──  
+             │              ╰──── overload accepting (TIME, TIME, TIME)
+             │ 
+         455 │   FUNCTION LIMIT: LTIME
+             │            ──┬──  
+             │              ╰──── overload accepting (LTIME, LTIME, LTIME)
+        ─────╯
+        [E0810] Error: no matching overload
+             ╭─[ src/main.st:20:14 ]
+             │
+          20 │   at_high := LIMIT(a, c, b);
+             │              ──┬──  
+             │                ╰──── no overload of 'LIMIT' accepts (STRING, STRING, STRING)
+             │
+             ├─[ <rk-stdlib>/Selection.st:268:11 ]
+             │
+         268 │   FUNCTION LIMIT: SINT
+             │            ──┬──  
+             │              ╰──── overload accepting (SINT, SINT, SINT)
+             │ 
+         285 │   FUNCTION LIMIT: INT
+             │            ──┬──  
+             │              ╰──── overload accepting (INT, INT, INT)
+             │ 
+         302 │   FUNCTION LIMIT: DINT
+             │            ──┬──  
+             │              ╰──── overload accepting (DINT, DINT, DINT)
+             │ 
+         319 │   FUNCTION LIMIT: LINT
+             │            ──┬──  
+             │              ╰──── overload accepting (LINT, LINT, LINT)
+             │ 
+         336 │   FUNCTION LIMIT: USINT
+             │            ──┬──  
+             │              ╰──── overload accepting (USINT, USINT, USINT)
+             │ 
+         353 │   FUNCTION LIMIT: UINT
+             │            ──┬──  
+             │              ╰──── overload accepting (UINT, UINT, UINT)
+             │ 
+         370 │   FUNCTION LIMIT: UDINT
+             │            ──┬──  
+             │              ╰──── overload accepting (UDINT, UDINT, UDINT)
+             │ 
+         387 │   FUNCTION LIMIT: ULINT
+             │            ──┬──  
+             │              ╰──── overload accepting (ULINT, ULINT, ULINT)
+             │ 
+         404 │   FUNCTION LIMIT: REAL
+             │            ──┬──  
+             │              ╰──── overload accepting (REAL, REAL, REAL)
+             │ 
+         421 │   FUNCTION LIMIT: LREAL
+             │            ──┬──  
+             │              ╰──── overload accepting (LREAL, LREAL, LREAL)
+             │ 
+         438 │   FUNCTION LIMIT: TIME
+             │            ──┬──  
+             │              ╰──── overload accepting (TIME, TIME, TIME)
+             │ 
+         455 │   FUNCTION LIMIT: LTIME
+             │            ──┬──  
+             │              ╰──── overload accepting (LTIME, LTIME, LTIME)
+        ─────╯
+        compilation failed: 5 error(s) found, cannot compile.
         
 ### conformance/timers/tof.st
 0 in=FALSE => q=FALSE et=T#0ms
@@ -1718,5 +2481,5 @@ DIFFERS conformance/undefined/ton_pt_change.st (implementation-defined)
         cycle 7 (trace line 33): et expected T#600ms, got T#800ms
         cycle 8 (trace line 34): et expected T#700ms, got T#800ms
 
-92 tests: 53 pass, 21 fail, 10 same, 8 differs, 0 error
+101 tests: 56 pass, 27 fail, 10 same, 8 differs, 0 error
 exit 1

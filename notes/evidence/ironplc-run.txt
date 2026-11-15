@@ -453,6 +453,11 @@ PASS    conformance/ops/literals.st
 2 a=2.0 b=1.0E300 => sum=1000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000 quot=0.000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000002 prod=2000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000 sq=1.4142135623730951 big=1000000000000001
 3 a=1.0E16 b=1.0 => sum=10000000000000000 quot=10000000000000000 prod=10000000000000000 sq=100000000 big=1000000000000001
 PASS    conformance/ops/lreal_precision.st
+### conformance/ops/minmax_ext_expr.st
+0 a=3 b=7 => max_first=7 max_second=7 max_last=7 min_first=-7 min_second=-7 min_last=-7
+1 a=-5 b=2 => max_first=2 max_second=2 max_last=2 min_first=-15 min_second=-15 min_last=-15
+2 a=8 b=-3 => max_first=16 max_second=16 max_last=16 min_first=-2 min_second=-2 min_last=-2
+PASS    conformance/ops/minmax_ext_expr.st
 ### conformance/ops/mux_types.st
 0 k=0 => mu=10 mb=16#0F mw=16#1234 mx=TRUE mt=T#1000ms
 1 k=1 => mu=65535 mb=16#F0 mw=16#FFFF mx=FALSE mt=T#250ms
@@ -767,34 +772,200 @@ PASS    conformance/pou/function_var_not_retained.st
 2 a=-7 b=2 => ok=TRUE q=-3 r=-1
 3 a=9 b=3 => ok=TRUE q=3 r=0
 PASS    conformance/pou/function_var_output.st
+### conformance/pou/inout_array_element.st
+FAIL    conformance/pou/inout_array_element.st
+        ironplcc failed to compile the program:
+error[P9999]: Capability is not implemented (yet!)
+   ┌─ <root>/conformance/pou/inout_array_element.st:28:5
+   │
+28 │   r := BUMP(arr[i], 5);
+   │     ^^ Statement code generation does not support yet
+   │
+   = Learn more: https://www.ironplc.com/reference/compiler/problems/P9999.html?version=0.252.0&channel=cli&file=<file>&line=<n>
+
+Error: "Compile failed with 1 problem(s)"
+
 ### conformance/pou/inout_call_in_std_arg.st
 0 i0=25 => a=9 m=2 s=3 x=2 q=4 r=7 calls=4
 1 i0=-31 => a=5 m=-31 s=7 x=-3 q=8 r=7 calls=8
 PASS    conformance/pou/inout_call_in_std_arg.st
+### conformance/pou/output_array_element.st
+0 i=1 x=9 => q=2 q2=2 e1=1 e2=0 e3=2
+1 i=2 x=7 => q=1 q2=2 e1=1 e2=3 e3=0
+2 i=3 x=6 => q=1 q2=1 e1=1 e2=3 e3=3
+PASS    conformance/pou/output_array_element.st
 ### conformance/strings/compare.st
 0 => e1=TRUE e2=FALSE l1=TRUE l2=TRUE l3=TRUE l4=TRUE g1=TRUE n1=TRUE
 1 => e1=TRUE e2=FALSE l1=TRUE l2=TRUE l3=TRUE l4=TRUE g1=TRUE n1=TRUE
 PASS    conformance/strings/compare.st
+### conformance/strings/compare_le_ge.st
+0 => le1=TRUE le2=TRUE le3=FALSE ge1=FALSE ge2=TRUE ge3=TRUE
+1 => le1=TRUE le2=TRUE le3=FALSE ge1=FALSE ge2=TRUE ge3=TRUE
+PASS    conformance/strings/compare_le_ge.st
 ### conformance/strings/concat_assign.st
 0 push=TRUE => acc='x' n=1 copy='ab'
 1 push=TRUE => acc='xx' n=2 copy='abz'
 2 push=FALSE => acc='xx' n=2 copy='abzz'
 3 push=TRUE => acc='xxx' n=3 copy='abzzz'
 PASS    conformance/strings/concat_assign.st
+### conformance/strings/concat_ext.st
+FAIL    conformance/strings/concat_ext.st
+        ironplcc failed to compile the program:
+error[P4018]: Function call has wrong number of arguments (function=CONCAT, expected=2, actual=3)
+   ┌─ <root>/conformance/strings/concat_ext.st:14:14
+   │
+14 │   joined3 := CONCAT(a, b, c);
+   │              ^^^^^^ Function call
+   │
+   = Learn more: https://www.ironplc.com/reference/compiler/problems/P4018.html?version=0.252.0&channel=cli
+
+error[P4018]: Function call has wrong number of arguments (function=CONCAT, expected=2, actual=4)
+   ┌─ <root>/conformance/strings/concat_ext.st:15:14
+   │
+15 │   joined4 := CONCAT(a, b, c, d);
+   │              ^^^^^^ Function call
+   │
+   = Learn more: https://www.ironplc.com/reference/compiler/problems/P4018.html?version=0.252.0&channel=cli
+
+Error: "Compile failed with 2 problem(s)"
+
 ### conformance/strings/declared_length.st
 0 => s3='xyz' s4='init' s5='abcde' n3=3 n4=4 n5=5 cat='xyzinit'
 1 => s3='xyz' s4='init' s5='abcde' n3=3 n4=4 n5=5 cat='xyzinit'
 PASS    conformance/strings/declared_length.st
+### conformance/strings/find_int.st
+0 i0=-11 => m=2 n=-11 c=TRUE d=-3 absent=0
+1 i0=7 => m=7 n=2 c=FALSE d=-3 absent=0
+PASS    conformance/strings/find_int.st
 ### conformance/strings/functions.st
 0 n=1 => o_len=5 o_concat='abcd' o_left='h' o_right='o' o_mid='e' o_insert='hXXello' o_delete='hllo' o_replace='hYYllo' o_find=3 o_find0=0
 1 n=2 => o_len=5 o_concat='abcd' o_left='he' o_right='lo' o_mid='el' o_insert='heXXllo' o_delete='hlo' o_replace='hYYlo' o_find=3 o_find0=0
 2 n=3 => o_len=5 o_concat='abcd' o_left='hel' o_right='llo' o_mid='ell' o_insert='helXXlo' o_delete='ho' o_replace='hYYo' o_find=3 o_find0=0
 3 n=4 => o_len=5 o_concat='abcd' o_left='hell' o_right='ello' o_mid='ello' o_insert='hellXXo' o_delete='h' o_replace='hYY' o_find=3 o_find0=0
 PASS    conformance/strings/functions.st
+### conformance/strings/insert_positions.st
+0 pos=1 => inserted='aXYbcde'
+1 pos=2 => inserted='abXYcde'
+2 pos=4 => inserted='abcdXYe'
+3 pos=5 => inserted='abcdeXY'
+PASS    conformance/strings/insert_positions.st
+### conformance/strings/len_int.st
+0 i0=-11 => m=0 n=-11 c=TRUE d=-2
+1 i0=7 => m=7 n=3 c=FALSE d=-2
+PASS    conformance/strings/len_int.st
 ### conformance/strings/literals_escapes.st
 0 => s1='abc' s2='' s3='it$'s' s4='$$' s5='a$20b' s6='tab$Tx' s7='nl$Ly' s8='AB' n1=3
 1 => s1='abc' s2='' s3='it$'s' s4='$$' s5='a$20b' s6='tab$Tx' s7='nl$Ly' s8='AB' n1=3
 PASS    conformance/strings/literals_escapes.st
+### conformance/strings/min_max_limit.st
+FAIL    conformance/strings/min_max_limit.st
+        ironplcc failed to compile the program:
+error[P4026]: Function call argument type does not match parameter type (function=MIN, parameter=IN1, expected=ANY_NUM, actual=string)
+   ┌─ <root>/conformance/strings/min_max_limit.st:15:9
+   │
+15 │   lo := MIN(a, b);
+   │         ^^^ Function call
+   │
+   = Learn more: https://www.ironplc.com/reference/compiler/problems/P4026.html?version=0.252.0&channel=cli
+
+error[P4026]: Function call argument type does not match parameter type (function=MIN, parameter=IN2, expected=ANY_NUM, actual=string)
+   ┌─ <root>/conformance/strings/min_max_limit.st:15:9
+   │
+15 │   lo := MIN(a, b);
+   │         ^^^ Function call
+   │
+   = Learn more: https://www.ironplc.com/reference/compiler/problems/P4026.html?version=0.252.0&channel=cli
+
+error[P4026]: Function call argument type does not match parameter type (function=MAX, parameter=IN1, expected=ANY_NUM, actual=string)
+   ┌─ <root>/conformance/strings/min_max_limit.st:16:9
+   │
+16 │   hi := MAX(a, b);
+   │         ^^^ Function call
+   │
+   = Learn more: https://www.ironplc.com/reference/compiler/problems/P4026.html?version=0.252.0&channel=cli
+
+error[P4026]: Function call argument type does not match parameter type (function=MAX, parameter=IN2, expected=ANY_NUM, actual=string)
+   ┌─ <root>/conformance/strings/min_max_limit.st:16:9
+   │
+16 │   hi := MAX(a, b);
+   │         ^^^ Function call
+   │
+   = Learn more: https://www.ironplc.com/reference/compiler/problems/P4026.html?version=0.252.0&channel=cli
+
+error[P4026]: Function call argument type does not match parameter type (function=LIMIT, parameter=MN, expected=ANY_NUM, actual=string)
+   ┌─ <root>/conformance/strings/min_max_limit.st:17:13
+   │
+17 │   at_low := LIMIT(b, a, c);
+   │             ^^^^^ Function call
+   │
+   = Learn more: https://www.ironplc.com/reference/compiler/problems/P4026.html?version=0.252.0&channel=cli
+
+error[P4026]: Function call argument type does not match parameter type (function=LIMIT, parameter=IN, expected=ANY_NUM, actual=string)
+   ┌─ <root>/conformance/strings/min_max_limit.st:17:13
+   │
+17 │   at_low := LIMIT(b, a, c);
+   │             ^^^^^ Function call
+   │
+   = Learn more: https://www.ironplc.com/reference/compiler/problems/P4026.html?version=0.252.0&channel=cli
+
+error[P4026]: Function call argument type does not match parameter type (function=LIMIT, parameter=MX, expected=ANY_NUM, actual=string)
+   ┌─ <root>/conformance/strings/min_max_limit.st:17:13
+   │
+17 │   at_low := LIMIT(b, a, c);
+   │             ^^^^^ Function call
+   │
+   = Learn more: https://www.ironplc.com/reference/compiler/problems/P4026.html?version=0.252.0&channel=cli
+
+error[P4026]: Function call argument type does not match parameter type (function=LIMIT, parameter=MN, expected=ANY_NUM, actual=string)
+   ┌─ <root>/conformance/strings/min_max_limit.st:18:13
+   │
+18 │   within := LIMIT(a, b, c);
+   │             ^^^^^ Function call
+   │
+   = Learn more: https://www.ironplc.com/reference/compiler/problems/P4026.html?version=0.252.0&channel=cli
+
+error[P4026]: Function call argument type does not match parameter type (function=LIMIT, parameter=IN, expected=ANY_NUM, actual=string)
+   ┌─ <root>/conformance/strings/min_max_limit.st:18:13
+   │
+18 │   within := LIMIT(a, b, c);
+   │             ^^^^^ Function call
+   │
+   = Learn more: https://www.ironplc.com/reference/compiler/problems/P4026.html?version=0.252.0&channel=cli
+
+error[P4026]: Function call argument type does not match parameter type (function=LIMIT, parameter=MX, expected=ANY_NUM, actual=string)
+   ┌─ <root>/conformance/strings/min_max_limit.st:18:13
+   │
+18 │   within := LIMIT(a, b, c);
+   │             ^^^^^ Function call
+   │
+   = Learn more: https://www.ironplc.com/reference/compiler/problems/P4026.html?version=0.252.0&channel=cli
+
+error[P4026]: Function call argument type does not match parameter type (function=LIMIT, parameter=MN, expected=ANY_NUM, actual=string)
+   ┌─ <root>/conformance/strings/min_max_limit.st:19:14
+   │
+19 │   at_high := LIMIT(a, c, b);
+   │              ^^^^^ Function call
+   │
+   = Learn more: https://www.ironplc.com/reference/compiler/problems/P4026.html?version=0.252.0&channel=cli
+
+error[P4026]: Function call argument type does not match parameter type (function=LIMIT, parameter=IN, expected=ANY_NUM, actual=string)
+   ┌─ <root>/conformance/strings/min_max_limit.st:19:14
+   │
+19 │   at_high := LIMIT(a, c, b);
+   │              ^^^^^ Function call
+   │
+   = Learn more: https://www.ironplc.com/reference/compiler/problems/P4026.html?version=0.252.0&channel=cli
+
+error[P4026]: Function call argument type does not match parameter type (function=LIMIT, parameter=MX, expected=ANY_NUM, actual=string)
+   ┌─ <root>/conformance/strings/min_max_limit.st:19:14
+   │
+19 │   at_high := LIMIT(a, c, b);
+   │              ^^^^^ Function call
+   │
+   = Learn more: https://www.ironplc.com/reference/compiler/problems/P4026.html?version=0.252.0&channel=cli
+
+Error: "Compile failed with 13 problem(s)"
+
 ### conformance/timers/tof.st
 0 in=FALSE => q=TRUE et=T#0ms
 1 in=TRUE => q=TRUE et=T#0ms
@@ -991,5 +1162,5 @@ SAME    conformance/undefined/timer_pt_zero.st (implementation-defined)
 12 in=FALSE => q=FALSE et=T#0ms
 SAME    conformance/undefined/ton_pt_change.st (implementation-defined)
 
-92 tests: 52 pass, 22 fail, 17 same, 1 differs, 0 error
+101 tests: 58 pass, 25 fail, 17 same, 1 differs, 0 error
 exit 1

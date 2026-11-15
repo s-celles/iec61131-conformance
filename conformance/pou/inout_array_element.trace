@@ -1,0 +1,24 @@
+# An array element passed to a function's VAR_IN_OUT.
+#
+# Derivation: a VAR_IN_OUT parameter refers to the caller's variable, which
+# the function reads and writes (ed.3 6.6.2.3 "the variable is passed by
+# reference", 6.6.1.7.1 table 20; ed.2 2.5.1.3). An element of an array is
+# a variable, addressed by its subscript within the declared subrange
+# (ed.3 6.4.4.3, 7.3.1; ed.2 2.4.1.2 multi-element variables). arr is the
+# program's VAR, initially 0 (ed.3 table 10) and retained between cycles.
+# BUMP adds d to the element and returns its new value.
+#   cycle 0, i=1: arr[1] = 0+5 = 5, r = 5; arr[3] = 0+1 = 1, s = 1  -> 5 0 1
+#   cycle 1, i=3: arr[3] = 1+5 = 6, r = 6; arr[3] = 6+1 = 7, s = 7  -> 5 0 7
+#   cycle 2, i=2: arr[2] = 0+5 = 5, r = 5; arr[3] = 7+1 = 8, s = 8  -> 5 5 8
+# Each statement has one call, and no other read of arr, so evaluation
+# order inside an expression does not matter.
+period_ms: 100
+program: main
+inputs: i
+outputs: r s e1 e2 e3
+status: conformant
+reference: IEC 61131-3 ed.3 6.6.2.3, 6.6.1.7.1 (table 20), 7.3.1
+---
+0 i=1 => r=5 s=1 e1=5 e2=0 e3=1
+1 i=3 => r=6 s=7 e1=5 e2=0 e3=7
+2 i=2 => r=5 s=8 e1=5 e2=5 e3=8

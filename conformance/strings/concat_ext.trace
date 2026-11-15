@@ -1,0 +1,17 @@
+# CONCAT is extensible (ed.3 6.6.2.5.3 table 34 / ed.2 2.5.1.5.5 table 29;
+# extensible functions ed.3 6.6.1.7.3). It concatenates its string inputs
+# in parameter order: 'ab' + 'CD' + 'ef' = 'abCDef'; with 'GH' appended,
+# 'abCDefGH'. A nested two-input CONCAT gives the same three-input result.
+# All inputs are STRING variables, all results fit the default capacity.
+# matiec follows this derivation; STruC++ 72dfcb8 has a variadic overload
+# only for IECString values, not the IECStringVar wrappers it generates
+# for variables. Its two-input CONCAT overloads accept those wrappers.
+period_ms: 100
+program: main
+inputs:
+outputs: joined3 joined4 nested
+status: conformant
+reference: IEC 61131-3 ed.3 6.6.2.5.3 table 34, 6.6.1.7.3 (extensible functions)
+---
+0 => joined3='abCDef' joined4='abCDefGH' nested='abCDef'
+1 => joined3='abCDef' joined4='abCDefGH' nested='abCDef'

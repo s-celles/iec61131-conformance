@@ -1,0 +1,20 @@
+# FIND(IN1, IN2) returns the position (starting at 1) of the first
+# occurrence of IN2 in IN1, or 0 when absent (ed.3 6.6.2.5.3 table 34;
+# ed.2 2.5.1.5.5 table 29 types the result INT). 'bc' starts at 2 in
+# 'abc'; 'zz' is absent. Thus the operands of MIN/MAX, > and - here are
+# signed INTs (tables 28, 30, 32).
+# i0=-11: MAX(2,-11)=2; MIN(2,-11)=-11; 2>-11 TRUE.
+# i0=7:   MAX(2,7)=7; MIN(2,7)=2; 2>7 FALSE.
+# Both scans: 2-5=-3, absent=0. No empty search string or truncation.
+# IronPLC and matiec follow this derivation; STruC++ 72dfcb8 uses size_t
+# for FIND and promotes the negative INT to unsigned in the first scan,
+# as it also does for LEN (strings/len_int).
+period_ms: 100
+program: main
+inputs: i0
+outputs: m n c d absent
+status: conformant
+reference: IEC 61131-3 ed.3 6.6.2.5.3 table 34, tables 28, 30, 32
+---
+0 i0=-11 => m=2 n=-11 c=TRUE d=-3 absent=0
+1 i0=7 => m=7 n=2 c=FALSE d=-3 absent=0

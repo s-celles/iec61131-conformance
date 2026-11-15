@@ -1,0 +1,138 @@
+# Local upstream findings, 2026-11-07
+
+These entries are local report drafts, not published issues. Results refer
+to the commits pinned in `.github/workflows/ci.yml`; they do not assert
+that the latest upstream revision is affected. Full programs, hand-derived
+traces and observed results are in the linked files. Earlier reported
+findings remain in [notes/findings.md](notes/findings.md) and
+[notes/comparison.md](notes/comparison.md).
+
+## STruC++ `72dfcb8`: INSERT is one character early
+
+- Reproducer: [insert_positions.st](conformance/strings/insert_positions.st),
+  [trace](conformance/strings/insert_positions.trace).
+- `src='abcde'`, `part='XY'`, `INSERT(src,part,2)`:
+  expected `'abXYcde'`, observed `'aXYbcde'`. P=1 inserts at the beginning;
+  P=5 inserts before the final character instead of appending.
+- IEC 61131-3 ed.3 table 34 defines INSERT after character P. The existing
+  general string test uses literals and fails to build before it can
+  observe this independent defect. IronPLC, both matiecs and 4diac agree
+  with the reduced trace.
+- Cause: [iec_string.hpp](https://github.com/Autonomy-Logic/STruCpp/blob/72dfcb8b1c5a41a68bfbf4b133169189c58f04b3/src/runtime/include/iec_string.hpp)
+  passes `pos - 1` to the zero-based `insert`; DELETE/REPLACE start at P,
+  but INSERT starts after P.
+
+## STruC++ `72dfcb8`: extensible MIN/MAX reject expression inputs
+
+- Reproducer: [minmax_ext_expr.st](conformance/ops/minmax_ext_expr.st),
+  [trace](conformance/ops/minmax_ext_expr.trace); reduced from `calls` seed 166.
+- With INT variables a=3, b=7, c=2, `MAX(a*2,b,c)` should return 7.
+  The ST is accepted, but g++ reports no matching MAX overload. Moving
+  the expression to the last position, `MAX(b,c,a*2)`, builds and gives 7.
+  MIN has the same defect. No literal arguments, overflow or side effects.
+- Cause: [iec_std_lib.hpp](https://github.com/Autonomy-Logic/STruCpp/blob/72dfcb8b1c5a41a68bfbf4b133169189c58f04b3/src/runtime/include/iec_std_lib.hpp)
+  uses `MAX(T first, T second, U third, ...)` and likewise MIN. The first
+  two C++ types must be identical, but arithmetic with a constant promotes INT to C++ int
+  while variables remain `IECVar<short>`. The mixed-type two-input overload
+  does not rescue deduction for a three-input call. Table 32 makes MIN/MAX
+  extensible; IronPLC and both matiecs pass.
+
+## STruC++ `72dfcb8`: extensible CONCAT lacks variable overloads
+
+- Reproducer: [concat_ext.st](conformance/strings/concat_ext.st),
+  [trace](conformance/strings/concat_ext.trace).
+- `CONCAT(a,b,c)` with STRING variables `'ab'`, `'CD'`, `'ef'` should yield
+  `'abCDef'` (ed.3 table 34, extensible calls 6.6.1.7.3). ST compiles to
+  C++, but g++ finds no matching CONCAT overload. Four inputs also fail;
+  the nested two-input form works. Both matiecs pass the extensible call.
+- The variadic overload in `iec_string.hpp` accepts `IECString`, while
+  only two-input overloads accept the generated `IECStringVar` wrappers.
+  This does not require string literals or `STRING[n]` syntax.
+
+## STruC++ `72dfcb8`: MIN/MAX/LIMIT omit STRING
+
+- Reproducer: [min_max_limit.st](conformance/strings/min_max_limit.st),
+  [trace](conformance/strings/min_max_limit.trace).
+- STRING variables `'abc' < 'abd' < 'abe'` are valid ANY_ELEMENTARY inputs
+  (ed.3 table 32). `MIN(a,b)`, `MAX(a,b)` and `LIMIT(a,c,b)` are accepted
+  as ST but rejected by g++'s overload deduction.
+- `iec_traits.hpp` does not give either string class the ANY_ELEMENTARY
+  trait required by the function templates. Both matiecs and 4diac pass.
+  Equal lengths and ordered LIMIT bounds avoid the known prefix comparison
+  and inverted-bounds issues.
+
+## IronPLC `6e40df2` (0.252.0): CONCAT still requires two inputs
+
+- Reproducer: [concat_ext.st](conformance/strings/concat_ext.st).
+- P4018: `function=CONCAT, expected=2, actual=3` (also actual=4).
+- CONCAT is extensible (ed.3 table 34). The same test passes both matiecs;
+  the nested two-input form works on IronPLC. MIN/MAX extensibility was
+  fixed in ironplc#2551, but that fix does not cover CONCAT.
+- `analyzer/src/intermediates/stdlib_function.rs` registers CONCAT using
+  `FunctionSignature::stdlib` with exactly IN1 and IN2; it is not marked
+  extensible, so the rejection precedes code generation.
+- See [finding 28](notes/findings.md#28-defect-concat-accepts-only-two-inputs).
+
+## rk `20761dd`: CONCAT and ordered string selection are missing overloads
+
+- `strings/concat_ext` refuses three/four CONCAT inputs; `stdlib/Strings.st`
+  declares only two inputs. `strings/min_max_limit` refuses STRING inputs;
+  `stdlib/Selection.st` omits STRING for MIN/MAX/LIMIT. These constructs are
+  in ed.3 tables 34 and 32 respectively.
+- Record these as missing standard functionality; no claim about their
+  priority in rk's documented scope. Both matiecs execute both tests;
+  4diac executes the string selection test.
+
+## matiec `3a41303` (and OpenPLC `b5d4135`): an array element as a function's VAR_IN_OUT or VAR_OUTPUT does not build
+
+Added 2026-11-15.
+
+- Reproducers: [inout_array_element.st](conformance/pou/inout_array_element.st),
+  [output_array_element.st](conformance/pou/output_array_element.st), and their traces.
+- `r := BUMP(arr[i], 5)` (n is BUMP's VAR_IN_OUT) and
+  `q := DIVMOD(a := x, b := 4, m => arr[i])` with `arr : ARRAY[1..3] OF INT`:
+  iec2c accepts the ST, gcc rejects the generated C with
+  "`__ARRAY_OF_INT_3` has no member named `tabledata__`". The wrapper prints
+  `data__->ARR.value.tabledata__->I` instead of
+  `data__->ARR.value.table[(data__->I) - (1)]`. A literal subscript gives
+  `table__ULINT_LITERAL(0)` (fuzz seed 13, `a0[0]`). The OpenPLC fork fails on the same line ("assignment
+  to expression with array type"). A function block's output to an element
+  (`d(x := 3, y => arr[i])`) builds and runs.
+- Expected: VAR_IN_OUT refers to the caller's variable and `=>` assigns the
+  output to a variable (ed.3 6.6.2.3, 6.6.1.7.1 table 20); an array element
+  is a variable (ed.3 6.4.4.3, 7.3.1; ed.2 2.4.1.2). STruC++ and rk compute
+  both traces, and IronPLC computes the VAR_OUTPUT one.
+- Cause: `stage4/generate_c/generate_c_inlinefcall.cc`,
+  `visit(array_variable_c)`, prints `.table` and then visits
+  `subscript_list`, but `generate_c_inlinefcall_c` has no
+  `visit(subscript_list_c)`; `generate_c_st.cc` has one, which prints
+  `[(sub) - (lower bound)]` per dimension. Still so on matiec `master`
+  (2026-11-15). Found by `tools/fuzz` (profile `array_calls`): 19 of 120
+  seeds.
+
+## IronPLC `6e40df2` (0.252.0): an array element cannot be a VAR_IN_OUT argument
+
+Added 2026-11-15.
+
+- Reproducer: [inout_array_element.st](conformance/pou/inout_array_element.st).
+- `BUMP(arr[i], 5)` and `BUMP(n := arr[3], d := 1)` are P9999 "Statement code
+  generation does not support yet". The VAR_OUTPUT form
+  (`m => arr[i]`, `pou/output_array_element`) passes.
+- `codegen/src/body/mod.rs` `args_can_emit`: `Arg::Ref(place)` must resolve
+  through `place::variable_name` to a named variable; an indexed place does
+  not. Still so on `main` (2026-11-15). 13 of 120 `array_calls` seeds.
+- See [finding 29](notes/findings.md#29-defect-an-array-element-cannot-be-passed-to-a-functions-var_in_out).
+
+## Extensions of existing findings
+
+- STruC++'s unsigned LEN result also affects FIND: `FIND('abc','bc')=2`,
+  but `MAX(FIND(src,part), i0)` with i0=-11 returns -11, MIN returns 2 and
+  `FIND(src,part)>i0` is FALSE. [find_int.st](conformance/strings/find_int.st)
+  isolates the same `size_t` cause. IronPLC, matiec and 4diac pass.
+- IronPLC's ANY_NUM restriction on MIN/MAX/LIMIT (ironplc#2555 for TIME)
+  also excludes STRING. `strings/min_max_limit` extends finding 27.
+- OpenPLC's FIND-not-found result and rk's UDINT string indices appear in
+  the new tests too; both were already documented. No new bug count is
+  assigned to those results.
+
+Assisted-by: AI

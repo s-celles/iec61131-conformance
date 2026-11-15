@@ -341,6 +341,11 @@ PASS    conformance/ops/literals.st
 2 a=2.0 b=1.0E300 => sum=1.0000000000000001e+300 quot=2.0000000000000001e-300 prod=2.0000000000000001e+300 sq=1.4142135623730951 big=1000000000000001
 3 a=1.0E16 b=1.0 => sum=10000000000000000 quot=10000000000000000 prod=10000000000000000 sq=100000000 big=1000000000000001
 PASS    conformance/ops/lreal_precision.st
+### conformance/ops/minmax_ext_expr.st
+0 a=3 b=7 => max_first=7 max_second=7 max_last=7 min_first=-7 min_second=-7 min_last=-7
+1 a=-5 b=2 => max_first=2 max_second=2 max_last=2 min_first=-15 min_second=-15 min_last=-15
+2 a=8 b=-3 => max_first=16 max_second=16 max_last=16 min_first=-2 min_second=-2 min_last=-2
+PASS    conformance/ops/minmax_ext_expr.st
 ### conformance/ops/mux_types.st
 0 k=0 => mu=10 mb=16#0F mw=16#1234 mx=TRUE mt=T#1000ms
 1 k=1 => mu=65535 mb=16#F0 mw=16#FFFF mx=FALSE mt=T#250ms
@@ -555,6 +560,33 @@ PASS    conformance/pou/function_var_not_retained.st
 2 a=-7 b=2 => ok=TRUE q=-3 r=-1
 3 a=9 b=3 => ok=TRUE q=3 r=0
 PASS    conformance/pou/function_var_output.st
+### conformance/pou/inout_array_element.st
+ERROR   conformance/pou/inout_array_element.st
+        gcc failed:
+In file included from <matiec-lib>/C/iec_std_FB.h:35,
+                 from <matiec-lib>/C/iec_std_lib.h:753,
+                 from res0.c:6:
+POUS.c: In function ‘__MAIN_BUMP1’:
+<matiec-lib>/C/accessor.h:126:79: error: assignment to expression with array type
+  126 |         if (!(prefix name.flags & __IEC_FORCE_FLAG)) prefix name.value suffix = new_value
+      |                                                                               ^
+POUS.c:52:3: note: in expansion of macro ‘__SET_VAR’
+   52 |   __SET_VAR(,data__->ARR,.table,__TMP_N);
+      |   ^~~~~~~~~
+POUS.c: In function ‘__MAIN_BUMP2’:
+POUS.c:61:40: error: ‘__ARRAY_OF_INT_3’ has no member named ‘table3’; did you mean ‘table’?
+   61 |   INT __TMP_N = __GET_VAR(data__->ARR,.table3);
+      |                                        ^~~~~~
+<matiec-lib>/C/accessor.h:88:20: note: in definition of macro ‘__GET_VAR’
+   88 |         name.value __VA_ARGS__
+      |                    ^~~~~~~~~~~
+POUS.c:66:27: error: ‘__ARRAY_OF_INT_3’ has no member named ‘table3’; did you mean ‘table’?
+   66 |   __SET_VAR(,data__->ARR,.table3,__TMP_N);
+      |                           ^~~~~~
+<matiec-lib>/C/accessor.h:126:72: note: in definition of macro ‘__SET_VAR’
+  126 |         if (!(prefix name.flags & __IEC_FORCE_FLAG)) prefix name.value suffix = new_value
+      |                                                                        ^~~~~~
+
 ### conformance/pou/inout_call_in_std_arg.st
 ERROR   conformance/pou/inout_call_in_std_arg.st
         gcc failed:
@@ -567,6 +599,33 @@ res0.c:(.text+<off>): undefined reference to `__MAIN_BUMP1'
 /usr/bin/ld: res0.c:(.text+<off>): undefined reference to `__MAIN_SPLIT5'
 collect2: error: ld returned 1 exit status
 
+### conformance/pou/output_array_element.st
+ERROR   conformance/pou/output_array_element.st
+        gcc failed:
+In file included from <matiec-lib>/C/iec_std_FB.h:35,
+                 from <matiec-lib>/C/iec_std_lib.h:753,
+                 from res0.c:6:
+POUS.c: In function ‘__MAIN_DIVMOD1’:
+<matiec-lib>/C/accessor.h:126:79: error: assignment to expression with array type
+  126 |         if (!(prefix name.flags & __IEC_FORCE_FLAG)) prefix name.value suffix = new_value
+      |                                                                               ^
+POUS.c:48:3: note: in expansion of macro ‘__SET_VAR’
+   48 |   __SET_VAR(,data__->ARR,.table,__TMP_M);
+      |   ^~~~~~~~~
+POUS.c: In function ‘__MAIN_DIVMOD2’:
+POUS.c:58:40: error: ‘__ARRAY_OF_INT_3’ has no member named ‘table3’; did you mean ‘table’?
+   58 |   INT __TMP_M = __GET_VAR(data__->ARR,.table3);
+      |                                        ^~~~~~
+<matiec-lib>/C/accessor.h:88:20: note: in definition of macro ‘__GET_VAR’
+   88 |         name.value __VA_ARGS__
+      |                    ^~~~~~~~~~~
+POUS.c:64:27: error: ‘__ARRAY_OF_INT_3’ has no member named ‘table3’; did you mean ‘table’?
+   64 |   __SET_VAR(,data__->ARR,.table3,__TMP_M);
+      |                           ^~~~~~
+<matiec-lib>/C/accessor.h:126:72: note: in definition of macro ‘__SET_VAR’
+  126 |         if (!(prefix name.flags & __IEC_FORCE_FLAG)) prefix name.value suffix = new_value
+      |                                                                        ^~~~~~
+
 ### conformance/strings/compare.st
 0 => e1=TRUE e2=FALSE l1=TRUE l2=FALSE l3=TRUE l4=FALSE g1=TRUE n1=TRUE
 1 => e1=TRUE e2=FALSE l1=TRUE l2=FALSE l3=TRUE l4=FALSE g1=TRUE n1=TRUE
@@ -575,12 +634,22 @@ FAIL    conformance/strings/compare.st
         cycle 0 (trace line 13): l4 expected TRUE, got FALSE
         cycle 1 (trace line 14): l2 expected TRUE, got FALSE
         cycle 1 (trace line 14): l4 expected TRUE, got FALSE
+### conformance/strings/compare_le_ge.st
+0 => le1=TRUE le2=TRUE le3=TRUE ge1=FALSE ge2=TRUE ge3=TRUE
+1 => le1=TRUE le2=TRUE le3=TRUE ge1=FALSE ge2=TRUE ge3=TRUE
+FAIL    conformance/strings/compare_le_ge.st
+        cycle 0 (trace line 16): le3 expected FALSE, got TRUE
+        cycle 1 (trace line 17): le3 expected FALSE, got TRUE
 ### conformance/strings/concat_assign.st
 0 push=TRUE => acc='x' n=1 copy='ab'
 1 push=TRUE => acc='xx' n=2 copy='abz'
 2 push=FALSE => acc='xx' n=2 copy='abzz'
 3 push=TRUE => acc='xxx' n=3 copy='abzzz'
 PASS    conformance/strings/concat_assign.st
+### conformance/strings/concat_ext.st
+0 => joined3='abCDef' joined4='abCDefGH' nested='abCDef'
+1 => joined3='abCDef' joined4='abCDefGH' nested='abCDef'
+PASS    conformance/strings/concat_ext.st
 ### conformance/strings/declared_length.st
 FAIL    conformance/strings/declared_length.st
         iec2c failed to compile the program:
@@ -590,6 +659,12 @@ prog.st:21: error: invalid parameter(s) defined in function invocation of ST exp
 
 3 error(s) found. Bailing out!
 
+### conformance/strings/find_int.st
+0 i0=-11 => m=2 n=-11 c=TRUE d=-3 absent=4
+1 i0=7 => m=7 n=2 c=FALSE d=-3 absent=4
+FAIL    conformance/strings/find_int.st
+        cycle 0 (trace line 19): absent expected 0, got 4
+        cycle 1 (trace line 20): absent expected 0, got 4
 ### conformance/strings/functions.st
 0 n=1 => o_len=5 o_concat='abcd' o_left='h' o_right='o' o_mid='e' o_insert='hXXello' o_delete='hllo' o_replace='hYllo' o_find=3 o_find0=6
 1 n=2 => o_len=5 o_concat='abcd' o_left='he' o_right='lo' o_mid='el' o_insert='heXXllo' o_delete='hlo' o_replace='hYYlo' o_find=3 o_find0=6
@@ -601,10 +676,24 @@ FAIL    conformance/strings/functions.st
         cycle 1 (trace line 19): o_find0 expected 0, got 6
         cycle 2 (trace line 20): o_find0 expected 0, got 6
         cycle 3 (trace line 21): o_find0 expected 0, got 6
+### conformance/strings/insert_positions.st
+0 pos=1 => inserted='aXYbcde'
+1 pos=2 => inserted='abXYcde'
+2 pos=4 => inserted='abcdXYe'
+3 pos=5 => inserted='abcdeXY'
+PASS    conformance/strings/insert_positions.st
+### conformance/strings/len_int.st
+0 i0=-11 => m=0 n=-11 c=TRUE d=-2
+1 i0=7 => m=7 n=3 c=FALSE d=-2
+PASS    conformance/strings/len_int.st
 ### conformance/strings/literals_escapes.st
 0 => s1='abc' s2='' s3='it$'s' s4='$$' s5='a$20b' s6='tab$Tx' s7='nl$Ly' s8='AB' n1=3
 1 => s1='abc' s2='' s3='it$'s' s4='$$' s5='a$20b' s6='tab$Tx' s7='nl$Ly' s8='AB' n1=3
 PASS    conformance/strings/literals_escapes.st
+### conformance/strings/min_max_limit.st
+0 => lo='abc' hi='abd' at_low='abd' within='abd' at_high='abd'
+1 => lo='abc' hi='abd' at_low='abd' within='abd' at_high='abd'
+PASS    conformance/strings/min_max_limit.st
 ### conformance/timers/tof.st
 0 in=FALSE => q=FALSE et=T#0ms
 1 in=TRUE => q=TRUE et=T#0ms
@@ -801,5 +890,5 @@ DIFFERS conformance/undefined/ton_pt_change.st
         cycle 10 (trace line 36): et expected T#800ms, got T#200ms
         cycle 11 (trace line 37): et expected T#800ms, got T#200ms
 
-92 tests: 62 pass, 10 fail, 11 same, 7 differs, 2 error
+101 tests: 67 pass, 12 fail, 11 same, 7 differs, 4 error
 exit 1

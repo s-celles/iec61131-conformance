@@ -307,34 +307,35 @@ POUS.c: In function ‘MAIN_body__’:
 POUS.c:36:29: error: incompatible types when assigning to type ‘IEC_TIME’ {aka ‘IEC_TIMESPEC’} from type ‘int’
    36 |   __SET_VAR(data__->,D_SUB,,_____time_sub(__GET_VAR(data__->D1,), __GET_VAR(data__->D2,)));
       |                             ^~~~~~~~~~~~~
-<tmp>/matiec/lib/C/accessor.h:215:81: note: in definition of macro ‘__SET_VAR’
+<matiec-lib>/C/accessor.h:215:81: note: in definition of macro ‘__SET_VAR’
   215 |         if (!(prefix name.flags & __IEC_FORCE_FLAG)) prefix name.value suffix = new_value
       |                                                                                 ^~~~~~~~~
 POUS.c:37:31: error: incompatible types when assigning to type ‘IEC_TIME’ {aka ‘IEC_TIMESPEC’} from type ‘int’
    37 |   __SET_VAR(data__->,TOD_SUB,,_____time_sub(__GET_VAR(data__->T1,), __GET_VAR(data__->T2,)));
       |                               ^~~~~~~~~~~~~
-<tmp>/matiec/lib/C/accessor.h:215:81: note: in definition of macro ‘__SET_VAR’
+<matiec-lib>/C/accessor.h:215:81: note: in definition of macro ‘__SET_VAR’
   215 |         if (!(prefix name.flags & __IEC_FORCE_FLAG)) prefix name.value suffix = new_value
       |                                                                                 ^~~~~~~~~
 POUS.c:38:30: error: incompatible types when assigning to type ‘IEC_TIME’ {aka ‘IEC_TIMESPEC’} from type ‘int’
    38 |   __SET_VAR(data__->,DT_SUB,,_____time_sub(__GET_VAR(data__->DT1,), __GET_VAR(data__->DT2,)));
       |                              ^~~~~~~~~~~~~
-<tmp>/matiec/lib/C/accessor.h:215:81: note: in definition of macro ‘__SET_VAR’
+<matiec-lib>/C/accessor.h:215:81: note: in definition of macro ‘__SET_VAR’
   215 |         if (!(prefix name.flags & __IEC_FORCE_FLAG)) prefix name.value suffix = new_value
       |                                                                                 ^~~~~~~~~
 POUS.c:39:31: error: incompatible types when assigning to type ‘IEC_TIME’ {aka ‘IEC_TIMESPEC’} from type ‘int’
    39 |   __SET_VAR(data__->,TOD_ADD,,_____time_sub(_____time_add(__tod_to_timespec(0, 0, 12), __time_to_timespec(1, 0, 0, 90, 0, 0)), __tod_to_timespec(0, 0, 0)));
       |                               ^~~~~~~~~~~~~
-<tmp>/matiec/lib/C/accessor.h:215:81: note: in definition of macro ‘__SET_VAR’
+<matiec-lib>/C/accessor.h:215:81: note: in definition of macro ‘__SET_VAR’
   215 |         if (!(prefix name.flags & __IEC_FORCE_FLAG)) prefix name.value suffix = new_value
       |                                                                                 ^~~~~~~~~
 POUS.c:40:31: error: incompatible types when assigning to type ‘IEC_TIME’ {aka ‘IEC_TIMESPEC’} from type ‘int’
    40 |   __SET_VAR(data__->,TOD_MIN,,_____time_sub(_____time_sub(__tod_to_timespec(0, 0, 1), __time_to_timespec(1, 0, 0, 30, 0, 0)), __tod_to_timespec(0, 0, 0)));
       |                               ^~~~~~~~~~~~~
-<tmp>/matiec/lib/C/accessor.h:215:81: note: in definition of macro ‘__SET_VAR’
+<matiec-lib>/C/accessor.h:215:81: note: in definition of macro ‘__SET_VAR’
   215 |         if (!(prefix name.flags & __IEC_FORCE_FLAG)) prefix name.value suffix = new_value
       |                                                                                 ^~~~~~~~~
-POUS.c:41:30: error: 
+POUS.c:41:30: error: incompatible types when assigning to type ‘IEC_TIME’ {aka ‘IEC_TIMESPEC’} from type ‘int’
+   41 |   __SET_VAR(
 ### conformance/ops/div_call_divisor.st
 ERROR   conformance/ops/div_call_divisor.st
         gcc failed:
@@ -363,6 +364,11 @@ PASS    conformance/ops/literals.st
 2 a=2.0 b=1.0E300 => sum=1.0000000000000001e+300 quot=2.0000000000000001e-300 prod=2.0000000000000001e+300 sq=1.4142135623730951 big=1000000000000001
 3 a=1.0E16 b=1.0 => sum=10000000000000000 quot=10000000000000000 prod=10000000000000000 sq=100000000 big=1000000000000001
 PASS    conformance/ops/lreal_precision.st
+### conformance/ops/minmax_ext_expr.st
+0 a=3 b=7 => max_first=7 max_second=7 max_last=7 min_first=-7 min_second=-7 min_last=-7
+1 a=-5 b=2 => max_first=2 max_second=2 max_last=2 min_first=-15 min_second=-15 min_last=-15
+2 a=8 b=-3 => max_first=16 max_second=16 max_last=16 min_first=-2 min_second=-2 min_last=-2
+PASS    conformance/ops/minmax_ext_expr.st
 ### conformance/ops/mux_types.st
 0 k=0 => mu=10 mb=16#0F mw=16#1234 mx=TRUE mt=T#1000ms
 1 k=1 => mu=65535 mb=16#F0 mw=16#FFFF mx=FALSE mt=T#250ms
@@ -448,13 +454,13 @@ POUS.c: In function ‘MAIN_body__’:
 POUS.c:33:27: error: incompatible types when assigning to type ‘IEC_TIME’ {aka ‘IEC_TIMESPEC’} from type ‘int’
    33 |   __SET_VAR(data__->,SUM,,_____time_add(__GET_VAR(data__->T1,), __GET_VAR(data__->T2,)));
       |                           ^~~~~~~~~~~~~
-<tmp>/matiec/lib/C/accessor.h:215:81: note: in definition of macro ‘__SET_VAR’
+<matiec-lib>/C/accessor.h:215:81: note: in definition of macro ‘__SET_VAR’
   215 |         if (!(prefix name.flags & __IEC_FORCE_FLAG)) prefix name.value suffix = new_value
       |                                                                                 ^~~~~~~~~
 POUS.c:34:28: error: incompatible types when assigning to type ‘IEC_TIME’ {aka ‘IEC_TIMESPEC’} from type ‘int’
    34 |   __SET_VAR(data__->,DIFF,,_____time_sub(__GET_VAR(data__->T1,), __GET_VAR(data__->T2,)));
       |                            ^~~~~~~~~~~~~
-<tmp>/matiec/lib/C/accessor.h:215:81: note: in definition of macro ‘__SET_VAR’
+<matiec-lib>/C/accessor.h:215:81: note: in definition of macro ‘__SET_VAR’
   215 |         if (!(prefix name.flags & __IEC_FORCE_FLAG)) prefix name.value suffix = new_value
       |                                                                                 ^~~~~~~~~
 
@@ -475,19 +481,19 @@ POUS.c: In function ‘MAIN_body__’:
 POUS.c:26:25: error: incompatible types when assigning to type ‘IEC_TIME’ {aka ‘IEC_TIMESPEC’} from type ‘int’
    26 |   __SET_VAR(data__->,P,,_____time_mul(__GET_VAR(data__->T,), __GET_VAR(data__->N,)));
       |                         ^~~~~~~~~~~~~
-<tmp>/matiec/lib/C/accessor.h:215:81: note: in definition of macro ‘__SET_VAR’
+<matiec-lib>/C/accessor.h:215:81: note: in definition of macro ‘__SET_VAR’
   215 |         if (!(prefix name.flags & __IEC_FORCE_FLAG)) prefix name.value suffix = new_value
       |                                                                                 ^~~~~~~~~
 POUS.c:27:26: error: incompatible types when assigning to type ‘IEC_TIME’ {aka ‘IEC_TIMESPEC’} from type ‘int’
    27 |   __SET_VAR(data__->,P4,,_____time_mul(__time_to_timespec(1, 700, 0, 0, 0, 0), __ULINT_LITERAL(4)));
       |                          ^~~~~~~~~~~~~
-<tmp>/matiec/lib/C/accessor.h:215:81: note: in definition of macro ‘__SET_VAR’
+<matiec-lib>/C/accessor.h:215:81: note: in definition of macro ‘__SET_VAR’
   215 |         if (!(prefix name.flags & __IEC_FORCE_FLAG)) prefix name.value suffix = new_value
       |                                                                                 ^~~~~~~~~
 POUS.c:28:27: error: incompatible types when assigning to type ‘IEC_TIME’ {aka ‘IEC_TIMESPEC’} from type ‘int’
    28 |   __SET_VAR(data__->,P44,,_____time_mul(__time_to_timespec(1, 487, 71, 0, 0, 0), __ULINT_LITERAL(44)));
       |                           ^~~~~~~~~~~~~
-<tmp>/matiec/lib/C/accessor.h:215:81: note: in definition of macro ‘__SET_VAR’
+<matiec-lib>/C/accessor.h:215:81: note: in definition of macro ‘__SET_VAR’
   215 |         if (!(prefix name.flags & __IEC_FORCE_FLAG)) prefix name.value suffix = new_value
       |                                                                                 ^~~~~~~~~
 POUS.c:29:70: error: incompatible type for argument 4 of ‘___EQ_TIME’
@@ -495,13 +501,15 @@ POUS.c:29:70: error: incompatible type for argument 4 of ‘___EQ_TIME’
       |                                                                      ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
       |                                                                      |
       |                                                                      int
-<tmp>/matiec/lib/C/accessor.h:215:81: note: in definition of macro ‘__SET_VAR’
+<matiec-lib>/C/accessor.h:215:81: note: in definition of macro ‘__SET_VAR’
   215 |         if (!(prefix name.flags & __IEC_FORCE_FLAG)) prefix name.value suffix = new_value
       |                                                                                 ^~~~~~~~~
-In file included from <tmp>/matiec/lib/C/iec_std_lib.h:848,
+In file included from <matiec-lib>/C/iec_std_lib.h:848,
                  from res0.c:6:
-<tmp>/matiec/lib/C/iec_std_functions.h:1076:72: note: expected ‘TIME’ {aka ‘IEC_TIMESPEC’} but argument is of type ‘int’
- 1076 | static inline BOOL ___##fname(EN_ENO_PARAMS UINT 
+<matiec-lib>/C/iec_std_functions.h:1076:72: note: expected ‘TIME’ {aka ‘IEC_TIMESPEC’} but argument is of type ‘int’
+ 1076 | static inline BOOL ___##fname(EN_ENO_PARAMS UINT param_count, TYPENAME op1, ...){\
+      |                                                                        ^
+<matiec-lib>/C/ie
 ### conformance/ops/trunc.st
 0 r=3.7 => t=3
 1 r=-3.7 => t=-3
@@ -607,6 +615,59 @@ PASS    conformance/pou/function_var_not_retained.st
 2 a=-7 b=2 => ok=TRUE q=-3 r=-1
 3 a=9 b=3 => ok=TRUE q=3 r=0
 PASS    conformance/pou/function_var_output.st
+### conformance/pou/inout_array_element.st
+ERROR   conformance/pou/inout_array_element.st
+        gcc failed:
+In file included from config.c:8:
+POUS.c: In function ‘__MAIN_BUMP1’:
+POUS.c:66:44: error: ‘__ARRAY_OF_INT_3’ has no member named ‘tabledata__’
+   66 |   INT __TMP_N = __GET_VAR(data__->ARR.value.tabledata__->I,);
+      |                                            ^
+<matiec-lib>/C/accessor.h:177:9: note: in definition of macro ‘__GET_VAR’
+  177 |         name.value __VA_ARGS__
+      |         ^~~~
+POUS.c:71:31: error: ‘__ARRAY_OF_INT_3’ has no member named ‘tabledata__’
+   71 |   __SET_VAR(,data__->ARR.value.tabledata__->I,,__TMP_N);
+      |                               ^
+<matiec-lib>/C/accessor.h:215:22: note: in definition of macro ‘__SET_VAR’
+  215 |         if (!(prefix name.flags & __IEC_FORCE_FLAG)) prefix name.value suffix = new_value
+      |                      ^~~~
+POUS.c:71:31: error: ‘__ARRAY_OF_INT_3’ has no member named ‘tabledata__’
+   71 |   __SET_VAR(,data__->ARR.value.tabledata__->I,,__TMP_N);
+      |                               ^
+<matiec-lib>/C/accessor.h:215:61: note: in definition of macro ‘__SET_VAR’
+  215 |         if (!(prefix name.flags & __IEC_FORCE_FLAG)) prefix name.value suffix = new_value
+      |                                                             ^~~~
+POUS.c: In function ‘__MAIN_BUMP2’:
+POUS.c:80:44: error: ‘__ARRAY_OF_INT_3’ has no member named ‘table__ULINT_LITERAL’
+   80 |   INT __TMP_N = __GET_VAR(data__->ARR.value.table__ULINT_LITERAL(3),);
+      |                                            ^
+<matiec-lib>/C/accessor.h:177:9: note: in definition of macro ‘__GET_VAR’
+  177 |         name.value __VA_ARGS__
+      |         ^~~~
+POUS.c:85:31: error: ‘__ARRAY_OF_INT_3’ has no member named ‘table__ULINT_LITERAL’
+   85 |   __SET_VAR(,data__->ARR.value.table__ULINT_LITERAL(3),,__TMP_N);
+      |                               ^
+<matiec-lib>/C/accessor.h:215:22: note: in definition of macro ‘__SET_VAR’
+  215 |         if (!(prefix name.flags & __IEC_FORCE_FLAG)) prefix name.value suffix = new_value
+      |                      ^~~~
+POUS.c:85:31: error: ‘__ARRAY_OF_INT_3’ has no member named ‘table__ULINT_LITERAL’
+   85 |   __SET_VAR(,data__->ARR.value.table__ULINT_LITERAL(3),,__TMP_N);
+      |                               ^
+<matiec-lib>/C/accessor.h:215:61: note: in definition of macro ‘__SET_VAR’
+  215 |         if (!(prefix name.flags & __IEC_FORCE_FLAG)) prefix name.value suffix = new_value
+      |                                                             ^~~~
+In file included from res0.c:12:
+POUS.c: In function ‘__MAIN_BUMP1’:
+POUS.c:66:44: error: ‘__ARRAY_OF_INT_3’ has no member named ‘tabledata__’
+   66 |   INT __TMP_N = __GET_VAR(data__->ARR.value.tabledata__->I,);
+      |                                            ^
+<matiec-lib>/C/accessor.h:177:9: note: in definition of macro ‘__GET_VAR’
+  177 |         name.value __VA_ARGS__
+      |         ^~~~
+POUS.c:71:31: error: ‘__ARRAY_OF_INT_3’ has no member named ‘tabledata__’
+   71 |   __SET_VAR(,data__->ARR.value.tabledata__->I,,__TMP_N);
+      |          
 ### conformance/pou/inout_call_in_std_arg.st
 ERROR   conformance/pou/inout_call_in_std_arg.st
         gcc failed:
@@ -619,16 +680,77 @@ res0.c:(.text+<off>): undefined reference to `__MAIN_BUMP1'
 /usr/bin/ld: res0.c:(.text+<off>): undefined reference to `__MAIN_SPLIT5'
 collect2: error: ld returned 1 exit status
 
+### conformance/pou/output_array_element.st
+ERROR   conformance/pou/output_array_element.st
+        gcc failed:
+In file included from config.c:8:
+POUS.c: In function ‘__MAIN_DIVMOD1’:
+POUS.c:62:44: error: ‘__ARRAY_OF_INT_3’ has no member named ‘tabledata__’
+   62 |   INT __TMP_M = __GET_VAR(data__->ARR.value.tabledata__->I,);
+      |                                            ^
+<matiec-lib>/C/accessor.h:177:9: note: in definition of macro ‘__GET_VAR’
+  177 |         name.value __VA_ARGS__
+      |         ^~~~
+POUS.c:68:31: error: ‘__ARRAY_OF_INT_3’ has no member named ‘tabledata__’
+   68 |   __SET_VAR(,data__->ARR.value.tabledata__->I,,__TMP_M);
+      |                               ^
+<matiec-lib>/C/accessor.h:215:22: note: in definition of macro ‘__SET_VAR’
+  215 |         if (!(prefix name.flags & __IEC_FORCE_FLAG)) prefix name.value suffix = new_value
+      |                      ^~~~
+POUS.c:68:31: error: ‘__ARRAY_OF_INT_3’ has no member named ‘tabledata__’
+   68 |   __SET_VAR(,data__->ARR.value.tabledata__->I,,__TMP_M);
+      |                               ^
+<matiec-lib>/C/accessor.h:215:61: note: in definition of macro ‘__SET_VAR’
+  215 |         if (!(prefix name.flags & __IEC_FORCE_FLAG)) prefix name.value suffix = new_value
+      |                                                             ^~~~
+POUS.c: In function ‘__MAIN_DIVMOD2’:
+POUS.c:78:44: error: ‘__ARRAY_OF_INT_3’ has no member named ‘table__ULINT_LITERAL’
+   78 |   INT __TMP_M = __GET_VAR(data__->ARR.value.table__ULINT_LITERAL(3),);
+      |                                            ^
+<matiec-lib>/C/accessor.h:177:9: note: in definition of macro ‘__GET_VAR’
+  177 |         name.value __VA_ARGS__
+      |         ^~~~
+POUS.c:84:31: error: ‘__ARRAY_OF_INT_3’ has no member named ‘table__ULINT_LITERAL’
+   84 |   __SET_VAR(,data__->ARR.value.table__ULINT_LITERAL(3),,__TMP_M);
+      |                               ^
+<matiec-lib>/C/accessor.h:215:22: note: in definition of macro ‘__SET_VAR’
+  215 |         if (!(prefix name.flags & __IEC_FORCE_FLAG)) prefix name.value suffix = new_value
+      |                      ^~~~
+POUS.c:84:31: error: ‘__ARRAY_OF_INT_3’ has no member named ‘table__ULINT_LITERAL’
+   84 |   __SET_VAR(,data__->ARR.value.table__ULINT_LITERAL(3),,__TMP_M);
+      |                               ^
+<matiec-lib>/C/accessor.h:215:61: note: in definition of macro ‘__SET_VAR’
+  215 |         if (!(prefix name.flags & __IEC_FORCE_FLAG)) prefix name.value suffix = new_value
+      |                                                             ^~~~
+In file included from res0.c:12:
+POUS.c: In function ‘__MAIN_DIVMOD1’:
+POUS.c:62:44: error: ‘__ARRAY_OF_INT_3’ has no member named ‘tabledata__’
+   62 |   INT __TMP_M = __GET_VAR(data__->ARR.value.tabledata__->I,);
+      |                                            ^
+<matiec-lib>/C/accessor.h:177:9: note: in definition of macro ‘__GET_VAR’
+  177 |         name.value __VA_ARGS__
+      |         ^~~~
+POUS.c:68:31: error: ‘__ARRAY_OF_INT_3’ has no member named ‘tabledata__’
+   68 |   __SET_VAR(,data__->ARR.value.tabledata__->I,,__TMP_M);
+      |    
 ### conformance/strings/compare.st
 0 => e1=TRUE e2=FALSE l1=TRUE l2=TRUE l3=TRUE l4=TRUE g1=TRUE n1=TRUE
 1 => e1=TRUE e2=FALSE l1=TRUE l2=TRUE l3=TRUE l4=TRUE g1=TRUE n1=TRUE
 PASS    conformance/strings/compare.st
+### conformance/strings/compare_le_ge.st
+0 => le1=TRUE le2=TRUE le3=FALSE ge1=FALSE ge2=TRUE ge3=TRUE
+1 => le1=TRUE le2=TRUE le3=FALSE ge1=FALSE ge2=TRUE ge3=TRUE
+PASS    conformance/strings/compare_le_ge.st
 ### conformance/strings/concat_assign.st
 0 push=TRUE => acc='x' n=1 copy='ab'
 1 push=TRUE => acc='xx' n=2 copy='abz'
 2 push=FALSE => acc='xx' n=2 copy='abzz'
 3 push=TRUE => acc='xxx' n=3 copy='abzzz'
 PASS    conformance/strings/concat_assign.st
+### conformance/strings/concat_ext.st
+0 => joined3='abCDef' joined4='abCDefGH' nested='abCDef'
+1 => joined3='abCDef' joined4='abCDefGH' nested='abCDef'
+PASS    conformance/strings/concat_ext.st
 ### conformance/strings/declared_length.st
 FAIL    conformance/strings/declared_length.st
         iec2c failed to compile the program:
@@ -638,6 +760,10 @@ prog.st:21: error: invalid parameter(s) defined in function invocation of ST exp
 
 3 error(s) found. Bailing out!
 
+### conformance/strings/find_int.st
+0 i0=-11 => m=2 n=-11 c=TRUE d=-3 absent=0
+1 i0=7 => m=7 n=2 c=FALSE d=-3 absent=0
+PASS    conformance/strings/find_int.st
 ### conformance/strings/functions.st
 0 n=1 => o_len=5 o_concat='abcd' o_left='h' o_right='o' o_mid='e' o_insert='hXXello' o_delete='hllo' o_replace='hYllo' o_find=3 o_find0=0
 1 n=2 => o_len=5 o_concat='abcd' o_left='he' o_right='lo' o_mid='el' o_insert='heXXllo' o_delete='hlo' o_replace='hYYlo' o_find=3 o_find0=0
@@ -645,10 +771,24 @@ prog.st:21: error: invalid parameter(s) defined in function invocation of ST exp
 3 n=4 => o_len=5 o_concat='abcd' o_left='hell' o_right='ello' o_mid='ello' o_insert='hellXXo' o_delete='h' o_replace='hYY' o_find=3 o_find0=0
 FAIL    conformance/strings/functions.st
         cycle 0 (trace line 18): o_replace expected 'hYYllo', got 'hYllo'
+### conformance/strings/insert_positions.st
+0 pos=1 => inserted='aXYbcde'
+1 pos=2 => inserted='abXYcde'
+2 pos=4 => inserted='abcdXYe'
+3 pos=5 => inserted='abcdeXY'
+PASS    conformance/strings/insert_positions.st
+### conformance/strings/len_int.st
+0 i0=-11 => m=0 n=-11 c=TRUE d=-2
+1 i0=7 => m=7 n=3 c=FALSE d=-2
+PASS    conformance/strings/len_int.st
 ### conformance/strings/literals_escapes.st
 0 => s1='abc' s2='' s3='it$'s' s4='$$' s5='a$20b' s6='tab$Tx' s7='nl$Ly' s8='AB' n1=3
 1 => s1='abc' s2='' s3='it$'s' s4='$$' s5='a$20b' s6='tab$Tx' s7='nl$Ly' s8='AB' n1=3
 PASS    conformance/strings/literals_escapes.st
+### conformance/strings/min_max_limit.st
+0 => lo='abc' hi='abd' at_low='abd' within='abd' at_high='abd'
+1 => lo='abc' hi='abd' at_low='abd' within='abd' at_high='abd'
+PASS    conformance/strings/min_max_limit.st
 ### conformance/timers/tof.st
 0 in=FALSE => q=FALSE et=T#0ms
 1 in=TRUE => q=TRUE et=T#0ms
@@ -845,5 +985,5 @@ DIFFERS conformance/undefined/ton_pt_change.st
         cycle 10 (trace line 36): et expected T#800ms, got T#200ms
         cycle 11 (trace line 37): et expected T#800ms, got T#200ms
 
-92 tests: 63 pass, 5 fail, 11 same, 7 differs, 6 error
+101 tests: 70 pass, 5 fail, 11 same, 7 differs, 8 error
 exit 1
