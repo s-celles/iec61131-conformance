@@ -46,6 +46,13 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from tracefmt import Status, Value, canonical_actual, parse_trace  # noqa: E402
 
+
+def build_diagnostic(stderr, library_root, label):
+    """Bound build errors after masking the checkout path, so path length
+    cannot change where a recorded diagnostic is cut off."""
+    return stderr.replace(str(Path(library_root)), label)[:3000]
+
+
 TYPE_C = {"BOOL": "BOOL", "INT": "INT", "DINT": "DINT", "UINT": "UINT", "TIME": "TIME",
           "BYTE": "BYTE", "WORD": "WORD", "DWORD": "DWORD", "REAL": "REAL", "LREAL": "LREAL"}
 REAL_FMT = {"REAL": "%.9g", "LREAL": "%.17g"}
@@ -335,7 +342,7 @@ def run_test(st_path: Path, opts):
                             "-o", "driver", "driver.c", conf_c, res_c, "-lm"],
                            cwd=work, capture_output=True, text=True)
         if r.returncode != 0:
-            return "ERROR", ["gcc failed:\n" + r.stderr[:3000]], []
+            return "ERROR", ["gcc failed:\n" + build_diagnostic(r.stderr, opts.matiec_lib, "<matiec-lib>")], []
         stdin = "".join(
             f"{rec.cycle} " + " ".join(f"{n}={v}" for n, v in rec.inputs) + "\n" for rec in trace.records
         )

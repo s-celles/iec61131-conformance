@@ -43,7 +43,7 @@ import tempfile
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "matiec"))
-from run import declared_types, parse_configuration  # noqa: E402
+from run import build_diagnostic, declared_types, parse_configuration  # noqa: E402
 from tracefmt import Status, canonical_actual, parse_trace  # noqa: E402
 
 # IEC type -> (C++ scalar for casts, printf format)
@@ -243,7 +243,7 @@ def run_test(st_path: Path, opts):
                             "-o", "driver", "prog.cpp", "driver.cpp"],
                            cwd=work, capture_output=True, text=True)
         if r.returncode != 0:
-            return "ERROR", ["g++ failed:\n" + r.stderr[:3000]], []
+            return "ERROR", ["g++ failed:\n" + build_diagnostic(r.stderr, opts.runtime_include, "<strucpp-runtime>")], []
         stdin = "".join(
             f"{rec.cycle} " + " ".join(f"{n}={v}" for n, v in rec.inputs) + "\n" for rec in trace.records
         )
