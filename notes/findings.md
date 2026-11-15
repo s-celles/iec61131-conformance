@@ -361,7 +361,8 @@ Reported: https://github.com/ironplc/ironplc/issues/2549
 
 ## 29. (Defect) An array element cannot be passed to a function's VAR_IN_OUT
 
-- Local finding, no upstream issue created. Reproducer:
+- Reported: https://github.com/ironplc/ironplc/issues/2615
+- Reproducer:
   `conformance/pou/inout_array_element.st` / `.trace`.
 - `r := BUMP(arr[i], 5)` and `s := BUMP(n := arr[3], d := 1)`, with
   `arr : ARRAY[1..3] OF INT` and BUMP's `n : INT` a VAR_IN_OUT, are

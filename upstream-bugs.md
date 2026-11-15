@@ -85,7 +85,7 @@ findings remain in [notes/findings.md](notes/findings.md) and
 
 ## matiec `3a41303` (and OpenPLC `b5d4135`): an array element as a function's VAR_IN_OUT or VAR_OUTPUT does not build
 
-Added 2026-11-15.
+Added 2026-11-15. Reported: https://github.com/beremiz/matiec/issues/53
 
 - Reproducers: [inout_array_element.st](conformance/pou/inout_array_element.st),
   [output_array_element.st](conformance/pou/output_array_element.st), and their traces.
@@ -112,7 +112,7 @@ Added 2026-11-15.
 
 ## IronPLC `6e40df2` (0.252.0): an array element cannot be a VAR_IN_OUT argument
 
-Added 2026-11-15.
+Added 2026-11-15. Reported: https://github.com/ironplc/ironplc/issues/2615
 
 - Reproducer: [inout_array_element.st](conformance/pou/inout_array_element.st).
 - `BUMP(arr[i], 5)` and `BUMP(n := arr[3], d := 1)` are P9999 "Statement code
