@@ -167,6 +167,17 @@ located variables.
 To bump a runtime, update its SHA in the workflow `env` and the evidence
 file together.
 
+## Building the runtimes on NixOS
+
+`shell.nix` provides the toolchains of CI's ubuntu-24.04 job: gcc 13 (gcc 14
+turns the implicit declarations of matiec's call wrappers into errors,
+`notes/comparison.md` matiec item 13), flex, bison, autotools, Node 22,
+rustup (rk's `rust-toolchain.toml` selects its Rust) and xvfb-run. Inside
+`nix-shell`, the build commands of `notes/evidence/COMMANDS.md` apply
+unchanged. On 2026-11-16 this reproduced every verdict of the IronPLC,
+matiec, OpenPLC, STruC++ and rk evidence; only the linker's path in
+link errors differs.
+
 ## Running against IronPLC
 
 The harness links the `ironplc_vm` crate directly because the `ironplcvm`

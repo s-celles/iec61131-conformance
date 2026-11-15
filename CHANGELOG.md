@@ -21,6 +21,8 @@ Notable changes are recorded here following Keep a Changelog.
   array elements also as VAR_IN_OUT and VAR_OUTPUT arguments
   (`--exclude array_elem_args` leaves those out).
 - String oracle and build-diagnostic regression checks, also run in CI.
+- `shell.nix` with CI's toolchains (gcc 13, Node 22, rustup) for building the
+  runtimes on NixOS.
 
 ### Changed
 
