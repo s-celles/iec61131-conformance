@@ -25,6 +25,25 @@ functions whose meaning IEC 61131-3 fixes completely:
         short-circuit evaluation ed.3 7.3.2 leaves open), and does not read
         the variable that call writes elsewhere (the order in which operands
         are evaluated is not fixed either).
+  strings core plus STRING variables and literals with LEN, LEFT, RIGHT,
+        MID, extensible CONCAT, INSERT, DELETE, REPLACE, FIND and the comparisons
+        (table 34; 6.4.2 for the ordering); every L and P is kept in the
+        range table 34 defines (P >= 1, P + L - 1 <= LEN, ...), FIND's IN2
+        is not empty and no string grows past 80 characters, well below
+        any implementation's maximum length.
+  arrays core plus three INT arrays kept in the program's VAR: a0
+        ARRAY[-2..2] with an initialiser, a1 ARRAY[1..4] and the two-
+        dimensional m0 ARRAY[0..1, 1..3], read inside expressions and
+        written by assignments, also from FOR loops (6.4.4.3, 7.3.1,
+        table 11). Subscripts are literals within the bounds, the loop
+        variable, lo + ABS(e) MOD n, or any INT expression; a subscript
+        outside the declared subrange is an error, so an execution reaching
+        one is discarded, and a subscript without variables is always in
+        range (a compiler may reject a constant one statically).
+  array_calls  arrays plus the user POUs of calls, with array elements
+        also passed as F_TICK's VAR_IN_OUT and F_DM's VAR_OUTPUT (6.6.1.2):
+        the array such a call writes is not read elsewhere in the same
+        expression nor in the subscripts of the element being assigned.
 
 A reference evaluator runs the program on random inputs; any step that
 would leave the type's range, divide by zero, convert out of range or
@@ -42,6 +61,7 @@ outside an INT context are typed (DINT#5, UINT#5, 16#0F).
 """
 
 import argparse
+import itertools
 import pathlib
 import random
 
@@ -58,7 +78,7 @@ LIT_RANGE = {"INT": (-20, 20), "DINT": (-20, 20), "UINT": (0, 20), "BYTE": (0, 2
 IN_RANGE = {"INT": (-50, 50), "DINT": (-100000, 100000), "UINT": (0, 200), "BYTE": (0, 255), "WORD": (0, 65535), "TIME": (0, 100000)}
 
 EXCLUDABLE = {
-    "ext_minmax": "MIN/MAX with more than two inputs (ironplc#2548)",
+    "ext_minmax": "MIN/MAX with more than two inputs (STruC++ mixed expression/variable types; ironplc#2548 fixed in 0.252.0)",
     "literal_args": "a bare literal as a function argument (STruC++ template deduction)",
     "case_call": "a CASE selector that is not a plain variable (STruC++)",
     "limit_inverted": "LIMIT with MN > MX: matiec, STruC++ and RuSTy return MN (matiec#50, rusty#2040)",
@@ -71,6 +91,13 @@ EXCLUDABLE = {
     "time_literal_ms": "TIME literals with a millisecond part: whole seconds are written instead (beremiz/matiec#44 on AArch64)",
     "time_mul": "TIME * INT (beremiz/matiec#51; rk refuses it)",
     "mux_unsigned": "MUX on UINT (rk has no unsigned MUX overload)",
+    "string_order": "<, >, <=, >= between STRINGs (OpenPLC fork item 1)",
+    "string_insert": "INSERT (STruC++ inserts before P instead of after; strings/insert_positions)",
+    "string_replace": "REPLACE (matiec#41: only L characters of IN2 are copied)",
+    "string_int": "LEN/FIND as INT expressions (STruC++ returns size_t; strings/len_int and find_int)",
+    "ext_concat": "CONCAT with more than two inputs (STruC++ lacks variadic IECStringVar overloads)",
+    "array_index_expr": "array subscripts other than a literal, a variable or the loop variable (profile arrays)",
+    "array_elem_args": "array elements as VAR_IN_OUT / VAR_OUTPUT arguments (profile array_calls; IronPLC finding 29, matiec item 18)",
     "std_formal": "formal calls of standard functions, LIMIT(MX := .., IN := .., MN := ..) (profile calls; RuSTy: rusty#2035)",
 }
 
@@ -113,6 +140,48 @@ class Undefined(Exception):
     pass
 
 
+STR_MAX = 80          # kept far below every runtime's maximum STRING length
+STR_ALPHABET = "abcxyz"
+STR_FUNCS = ("CONCAT", "LEFT", "RIGHT", "MID", "INSERT", "DELETE", "REPLACE")
+
+
+def iec_str(fn, a):
+    """Table 34, with every out-of-range L or P undefined."""
+    def length(x):
+        if len(x) > STR_MAX:
+            raise Undefined("string too long")
+        return x
+    if fn == "CONCAT":
+        return length("".join(a))
+    if fn in ("LEFT", "RIGHT"):
+        x, l = a
+        if not 0 <= l <= len(x):
+            raise Undefined(fn)
+        return x[:l] if fn == "LEFT" else x[len(x) - l:]
+    if fn in ("MID", "DELETE"):
+        x, l, p = a
+        if not (1 <= p <= len(x) and l >= 0 and p + l - 1 <= len(x)):
+            raise Undefined(fn)
+        return x[p - 1:p - 1 + l] if fn == "MID" else x[:p - 1] + x[p - 1 + l:]
+    if fn == "INSERT":
+        x, y, p = a
+        if not 0 <= p <= len(x):
+            raise Undefined(fn)
+        return length(x[:p] + y + x[p:])
+    if fn == "REPLACE":
+        x, y, l, p = a
+        if not (1 <= p <= len(x) and l >= 0 and p + l - 1 <= len(x)):
+            raise Undefined(fn)
+        return length(x[:p - 1] + y + x[p - 1 + l:])
+    if fn == "LEN":
+        return len(a[0])
+    if fn == "FIND":
+        if a[1] == "":
+            raise Undefined("FIND of an empty string")
+        return a[0].find(a[1]) + 1
+    raise ValueError(fn)
+
+
 def chk(ty, v):
     lo, hi = RANGE[ty]
     if not lo <= v <= hi:
@@ -134,7 +203,7 @@ def iec_mod(ty, a, b):
 
 
 def has_var(e):
-    if e[0] == "var":
+    if e[0] in ("var", "aref"):
         return True
     for x in e[1:]:
         if isinstance(x, tuple) and has_var(x):
@@ -153,14 +222,16 @@ def folds_to_zero(e, types):
 # ---------------------------------------------------------------- expressions
 #   ("lit", ty, v)  ("var", name)  ("neg", e)  ("not", e)  ("bnot", e)
 #   ("bin", op, l, r)   ("call", fn, [args])   ("conv", from, to, e)
-#   ("shift", fn, e, n)
+#   ("shift", fn, e, n)  ("aref", array, element type, [subscripts])
 # Types of variables are in a dict name -> type shared by generator,
 # evaluator and renderer.
 
 
 class Gen:
-    def __init__(self, rng, types, excl=(), effect_vars=()):
+    def __init__(self, rng, types, excl=(), effect_vars=(), arrays=None):
         self.rng = rng
+        # name -> (element type, [(lo, hi)...], initialiser or None)
+        self.arrays = arrays or {}
         self.types = types
         self.excl = set(excl)
         # INT variables a user function may write (VAR_IN_OUT / VAR_OUTPUT);
@@ -171,6 +242,8 @@ class Gen:
         return [n for n, t in self.types.items() if t == ty]
 
     def lit(self, ty):
+        if ty == "STRING":
+            return ("lit", ty, "".join(self.rng.choice(STR_ALPHABET) for _ in range(self.rng.randint(0, 5))))
         lo, hi = LIT_RANGE[ty]
         v = self.rng.randint(lo, hi)
         if ty == "TIME" and "time_literal_ms" in self.excl:
@@ -183,6 +256,36 @@ class Gen:
             return ("var", self.rng.choice(vs))
         return self.lit(ty)
 
+    def arrays_of(self, ty):
+        return [n for n, (t, _, _) in self.arrays.items() if t == ty]
+
+    def subscript(self, lo, hi, depth):
+        """An INT subscript for the subrange lo..hi: never a constant
+        outside it."""
+        r = self.rng
+        k = r.random()
+        loop = [v for v in self.vars_of("INT") if v == "ix"]
+        if k < 0.3 or depth <= 0:
+            return ("lit", "INT", r.randint(lo, hi))
+        if k < 0.55 and loop:
+            return ("var", loop[0])
+        if k < 0.7 or "array_index_expr" in self.excl:
+            return ("var", r.choice(self.vars_of("INT")))
+        if k < 0.85:
+            # lo + ABS(e) MOD n, n the length of the subrange
+            fold = ("bin", "MOD", ("call", "ABS", [self.int_expr("INT", depth - 1)]), ("lit", "INT", hi - lo + 1))
+            return ("bin", "+", ("lit", "INT", lo), fold) if lo else fold
+        for _ in range(20):
+            e = self.int_expr("INT", depth - 1)
+            if has_var(e):
+                return e
+        return ("lit", "INT", r.randint(lo, hi))
+
+    def array_ref(self, ty, depth):
+        name = self.rng.choice(self.arrays_of(ty))
+        _, dims, _ = self.arrays[name]
+        return ("aref", name, ty, [self.subscript(lo, hi, depth - 1) for lo, hi in dims])
+
     def arg(self, ty, depth):
         e = self.bit_expr(ty, depth) if ty in BIT_TYPES else self.int_expr(ty, depth)
         if "literal_args" in self.excl and e[0] == "lit":
@@ -192,6 +295,8 @@ class Gen:
 
     def int_expr(self, ty, depth):
         r = self.rng
+        if self.arrays_of(ty) and r.random() < 0.22:
+            return self.array_ref(ty, max(depth, 1))
         if depth <= 0 or r.random() < 0.3:
             return self.var_or_lit(ty)
         k = r.random()
@@ -217,6 +322,10 @@ class Gen:
             return ("bin", op, l, rr)
         if ty == "INT" and self.effect_vars and r.random() < 0.3:
             return self.user_call(depth)
+        if ty == "INT" and self.vars_of("STRING") and "string_int" not in self.excl and r.random() < 0.3:
+            if r.random() < 0.6:
+                return ("call", "LEN", [self.str_expr(depth - 1)])
+            return ("call", "FIND", [self.str_arg(depth - 1), self.str_arg(depth - 1)])
         if k < 0.58 and ty != "UINT":
             return ("neg", self.int_expr(ty, depth - 1))
         if k < 0.7 and "conversions" not in self.excl and len([t for t in INT_TYPES if self.vars_of(t)]) > 1:
@@ -247,6 +356,49 @@ class Gen:
             return ("call", "MUX", [k_expr] + [("var", r.choice(self.vars_of(ty))) for _ in range(n)])
         return ("call", "MUX", [k_expr] + [self.arg(ty, depth - 1) for _ in range(n)])
 
+    def str_arg(self, depth):
+        e = self.str_expr(depth)
+        if "literal_args" in self.excl and e[0] == "lit":
+            e = ("var", self.rng.choice(self.vars_of("STRING")))
+        return e
+
+    def pos(self, depth):
+        """A small INT for an L or P argument: a literal, a LEN, or an
+        input folded into a small range."""
+        r = self.rng
+        k = r.random()
+        if k < 0.5 or depth <= 0:
+            return ("lit", "INT", r.randint(0, 4))
+        if k < 0.75 and "string_int" not in self.excl:
+            return ("call", "LEN", [("var", r.choice(self.vars_of("STRING")))])
+        ints = [v for v in self.vars_of("INT")]
+        return ("bin", "MOD", ("call", "ABS", [("var", r.choice(ints))]), ("lit", "INT", r.randint(2, 6)))
+
+    def str_expr(self, depth):
+        r = self.rng
+        if depth <= 0 or r.random() < 0.35:
+            return self.var_or_lit("STRING")
+        funcs = [fn for fn in STR_FUNCS if f"string_{fn.lower()}" not in self.excl]
+        fn = r.choice(funcs)
+        a = lambda: self.str_arg(depth - 1)
+        p = lambda: self.pos(depth - 1)
+        args = {"CONCAT": lambda: [a() for _ in range(2 if "ext_concat" in self.excl else r.choice([2, 2, 3, 4]))],
+                "LEFT": lambda: [a(), p()], "RIGHT": lambda: [a(), p()],
+                "MID": lambda: [a(), p(), p()], "INSERT": lambda: [a(), a(), p()],
+                "DELETE": lambda: [a(), p(), p()], "REPLACE": lambda: [a(), a(), p(), p()]}[fn]()
+        return ("call", fn, args)
+
+    def effect_target(self):
+        """What a VAR_IN_OUT / VAR_OUTPUT argument writes: an INT variable,
+        or an array element whose subscripts are literals or variables."""
+        r = self.rng
+        arrays = self.arrays_of("INT")
+        if arrays and "array_elem_args" not in self.excl and r.random() < 0.5:
+            name = r.choice(arrays)
+            return ("aref", name, "INT", [self.subscript(lo, hi, 0) if r.random() < 0.6 else ("var", r.choice(self.vars_of("INT")))
+                                          for lo, hi in self.arrays[name][1]])
+        return ("var", r.choice(self.effect_vars))
+
     def user_call(self, depth):
         r = self.rng
         fn = r.choice(["F_LIN", "F_LIN", "F_TICK", "F_DM"])
@@ -254,12 +406,12 @@ class Gen:
             return ("ucall", fn, [self.int_expr("INT", depth - 1), self.int_expr("INT", depth - 1)],
                     r.choice(["pos", "formal", "formal_rev"]))
         if fn == "F_TICK":
-            return ("ucall", fn, [("var", r.choice(self.effect_vars)), self.int_expr("INT", depth - 1)],
+            return ("ucall", fn, [self.effect_target(), self.int_expr("INT", depth - 1)],
                     r.choice(["pos", "formal"]))
         b = self.int_expr("INT", depth - 1)
         while not has_var(b) and folds_to_zero(b, self.types):
             b = self.int_expr("INT", depth - 1)
-        return ("ucall", fn, [self.int_expr("INT", depth - 1), b, ("var", r.choice(self.effect_vars))],
+        return ("ucall", fn, [self.int_expr("INT", depth - 1), b, self.effect_target()],
                 r.choice(["formal", "formal_rev"]))
 
     def bit_expr(self, ty, depth):
@@ -289,6 +441,9 @@ class Gen:
                 return ("var", r.choice(bools))
             return ("lit", "BOOL", r.choice([True, False]))
         k = r.random()
+        if self.vars_of("STRING") and r.random() < 0.25:
+            ops = ["=", "<>"] + ([] if "string_order" in self.excl else ["<", ">", "<=", ">="])
+            return ("bin", r.choice(ops), self.str_arg(depth - 1), self.str_arg(depth - 1))
         if k < 0.4:
             ty = r.choice([t for t in ORDERED_TYPES if self.vars_of(t)] or ["INT"])
             op = r.choice(["<", "<=", ">", ">=", "=", "<>"])
@@ -304,6 +459,8 @@ class Gen:
         return ("not", self.bool_expr(depth - 1))
 
     def expr(self, ty, depth):
+        if ty == "STRING":
+            return self.str_expr(depth)
         if ty == "BOOL":
             return self.bool_expr(depth)
         if ty in BIT_TYPES:
@@ -317,6 +474,8 @@ def render(e, excl=()):
         ty, v = e[1], e[2]
         if ty == "BOOL":
             return "TRUE" if v else "FALSE"
+        if ty == "STRING":
+            return f"'{v}'"
         if ty in BIT_TYPES:
             hexa = f"16#{v:0{WIDTH[ty] // 4}X}"
             return hexa if "typed_literals" in excl else f"{ty}#{hexa}"
@@ -327,6 +486,8 @@ def render(e, excl=()):
         return f"{ty}#{v}" if v >= 0 else f"(-{ty}#{-v})"
     if k == "var":
         return e[1]
+    if k == "aref":
+        return f"{e[1]}[{', '.join(render(i, excl) for i in e[3])}]"
     if k == "neg":
         return f"(-{render(e[1], excl)})"
     if k in ("not", "bnot"):
@@ -377,9 +538,10 @@ def reads(e, acc=None):
     acc = set() if acc is None else acc
     if not isinstance(e, tuple):
         return acc
-    if e[0] == "var":
+    if e[0] in ("var", "aref"):
         acc.add(e[1])
-        return acc
+        if e[0] == "var":
+            return acc
     kids = e[2] if e[0] == "ucall" else [y for x in e[1:] for y in (x if isinstance(x, list) else [x])]
     if e[0] == "ucall" and e[1] == "F_TICK":
         kids = kids[1:]
@@ -405,6 +567,8 @@ def type_of(e, types):
         return e[1]
     if k == "var":
         return types[e[1]]
+    if k == "aref":
+        return e[2]
     if k in ("neg", "bnot"):
         return type_of(e[1], types)
     if k == "not":
@@ -412,6 +576,10 @@ def type_of(e, types):
     if k == "bin":
         return "BOOL" if e[1] in ("<", "<=", ">", ">=", "=", "<>") else type_of(e[2], types)
     if k == "call":
+        if e[1] in STR_FUNCS:
+            return "STRING"
+        if e[1] in ("LEN", "FIND"):
+            return "INT"
         return type_of(e[2][-1], types)
     if k == "conv":
         return e[2]
@@ -422,12 +590,29 @@ def type_of(e, types):
     raise ValueError(k)
 
 
+def element(store, subs):
+    """The key of an array element, or Undefined outside its subranges."""
+    key = tuple(subs)
+    if key not in store:
+        raise Undefined("array subscript out of range")
+    return key
+
+
+def lvalue(e, env, types):
+    """(container, key) of a variable or array element written by a call."""
+    if e[0] == "var":
+        return env, e[1]
+    return env[e[1]], element(env[e[1]], [evaluate(i, env, types) for i in e[3]])
+
+
 def evaluate(e, env, types):
     k = e[0]
     if k == "lit":
         return e[2]
     if k == "var":
         return env[e[1]]
+    if k == "aref":
+        return env[e[1]][element(env[e[1]], [evaluate(i, env, types) for i in e[3]])]
     if k == "neg":
         return chk(type_of(e, types), -evaluate(e[1], env, types))
     if k == "not":
@@ -474,6 +659,8 @@ def evaluate(e, env, types):
     if k == "call":
         fn = e[1]
         args = [evaluate(a, env, types) for a in e[2]]
+        if fn in STR_FUNCS or fn in ("LEN", "FIND"):
+            return iec_str(fn, args)
         ty = type_of(e, types)
         if fn == "ABS":
             return chk(ty, abs(args[0]))
@@ -514,14 +701,15 @@ def evaluate(e, env, types):
             a, b = evaluate(e[2][0], env, types), evaluate(e[2][1], env, types)
             return chk("INT", chk("INT", 2 * a) - b)
         if fn == "F_TICK":  # n := n + d; F_TICK := n
-            n = e[2][0][1]
+            store, key = lvalue(e[2][0], env, types)
             d = evaluate(e[2][1], env, types)
-            env[n] = chk("INT", env[n] + d)
-            return env[n]
+            store[key] = chk("INT", store[key] + d)
+            return store[key]
         if fn == "F_DM":    # F_DM := a / b; r := a MOD b
             a, b = evaluate(e[2][0], env, types), evaluate(e[2][1], env, types)
             q = iec_div("INT", a, b)
-            env[e[2][2][1]] = iec_mod("INT", a, b)
+            store, key = lvalue(e[2][2], env, types)
+            store[key] = iec_mod("INT", a, b)
             return q
         raise ValueError(fn)
     raise ValueError(k)
@@ -594,13 +782,28 @@ PROFILES = {
         "outputs": [("o0", "INT"), ("o1", "INT"), ("od", "DINT"), ("ou", "UINT"), ("ob", "BYTE"), ("ow", "WORD"), ("q0", "BOOL"), ("q1", "BOOL")],
         "internal": [("v0", "INT"), ("vd", "DINT"), ("vu", "UINT"), ("vb", "BYTE"), ("vw", "WORD"), ("f0", "BOOL")],
     },
+    "strings": {
+        "inputs": [("i0", "INT"), ("i1", "INT"), ("b0", "BOOL")],
+        "outputs": [("os0", "STRING"), ("os1", "STRING"), ("on0", "INT"), ("on1", "INT"), ("q0", "BOOL")],
+        "internal": [("s0", "STRING"), ("s1", "STRING"), ("v0", "INT"), ("f0", "BOOL")],
+    },
     "calls": {
         "inputs": [("i0", "INT"), ("i1", "INT"), ("b0", "BOOL")],
         "outputs": [("o0", "INT"), ("o1", "INT"), ("o2", "INT"), ("q0", "BOOL"), ("q1", "BOOL")],
         "internal": [("v0", "INT"), ("v1", "INT"), ("f0", "BOOL")],
         "pous": True,
     },
+    "arrays": {
+        "inputs": [("i0", "INT"), ("i1", "INT"), ("b0", "BOOL")],
+        "outputs": [("o0", "INT"), ("o1", "INT"), ("o2", "INT"), ("q0", "BOOL"), ("q1", "BOOL")],
+        "internal": [("v0", "INT"), ("v1", "INT"), ("f0", "BOOL")],
+        "arrays": {"a0": ("INT", [(-2, 2)], [3, -1, 0, 7, -5]),
+                   "a1": ("INT", [(1, 4)], None),
+                   "m0": ("INT", [(0, 1), (1, 3)], None)},
+    },
 }
+# calls with the arrays: array elements also as VAR_IN_OUT and VAR_OUTPUT arguments
+PROFILES["array_calls"] = dict(PROFILES["arrays"], pous=True)
 
 
 class ProgGen:
@@ -613,6 +816,7 @@ class ProgGen:
         self.writable = self.outputs + self.internal
         self.excl = set(excl)
         self.pous = p.get("pous", False)
+        self.arrays = p.get("arrays", {})
         self.effect_vars = [n for n, t in self.writable if t == "INT"] if self.pous else []
         if self.pous:
             self.types["acc0.s"] = "INT"   # read-only: the FB instance's output
@@ -625,10 +829,21 @@ class ProgGen:
         types = dict(self.types)
         if in_loop:
             types[self.loop_var] = "INT"
-        g = Gen(r, types, self.excl, self.effect_vars)
+        g = Gen(r, types, self.excl, self.effect_vars, self.arrays)
         k = r.random()
         if self.pous and r.random() < 0.12:
             return ("fbcall", "acc0", self.defined(g, lambda: g.int_expr("INT", 2)))
+        if self.arrays and r.random() < (0.45 if in_loop else 0.25):
+            saved, g.effect_vars = g.effect_vars, []   # no call with a side effect in the target's subscripts
+            ref = g.array_ref("INT", 2)
+            g.effect_vars = saved
+            sub_reads = set().union(*(reads(i) for i in ref[3]))
+            rhs = self.defined(g, lambda: g.int_expr("INT", 2))
+            if any(w in sub_reads for w, _ in effects(rhs)):
+                # the subscript and a call writing what it reads: their order is open
+                saved, g.effect_vars = g.effect_vars, []
+                rhs, g.effect_vars = g.int_expr("INT", 2), saved
+            return ("aassign", ref[1], ref[2], ref[3], rhs)
         if depth <= 0 or k < 0.55:
             name, ty = r.choice(self.writable)
             return ("assign", name, self.defined(g, lambda: g.expr(ty, 3)))
@@ -684,6 +899,8 @@ def render_stmts(stmts, ind, excl=()):
         k = s[0]
         if k == "assign":
             out.append(f"{pad}{s[1]} := {render(s[2], excl)};")
+        elif k == "aassign":
+            out.append(f"{pad}{s[1]}[{', '.join(render(i, excl) for i in s[3])}] := {render(s[4], excl)};")
         elif k == "if":
             first = True
             for cond, body in s[1]:
@@ -720,6 +937,9 @@ def exec_stmts(stmts, env, types):
         k = s[0]
         if k == "assign":
             env[s[1]] = evaluate(s[2], env, types)
+        elif k == "aassign":
+            key = element(env[s[1]], [evaluate(i, env, types) for i in s[3]])
+            env[s[1]][key] = evaluate(s[4], env, types)
         elif k == "if":
             for cond, body in s[1]:
                 if evaluate(cond, env, types):
@@ -751,6 +971,8 @@ def exec_stmts(stmts, env, types):
 
 
 def fmt(ty, v):
+    if ty == "STRING":
+        return f"'{v}'"
     if ty == "BOOL":
         return "TRUE" if v else "FALSE"
     if ty == "TIME":
@@ -769,9 +991,12 @@ def make(seed, cycles, n_stmts=6, tries=200, excl=(), profile="core"):
         body = pg.program(n_stmts)
         types = dict(pg.types)
         types[pg.loop_var] = "INT"
-        env = {n: (False if t == "BOOL" else 0) for n, t in pg.types.items()}
+        env = {n: (False if t == "BOOL" else "" if t == "STRING" else 0) for n, t in pg.types.items()}
         if pg.pous:
             env["acc0.prev"] = 0
+        for name, (_, dims, init) in pg.arrays.items():
+            keys = list(itertools.product(*[range(lo, hi + 1) for lo, hi in dims]))
+            env[name] = dict(zip(keys, init or [0] * len(keys)))
         records = []
         try:
             for c in range(cycles):
@@ -799,6 +1024,9 @@ def make(seed, cycles, n_stmts=6, tries=200, excl=(), profile="core"):
         st += [f"    {n} : {t};" for n, t in pg.internal] + [f"    {pg.loop_var} : INT;"]
         if pg.pous:
             st += ["    acc0 : ACC;"]
+        for name, (ty, dims, init) in pg.arrays.items():
+            sub = ", ".join(f"{lo}..{hi}" for lo, hi in dims)
+            st += [f"    {name} : ARRAY[{sub}] OF {ty}" + (f" := [{', '.join(str(v) for v in init)}];" if init else ";")]
         st += ["  END_VAR"]
         st += render_stmts(body, 1, excl)
         st += ["END_PROGRAM", ""]

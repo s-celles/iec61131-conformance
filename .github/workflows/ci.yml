@@ -33,6 +33,11 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Fuzz oracle and stable build diagnostics
+        run: |
+          python3 -I tools/fuzz/test_gen.py
+          python3 -I harness/matiec/test_diagnostics.py
+
       - name: Traces.lean is in sync with the .trace files
         run: |
           python3 -I formal/gen_traces.py
