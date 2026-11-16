@@ -34,6 +34,10 @@ Notable changes are recorded here following Keep a Changelog.
   user POUs) INT fields as VAR_IN_OUT and VAR_OUTPUT arguments
   (`--exclude struct_copy,struct_init,struct_field_args`).
 - String oracle and build-diagnostic regression checks, also run in CI.
+- Fuzz exclusions `call_in_args` (an F_TICK / F_DM call inside another
+  call's argument, matiec item 17) and `call_divisor` (such a call as a
+  `MOD` divisor, matiec item 16). Programs generated without them are
+  unchanged.
 - `shell.nix` with CI's toolchains (gcc 13, Node 22, rustup) for building the
   runtimes on NixOS.
 

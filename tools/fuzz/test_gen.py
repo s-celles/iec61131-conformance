@@ -299,5 +299,83 @@ class Structs(unittest.TestCase):
         self.assertFalse(any(g.effect_target(inout=True)[0] == "fld" for _ in range(50)))
 
 
+def nested_effect_calls(st):
+    """(nested in a call's argument, as a MOD divisor) counts of the F_TICK /
+    F_DM calls in the program body of st, found on the text: an independent
+    oracle for the AST checks of gen.py. A function block call (acc0) is a
+    statement, not an enclosing function call."""
+    body = st.split("PROGRAM main", 1)[1]
+    nested = divisor = 0
+    for m in __import__("re").finditer(r"\b(F_TICK|F_DM)\(", body):
+        i, depth, in_call = m.start(), 0, False
+        j = i - 1
+        while j >= 0 and not (body[j] == ";" and depth == 0) and body[j] != "\n":
+            c = body[j]
+            if c == ")":
+                depth += 1
+            elif c == "(":
+                if depth == 0:
+                    k = j
+                    while k > 0 and body[k - 1] == " ":
+                        k -= 1
+                    e = k
+                    while k > 0 and (body[k - 1].isalnum() or body[k - 1] == "_"):
+                        k -= 1
+                    name = body[k:e]
+                    if name and name not in ("MOD", "AND", "OR", "XOR", "NOT", "IF", "ELSIF", "WHILE", "UNTIL", "CASE", "acc0"):
+                        in_call = True
+                else:
+                    depth -= 1
+            j -= 1
+        nested += in_call
+        divisor += bool(__import__("re").search(r"MOD\s*$", body[max(0, i - 6):i]))
+    return nested, divisor
+
+
+class EffectCalls(unittest.TestCase):
+    TICK = ("ucall", "F_TICK", [("var", "o0"), ("lit", "INT", 1)], "pos")
+
+    def test_predicates(self):
+        t = self.TICK
+        self.assertFalse(gen.effect_call_in_args(t))
+        self.assertFalse(gen.effect_call_in_args(("bin", "+", ("var", "i0"), t)))
+        self.assertTrue(gen.effect_call_in_args(("call", "ABS", [t])))
+        self.assertTrue(gen.effect_call_in_args(("call", "MIN", [("var", "i0"), ("bin", "MOD", t, ("lit", "INT", 6))])))
+        self.assertTrue(gen.effect_call_in_args(("ucall", "F_LIN", [("var", "i0"), t], "pos")))
+        self.assertTrue(gen.effect_call_in_args(("conv", "INT", "DINT", t)))
+        self.assertFalse(gen.effect_call_in_mod_divisor(("bin", "MOD", t, ("lit", "INT", 6))))
+        self.assertFalse(gen.effect_call_in_mod_divisor(("bin", "/", ("var", "i0"), t)))
+        self.assertTrue(gen.effect_call_in_mod_divisor(("bin", "MOD", ("var", "i0"), t)))
+        self.assertTrue(gen.effect_call_in_mod_divisor(("bin", "MOD", ("var", "i0"), ("neg", t))))
+
+    def test_calls_can_be_excluded(self):
+        # matiec item 17 (a VAR_IN_OUT / VAR_OUTPUT call inside another call's
+        # argument does not link) and item 16 (a call as MOD divisor is
+        # generated twice): without the exclusions the profiles produce both,
+        # with them neither reaches the compiler.
+        for profile in ("calls", "struct_calls"):
+            seen, seen_excl = [0, 0], [0, 0]
+            for seed in range(1, 120):
+                m = gen.make(seed, 3, 8, profile=profile)
+                if m:
+                    n, d = nested_effect_calls(m[0])
+                    seen[0] += n
+                    seen[1] += d
+                m = gen.make(seed, 3, 8, profile=profile, excl=["call_in_args", "call_divisor"])
+                if m:
+                    n, d = nested_effect_calls(m[0])
+                    seen_excl[0] += n
+                    seen_excl[1] += d
+            with self.subTest(profile=profile):
+                self.assertGreater(seen[0], 0)
+                if profile == "calls":   # a call as MOD divisor is rarer with structures
+                    self.assertGreater(seen[1], 0)
+                self.assertEqual(seen_excl, [0, 0])
+
+    def test_exclusions_are_documented(self):
+        self.assertIn("call_in_args", gen.EXCLUDABLE)
+        self.assertIn("call_divisor", gen.EXCLUDABLE)
+
+
 if __name__ == "__main__":
     unittest.main()

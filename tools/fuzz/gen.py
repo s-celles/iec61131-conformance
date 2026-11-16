@@ -113,6 +113,8 @@ EXCLUDABLE = {
     "struct_field_args": "structure fields as VAR_IN_OUT / VAR_OUTPUT arguments (profile struct_calls)",
     "struct_field_inout": "structure fields as VAR_IN_OUT arguments only (IronPLC: pou/inout_struct_field)",
     "std_formal": "formal calls of standard functions, LIMIT(MX := .., IN := .., MN := ..) (profile calls; RuSTy: rusty#2035)",
+    "call_in_args": "an F_TICK / F_DM call inside the argument of another call, MIN(i0, F_TICK(..)) (matiec item 17: does not link)",
+    "call_divisor": "an F_TICK / F_DM call in the divisor of MOD, a MOD F_TICK(..) (matiec item 16, beremiz/matiec#47: generated twice)",
 }
 
 # formal parameter names of the standard functions (ed.3 tables 29-32)
@@ -627,6 +629,30 @@ def reads(e, acc=None):
     return acc
 
 
+def _kids(e):
+    return [y for x in e[1:] for y in (x if isinstance(x, list) else [x]) if isinstance(y, tuple)]
+
+
+def effect_call_in_args(e, inside=False):
+    """An F_TICK / F_DM call somewhere inside an argument of a function
+    call, a user function call or a conversion (matiec item 17)."""
+    if not isinstance(e, tuple):
+        return False
+    if e[0] == "ucall" and e[1] in ("F_TICK", "F_DM") and inside:
+        return True
+    inside = inside or e[0] in ("call", "ucall", "conv", "shift")
+    return any(effect_call_in_args(y, inside) for y in _kids(e))
+
+
+def effect_call_in_mod_divisor(e):
+    """An F_TICK / F_DM call in the divisor of a MOD (matiec item 16)."""
+    if not isinstance(e, tuple):
+        return False
+    if e[0] == "bin" and e[1] == "MOD" and effects(e[3]):
+        return True
+    return any(effect_call_in_mod_divisor(y) for y in _kids(e))
+
+
 def well_defined(e):
     eff = effects(e)
     if not eff:
@@ -1003,6 +1029,10 @@ class ProgGen:
         short-circuiting (see well_defined); without user calls after 20 tries."""
         for _ in range(20):
             e = make_expr()
+            if "call_in_args" in self.excl and effect_call_in_args(e):
+                continue
+            if "call_divisor" in self.excl and effect_call_in_mod_divisor(e):
+                continue
             if well_defined(e):
                 if self.pous and "std_formal" not in self.excl:
                     e = formalize(e, self.rng)
