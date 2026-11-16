@@ -86,6 +86,7 @@ findings remain in [notes/findings.md](notes/findings.md) and
 ## matiec `3a41303` (and OpenPLC `b5d4135`): an array element as a function's VAR_IN_OUT or VAR_OUTPUT does not build
 
 Added 2026-11-15. Reported: https://github.com/beremiz/matiec/issues/53
+Still present at matiec `c316fe5` (2026-11-16, issue open).
 
 - Reproducers: [inout_array_element.st](conformance/pou/inout_array_element.st),
   [output_array_element.st](conformance/pou/output_array_element.st), and their traces.
@@ -147,7 +148,7 @@ Added 2026-11-16. Not reported upstream.
   is set to value of incompatible datatype". In reductions, a TIME member
   (`T#1s`), a REAL member (`1.5`) and `BOOL#TRUE` give the same error. Integer
   literals pass, also into a BOOL member (`flag := 1`) and into a WORD member
-  (`16#00FF`), in any member order. Upstream matiec `3a41303` accepts every case.
+  (`16#00FF`), in any member order. Upstream matiec `3a41303` and `c316fe5` accept every case.
   This is the same message as fork item 7 (structure initialisers inside an
   array initialiser), so the two may share a cause.
 - Expected: a structure initialiser assigns a constant of each named member's

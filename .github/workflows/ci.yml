@@ -19,7 +19,7 @@ concurrency:
 # (see notes/evidence/COMMANDS.md). Bump together with the evidence files.
 env:
   IRONPLC_SHA: 6e40df279fc208fc1f3ee6efa11db7a4d9c10c65
-  MATIEC_SHA: 3a41303bcb4e50403417bc39c63f88981d7d961e
+  MATIEC_SHA: c316fe57e335381cbe91f61c7366857198580ac7
   OPENPLC_SHA: b5d41356dab4aeadca0dd7ca64ba542f870b595d
   STRUCPP_SHA: 72dfcb8b1c5a41a68bfbf4b133169189c58f04b3
   RUSTY_SHA: e911ee5e0bce0ba60086ff5269d74090a27c32d6

@@ -13,9 +13,10 @@ ln -s $PWD/scratch/ironplc ironplc-src
     --ironplcc ironplc-src/compiler/target/release/ironplcc --record conformance \
     > notes/evidence/ironplc-run.txt
 
-# matiec 3a41303
+# matiec c316fe5 (2026-11-09)
 apt-get install -y flex
-git clone --depth 1 https://github.com/beremiz/matiec scratch/matiec
+git clone https://github.com/beremiz/matiec scratch/matiec
+git -C scratch/matiec checkout c316fe57e335381cbe91f61c7366857198580ac7
 (cd scratch/matiec && autoreconf -i && ./configure && make -j4)
 python3 -I harness/matiec/run.py --iec2c scratch/matiec/iec2c \
     --matiec-lib scratch/matiec/lib --record conformance > notes/evidence/matiec-run.txt
@@ -138,3 +139,17 @@ Before recording, the output was normalised: ANSI codes stripped,
 `ld.bfd` written as CI's `/usr/bin/ld`.
 The 89 blocks already recorded are unchanged; the file gains the sixteen
 tests added since 2026-11-02 and the new summary line.
+
+## matiec bump of 2026-11-16
+
+Upstream matiec moved from 3a41303 to c316fe5. It was built at c316fe5 on
+the NixOS VM in `~/shell.nix` (gcc 13, as CI) and run over all 105 tests
+with `TMPDIR=/tmp`. Before recording, the output was normalised as the other
+files: ANSI codes stripped, `/tmp/cc*.o` written `<obj>`, code offsets
+`(.text+<off>)`, and the store path of `ld.bfd` written `/usr/bin/ld`.
+Only the blocks of seven tests and the summary line changed:
+`config/priority_order` and `strings/functions` FAIL to PASS (7a7f933,
+4454518), `ops/date_time`, `ops/time_arith` and `ops/time_functions` ERROR
+to PASS (45f5f27), and `ops/time_mul` ERROR to FAIL (it builds now, and
+shows the `__time_mul` overflow of comparison item 15). The OpenPLC fork's
+pin and evidence are unchanged.

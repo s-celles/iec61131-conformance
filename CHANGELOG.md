@@ -39,6 +39,11 @@ Notable changes are recorded here following Keep a Changelog.
 
 ### Changed
 
+- matiec pinned at upstream c316fe5 (was 3a41303): `config/priority_order`,
+  `strings/functions`, `ops/date_time`, `ops/time_arith` and
+  `ops/time_functions` now pass (upstream fixes of beremiz/matiec#43, #41
+  and #40), and `ops/time_mul` builds and fails on the `__time_mul`
+  overflow (beremiz/matiec#51); matiec passes 77 of the 87 conformant tests.
 - RuSTy evidence rerun at the pinned e911ee5 over all 105 tests (it covered
   89): 70 of the 87 conformant tests pass; the one new deviation is MIN, MAX
   and LIMIT on STRING, which compile but do not link (RuSTy item 9).
