@@ -198,6 +198,17 @@ FAIL    conformance/data/defaults.st
 4 pick=0 => code=1 is_green=FALSE same=FALSE
 5 pick=7 => code=1 is_green=FALSE same=TRUE
 PASS    conformance/data/enum.st
+### conformance/data/struct_element_copy.st
+0 i=1 k=3 => s1=13 s2=0 s3=0 cs=14
+1 i=3 k=-2 => s1=13 s2=0 s3=28 cs=29
+2 i=1 k=5 => s1=15 s2=0 s3=28 cs=16
+3 i=2 k=0 => s1=15 s2=20 s3=28 cs=21
+PASS    conformance/data/struct_element_copy.st
+### conformance/data/struct_init.st
+0 i=1 => dn=5 dflag=FALSE dk=0 cn=5 cflag=TRUE ck=4
+1 i=2 => dn=5 dflag=FALSE dk=0 cn=5 cflag=TRUE ck=6
+2 i=-6 => dn=5 dflag=FALSE dk=0 cn=5 cflag=TRUE ck=0
+PASS    conformance/data/struct_init.st
 ### conformance/data/struct_internal.st
 0 a=3 b=4 => qx=3 qy=4 px=0 area=12
 1 a=-2 b=5 => qx=-2 qy=5 px=0 area=-10
@@ -295,6 +306,11 @@ PASS    conformance/ops/conversions.st
 0 => d_sub=T#259200000ms tod_sub=T#8069500ms dt_sub=T#45001000ms tod_add=T#48600000ms tod_min=T#1800000ms dt_add=T#90000000ms dt_min=T#84600000ms same_d=TRUE same_t=TRUE before=TRUE
 1 => d_sub=T#259200000ms tod_sub=T#8069500ms dt_sub=T#45001000ms tod_add=T#48600000ms tod_min=T#1800000ms dt_add=T#90000000ms dt_min=T#84600000ms same_d=TRUE same_t=TRUE before=TRUE
 PASS    conformance/ops/date_time.st
+### conformance/ops/div_call_divisor.st
+0 a=7 => q=3 m=1 calls=2
+1 a=-7 => q=-3 m=-1 calls=4
+2 a=10 => q=5 m=0 calls=6
+PASS    conformance/ops/div_call_divisor.st
 ### conformance/ops/limit_inverted.st
 0 mn=0 x=0 mx=-16 => l=-16
 1 mn=5 x=3 mx=1 => l=5
@@ -319,6 +335,11 @@ FAIL    conformance/ops/lreal_precision.st
         cycle 1 (trace line 16): big expected 1000000000000001.0, got 999999986991104
         cycle 2 (trace line 17): big expected 1000000000000001.0, got 999999986991104
         cycle 3 (trace line 18): big expected 1000000000000001.0, got 999999986991104
+### conformance/ops/minmax_ext_expr.st
+0 a=3 b=7 => max_first=7 max_second=7 max_last=7 min_first=-7 min_second=-7 min_last=-7
+1 a=-5 b=2 => max_first=2 max_second=2 max_last=2 min_first=-15 min_second=-15 min_last=-15
+2 a=8 b=-3 => max_first=16 max_second=16 max_last=16 min_first=-2 min_second=-2 min_last=-2
+PASS    conformance/ops/minmax_ext_expr.st
 ### conformance/ops/mux_types.st
 0 k=0 => mu=10 mb=16#0F mw=16#1234 mx=TRUE mt=T#1000ms
 1 k=1 => mu=65535 mb=16#F0 mw=16#FFFF mx=FALSE mt=T#250ms
@@ -372,6 +393,60 @@ PASS    conformance/ops/real_power.st
 3 b=16#FF w=16#FFFF => b_back=16#08 b_rol=16#0F w_back=16#00F0 w_ror=16#00FF b_or=16#4C
 4 b=16#00 w=16#0010 => b_back=16#00 b_rol=16#00 w_back=16#0000 w_ror=16#0010 b_or=16#44
 PASS    conformance/ops/shl_width.st
+### conformance/ops/std_formal_order.st
+FAIL    conformance/ops/std_formal_order.st
+        plc failed to compile the program:
+error[E089]: Invalid call parameters
+   ┌─ <tmpdir>/prog.st:15:15
+   │
+15 │   l1 := LIMIT(MN := 0, IN := i0, MX := 10);
+   │               ^^^^^^^ Invalid call parameters
+
+error[E048]: Could not resolve reference to MN
+   ┌─ <tmpdir>/prog.st:15:15
+   │
+15 │   l1 := LIMIT(MN := 0, IN := i0, MX := 10);
+   │               ^^ Could not resolve reference to MN
+
+error[E089]: Invalid call parameters
+   ┌─ <tmpdir>/prog.st:16:15
+   │
+16 │   l2 := LIMIT(MX := 10, IN := i0, MN := 0);
+   │               ^^^^^^^^ Invalid call parameters
+
+error[E048]: Could not resolve reference to MX
+   ┌─ <tmpdir>/prog.st:16:15
+   │
+16 │   l2 := LIMIT(MX := 10, IN := i0, MN := 0);
+   │               ^^ Could not resolve reference to MX
+
+error[E089]: Invalid call parameters
+   ┌─ <tmpdir>/prog.st:18:13
+   │
+18 │   m1 := MUX(IN1 := 200, IN0 := 100, K := 1, IN2 := 300);
+   │             ^^^^^^^^^^ Invalid call parameters
+
+error[E048]: Could not resolve reference to IN1
+   ┌─ <tmpdir>/prog.st:18:13
+   │
+18 │   m1 := MUX(IN1 := 200, IN0 := 100, K := 1, IN2 := 300);
+   │             ^^^ Could not resolve reference to IN1
+
+error[E089]: Invalid call parameters
+   ┌─ <tmpdir>/prog.st:19:13
+   │
+19 │   x1 := MUX(IN2 := 3, K := 2, IN0 := 1, IN1 := 2);
+   │             ^^^^^^^^ Invalid call parameters
+
+error[E048]: Could not resolve reference to IN2
+   ┌─ <tmpdir>/prog.st:19:13
+   │
+19 │   x1 := MUX(IN2 := 3, K := 2, IN0 := 1, IN1 := 2);
+   │             ^^^ Could not resolve reference to IN2
+
+error: Compilation aborted due to critical errors.
+Hint: You can use `plc explain <ErrorCode>` for more information
+
 ### conformance/ops/std_functions.st
 0 a=-5 b=3 c=9 k=0 g=FALSE da=-100000 db=7 => o_abs=5 o_min=-5 o_max=3 o_limit=3 o_sel=-5 o_mux=-5 d_abs=100000 d_min=-100000
 1 a=12 b=-4 c=20 k=1 g=TRUE da=2147483647 db=-2147483648 => o_abs=12 o_min=-4 o_max=12 o_limit=12 o_sel=-4 o_mux=-4 d_abs=2147483647 d_min=-2147483648
@@ -526,30 +601,87 @@ PASS    conformance/pou/function_var_not_retained.st
 2 a=-7 b=2 => ok=TRUE q=-3 r=-1
 3 a=9 b=3 => ok=TRUE q=3 r=0
 PASS    conformance/pou/function_var_output.st
+### conformance/pou/inout_array_element.st
+0 i=1 => r=5 s=1 e1=5 e2=0 e3=1
+1 i=3 => r=6 s=7 e1=5 e2=0 e3=7
+2 i=2 => r=5 s=8 e1=5 e2=5 e3=8
+PASS    conformance/pou/inout_array_element.st
+### conformance/pou/inout_call_in_std_arg.st
+0 i0=25 => a=9 m=2 s=3 x=2 q=4 r=7 calls=4
+1 i0=-31 => a=5 m=-31 s=7 x=-3 q=8 r=7 calls=8
+PASS    conformance/pou/inout_call_in_std_arg.st
+### conformance/pou/inout_struct_field.st
+0 i=1 => r1=5 r2=1 px=5 e1=1 e2=0 e3=0
+1 i=3 => r1=10 r2=1 px=10 e1=1 e2=0 e3=1
+2 i=1 => r1=15 r2=2 px=15 e1=2 e2=0 e3=1
+PASS    conformance/pou/inout_struct_field.st
+### conformance/pou/output_array_element.st
+0 i=1 x=9 => q=2 q2=2 e1=1 e2=0 e3=2
+1 i=2 x=7 => q=1 q2=2 e1=1 e2=3 e3=0
+2 i=3 x=6 => q=1 q2=1 e1=1 e2=3 e3=3
+PASS    conformance/pou/output_array_element.st
+### conformance/pou/output_struct_field.st
+0 i=1 x=9 => q=2 q2=2 py=1 e1=2 e2=0 e3=0
+1 i=3 x=10 => q=2 q2=2 py=2 e1=2 e2=0 e3=3
+2 i=2 x=5 => q=1 q2=1 py=1 e1=2 e2=2 e3=3
+PASS    conformance/pou/output_struct_field.st
 ### conformance/strings/compare.st
 0 => e1=TRUE e2=FALSE l1=TRUE l2=TRUE l3=TRUE l4=TRUE g1=TRUE n1=TRUE
 1 => e1=TRUE e2=FALSE l1=TRUE l2=TRUE l3=TRUE l4=TRUE g1=TRUE n1=TRUE
 PASS    conformance/strings/compare.st
+### conformance/strings/compare_le_ge.st
+0 => le1=TRUE le2=TRUE le3=FALSE ge1=FALSE ge2=TRUE ge3=TRUE
+1 => le1=TRUE le2=TRUE le3=FALSE ge1=FALSE ge2=TRUE ge3=TRUE
+PASS    conformance/strings/compare_le_ge.st
 ### conformance/strings/concat_assign.st
 0 push=TRUE => acc='x' n=1 copy='ab'
 1 push=TRUE => acc='xx' n=2 copy='abz'
 2 push=FALSE => acc='xx' n=2 copy='abzz'
 3 push=TRUE => acc='xxx' n=3 copy='abzzz'
 PASS    conformance/strings/concat_assign.st
+### conformance/strings/concat_ext.st
+0 => joined3='abCDef' joined4='abCDefGH' nested='abCDef'
+1 => joined3='abCDef' joined4='abCDefGH' nested='abCDef'
+PASS    conformance/strings/concat_ext.st
 ### conformance/strings/declared_length.st
 0 => s3='xyz' s4='init' s5='abcde' n3=3 n4=4 n5=5 cat='xyzinit'
 1 => s3='xyz' s4='init' s5='abcde' n3=3 n4=4 n5=5 cat='xyzinit'
 PASS    conformance/strings/declared_length.st
+### conformance/strings/find_int.st
+0 i0=-11 => m=2 n=-11 c=TRUE d=-3 absent=0
+1 i0=7 => m=7 n=2 c=FALSE d=-3 absent=0
+PASS    conformance/strings/find_int.st
 ### conformance/strings/functions.st
 0 n=1 => o_len=5 o_concat='abcd' o_left='h' o_right='o' o_mid='e' o_insert='hXXello' o_delete='hllo' o_replace='hYYllo' o_find=3 o_find0=0
 1 n=2 => o_len=5 o_concat='abcd' o_left='he' o_right='lo' o_mid='el' o_insert='heXXllo' o_delete='hlo' o_replace='hYYlo' o_find=3 o_find0=0
 2 n=3 => o_len=5 o_concat='abcd' o_left='hel' o_right='llo' o_mid='ell' o_insert='helXXlo' o_delete='ho' o_replace='hYYo' o_find=3 o_find0=0
 3 n=4 => o_len=5 o_concat='abcd' o_left='hell' o_right='ello' o_mid='ello' o_insert='hellXXo' o_delete='h' o_replace='hYY' o_find=3 o_find0=0
 PASS    conformance/strings/functions.st
+### conformance/strings/insert_positions.st
+0 pos=1 => inserted='aXYbcde'
+1 pos=2 => inserted='abXYcde'
+2 pos=4 => inserted='abcdXYe'
+3 pos=5 => inserted='abcdeXY'
+PASS    conformance/strings/insert_positions.st
+### conformance/strings/len_int.st
+0 i0=-11 => m=0 n=-11 c=TRUE d=-2
+1 i0=7 => m=7 n=3 c=FALSE d=-2
+PASS    conformance/strings/len_int.st
 ### conformance/strings/literals_escapes.st
 0 => s1='abc' s2='' s3='it$'s' s4='$$' s5='a$20b' s6='tab$Tx' s7='nl$Ly' s8='AB' n1=3
 1 => s1='abc' s2='' s3='it$'s' s4='$$' s5='a$20b' s6='tab$Tx' s7='nl$Ly' s8='AB' n1=3
 PASS    conformance/strings/literals_escapes.st
+### conformance/strings/min_max_limit.st
+ERROR   conformance/strings/min_max_limit.st
+        gcc failed:
+/usr/bin/ld: prog.o: in function `conf_prog':
+prog.st:(.text+0xfc): undefined reference to `MIN__STRING'
+/usr/bin/ld: prog.st:(.text+0x1f8): undefined reference to `MAX__STRING'
+/usr/bin/ld: prog.st:(.text+0x25b): undefined reference to `LIMIT__STRING'
+/usr/bin/ld: prog.st:(.text+0x2c7): undefined reference to `LIMIT__STRING'
+/usr/bin/ld: prog.st:(.text+0x333): undefined reference to `LIMIT__STRING'
+collect2: error: ld returned 1 exit status
+
 ### conformance/timers/tof.st
 0 in=FALSE => q=FALSE et=T#0ms
 1 in=TRUE => q=TRUE et=T#0ms
@@ -744,5 +876,5 @@ DIFFERS conformance/undefined/ton_pt_change.st
         cycle 8 (trace line 34): q expected TRUE, got FALSE
         cycle 9 (trace line 35): q expected TRUE, got FALSE
 
-89 tests: 56 pass, 10 fail, 13 same, 4 differs, 6 error
+105 tests: 70 pass, 11 fail, 13 same, 4 differs, 7 error
 exit 1

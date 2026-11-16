@@ -39,6 +39,9 @@ Notable changes are recorded here following Keep a Changelog.
 
 ### Changed
 
+- RuSTy evidence rerun at the pinned e911ee5 over all 105 tests (it covered
+  89): 70 of the 87 conformant tests pass; the one new deviation is MIN, MAX
+  and LIMIT on STRING, which compile but do not link (RuSTy item 9).
 - The in-progress STRING fuzz profile now generates CONCAT with two to
   four inputs and can exclude INSERT, REPLACE, signed LEN/FIND expressions
   and extensible CONCAT when searching beyond known defects.

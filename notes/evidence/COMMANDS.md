@@ -122,3 +122,19 @@ and the summary lines changed. For 4diac, the blocks of a run on the four
 tests were inserted, and the summary counts them (three PASS, one ERROR).
 RuSTy's file is updated separately, on its own branch, because CI runs that
 job only on pull requests and on the weekly schedule.
+
+## RuSTy refresh of 2026-11-16
+
+RuSTy (still e911ee5) was rerun over all 105 tests on a NixOS VM, with
+LLVM 21.1.8 from nixpkgs instead of apt.llvm.org and gcc 13 to link the
+driver, in a `mkShell` over `gcc13Stdenv` with `llvmPackages_21` (`llvm`,
+`llvm.dev`, `libllvm`, `clang`, `lld`), libffi, libxml2, zlib, zstd and
+ncurses, and `LLVM_SYS_211_PREFIX` and `LLVM_CONFIG` pointing at
+`llvmPackages_21.llvm.dev`. The build and run commands are the ones above,
+with `TMPDIR=/tmp` for the run: nix-shell's longer temporary directory
+would move the point where the harness truncates a long diagnostic.
+Before recording, the output was normalised: ANSI codes stripped,
+`/tmp/rusty-<test>-*/` masked to `<tmpdir>/`, and the store path of
+`ld.bfd` written as CI's `/usr/bin/ld`.
+The 89 blocks already recorded are unchanged; the file gains the sixteen
+tests added since 2026-11-02 and the new summary line.
