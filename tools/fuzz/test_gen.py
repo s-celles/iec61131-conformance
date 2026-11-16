@@ -208,5 +208,76 @@ class Arrays(unittest.TestCase):
                             for st, _ in made for line in st.splitlines()))
 
 
+class Structs(unittest.TestCase):
+    P0X = ("fld", ("var", "p0"), "x", "INT")
+
+    def env(self):
+        return {"p0": {"x": 1, "y": 5, "ok": False},
+                "p1": {"x": 2, "y": 5, "ok": True},
+                "pa": {(i,): {"x": 10 * i, "y": 5, "ok": False} for i in range(3)},
+                "i": 2}
+
+    def test_field_read(self):
+        types = {"p0": "PT", "i": "INT"}
+        self.assertEqual(gen.evaluate(self.P0X, self.env(), types), 1)
+        self.assertEqual(gen.render(self.P0X), "p0.x")
+        self.assertEqual(gen.type_of(self.P0X, types), "INT")
+        el = ("fld", ("aref", "pa", "PT", [("var", "i")]), "x", "INT")
+        self.assertEqual(gen.evaluate(el, self.env(), types), 20)
+        self.assertEqual(gen.render(el), "pa[i].x")
+        self.assertTrue(gen.has_var(self.P0X))
+        self.assertEqual(gen.reads(el), {"pa", "i"})
+
+    def test_struct_assignment_copies(self):
+        # ed.3 7.3.2 / 6.4.4.4: assigning a structured variable copies its value
+        env, types = self.env(), {"p0": "PT", "p1": "PT"}
+        gen.exec_stmts([("assign", "p0", ("var", "p1")),
+                        ("lassign", ("fld", ("var", "p1"), "x", "INT"), ("lit", "INT", 9))], env, types)
+        self.assertEqual(env["p0"]["x"], 2)
+        self.assertEqual(env["p1"]["x"], 9)
+        el = ("aref", "pa", "PT", [("lit", "INT", 0)])
+        gen.exec_stmts([("lassign", el, ("var", "p0")),
+                        ("lassign", self.P0X, ("lit", "INT", -3))], env, types)
+        self.assertEqual(env["pa"][(0,)]["x"], 2)
+        self.assertEqual(gen.render_stmts([("lassign", el, ("var", "p0"))], 0), ["pa[0] := p0;"])
+
+    def test_field_out_of_range_subscript(self):
+        el = ("fld", ("aref", "pa", "PT", [("lit", "INT", 3)]), "y", "INT")
+        with self.assertRaises(gen.Undefined):
+            gen.evaluate(el, self.env(), {})
+
+    def test_field_as_in_out(self):
+        env = self.env()
+        tick = ("ucall", "F_TICK", [self.P0X, ("lit", "INT", 4)], "pos")
+        self.assertEqual(gen.evaluate(tick, env, {}), 5)
+        self.assertEqual(env["p0"]["x"], 5)
+        self.assertEqual(gen.effects(tick), [("p0", False)])
+        self.assertFalse(gen.well_defined(("bin", "+", tick, ("fld", ("var", "p0"), "y", "INT"))))
+
+    def test_program_declares_types(self):
+        made = [m for m in (gen.make(s, 5, profile="structs") for s in range(1, 31)) if m]
+        self.assertGreater(len(made), 20)
+        st = made[0][0]
+        self.assertIn("TYPE\n  PT : STRUCT", st)
+        self.assertIn("    y : INT := 5;", st)
+        self.assertIn("p1 : PT := (x := 2, ok := TRUE);", st)
+        self.assertIn("pa : ARRAY[0..2] OF PT;", st)
+        joined = "\n".join(m[0] for m in made)
+        self.assertRegex(joined, r"\b(p0|p1|pa\[[^]]+\])\.(x|y|ok)\b")
+        self.assertRegex(joined, r"\n\s*(p0|p1|pa\[[^]]+\]) := (p0|p1|pa\[[^]]+\]);")
+
+    def test_struct_calls_profile_and_exclusions(self):
+        made = [m[0] for m in (gen.make(s, 5, profile="struct_calls") for s in range(1, 41)) if m]
+        self.assertRegex("\n".join(made), r"F_TICK\((n := )?(p0|p1|pa\[[^]]+\])\.(x|y)")
+        for s in range(1, 41):
+            m = gen.make(s, 5, profile="struct_calls",
+                         excl=["struct_field_args", "struct_copy", "struct_init"])
+            if m:
+                self.assertNotRegex(m[0], r"F_TICK\((n := )?(p0|p1|pa\[[^]]+\])\.")
+                self.assertNotRegex(m[0], r"r => (p0|p1|pa\[[^]]+\])\.")
+                self.assertNotRegex(m[0], r"\n\s*(p0|p1|pa\[[^]]+\]) := (p0|p1|pa\[[^]]+\]);")
+                self.assertNotIn(":= (x :=", m[0])
+
+
 if __name__ == "__main__":
     unittest.main()

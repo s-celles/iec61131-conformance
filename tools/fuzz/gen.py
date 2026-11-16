@@ -44,6 +44,15 @@ functions whose meaning IEC 61131-3 fixes completely:
         also passed as F_TICK's VAR_IN_OUT and F_DM's VAR_OUTPUT (6.6.1.2):
         the array such a call writes is not read elsewhere in the same
         expression nor in the subscripts of the element being assigned.
+  structs  core plus a structured type PT (x : INT, y : INT := 5,
+        ok : BOOL), two variables p0 and p1 (p1 with the initialiser
+        (x := 2, ok := TRUE)), an array pa ARRAY[0..2] OF PT and an INT
+        array a1: fields read in expressions and written by assignments,
+        and whole structures assigned to one another, which copies the
+        value (6.4.4.4, 6.5.1 table 11 and 7.3.2; a field left out of an
+        initialiser keeps its type's initial value, 6.4.4.4.2).
+  struct_calls  structs plus the user POUs of calls, with INT fields also
+        passed as F_TICK's VAR_IN_OUT and F_DM's VAR_OUTPUT.
 
 A reference evaluator runs the program on random inputs; any step that
 would leave the type's range, divide by zero, convert out of range or
@@ -98,6 +107,9 @@ EXCLUDABLE = {
     "ext_concat": "CONCAT with more than two inputs (STruC++ lacks variadic IECStringVar overloads)",
     "array_index_expr": "array subscripts other than a literal, a variable or the loop variable (profile arrays)",
     "array_elem_args": "array elements as VAR_IN_OUT / VAR_OUTPUT arguments (profile array_calls; IronPLC finding 29, matiec item 18)",
+    "struct_copy": "assignment of a whole structure, p0 := pa[i] (profile structs)",
+    "struct_init": "the initialiser of a structured variable, p1 : PT := (x := 2, ok := TRUE)",
+    "struct_field_args": "structure fields as VAR_IN_OUT / VAR_OUTPUT arguments (profile struct_calls)",
     "std_formal": "formal calls of standard functions, LIMIT(MX := .., IN := .., MN := ..) (profile calls; RuSTy: rusty#2035)",
 }
 
@@ -202,8 +214,27 @@ def iec_mod(ty, a, b):
     return chk(ty, a - iec_div(ty, a, b) * b)
 
 
+def root(e):
+    """The variable an lvalue (variable, element or field) belongs to."""
+    return e[1] if e[0] in ("var", "aref") else root(e[1])
+
+
+def subscripts_of(e):
+    """The subscripts along an lvalue: pa[i].x -> [i]."""
+    if e[0] == "aref":
+        return list(e[3])
+    if e[0] == "fld":
+        return subscripts_of(e[1])
+    return []
+
+
+def copyval(v):
+    """Assignment copies a structure (7.3.2): no aliasing between variables."""
+    return {k: copyval(x) for k, x in v.items()} if isinstance(v, dict) else v
+
+
 def has_var(e):
-    if e[0] in ("var", "aref"):
+    if e[0] in ("var", "aref", "fld"):
         return True
     for x in e[1:]:
         if isinstance(x, tuple) and has_var(x):
@@ -223,13 +254,16 @@ def folds_to_zero(e, types):
 #   ("lit", ty, v)  ("var", name)  ("neg", e)  ("not", e)  ("bnot", e)
 #   ("bin", op, l, r)   ("call", fn, [args])   ("conv", from, to, e)
 #   ("shift", fn, e, n)  ("aref", array, element type, [subscripts])
+#   ("fld", base, field, field type), base a structured var, aref or fld
 # Types of variables are in a dict name -> type shared by generator,
 # evaluator and renderer.
 
 
 class Gen:
-    def __init__(self, rng, types, excl=(), effect_vars=(), arrays=None):
+    def __init__(self, rng, types, excl=(), effect_vars=(), arrays=None, structs=None):
         self.rng = rng
+        # structured type -> [(field, type, initial value)]
+        self.structs = structs or {}
         # name -> (element type, [(lo, hi)...], initialiser or None)
         self.arrays = arrays or {}
         self.types = types
@@ -286,6 +320,32 @@ class Gen:
         _, dims, _ = self.arrays[name]
         return ("aref", name, ty, [self.subscript(lo, hi, depth - 1) for lo, hi in dims])
 
+    def struct_bases(self, sty):
+        return self.vars_of(sty) + self.arrays_of(sty)
+
+    def has_fields(self, ty):
+        return any(t == ty and self.struct_bases(sty)
+                   for sty, fields in self.structs.items() for _, t, _ in fields)
+
+    def struct_ref(self, sty, depth, simple=False):
+        """A structured variable or array element of type sty; simple keeps
+        the subscripts to literals and variables."""
+        r = self.rng
+        name = r.choice(self.struct_bases(sty))
+        if name not in self.arrays:
+            return ("var", name)
+        dims = self.arrays[name][1]
+        if simple:
+            return ("aref", name, sty, [self.subscript(lo, hi, 0) if r.random() < 0.6
+                                        else ("var", r.choice(self.vars_of("INT"))) for lo, hi in dims])
+        return ("aref", name, sty, [self.subscript(lo, hi, depth - 1) for lo, hi in dims])
+
+    def field_ref(self, ty, depth, simple=False):
+        cands = [(sty, f) for sty, fields in self.structs.items() for f, t, _ in fields
+                 if t == ty and self.struct_bases(sty)]
+        sty, f = self.rng.choice(cands)
+        return ("fld", self.struct_ref(sty, depth, simple), f, ty)
+
     def arg(self, ty, depth):
         e = self.bit_expr(ty, depth) if ty in BIT_TYPES else self.int_expr(ty, depth)
         if "literal_args" in self.excl and e[0] == "lit":
@@ -297,6 +357,8 @@ class Gen:
         r = self.rng
         if self.arrays_of(ty) and r.random() < 0.22:
             return self.array_ref(ty, max(depth, 1))
+        if self.has_fields(ty) and r.random() < 0.22:
+            return self.field_ref(ty, max(depth, 1))
         if depth <= 0 or r.random() < 0.3:
             return self.var_or_lit(ty)
         k = r.random()
@@ -392,6 +454,8 @@ class Gen:
         """What a VAR_IN_OUT / VAR_OUTPUT argument writes: an INT variable,
         or an array element whose subscripts are literals or variables."""
         r = self.rng
+        if self.has_fields("INT") and "struct_field_args" not in self.excl and r.random() < 0.5:
+            return self.field_ref("INT", 0, simple=True)
         arrays = self.arrays_of("INT")
         if arrays and "array_elem_args" not in self.excl and r.random() < 0.5:
             name = r.choice(arrays)
@@ -436,6 +500,8 @@ class Gen:
     def bool_expr(self, depth):
         r = self.rng
         bools = self.vars_of("BOOL")
+        if self.has_fields("BOOL") and r.random() < 0.15:
+            return self.field_ref("BOOL", max(depth, 1))
         if depth <= 0 or r.random() < 0.25:
             if bools and r.random() < 0.7:
                 return ("var", r.choice(bools))
@@ -459,6 +525,8 @@ class Gen:
         return ("not", self.bool_expr(depth - 1))
 
     def expr(self, ty, depth):
+        if ty in self.structs:
+            return self.struct_ref(ty, depth)
         if ty == "STRING":
             return self.str_expr(depth)
         if ty == "BOOL":
@@ -488,6 +556,8 @@ def render(e, excl=()):
         return e[1]
     if k == "aref":
         return f"{e[1]}[{', '.join(render(i, excl) for i in e[3])}]"
+    if k == "fld":
+        return f"{render(e[1], excl)}.{e[2]}"
     if k == "neg":
         return f"(-{render(e[1], excl)})"
     if k in ("not", "bnot"):
@@ -524,7 +594,7 @@ def effects(e, under_bool=False, acc=None):
     if not isinstance(e, tuple):
         return acc
     if e[0] == "ucall" and e[1] in ("F_TICK", "F_DM"):
-        acc.append((e[2][0][1] if e[1] == "F_TICK" else e[2][2][1], under_bool))
+        acc.append((root(e[2][0] if e[1] == "F_TICK" else e[2][2]), under_bool))
     sc = e[0] == "bin" and e[1] in ("AND", "OR", "XOR")
     for x in e[1:]:
         for y in (x if isinstance(x, list) else [x]):
@@ -569,6 +639,8 @@ def type_of(e, types):
         return types[e[1]]
     if k == "aref":
         return e[2]
+    if k == "fld":
+        return e[3]
     if k in ("neg", "bnot"):
         return type_of(e[1], types)
     if k == "not":
@@ -602,6 +674,8 @@ def lvalue(e, env, types):
     """(container, key) of a variable or array element written by a call."""
     if e[0] == "var":
         return env, e[1]
+    if e[0] == "fld":
+        return evaluate(e[1], env, types), e[2]
     return env[e[1]], element(env[e[1]], [evaluate(i, env, types) for i in e[3]])
 
 
@@ -613,6 +687,8 @@ def evaluate(e, env, types):
         return env[e[1]]
     if k == "aref":
         return env[e[1]][element(env[e[1]], [evaluate(i, env, types) for i in e[3]])]
+    if k == "fld":
+        return evaluate(e[1], env, types)[e[2]]
     if k == "neg":
         return chk(type_of(e, types), -evaluate(e[1], env, types))
     if k == "not":
@@ -765,6 +841,7 @@ END_FUNCTION_BLOCK
 # ("assign", name, expr) ("if", [(cond, [stmts])...], [else_stmts] or None)
 # ("case", expr, [((lo, hi), [stmts])...], [else_stmts] or None)
 # ("for", var, a, b, [stmts])  with constants a <= b
+# ("lassign", lvalue, expr): a field or a whole structure (variable or element)
 
 PROFILES = {
     "core": {
@@ -804,6 +881,15 @@ PROFILES = {
 }
 # calls with the arrays: array elements also as VAR_IN_OUT and VAR_OUTPUT arguments
 PROFILES["array_calls"] = dict(PROFILES["arrays"], pous=True)
+PROFILES["structs"] = {
+    "inputs": [("i0", "INT"), ("i1", "INT"), ("b0", "BOOL")],
+    "outputs": [("o0", "INT"), ("o1", "INT"), ("o2", "INT"), ("q0", "BOOL"), ("q1", "BOOL")],
+    "internal": [("v0", "INT"), ("v1", "INT"), ("f0", "BOOL"), ("p0", "PT"), ("p1", "PT")],
+    "structs": {"PT": [("x", "INT", 0), ("y", "INT", 5), ("ok", "BOOL", False)]},
+    "inits": {"p1": {"x": 2, "ok": True}},
+    "arrays": {"pa": ("PT", [(0, 2)], None), "a1": ("INT", [(1, 4)], None)},
+}
+PROFILES["struct_calls"] = dict(PROFILES["structs"], pous=True)
 
 
 class ProgGen:
@@ -817,6 +903,11 @@ class ProgGen:
         self.excl = set(excl)
         self.pous = p.get("pous", False)
         self.arrays = p.get("arrays", {})
+        self.structs = p.get("structs", {})
+        self.inits = {} if "struct_init" in self.excl else p.get("inits", {})
+        # what a plain assignment may target: no whole structure if excluded
+        self.targets = [(n, t) for n, t in self.writable
+                        if t not in self.structs or "struct_copy" not in self.excl]
         self.effect_vars = [n for n, t in self.writable if t == "INT"] if self.pous else []
         if self.pous:
             self.types["acc0.s"] = "INT"   # read-only: the FB instance's output
@@ -829,11 +920,13 @@ class ProgGen:
         types = dict(self.types)
         if in_loop:
             types[self.loop_var] = "INT"
-        g = Gen(r, types, self.excl, self.effect_vars, self.arrays)
+        g = Gen(r, types, self.excl, self.effect_vars, self.arrays, self.structs)
         k = r.random()
         if self.pous and r.random() < 0.12:
             return ("fbcall", "acc0", self.defined(g, lambda: g.int_expr("INT", 2)))
-        if self.arrays and r.random() < (0.45 if in_loop else 0.25):
+        if self.structs and r.random() < 0.3:
+            return self.struct_stmt(g)
+        if self.arrays_int(g) and r.random() < (0.45 if in_loop else 0.25):
             saved, g.effect_vars = g.effect_vars, []   # no call with a side effect in the target's subscripts
             ref = g.array_ref("INT", 2)
             g.effect_vars = saved
@@ -845,7 +938,7 @@ class ProgGen:
                 rhs, g.effect_vars = g.int_expr("INT", 2), saved
             return ("aassign", ref[1], ref[2], ref[3], rhs)
         if depth <= 0 or k < 0.55:
-            name, ty = r.choice(self.writable)
+            name, ty = r.choice(self.targets)
             return ("assign", name, self.defined(g, lambda: g.expr(ty, 3)))
         if k < 0.75:
             branches = [(self.defined(g, lambda: g.bool_expr(2)), self.stmts(r.randint(1, 2), depth - 1, in_loop))
@@ -868,11 +961,36 @@ class ProgGen:
             sel = ("var", r.choice(g.vars_of("INT"))) if "case_call" in self.excl else self.defined(g, lambda: g.int_expr("INT", 2))
             return ("case", sel, labels, els)
         if in_loop:
-            name, ty = r.choice(self.writable)
+            name, ty = r.choice(self.targets)
             return ("assign", name, self.defined(g, lambda: g.expr(ty, 2)))
         a = r.randint(-2, 2)
         b = a + r.randint(0, 3)
         return ("for", self.loop_var, a, b, self.stmts(r.randint(1, 2), depth - 1, True))
+
+    def arrays_int(self, g):
+        return bool(g.arrays_of("INT"))
+
+    def struct_stmt(self, g):
+        """A field assignment, or a whole structure copied to a variable or
+        element; the target's subscripts hold no call with a side effect,
+        and nothing the right side writes is read by them."""
+        r = self.rng
+        saved, g.effect_vars = g.effect_vars, []
+        copy = "struct_copy" not in self.excl and r.random() < 0.3
+        if copy:
+            sty = r.choice(list(self.structs))
+            lhs, rhs = g.struct_ref(sty, 2), g.struct_ref(sty, 2)
+            g.effect_vars = saved
+            return ("lassign", lhs, rhs)
+        ty = r.choice([t for t in ("INT", "BOOL") if g.has_fields(t)])
+        lhs = g.field_ref(ty, 2)
+        g.effect_vars = saved
+        sub_reads = set().union(*(reads(i) for i in subscripts_of(lhs)))
+        rhs = self.defined(g, lambda: g.expr(ty, 2))
+        if any(w in sub_reads for w, _ in effects(rhs)):
+            saved, g.effect_vars = g.effect_vars, []
+            rhs, g.effect_vars = g.expr(ty, 2), saved
+        return ("lassign", lhs, rhs)
 
     def defined(self, g, make_expr):
         """An expression whose value does not depend on evaluation order or
@@ -901,6 +1019,8 @@ def render_stmts(stmts, ind, excl=()):
             out.append(f"{pad}{s[1]} := {render(s[2], excl)};")
         elif k == "aassign":
             out.append(f"{pad}{s[1]}[{', '.join(render(i, excl) for i in s[3])}] := {render(s[4], excl)};")
+        elif k == "lassign":
+            out.append(f"{pad}{render(s[1], excl)} := {render(s[2], excl)};")
         elif k == "if":
             first = True
             for cond, body in s[1]:
@@ -936,10 +1056,13 @@ def exec_stmts(stmts, env, types):
     for s in stmts:
         k = s[0]
         if k == "assign":
-            env[s[1]] = evaluate(s[2], env, types)
+            env[s[1]] = copyval(evaluate(s[2], env, types))
         elif k == "aassign":
             key = element(env[s[1]], [evaluate(i, env, types) for i in s[3]])
             env[s[1]][key] = evaluate(s[4], env, types)
+        elif k == "lassign":
+            store, key = lvalue(s[1], env, types)
+            store[key] = copyval(evaluate(s[2], env, types))
         elif k == "if":
             for cond, body in s[1]:
                 if evaluate(cond, env, types):
@@ -991,12 +1114,16 @@ def make(seed, cycles, n_stmts=6, tries=200, excl=(), profile="core"):
         body = pg.program(n_stmts)
         types = dict(pg.types)
         types[pg.loop_var] = "INT"
-        env = {n: (False if t == "BOOL" else "" if t == "STRING" else 0) for n, t in pg.types.items()}
+        def initial(t, init=None):
+            if t in pg.structs:
+                return {f: (init or {}).get(f, d) for f, _, d in pg.structs[t]}
+            return False if t == "BOOL" else "" if t == "STRING" else 0
+        env = {n: initial(t, pg.inits.get(n)) for n, t in pg.types.items()}
         if pg.pous:
             env["acc0.prev"] = 0
-        for name, (_, dims, init) in pg.arrays.items():
+        for name, (ty, dims, init) in pg.arrays.items():
             keys = list(itertools.product(*[range(lo, hi + 1) for lo, hi in dims]))
-            env[name] = dict(zip(keys, init or [0] * len(keys)))
+            env[name] = dict(zip(keys, init or [initial(ty) for _ in keys]))
         records = []
         try:
             for c in range(cycles):
@@ -1014,6 +1141,13 @@ def make(seed, cycles, n_stmts=6, tries=200, excl=(), profile="core"):
         except Undefined:
             continue
         st = ["(* generated by tools/fuzz/gen.py, profile %s, seed %d, attempt %d *)" % (profile, seed, attempt)]
+        if pg.structs:
+            st += ["TYPE"]
+            for sty, fields in pg.structs.items():
+                st += [f"  {sty} : STRUCT"]
+                st += [f"    {f} : {t}" + (f" := {fmt(t, d)};" if d else ";") for f, t, d in fields]
+                st += ["  END_STRUCT;"]
+            st += ["END_TYPE", ""]
         if pg.pous:
             st += [USER_POUS]
         st += ["PROGRAM main", "  VAR_INPUT"]
@@ -1021,7 +1155,15 @@ def make(seed, cycles, n_stmts=6, tries=200, excl=(), profile="core"):
         st += ["  END_VAR", "  VAR_OUTPUT"]
         st += [f"    {n} : {t};" for n, t in pg.outputs]
         st += ["  END_VAR", "  VAR"]
-        st += [f"    {n} : {t};" for n, t in pg.internal] + [f"    {pg.loop_var} : INT;"]
+        for n, t in pg.internal:
+            init = pg.inits.get(n)
+            if init:
+                ftype = {f: ft for f, ft, _ in pg.structs[t]}
+                fields = ", ".join(f"{f} := {fmt(ftype[f], v)}" for f, v in init.items())
+                st += [f"    {n} : {t} := ({fields});"]
+            else:
+                st += [f"    {n} : {t};"]
+        st += [f"    {pg.loop_var} : INT;"]
         if pg.pous:
             st += ["    acc0 : ACC;"]
         for name, (ty, dims, init) in pg.arrays.items():

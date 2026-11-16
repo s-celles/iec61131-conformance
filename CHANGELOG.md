@@ -20,6 +20,11 @@ Notable changes are recorded here following Keep a Changelog.
 - Fuzz profile `array_calls`: the arrays with the user POUs of `calls`,
   array elements also as VAR_IN_OUT and VAR_OUTPUT arguments
   (`--exclude array_elem_args` leaves those out).
+- Fuzz profiles `structs` and `struct_calls`: a structured type with a field
+  initial value, variables with and without an initialiser and an array of
+  structures, fields read and written, whole structures copied, and (with the
+  user POUs) INT fields as VAR_IN_OUT and VAR_OUTPUT arguments
+  (`--exclude struct_copy,struct_init,struct_field_args`).
 - String oracle and build-diagnostic regression checks, also run in CI.
 - `shell.nix` with CI's toolchains (gcc 13, Node 22, rustup) for building the
   runtimes on NixOS.

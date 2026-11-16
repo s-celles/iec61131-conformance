@@ -354,14 +354,19 @@ inputs) and the comparisons, every L and P
 in range; profile `arrays`: one- and two-dimensional INT arrays with
 non-zero lower bounds and an initialiser, read and written with computed
 subscripts, also inside FOR loops (an execution that reaches a subscript
-outside its subrange is discarded); IF/CASE/FOR; the
+outside its subrange is discarded); profile `structs`: a structured type
+with a field initial value, structured variables (one with a partial
+initialiser) and an array of structures, fields read and written, whole
+structures assigned (copied); profiles `array_calls` and `struct_calls`:
+array elements and fields also as VAR_IN_OUT and VAR_OUTPUT arguments;
+IF/CASE/FOR; the
 operators and standard functions whose meaning the standard fixes
 completely) with the expected trace from a reference evaluator; `tools/fuzz/run.py` runs them through the local harnesses and
 prints the divergences, keeping the programs for reduction. `--exclude`
 leaves out constructs with known upstream issues so that new ones show.
 This is a search tool, not part of the suite or of CI.
 
-Run `python3 -I tools/fuzz/test_gen.py` to check the string and array evaluator against
+Run `python3 -I tools/fuzz/test_gen.py` to check the string, array and structure evaluator against
 table examples and its range guards. The search campaign and reduced cases
 of 2026-11-07 are recorded in `notes/fuzz-2026-11-07.md`; local upstream bug
 drafts are in `upstream-bugs.md`.
