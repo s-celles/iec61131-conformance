@@ -377,5 +377,45 @@ class EffectCalls(unittest.TestCase):
         self.assertIn("call_divisor", gen.EXCLUDABLE)
 
 
+def mux_selectors_with_mux(st):
+    """Number of MUX calls in the program body of st whose first argument
+    (the selector K) contains another MUX call, found on the text."""
+    body = st.split("PROGRAM main", 1)[1]
+    n = 0
+    for m in __import__("re").finditer(r"\bMUX\(", body):
+        i = j = m.end()
+        depth = 0
+        while j < len(body):
+            c = body[j]
+            if c == "(":
+                depth += 1
+            elif c == ")":
+                if depth == 0:
+                    break
+                depth -= 1
+            elif c == "," and depth == 0:
+                break
+            j += 1
+        n += "MUX(" in body[i:j]
+    return n
+
+
+class MuxSelector(unittest.TestCase):
+    def test_mux_in_selector_can_be_excluded(self):
+        # RuSTy item 10: a MUX call inside a MUX selector crashes plc.
+        seen = seen_excl = 0
+        for profile in ("core", "time", "strings"):
+            for seed in range(1, 150):
+                m = gen.make(seed, 3, 8, profile=profile)
+                if m:
+                    seen += mux_selectors_with_mux(m[0])
+                m = gen.make(seed, 3, 8, profile=profile, excl=["mux_selector_call"])
+                if m:
+                    seen_excl += mux_selectors_with_mux(m[0])
+        self.assertGreater(seen, 0)
+        self.assertEqual(seen_excl, 0)
+        self.assertIn("mux_selector_call", gen.EXCLUDABLE)
+
+
 if __name__ == "__main__":
     unittest.main()

@@ -114,6 +114,7 @@ EXCLUDABLE = {
     "struct_field_inout": "structure fields as VAR_IN_OUT arguments only (IronPLC: pou/inout_struct_field)",
     "std_formal": "formal calls of standard functions, LIMIT(MX := .., IN := .., MN := ..) (profile calls; RuSTy: rusty#2035)",
     "call_in_args": "an F_TICK / F_DM call inside the argument of another call, MIN(i0, F_TICK(..)) (matiec item 17: does not link)",
+    "mux_selector_call": "a MUX call inside the selector K of a MUX, MUX(ABS(MUX(..)) MOD n, ..) (RuSTy item 10: plc crashes)",
     "call_divisor": "an F_TICK / F_DM call in the divisor of MOD, a MOD F_TICK(..) (matiec item 16, beremiz/matiec#47: generated twice)",
 }
 
@@ -216,6 +217,15 @@ def iec_mod(ty, a, b):
     if b == 0:
         raise Undefined("MOD by zero")
     return chk(ty, a - iec_div(ty, a, b) * b)
+
+
+def has_call(e, fn):
+    """e calls the standard function fn somewhere."""
+    if not isinstance(e, tuple):
+        return False
+    if e[0] == "call" and e[1] == fn:
+        return True
+    return any(has_call(y, fn) for x in e[1:] for y in (x if isinstance(x, list) else [x]))
 
 
 def root(e):
@@ -418,7 +428,10 @@ class Gen:
             return ("call", "SEL", [self.bool_expr(depth - 1), self.arg(ty, depth - 1), self.arg(ty, depth - 1)])
         n = r.choice([2, 3, 4])
         # K is an INT kept in range by construction: ABS(k) MOD n
-        k_expr = ("bin", "MOD", ("call", "ABS", [self.int_expr("INT", depth - 1)]), ("lit", "INT", n))
+        k_in = self.int_expr("INT", depth - 1)
+        if "mux_selector_call" in self.excl and has_call(k_in, "MUX"):
+            k_in = self.var_or_lit("INT")
+        k_expr = ("bin", "MOD", ("call", "ABS", [k_in]), ("lit", "INT", n))
         if "mux_expr" in self.excl and self.vars_of(ty):
             return ("call", "MUX", [k_expr] + [("var", r.choice(self.vars_of(ty))) for _ in range(n)])
         return ("call", "MUX", [k_expr] + [self.arg(ty, depth - 1) for _ in range(n)])

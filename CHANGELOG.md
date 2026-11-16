@@ -43,6 +43,8 @@ Notable changes are recorded here following Keep a Changelog.
   call's argument, matiec item 17) and `call_divisor` (such a call as a
   `MOD` divisor, matiec item 16). Programs generated without them are
   unchanged.
+- Fuzz exclusion `mux_selector_call`: no MUX call inside a MUX selector
+  (RuSTy item 10). Programs generated without it are unchanged.
 - `shell.nix` with CI's toolchains (gcc 13, Node 22, rustup) for building the
   runtimes on NixOS.
 
