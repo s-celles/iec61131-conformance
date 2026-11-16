@@ -224,3 +224,23 @@ Added 2026-11-16. Not reported.
   (`strings/compare_prefix`). All 13 fork divergences of the `strings`
   campaign pass with upstream's `__str_cmp` in a patched copy of the
   fork's `lib`.
+
+## matiec `c316fe5` (and OpenPLC `b5d4135`): NOT on a BYTE or WORD compared directly
+
+Added 2026-11-16. Not reported.
+
+- Reproducer: [not_compare.st](conformance/ops/not_compare.st),
+  [trace](conformance/ops/not_compare.trace). With `b : BYTE := 16#00` and
+  `c : BYTE := 16#FF`, `(NOT b) = c` is FALSE and `(NOT b) <> c` TRUE; the
+  same with WORD (`NOT 16#0F0F` against `16#F0F0`).
+- Generated C: `__SET_VAR(data__->,Q1,,(~(__GET_VAR(data__->B,)) ==
+  __GET_VAR(data__->C,)));`. C's integer promotion widens the `BYTE`
+  (`uint8_t`) to `int` before `~`, so `~0x00` is -1 and differs from 255.
+  Ed.3 table 33 gives NOT the operand's bit-string type, so `NOT 16#00` is
+  the BYTE `16#FF`.
+- A cast back to the operand's type around `~` in stage 4 would fix it.
+  When the result is stored first (`x := NOT b`) it is truncated, which is
+  why the existing bit tests pass. IronPLC, STruC++, RuSTy, rk and 4diac
+  give the derived trace.
+- Found by `tools/fuzz` (profile `wide`, seeds 6091 and 6148 of the fourth
+  round).

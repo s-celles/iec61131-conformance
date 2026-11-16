@@ -74,6 +74,7 @@ conformance/
                div_call_divisor                 / and MOD with a VAR_IN_OUT call as divisor (from the review of beremiz/matiec#47)
                std_formal_order                 LIMIT SEL MUX called formally, arguments in another order (from tools/fuzz)
                mux_nested_selector time_literal_ms  MUX with a MUX call as selector, duration literals with ms (from tools/fuzz)
+               not_compare                      NOT on BYTE/WORD inside = and <> (from tools/fuzz)
   data/        array_internal array_init        arrays (negative bounds, initialisers)
                struct_internal enum             structures (copy, nesting), enumerations
                array_2d array_of_struct         2-D array, array of a named array type, array of structures

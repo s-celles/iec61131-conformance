@@ -1083,6 +1083,10 @@ FAIL    conformance/ops/mux_types.st
         ──────╯
         compilation failed: 3 error(s) found, cannot compile.
         
+### conformance/ops/not_compare.st
+0 => q1=TRUE q2=FALSE q3=TRUE q4=FALSE
+1 => q1=TRUE q2=FALSE q3=TRUE q4=FALSE
+PASS    conformance/ops/not_compare.st
 ### conformance/ops/precedence.st
 0 a=7 b=2 c=3 p=TRUE q=FALSE r=TRUE => e1=13 e2=27 e3=2 e4=9 e5=-1 e6=3 e7=9 l1=TRUE l2=TRUE l3=FALSE l4=FALSE l5=FALSE l6=TRUE
 1 a=-9 b=4 c=-2 p=FALSE q=TRUE r=FALSE => e1=-17 e2=10 e3=-11 e4=4 e5=1 e6=2 e7=-5 l1=FALSE l2=TRUE l3=TRUE l4=FALSE l5=FALSE l6=TRUE
@@ -2516,5 +2520,5 @@ DIFFERS conformance/undefined/ton_pt_change.st (implementation-defined)
         cycle 7 (trace line 33): et expected T#600ms, got T#800ms
         cycle 8 (trace line 34): et expected T#700ms, got T#800ms
 
-108 tests: 63 pass, 27 fail, 10 same, 8 differs, 0 error
+109 tests: 64 pass, 27 fail, 10 same, 8 differs, 0 error
 exit 1

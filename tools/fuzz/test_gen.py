@@ -417,5 +417,55 @@ class MuxSelector(unittest.TestCase):
         self.assertIn("mux_selector_call", gen.EXCLUDABLE)
 
 
+EXPR_KINDS = {"lit", "var", "neg", "not", "bnot", "bin", "call", "conv", "shift", "aref", "fld", "ucall"}
+
+
+def expressions(node):
+    """The expression trees inside a generated statement list."""
+    if isinstance(node, list):
+        for x in node:
+            yield from expressions(x)
+    elif isinstance(node, tuple):
+        if node and isinstance(node[0], str) and node[0] in EXPR_KINDS:
+            yield node
+        else:
+            for x in node[1:]:
+                yield from expressions(x)
+
+
+def constant_subtrees(e):
+    if not isinstance(e, tuple):
+        return
+    if isinstance(e[0], str) and e[0] in EXPR_KINDS and not gen.has_var(e):
+        yield e
+        return
+    for x in e[1:]:
+        for y in (x if isinstance(x, list) else [x]):
+            yield from constant_subtrees(y)
+
+
+class ConstantRange(unittest.TestCase):
+    def test_no_constant_out_of_range(self):
+        # A constant subexpression whose value leaves its type, such as
+        # UINT#6 - UINT#8, is rejected at compile time by IronPLC (P2026) and
+        # matiec even in a branch that never runs, where the reference
+        # evaluator does not see it (round 4, profile wide, seed 6071).
+        bad = []
+        for profile in ("wide", "core", "time"):
+            for seed in range(6001, 6201):
+                pg = gen.ProgGen(random.Random(seed), profile, ["literal_args"])
+                body = pg.program(8)
+                types = dict(pg.types)
+                types[pg.loop_var] = "INT"
+                for e in expressions(body):
+                    for c in constant_subtrees(e):
+                        try:
+                            gen.evaluate(c, {}, types)
+                        except gen.Undefined as u:
+                            if str(u).split()[0] in gen.RANGE:
+                                bad.append((profile, seed, gen.render(c)))
+        self.assertEqual(bad, [])
+
+
 if __name__ == "__main__":
     unittest.main()

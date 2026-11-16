@@ -258,6 +258,24 @@ def has_var(e):
     return False
 
 
+def constant_undefined(e, types):
+    """A subexpression without variables whose value leaves its type's range,
+    such as UINT#6 - UINT#8 or DINT_TO_UINT(-17): a compiler may reject it even in a
+    branch that never runs (IronPLC P2026, matiec), where the reference
+    evaluator does not reach it."""
+    if not isinstance(e, tuple) or not isinstance(e[0], str):
+        return False
+    if e[0] != "lit" and not has_var(e):
+        try:
+            evaluate(e, {}, types)
+        except Undefined as u:
+            # only a value out of its type's range (chk); a string position
+            # out of range in dead code is accepted by every runtime
+            return str(u).endswith(" range") and str(u).split()[0] in RANGE
+        return False
+    return any(constant_undefined(y, types) for x in e[1:] for y in (x if isinstance(x, list) else [x]))
+
+
 def folds_to_zero(e, types):
     try:
         return evaluate(e, {}, types) == 0
@@ -1042,6 +1060,8 @@ class ProgGen:
         short-circuiting (see well_defined); without user calls after 20 tries."""
         for _ in range(20):
             e = make_expr()
+            if constant_undefined(e, g.types):
+                continue
             if "call_in_args" in self.excl and effect_call_in_args(e):
                 continue
             if "call_divisor" in self.excl and effect_call_in_mod_divisor(e):
@@ -1052,6 +1072,10 @@ class ProgGen:
                 return e
         saved, g.effect_vars = g.effect_vars, []
         e = make_expr()
+        for _ in range(50):
+            if not constant_undefined(e, g.types):
+                break
+            e = make_expr()
         g.effect_vars = saved
         return e
 

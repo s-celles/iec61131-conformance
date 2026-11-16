@@ -6,6 +6,8 @@ Notable changes are recorded here following Keep a Changelog.
 
 ### Added
 
+- Conformance test `ops/not_compare`: NOT on a BYTE or WORD compared
+  directly, from the fourth fuzz round of 2026-11-16 (matiec item 19).
 - Three conformance tests from the third fuzz round of 2026-11-16: a MUX
   whose selector is a MUX call (`ops/mux_nested_selector`), duration
   literals with milliseconds (`ops/time_literal_ms`), and `=` / `<>`
@@ -67,6 +69,11 @@ Notable changes are recorded here following Keep a Changelog.
 
 ### Fixed
 
+- The fuzz generator no longer writes a constant subexpression whose value
+  leaves its type's range (`UINT#6 - UINT#8`, `DINT_TO_UINT(-17)`, a negative
+  TIME difference) in a branch that never runs: IronPLC and matiec reject it at
+  compile time. Programs of the `wide` and `time` profiles change for the
+  seeds that had one; the other profiles are unchanged.
 - C/C++ build-error excerpts mask library paths before truncation, so
   checkout path length cannot change the recorded cut-off point.
 - README totals distinguish the 83 conformant and 18 implementation-defined

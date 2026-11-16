@@ -1,0 +1,17 @@
+# Bitwise NOT compared without an intermediate variable.
+#
+# Derivation (ed.3 table 33: NOT on ANY_BIT is the bitwise
+# complement, of the operand's type; table 28: EQ and NE apply to
+# ANY_ELEMENTARY, bit strings included, and compare the values):
+#   NOT BYTE#16#00 = 16#FF, equal to c = 16#FF: q1 TRUE, q2 FALSE;
+#   NOT WORD#16#0F0F = 16#F0F0, equal to x = 16#F0F0: q3 TRUE, q4 FALSE.
+# No inputs; two cycles.
+period_ms: 100
+program: main
+inputs:
+outputs: q1 q2 q3 q4
+status: conformant
+reference: IEC 61131-3 ed.3 table 33 (AND OR XOR NOT), 6.6.2.5.1 table 28 (comparison)
+---
+0 => q1=TRUE q2=FALSE q3=TRUE q4=FALSE
+1 => q1=TRUE q2=FALSE q3=TRUE q4=FALSE
