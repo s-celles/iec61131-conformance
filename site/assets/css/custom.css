@@ -1,0 +1,26 @@
+.project-kicker { font: 600 .78rem/1.5 ui-monospace, monospace; letter-spacing: .08em; text-transform: uppercase; color: #426384; margin-bottom: 1rem; }
+.suite-stats { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: .8rem; margin: 2rem 0 1.5rem; }
+.suite-stat { display: flex; flex-direction: column; gap: .45rem; padding: 1.3rem 1rem; border: 1px solid #cbd5e1; border-radius: .5rem; background: #f8fafc; color: #173f66; text-decoration: none !important; }
+.suite-stat:hover, .suite-stat:focus-visible { border-color: #3174ae; outline-offset: 3px; }
+.suite-stat strong { font: 650 2.2rem/1 ui-monospace, monospace; font-variant-numeric: tabular-nums; }
+.suite-stat span { font-size: .78rem; line-height: 1.4; }
+.verdict { display: inline-flex; white-space: nowrap; border: 1px solid currentColor; border-radius: .3rem; padding: .05rem .38rem; font: 550 .7rem/1.5 ui-monospace, monospace; }
+.verdict--pass { color: #075c4d; background: #e6f5ef; }
+.verdict--fail { color: #8d263b; background: #fce9ee; }
+.verdict--error { color: #8b3d00; background: #fff0db; border-style: dashed; }
+.verdict--same { color: #174f8b; background: #e8f1ff; }
+.verdict--differs { color: #60328a; background: #f2eafa; border-style: dotted; }
+.content table { font-size: .84rem; }
+.content th { text-align: left; }
+.content td { vertical-align: top; }
+.content pre { max-height: 38rem; overflow: auto; }
+.content details { margin: .4rem 0; }
+.content summary { cursor: pointer; font-weight: 600; }
+.dark .project-kicker { color: #a1bdd5; }
+.dark .suite-stat { background: #16212d; border-color: #3c5269; color: #d3e7f7; }
+.dark .verdict--pass { color: #9ee2c9; background: #123d35; }
+.dark .verdict--fail { color: #ffb8cb; background: #4c2533; }
+.dark .verdict--error { color: #ffd0a0; background: #4a301d; }
+.dark .verdict--same { color: #b5d6ff; background: #203951; }
+.dark .verdict--differs { color: #dbc0f4; background: #392b4b; }
+@media (max-width: 760px) { .suite-stats { grid-template-columns: repeat(2, minmax(0, 1fr)); } .suite-stat strong { font-size: 1.8rem; } }

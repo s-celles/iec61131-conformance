@@ -3,15 +3,17 @@
 # IEC 61131-3 conformance traces
 
 [![CI](https://github.com/s-celles/iec61131-conformance/actions/workflows/ci.yml/badge.svg)](https://github.com/s-celles/iec61131-conformance/actions/workflows/ci.yml)
+[![Site](https://github.com/s-celles/iec61131-conformance/actions/workflows/site.yml/badge.svg)](https://s-celles.github.io/iec61131-conformance/)
 
 An open, runtime-agnostic conformance test suite for IEC 61131-3 Structured
 Text runtimes: plain `.st` programs paired with plain-text expected
 input/output traces, one record per scan cycle. Dedicated to the public
 domain under CC0 1.0 (see `LICENSE`).
 
-Status: 105 tests, run against IronPLC, matiec, OpenPLC's matiec fork, STruC++,
+Status: 109 tests, run against IronPLC, matiec, OpenPLC's matiec fork, STruC++,
 4diac (IDE + FORTE, on the subset 61499 can pose), rk and RuSTy
-(see `notes/comparison.md`), with a Lean 4 model of the function block
+(see `notes/comparison.md`, or browse them at
+https://s-celles.github.io/iec61131-conformance/), with a Lean 4 model of the function block
 semantics that the expected traces are proved to follow from.
 
 ## Method, and what the results do and do not mean
@@ -123,6 +125,8 @@ harness/
   rusty/       Python: plc (RuSTy) + mock-time stdlib + C driver
 formal/        Lean 4: executable FB semantics, trace theorems, properties
 tools/fuzz/    differential fuzzing: random well-defined programs + driver (not CI)
+tools/site/    generator and build script of the project site (GitHub Pages)
+site/          Hugo configuration, layouts and style of the site (theme Hextra)
 notes/
   ironplcvm-io.md   how ironplcvm can (and cannot) be driven from outside
   comparison.md     differential results between the runtimes (table generated
@@ -131,7 +135,7 @@ notes/
   evidence/         full harness outputs
 ```
 
-Each test is `<name>.st` + `<name>.trace`. Eighty-seven tests under the first
+Each test is `<name>.st` + `<name>.trace`. Ninety-one tests under the first
 nine categories are `status: conformant`: their expected values were derived
 by hand from the standard's function block bodies and timing diagrams, and
 the derivation is written as a comment at the top of each `.trace` file.
@@ -172,6 +176,29 @@ located variables.
 
 To bump a runtime, update its SHA in the workflow `env` and the evidence
 file together.
+
+## Project site
+
+https://s-celles.github.io/iec61131-conformance/ shows the same data as the
+repository: the results table, one page per test (program, hand-derived
+trace, and what each pinned runtime recorded), the deviations of each
+runtime, the upstream issues the notes cite, and the documents (this README,
+`SPEC.md`, the fuzz reports, the changelog). It also serves `llms.txt` and
+`llms-full.txt`.
+
+The pages are not stored in the repository. `tools/site/sitegen.py` derives
+them on every build from `conformance/`, `notes/` and the CI pins, and
+`.github/workflows/site.yml` builds them with Hugo (Extended, version pinned
+in `site/hugo-version`, theme Hextra as a Hugo module, hence Go) and deploys
+them to GitHub Pages from `main`. To build locally, outside the repository:
+
+```sh
+tools/site/install_hugo.sh ~/.local/hugo           # checksum-pinned Hugo
+python3 -I tools/site/test_sitegen.py               # generator checks
+tools/site/build.sh /tmp/iec-site ~/.local/hugo/hugo
+python3 -m http.server -d /tmp/iec-site/public      # the base URL is the Pages one;
+                                                    # set HUGO_BASEURL=http://localhost:8000/ to browse locally
+```
 
 ## Building the runtimes on NixOS
 

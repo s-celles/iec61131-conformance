@@ -573,6 +573,9 @@ in `conformance/` and the output in `notes/evidence/rusty-run.txt`:
    (`libs/stdlib/iec61131-st/bistable_functionblocks.st`), so programs
    written with the standard's `S1`/`R` and `S`/`R1` (ed.3 table 42) fail to
    compile with `E048 Could not resolve reference to S1`.
+4. **Formal argument names on standard functions** (PLC-lang/rusty#2035, LIMIT declares MIN/MAX; fix in PR #2038): `LIMIT(MN := b, IN := a, MX := c)` and `SEL(G := g, IN0 := a, IN1 := b)` are rejected (E089 invalid call parameters, E048 could not resolve reference to MN), although table 31 names those parameters and 7.2.3.1 allows formal invocation of any function. The positional forms in `ops/std_functions` compile and pass. (`ops/std_functions_ext`)
+5. **EN/ENO on a function block invocation** (PLC-lang/rusty#2036): `c(EN := run_it, inc := inc)` is rejected (E089 invalid call parameters, E048 could not resolve reference to EN), so the implicit EN input of ed.3 6.6.1.7 table 20 is not available on function blocks. (`pou/fb_en_eno`)
+6. **Untyped real literals are REAL** (PLC-lang/rusty#2037): in `big := 1.0E15 + 1.0` with `big : LREAL`, the sum is computed in binary32 and then widened, so `big` is 999999986991104 instead of 1000000000000001. ed.3 6.3.2 leaves the type of an untyped literal to its context; an `LREAL#` prefix would avoid it. (`ops/lreal_precision`)
 7. **A subrange variable starts at 0, not at its lower limit** (PLC-lang/rusty#2039)
    (`data/defaults`, `SMALL : INT (5..10)` reads 0 where ed.3 6.4.4.4.3 gives
    5; IronPLC and both matiecs give 5, STruC++ also 0). Every other lot 4
@@ -580,7 +583,6 @@ in `conformance/` and the output in `notes/evidence/rusty-run.txt`:
 8. **`LIMIT` with MN > MX returns MN** (PLC-lang/rusty#2040, `ops/limit_inverted`): the same
    `MN` first order as matiec item 14 and STruC++ item 13, where the
    standard's formula `MIN(MAX(IN, MN), MX)` gives MX.
-
 9. **MIN, MAX and LIMIT on STRING do not link** (`strings/min_max_limit`, not yet
    reported upstream): `libs/stdlib/iec61131-st/selectors.st` declares
    `MIN<T: ANY_ELEMENTARY>`, `MAX` and `LIMIT` the same way, so `plc` accepts
@@ -601,9 +603,3 @@ in `conformance/` and the output in `notes/evidence/rusty-run.txt`:
 Also observed, not a deviation: `TIME` is 32-bit milliseconds in this
 build (so `T#500ms` in a trace is the integer 500 in the generated code),
 which is why the driver passes milliseconds rather than nanoseconds.
-
-4. **Formal argument names on standard functions** (PLC-lang/rusty#2035, LIMIT declares MIN/MAX; fix in PR #2038): `LIMIT(MN := b, IN := a, MX := c)` and `SEL(G := g, IN0 := a, IN1 := b)` are rejected (E089 invalid call parameters, E048 could not resolve reference to MN), although table 31 names those parameters and 7.2.3.1 allows formal invocation of any function. The positional forms in `ops/std_functions` compile and pass. (`ops/std_functions_ext`)
-
-5. **EN/ENO on a function block invocation** (PLC-lang/rusty#2036): `c(EN := run_it, inc := inc)` is rejected (E089 invalid call parameters, E048 could not resolve reference to EN), so the implicit EN input of ed.3 6.6.1.7 table 20 is not available on function blocks. (`pou/fb_en_eno`)
-
-6. **Untyped real literals are REAL** (PLC-lang/rusty#2037): in `big := 1.0E15 + 1.0` with `big : LREAL`, the sum is computed in binary32 and then widened, so `big` is 999999986991104 instead of 1000000000000001. ed.3 6.3.2 leaves the type of an untyped literal to its context; an `LREAL#` prefix would avoid it. (`ops/lreal_precision`)

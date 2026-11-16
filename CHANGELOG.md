@@ -6,6 +6,12 @@ Notable changes are recorded here following Keep a Changelog.
 
 ### Added
 
+- Project site on GitHub Pages (https://s-celles.github.io/iec61131-conformance/):
+  results, a page per test with its program, trace and recorded outputs, the
+  runtimes' deviations, the cited upstream issues and the documents, plus
+  `llms.txt` and `llms-full.txt`. `tools/site/sitegen.py` generates the pages
+  at build time, outside the repository, and `.github/workflows/site.yml`
+  builds them with Hugo and Hextra and deploys them.
 - Conformance test `ops/not_compare`: NOT on a BYTE or WORD compared
   directly, from the fourth fuzz round of 2026-11-16 (matiec item 19).
 - Three conformance tests from the third fuzz round of 2026-11-16: a MUX

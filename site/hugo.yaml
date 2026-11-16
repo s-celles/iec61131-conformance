@@ -1,0 +1,66 @@
+# Project site, deployed to GitHub Pages by .github/workflows/site.yml.
+# Content is generated outside the repository by tools/site/sitegen.py;
+# build with tools/site/build.sh OUT.
+baseURL: https://s-celles.github.io/iec61131-conformance/
+title: IEC 61131-3 conformance traces
+languageCode: en
+enableRobotsTXT: true
+noBuildLock: true
+disableKinds: [taxonomy, term]
+module:
+  imports:
+    - path: github.com/imfing/hextra
+markup:
+  goldmark:
+    renderer:
+      unsafe: true
+  highlight:
+    noClasses: false
+menu:
+  main:
+    - name: Results
+      pageRef: /results
+      weight: 1
+    - name: Tests
+      pageRef: /tests
+      weight: 2
+    - name: Runtimes
+      pageRef: /runtimes
+      weight: 3
+    - name: Upstream
+      pageRef: /upstream
+      weight: 4
+    - name: Docs
+      pageRef: /docs
+      weight: 5
+    - name: GitHub
+      url: https://github.com/s-celles/iec61131-conformance
+      weight: 6
+      params:
+        icon: github
+    - name: Search
+      weight: 7
+      params:
+        type: search
+params:
+  description: Hand-derived IEC 61131-3 Structured Text conformance traces, run against seven runtimes.
+  navbar:
+    displayTitle: true
+    logo:
+      path: brand/scanard-mark.svg
+      width: 32
+      height: 32
+  theme:
+    default: system
+    displayToggle: true
+  search:
+    enable: true
+    type: flexsearch
+    flexsearch:
+      index: content
+      tokenize: forward
+  page:
+    width: wide
+  footer:
+    displayCopyright: false
+    displayPoweredBy: false
