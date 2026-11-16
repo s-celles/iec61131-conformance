@@ -227,7 +227,7 @@ Added 2026-11-16. Not reported.
 
 ## matiec `c316fe5` (and OpenPLC `b5d4135`): NOT on a BYTE or WORD compared directly
 
-Added 2026-11-16. Not reported.
+Added 2026-11-16. Reported: https://github.com/beremiz/matiec/issues/54
 
 - Reproducer: [not_compare.st](conformance/ops/not_compare.st),
   [trace](conformance/ops/not_compare.trace). With `b : BYTE := 16#00` and
@@ -244,3 +244,12 @@ Added 2026-11-16. Not reported.
   give the derived trace.
 - Found by `tools/fuzz` (profile `wide`, seeds 6091 and 6148 of the fourth
   round).
+
+## matiec `c316fe5` (and OpenPLC `b5d4135`): a VAR_IN_OUT call inside another call's argument
+
+Comparison item 17, found by `tools/fuzz` on 2026-11-07 and reported on
+2026-11-16: https://github.com/beremiz/matiec/issues/55. The issue includes
+the minimal program `a := ABS(BUMP(calls)); b := BUMP(calls);`. It leaves
+`__MAIN_BUMP2` undefined: the wrapper generator skips the nested call, so
+the one wrapper it emits, `__MAIN_BUMP1`, is `b`'s. Reproducer in the suite:
+`pou/inout_call_in_std_arg`.
