@@ -225,6 +225,14 @@ PASS    conformance/ops/lreal_precision.st
 1 a=-5 b=2 => max_first=2 max_second=2 max_last=2 min_first=-15 min_second=-15 min_last=-15
 2 a=8 b=-3 => max_first=16 max_second=16 max_last=16 min_first=-2 min_second=-2 min_last=-2
 PASS    conformance/ops/minmax_ext_expr.st
+### conformance/ops/mux_nested_selector.st
+ERROR   conformance/ops/mux_nested_selector.st
+        c++ failed:
+        <tmpdir>/exported/FB_CONFORMANCE_OPS_MUX_NESTED_SELECTOR/src/FB_CONFORMANCE_OPS_MUX_NESTED_SELECTOR_fbt.cpp:17:10: fatal error: forte/iec61131_functions/func_MUX.h: No such file or directory
+           17 | #include "forte/iec61131_functions/func_MUX.h"
+              |          ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+        compilation terminated.
+        
 ### conformance/ops/mux_types.st
 ERROR   conformance/ops/mux_types.st
         c++ failed:
@@ -343,6 +351,10 @@ ERROR   conformance/ops/time_functions.st
               |          ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         compilation terminated.
         
+### conformance/ops/time_literal_ms.st
+0 => t1=T#4748ms t2=T#3496ms t3=T#4ms t4=T#4219ms t5=T#1263ms
+1 => t1=T#4748ms t2=T#3496ms t3=T#4ms t4=T#4219ms t5=T#1263ms
+PASS    conformance/ops/time_literal_ms.st
 ### conformance/ops/time_mul.st
 FAIL    conformance/ops/time_mul.st
         4diac IDE failed to export the FB:
@@ -444,6 +456,10 @@ PASS    conformance/strings/compare.st
 0 => le1=TRUE le2=TRUE le3=FALSE ge1=FALSE ge2=TRUE ge3=TRUE
 1 => le1=TRUE le2=TRUE le3=FALSE ge1=FALSE ge2=TRUE ge3=TRUE
 PASS    conformance/strings/compare_le_ge.st
+### conformance/strings/compare_prefix.st
+0 => eq1=FALSE eq2=FALSE eq3=TRUE ne1=TRUE ne2=TRUE ne3=FALSE
+1 => eq1=FALSE eq2=FALSE eq3=TRUE ne1=TRUE ne2=TRUE ne3=FALSE
+PASS    conformance/strings/compare_prefix.st
 ### conformance/strings/concat_assign.st
 0 push=TRUE => acc='x' n=1 copy='ab'
 1 push=TRUE => acc='xx' n=2 copy='abz'
@@ -597,5 +613,5 @@ ERROR   conformance/undefined/timer_pt_zero.st
 ERROR   conformance/undefined/ton_pt_change.st
         type TON is outside this harness's scope
 
-105 tests: 42 pass, 8 fail, 4 same, 6 differs, 45 error
+108 tests: 44 pass, 8 fail, 4 same, 6 differs, 46 error
 exit 1

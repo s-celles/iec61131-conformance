@@ -180,3 +180,47 @@ Added 2026-11-16. Not reported upstream.
   `table2`" (fork item 13). This was 23 of the 40 matiec failures in
   `struct_calls`. The other 17 are item 17, a VAR_IN_OUT call inside another
   call's argument.
+
+## RuSTy `e911ee5`: a MUX whose selector is a MUX call crashes `plc`
+
+Added 2026-11-16. Not reported.
+
+- Reproducer: [mux_nested_selector.st](conformance/ops/mux_nested_selector.st),
+  [trace](conformance/ops/mux_nested_selector.trace). Minimal program:
+
+  ```
+  PROGRAM main
+    VAR k : INT; a : INT; b : INT; r : INT; END_VAR
+    r := MUX(MUX(k, a, b), a, b);
+  END_PROGRAM
+  ```
+
+- `plc -c` exits on SIGSEGV (rc 139) in LLVM's
+  `LowerExpectIntrinsicPass::run`, reached from
+  `GeneratedModule::persist_to_obj` -> `Module::run_passes`. `plc --ir`
+  stops with "Builder error: ... error: label expected to be numbered '5'
+  or greater", so the IR generated for the inner MUX is already invalid
+  before any pass runs.
+- `MUX(ABS(MUX(k, a, b)) MOD 4, ..)` and `MUX(k + MUX(k, a, b), a, b)` crash
+  too. A SEL, MAX or ABS as selector, a MUX as an input (`MUX(k, MUX(..),
+  b)`), `ABS(MUX(..))` and `MUX(..) + MUX(..)` compile.
+- Ed.3 table 32 declares K as ANY_INT, and 7.3.2 allows any expression of
+  that type as a function input. IronPLC, both matiecs, STruC++ and rk
+  give the derived trace. 4diac lacks `func_MUX.h` (an existing finding).
+- In the third fuzz round of 2026-11-16 this was every RuSTy divergence:
+  34 programs in `calls`, `time` and `strings`.
+
+## Extensions of existing findings, 2026-11-16 (third fuzz round)
+
+- OpenPLC fork item 4 (TIME literal truncation, beremiz/matiec#44) is not
+  AArch64-only. On x86-64, 80-bit `long double` still truncates
+  `T#4748ms` to 4747999999 ns, `T#3496ms` to 3495999999 ns and `T#4ms` to
+  3999999 ns, about half of the millisecond literals below 100 s
+  (`ops/time_literal_ms`; `T#4s219ms` and `T#1263ms` are exact). Upstream
+  matiec `c316fe5` rounds to the nearest (7a86468) and passes. Upstream
+  `3a41303` had the same macro as the fork.
+- OpenPLC fork item 1 (`__STR_CMP` stops at the shorter length) also makes
+  `'ab' = 'abc'` and `'' = 'abc'` TRUE, and `<>` FALSE
+  (`strings/compare_prefix`). All 13 fork divergences of the `strings`
+  campaign pass with upstream's `__str_cmp` in a patched copy of the
+  fork's `lib`.

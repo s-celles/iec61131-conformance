@@ -6,6 +6,11 @@ Notable changes are recorded here following Keep a Changelog.
 
 ### Added
 
+- Three conformance tests from the third fuzz round of 2026-11-16: a MUX
+  whose selector is a MUX call (`ops/mux_nested_selector`), duration
+  literals with milliseconds (`ops/time_literal_ms`), and `=` / `<>`
+  between a STRING and its prefix (`strings/compare_prefix`), with the
+  evidence of all seven runtimes.
 - Five conformance tests for INSERT positions, signed FIND results,
   extensible CONCAT, STRING MIN/MAX/LIMIT, and extensible MIN/MAX with
   arithmetic inputs in different positions.

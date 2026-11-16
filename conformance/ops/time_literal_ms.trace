@@ -1,0 +1,16 @@
+# Duration literals with milliseconds.
+#
+# Derivation (ed.3 6.3.4: a duration literal is T# or TIME# followed by
+# units d, h, m, s, ms, us, ns in decreasing order; its value is the sum of
+# the parts): T#4748ms = 4748 ms; T#3496ms = 3496 ms; T#4ms = 4 ms;
+# T#4s219ms = 4000 + 219 = 4219 ms; T#1263ms = 1263 ms. The values are
+# constant over cycles.
+period_ms: 100
+program: main
+inputs:
+outputs: t1 t2 t3 t4 t5
+status: conformant
+reference: IEC 61131-3 ed.3 6.3.4 (duration literals)
+---
+0 => t1=T#4748ms t2=T#3496ms t3=T#4ms t4=T#4219ms t5=T#1263ms
+1 => t1=T#4748ms t2=T#3496ms t3=T#4ms t4=T#4219ms t5=T#1263ms

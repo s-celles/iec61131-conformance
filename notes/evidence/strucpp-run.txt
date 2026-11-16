@@ -433,6 +433,12 @@ prog.cpp:44:21: note:   deduced conflicting types for parameter ‘T’ (‘stru
    44 |     MAX_SECOND = MAX(B, A * 2, C);
       |                  ~~~^~~~~~~~~~~~~
 <strucpp-runtime>/iec_std_lib.hpp:416:13: note: candidate: ‘template<class T, class U, typename std::enable_if<(! std::is_same<typename std::decay<_Tp>::type, typename std::decay<_Tp2>::type>::value), int>::type <anonymous> > auto strucpp::MAX(T, 
+### conformance/ops/mux_nested_selector.st
+0 k=0 => r=20 u=30
+1 k=1 => r=30 u=20
+2 k=2 => r=10 u=2
+3 k=0 => r=20 u=30
+PASS    conformance/ops/mux_nested_selector.st
 ### conformance/ops/mux_types.st
 0 k=0 => mu=10 mb=16#0F mw=16#1234 mx=TRUE mt=T#1000ms
 1 k=1 => mu=65535 mb=16#F0 mw=16#FFFF mx=FALSE mt=T#250ms
@@ -561,6 +567,10 @@ PASS    conformance/ops/time_arith.st
 2 a=T#9000ms b=T#9000ms k=2 => lo=T#9000ms hi=T#9000ms clamp=T#5000ms big=T#9000ms pick=T#18000ms less=FALSE
 3 a=T#0ms b=T#1ms k=2 => lo=T#0ms hi=T#1000ms clamp=T#100ms big=T#1ms pick=T#1ms less=TRUE
 PASS    conformance/ops/time_functions.st
+### conformance/ops/time_literal_ms.st
+0 => t1=T#4748ms t2=T#3496ms t3=T#4ms t4=T#4219ms t5=T#1263ms
+1 => t1=T#4748ms t2=T#3496ms t3=T#4ms t4=T#4219ms t5=T#1263ms
+PASS    conformance/ops/time_literal_ms.st
 ### conformance/ops/time_mul.st
 0 t=T#1500ms n=2 => p=T#3000ms p4=T#2800ms p44=T#3145428ms back=TRUE
 1 t=T#999ms n=3 => p=T#2997ms p4=T#2800ms p44=T#3145428ms back=TRUE
@@ -774,6 +784,10 @@ prog.cpp:44:16: note:   ‘strucpp::IEC_STRING’ {aka ‘strucpp::IECStringVar<
    44 |     LE2 = A <= D;
       |                ^
 <strucpp-runtime
+### conformance/strings/compare_prefix.st
+0 => eq1=FALSE eq2=FALSE eq3=TRUE ne1=TRUE ne2=TRUE ne3=FALSE
+1 => eq1=FALSE eq2=FALSE eq3=TRUE ne1=TRUE ne2=TRUE ne3=FALSE
+PASS    conformance/strings/compare_prefix.st
 ### conformance/strings/concat_assign.st
 0 push=TRUE => acc='x' n=1 copy='ab'
 1 push=TRUE => acc='xx' n=2 copy='abz'
@@ -1169,5 +1183,5 @@ DIFFERS conformance/undefined/ton_pt_change.st
         cycle 10 (trace line 36): et expected T#800ms, got T#200ms
         cycle 11 (trace line 37): et expected T#800ms, got T#200ms
 
-105 tests: 66 pass, 13 fail, 12 same, 6 differs, 8 error
+108 tests: 69 pass, 13 fail, 12 same, 6 differs, 8 error
 exit 1

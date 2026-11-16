@@ -1,0 +1,23 @@
+# MUX with a MUX call as its selector.
+#
+# Derivation (ed.3 table 32: MUX(K, IN0, ..., INn) selects IN_K; K is
+# ANY_INT, the inputs ANY; 7.3.2: a function input may be any expression of
+# its type, so the inner MUX is evaluated first and its INT result is K):
+#   r := MUX(MUX(k, x1, x2, x0), a, b, c) with x0..x2 = 0, 1, 2 and
+#   a, b, c = 10, 20, 30:
+#     k=0 -> inner x1 = 1 -> b = 20;  k=1 -> inner x2 = 2 -> c = 30;
+#     k=2 -> inner x0 = 0 -> a = 10.
+#   u := MUX(MUX(k, x2, x1, x0), k, b, c):
+#     k=0 -> inner x2 = 2 -> c = 30;  k=1 -> inner x1 = 1 -> b = 20;
+#     k=2 -> inner x0 = 0 -> IN0 = k = 2.
+period_ms: 100
+program: main
+inputs: k
+outputs: r u
+status: conformant
+reference: IEC 61131-3 ed.3 6.6.2.5.3 table 32 (MUX), 7.3.2 (expressions)
+---
+0 k=0 => r=20 u=30
+1 k=1 => r=30 u=20
+2 k=2 => r=10 u=2
+3 k=0 => r=20 u=30

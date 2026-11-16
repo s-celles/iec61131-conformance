@@ -73,6 +73,7 @@ conformance/
                minmax_ext_expr                  three-input MIN/MAX with expressions in each position (from tools/fuzz)
                div_call_divisor                 / and MOD with a VAR_IN_OUT call as divisor (from the review of beremiz/matiec#47)
                std_formal_order                 LIMIT SEL MUX called formally, arguments in another order (from tools/fuzz)
+               mux_nested_selector time_literal_ms  MUX with a MUX call as selector, duration literals with ms (from tools/fuzz)
   data/        array_internal array_init        arrays (negative bounds, initialisers)
                struct_internal enum             structures (copy, nesting), enumerations
                array_2d array_of_struct         2-D array, array of a named array type, array of structures
@@ -83,6 +84,7 @@ conformance/
                compare_le_ge len_int            <= >= between STRING variables, LEN as an INT (from tools/fuzz)
                insert_positions find_int        INSERT after position P, FIND as a signed INT
                concat_ext min_max_limit         extensible CONCAT, MIN/MAX/LIMIT on STRING variables
+               compare_prefix                   = <> between a STRING and its prefix (from tools/fuzz)
   config/      globals_external                 VAR_GLOBAL / VAR_EXTERNAL (SPEC version 2: the .st has
                two_periods priority_order       its CONFIGURATION); task intervals, PRIORITY order,
                global_exchange event_single     producer/consumer through a global, SINGLE task

@@ -172,8 +172,11 @@ hand. CI checks the table is in sync with the evidence.
 | data/struct_init | PASS | PASS | **FAIL** (compile) | PASS | PASS | PASS | PASS | member initial value in the TYPE, partial initialiser with a BOOL member out of order: the OpenPLC fork rejects every non-integer literal in a structure initialiser (fork item 14). Found by tools/fuzz |
 | pou/inout_struct_field | **FAIL** (compile) | **ERROR** (build) | **ERROR** (build) | PASS | PASS | **ERROR** (see evidence) | PASS | `BUMP(p.x, 5)`, `BUMP(pa[i].x, 1)`: IronPLC P9999 (findings #29, ironplc#2615); matiec and its fork build invalid C for the member of an element (matiec item 18, beremiz/matiec#53; fork item 13); 4diac has no VAR_IN_OUT on a function |
 | pou/output_struct_field | PASS | **ERROR** (build) | **ERROR** (build) | PASS | PASS | PASS | PASS | `m => p.y`, `m => pa[i].y`: matiec and its fork build invalid C for the member of an element (matiec item 18, beremiz/matiec#53; fork item 13) |
+| ops/mux_nested_selector | PASS | PASS | PASS | PASS | **FAIL** (compile) | **ERROR** (see evidence) | PASS | MUX whose selector is a MUX call: RuSTy's `plc` crashes (SIGSEGV in LLVM; its IR is invalid, RuSTy #10); 4diac has no func_MUX.h (4diac item 3). Found by tools/fuzz |
+| ops/time_literal_ms | PASS | PASS | **FAIL** (cycles 0-1) | PASS | PASS | PASS | PASS | `T#4748ms`, `T#3496ms`, `T#4ms`: the OpenPLC fork's literal macro truncates long double seconds, so they read 1 ms short on x86-64 too (fork item 4, beremiz/matiec#44); upstream rounds since 7a86468. Found by tools/fuzz (`time`) |
+| strings/compare_prefix | PASS | PASS | **FAIL** (cycles 0-1) | PASS | PASS | PASS | PASS | = and <> with a prefix: the OpenPLC fork compares only up to the shorter length, so 'ab' = 'abc' is TRUE (fork item 1). Found by tools/fuzz (`strings`) |
 
-Totals (105 tests, 87 with `status: conformant`): conformant tests passed, IronPLC 60/87; matiec 77/87; OpenPLC's matiec 68/87; STruC++ 66/87; RuSTy 70/87; 4diac 42/87; rk 60/87. 19 of the 105 tests have the same result on all seven runtimes.
+Totals (108 tests, 90 with `status: conformant`): conformant tests passed, IronPLC 63/90; matiec 80/90; OpenPLC's matiec 69/90; STruC++ 69/90; RuSTy 72/90; 4diac 44/90; rk 63/90. 19 of the 108 tests have the same result on all seven runtimes.
 
 <!-- results:end -->
 
@@ -214,7 +217,9 @@ the end of this list):
 1. **String comparison stops at the shorter length**: `__STR_CMP` is a
    `memcmp` over `min(len1, len2)`, so `'ab' < 'abc'` and `'' < 'a'` are
    FALSE (a prefix compares equal). Upstream compares the lengths after the
-   common part. (`strings/compare`)
+   common part. (`strings/compare`) The same holds for `=` and `<>`:
+   `'ab' = 'abc'` and `'' = 'abc'` are TRUE (`strings/compare_prefix`), and
+   for MIN, MAX and LIMIT on STRING, which use `__STR_CMP` too.
 2. **`FIND` returns `LEN(IN1) + 1` when `IN2` is absent** instead of 0:
    `FIND('hello', 'zz')` is 6. (`strings/functions`)
 3. **`F_TRIG` reports no edge on a first evaluation with CLK FALSE**: its body
@@ -228,7 +233,11 @@ the end of this list):
    `ops/time_arith` passes on Linux x86-64. On macOS arm64 the same build
    gives `T#1h2m3s4ms` 1 ns short (beremiz/matiec#44): the literal macro
    computes in `long double`, which is 80-bit on x86-64 and plain `double`
-   on AArch64, so the truncation only bites there.
+   on AArch64, so the truncation bites more there. It bites on x86-64 too:
+   with 80-bit `long double`, `T#4748ms` is 4.747999999 s and `T#4ms`
+   3999999 ns, about half of the millisecond literals below 100 s, which
+   then read one millisecond short (`ops/time_literal_ms`, `T#4s219ms`
+   passes). Upstream rounds to the nearest nanosecond since 7a86468.
 5. **No `__POUS_INIT_ONLY__` guard**: `undefined/eval_order` builds with
    clang here (beremiz/matiec#39 is also later), and so do functions with
    `VAR_OUTPUT` / `VAR_IN_OUT` (upstream item 13).
@@ -575,6 +584,15 @@ in `conformance/` and the output in `notes/evidence/rusty-run.txt`:
    `MAX__STRING` and `LIMIT__STRING`, but `libs/stdlib/src/types.rs` defines
    them only for the bit-string, integer and date/time types, and linking
    with `libiec61131std.a` fails on those undefined references.
+10. **A MUX whose selector is a MUX call crashes the compiler**
+   (`ops/mux_nested_selector`, not yet reported upstream):
+   `r := MUX(MUX(k, a, b), a, b);` makes `plc -c` die with SIGSEGV in
+   LLVM's `LowerExpectIntrinsicPass` (`GeneratedModule::persist_to_obj`),
+   and `plc --ir` stops on "label expected to be numbered '5' or greater":
+   the IR generated for the inner MUX is invalid. `MUX(ABS(MUX(..)) MOD 4,
+   ..)` and `MUX(k + MUX(..), ..)` crash the same way; a SEL, MAX or ABS as
+   selector, a MUX as an input, and `ABS(MUX(..))` compile. Found by
+   `tools/fuzz`: all 34 RuSTy divergences of the 2026-11-16 round 3.
 
 Also observed, not a deviation: `TIME` is 32-bit milliseconds in this
 build (so `T#500ms` in a trace is the integer 500 in the generated code),

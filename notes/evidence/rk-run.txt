@@ -833,6 +833,12 @@ FAIL    conformance/ops/minmax_ext_expr.st
         ─────╯
         compilation failed: 24 error(s) found, cannot compile.
         
+### conformance/ops/mux_nested_selector.st
+0 k=0 => r=20 u=30
+1 k=1 => r=30 u=20
+2 k=2 => r=10 u=2
+3 k=0 => r=20 u=30
+PASS    conformance/ops/mux_nested_selector.st
 ### conformance/ops/mux_types.st
 FAIL    conformance/ops/mux_types.st
         rk failed to compile the program:
@@ -1336,6 +1342,10 @@ FAIL    conformance/ops/time_functions.st
         ────╯
         compilation failed: 3 error(s) found, cannot compile.
         
+### conformance/ops/time_literal_ms.st
+0 => t1=T#4748ms t2=T#3496ms t3=T#4ms t4=T#4219ms t5=T#1263ms
+1 => t1=T#4748ms t2=T#3496ms t3=T#4ms t4=T#4219ms t5=T#1263ms
+PASS    conformance/ops/time_literal_ms.st
 ### conformance/ops/time_mul.st
 FAIL    conformance/ops/time_mul.st
         rk failed to compile the program:
@@ -1582,6 +1592,10 @@ PASS    conformance/strings/compare.st
 0 => le1=TRUE le2=TRUE le3=FALSE ge1=FALSE ge2=TRUE ge3=TRUE
 1 => le1=TRUE le2=TRUE le3=FALSE ge1=FALSE ge2=TRUE ge3=TRUE
 PASS    conformance/strings/compare_le_ge.st
+### conformance/strings/compare_prefix.st
+0 => eq1=FALSE eq2=FALSE eq3=TRUE ne1=TRUE ne2=TRUE ne3=FALSE
+1 => eq1=FALSE eq2=FALSE eq3=TRUE ne1=TRUE ne2=TRUE ne3=FALSE
+PASS    conformance/strings/compare_prefix.st
 ### conformance/strings/concat_assign.st
 FAIL    conformance/strings/concat_assign.st
         rk failed to compile the program:
@@ -2502,5 +2516,5 @@ DIFFERS conformance/undefined/ton_pt_change.st (implementation-defined)
         cycle 7 (trace line 33): et expected T#600ms, got T#800ms
         cycle 8 (trace line 34): et expected T#700ms, got T#800ms
 
-105 tests: 60 pass, 27 fail, 10 same, 8 differs, 0 error
+108 tests: 63 pass, 27 fail, 10 same, 8 differs, 0 error
 exit 1

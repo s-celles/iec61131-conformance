@@ -1,0 +1,17 @@
+# Comparison functions EQ (=) and NE (<>) on strings whose lengths differ
+# (ed.3 6.6.2.5.1 table 28: they apply to ANY_ELEMENTARY, strings
+# included; two strings are equal only if they have the same length and
+# the same characters, and a string that is a prefix of a longer one
+# compares less, so it is not equal).
+#   'ab' = 'abc' FALSE;  '' = 'abc' FALSE;  'abc' = 'abc' TRUE;
+#   'abc' <> 'ab' TRUE;  'abc' <> '' TRUE;  'abc' <> 'abc' FALSE.
+# No inputs; two cycles.
+period_ms: 100
+program: main
+inputs:
+outputs: eq1 eq2 eq3 ne1 ne2 ne3
+status: conformant
+reference: IEC 61131-3 ed.3 6.6.2.5.1 table 28 (comparison of strings)
+---
+0 => eq1=FALSE eq2=FALSE eq3=TRUE ne1=TRUE ne2=TRUE ne3=FALSE
+1 => eq1=FALSE eq2=FALSE eq3=TRUE ne1=TRUE ne2=TRUE ne3=FALSE
