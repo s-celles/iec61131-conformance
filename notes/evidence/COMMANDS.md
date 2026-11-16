@@ -111,3 +111,14 @@ were added (101 tests). The five runtimes were rerun over the whole suite
 in the same way: only those two blocks and the summary lines changed. For
 4diac, the two blocks of a run on those two tests were inserted, and its
 summary line counted them (one PASS, one ERROR).
+
+## Refresh of 2026-11-16
+
+Four structure tests were added (105 tests): `data/struct_init`,
+`data/struct_element_copy`, `pou/inout_struct_field` and
+`pou/output_struct_field`. IronPLC, matiec, the OpenPLC fork, STruC++ and rk
+were rerun over the whole suite as on 2026-11-15. Only the four new blocks
+and the summary lines changed. For 4diac, the blocks of a run on the four
+tests were inserted, and the summary counts them (three PASS, one ERROR).
+RuSTy's file is updated separately, on its own branch, because CI runs that
+job only on pull requests and on the weekly schedule.

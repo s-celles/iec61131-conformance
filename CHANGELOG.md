@@ -20,6 +20,14 @@ Notable changes are recorded here following Keep a Changelog.
 - Fuzz profile `array_calls`: the arrays with the user POUs of `calls`,
   array elements also as VAR_IN_OUT and VAR_OUTPUT arguments
   (`--exclude array_elem_args` leaves those out).
+- Four conformance tests for structures: member initial values and a partial
+  initialiser with a BOOL member (`data/struct_init`), copies to and from an
+  array element (`data/struct_element_copy`), a structure member as a
+  function's VAR_IN_OUT and as the target of its VAR_OUTPUT
+  (`pou/inout_struct_field`, `pou/output_struct_field`), with evidence for
+  IronPLC, matiec, the OpenPLC fork, STruC++, rk and 4diac.
+- Fuzz exclusions `struct_elem_copy` and `struct_field_inout`; with
+  `array_elem_args`, no member of an array element is passed as an argument.
 - Fuzz profiles `structs` and `struct_calls`: a structured type with a field
   initial value, variables with and without an initialiser and an array of
   structures, fields read and written, whole structures copied, and (with the

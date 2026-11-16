@@ -9,7 +9,7 @@ Text runtimes: plain `.st` programs paired with plain-text expected
 input/output traces, one record per scan cycle. Dedicated to the public
 domain under CC0 1.0 (see `LICENSE`).
 
-Status: 101 tests, run against IronPLC, matiec, OpenPLC's matiec fork, STruC++,
+Status: 105 tests, run against IronPLC, matiec, OpenPLC's matiec fork, STruC++,
 4diac (IDE + FORTE, on the subset 61499 can pose), rk and RuSTy
 (see `notes/comparison.md`), with a Lean 4 model of the function block
 semantics that the expected traces are proved to follow from.
@@ -77,6 +77,7 @@ conformance/
                struct_internal enum             structures (copy, nesting), enumerations
                array_2d array_of_struct         2-D array, array of a named array type, array of structures
                defaults                         default initial values of every type
+               struct_init struct_element_copy  member initial values and partial initialisers, copies to/from elements (from tools/fuzz)
   strings/     literals_escapes declared_length STRING literals and $ escapes, STRING[n]
                functions compare concat_assign  LEN CONCAT LEFT RIGHT MID INSERT DELETE REPLACE FIND, < =, copies
                compare_le_ge len_int            <= >= between STRING variables, LEN as an INT (from tools/fuzz)
@@ -97,6 +98,8 @@ conformance/
                inout_call_in_std_arg            a VAR_IN_OUT/VAR_OUTPUT call as argument of ABS MIN SEL MUX (from tools/fuzz)
                inout_array_element              an array element as a function's VAR_IN_OUT / VAR_OUTPUT (from tools/fuzz)
                output_array_element
+               inout_struct_field               a structure member (also of an element) as VAR_IN_OUT / VAR_OUTPUT (from tools/fuzz)
+               output_struct_field
   undefined/   int_overflow div_zero eval_order ton_pt_change
                for_bound_modified ctu_pv_zero   corners the standard leaves open
                for_var_after_loop timer_pt_zero
@@ -125,7 +128,7 @@ notes/
   evidence/         full harness outputs
 ```
 
-Each test is `<name>.st` + `<name>.trace`. Eighty-three tests under the first
+Each test is `<name>.st` + `<name>.trace`. Eighty-seven tests under the first
 nine categories are `status: conformant`: their expected values were derived
 by hand from the standard's function block bodies and timing diagrams, and
 the derivation is written as a comment at the top of each `.trace` file.
@@ -368,7 +371,7 @@ This is a search tool, not part of the suite or of CI.
 
 Run `python3 -I tools/fuzz/test_gen.py` to check the string, array and structure evaluator against
 table examples and its range guards. The search campaign and reduced cases
-of 2026-11-07 are recorded in `notes/fuzz-2026-11-07.md`; local upstream bug
+of 2026-11-07, 2026-11-15 and 2026-11-16 are recorded in `notes/fuzz-*.md`; local upstream bug
 drafts are in `upstream-bugs.md`.
 
 ## Citing

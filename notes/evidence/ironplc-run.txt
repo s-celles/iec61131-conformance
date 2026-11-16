@@ -288,6 +288,24 @@ PASS    conformance/data/defaults.st
 4 pick=0 => code=1 is_green=FALSE same=FALSE
 5 pick=7 => code=1 is_green=FALSE same=TRUE
 PASS    conformance/data/enum.st
+### conformance/data/struct_element_copy.st
+FAIL    conformance/data/struct_element_copy.st
+        ironplcc failed to compile the program:
+error[P9999]: Capability is not implemented (yet!)
+   ┌─ <root>/conformance/data/struct_element_copy.st:28:10
+   │
+28 │   pts[i] := p;       (* copies p into the element *)
+   │          ^^ Statement code generation does not support yet
+   │
+   = Learn more: https://www.ironplc.com/reference/compiler/problems/P9999.html?version=0.252.0&channel=cli&file=<file>&line=<n>
+
+Error: "Compile failed with 1 problem(s)"
+
+### conformance/data/struct_init.st
+0 i=1 => dn=5 dflag=FALSE dk=0 cn=5 cflag=TRUE ck=4
+1 i=2 => dn=5 dflag=FALSE dk=0 cn=5 cflag=TRUE ck=6
+2 i=-6 => dn=5 dflag=FALSE dk=0 cn=5 cflag=TRUE ck=0
+PASS    conformance/data/struct_init.st
 ### conformance/data/struct_internal.st
 FAIL    conformance/data/struct_internal.st
         ironplcc failed to compile the program:
@@ -789,11 +807,29 @@ Error: "Compile failed with 1 problem(s)"
 0 i0=25 => a=9 m=2 s=3 x=2 q=4 r=7 calls=4
 1 i0=-31 => a=5 m=-31 s=7 x=-3 q=8 r=7 calls=8
 PASS    conformance/pou/inout_call_in_std_arg.st
+### conformance/pou/inout_struct_field.st
+FAIL    conformance/pou/inout_struct_field.st
+        ironplcc failed to compile the program:
+error[P9999]: Capability is not implemented (yet!)
+   ┌─ <root>/conformance/pou/inout_struct_field.st:37:6
+   │
+37 │   r1 := BUMP(p.x, 5);
+   │      ^^ Statement code generation does not support yet
+   │
+   = Learn more: https://www.ironplc.com/reference/compiler/problems/P9999.html?version=0.252.0&channel=cli&file=<file>&line=<n>
+
+Error: "Compile failed with 1 problem(s)"
+
 ### conformance/pou/output_array_element.st
 0 i=1 x=9 => q=2 q2=2 e1=1 e2=0 e3=2
 1 i=2 x=7 => q=1 q2=2 e1=1 e2=3 e3=0
 2 i=3 x=6 => q=1 q2=1 e1=1 e2=3 e3=3
 PASS    conformance/pou/output_array_element.st
+### conformance/pou/output_struct_field.st
+0 i=1 x=9 => q=2 q2=2 py=1 e1=2 e2=0 e3=0
+1 i=3 x=10 => q=2 q2=2 py=2 e1=2 e2=0 e3=3
+2 i=2 x=5 => q=1 q2=1 py=1 e1=2 e2=2 e3=3
+PASS    conformance/pou/output_struct_field.st
 ### conformance/strings/compare.st
 0 => e1=TRUE e2=FALSE l1=TRUE l2=TRUE l3=TRUE l4=TRUE g1=TRUE n1=TRUE
 1 => e1=TRUE e2=FALSE l1=TRUE l2=TRUE l3=TRUE l4=TRUE g1=TRUE n1=TRUE
@@ -1162,5 +1198,5 @@ SAME    conformance/undefined/timer_pt_zero.st (implementation-defined)
 12 in=FALSE => q=FALSE et=T#0ms
 SAME    conformance/undefined/ton_pt_change.st (implementation-defined)
 
-101 tests: 58 pass, 25 fail, 17 same, 1 differs, 0 error
+105 tests: 60 pass, 27 fail, 17 same, 1 differs, 0 error
 exit 1

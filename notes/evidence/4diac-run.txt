@@ -134,6 +134,17 @@ FAIL    conformance/data/enum.st
         [fordiac.exportProjectFBs] FB_CONFORMANCE_DATA_ENUM: FB_CONFORMANCE_DATA_ENUM at 6: The variable BLUE is undefined
         [fordiac.exportProjectFBs] FB_CONFORMANCE_DATA_ENUM: FB_CONFORMANCE_DATA_ENUM at 9: The variable RED is undefined
         [fordiac.exportProjectFBs] L/FB_CONFORMANCE_DATA_ENUM/FB_CONFORMANCE_DATA_ENUM.fbt
+### conformance/data/struct_element_copy.st
+0 i=1 k=3 => s1=13 s2=0 s3=0 cs=14
+1 i=3 k=-2 => s1=13 s2=0 s3=28 cs=29
+2 i=1 k=5 => s1=15 s2=0 s3=28 cs=16
+3 i=2 k=0 => s1=15 s2=20 s3=28 cs=21
+PASS    conformance/data/struct_element_copy.st
+### conformance/data/struct_init.st
+0 i=1 => dn=5 dflag=FALSE dk=0 cn=5 cflag=TRUE ck=4
+1 i=2 => dn=5 dflag=FALSE dk=0 cn=5 cflag=TRUE ck=6
+2 i=-6 => dn=5 dflag=FALSE dk=0 cn=5 cflag=TRUE ck=0
+PASS    conformance/data/struct_init.st
 ### conformance/data/struct_internal.st
 0 a=3 b=4 => qx=3 qy=4 px=0 area=12
 1 a=-2 b=5 => qx=-2 qy=5 px=0 area=-10
@@ -412,11 +423,19 @@ ERROR   conformance/pou/inout_array_element.st
 ### conformance/pou/inout_call_in_std_arg.st
 ERROR   conformance/pou/inout_call_in_std_arg.st
         FUNCTION BUMP: VAR_IN_OUT on a function is outside this harness's scope
+### conformance/pou/inout_struct_field.st
+ERROR   conformance/pou/inout_struct_field.st
+        FUNCTION BUMP: VAR_IN_OUT on a function is outside this harness's scope
 ### conformance/pou/output_array_element.st
 0 i=1 x=9 => q=2 q2=2 e1=1 e2=0 e3=2
 1 i=2 x=7 => q=1 q2=2 e1=1 e2=3 e3=0
 2 i=3 x=6 => q=1 q2=1 e1=1 e2=3 e3=3
 PASS    conformance/pou/output_array_element.st
+### conformance/pou/output_struct_field.st
+0 i=1 x=9 => q=2 q2=2 py=1 e1=2 e2=0 e3=0
+1 i=3 x=10 => q=2 q2=2 py=2 e1=2 e2=0 e3=3
+2 i=2 x=5 => q=1 q2=1 py=1 e1=2 e2=2 e3=3
+PASS    conformance/pou/output_struct_field.st
 ### conformance/strings/compare.st
 0 => e1=TRUE e2=FALSE l1=TRUE l2=TRUE l3=TRUE l4=TRUE g1=TRUE n1=TRUE
 1 => e1=TRUE e2=FALSE l1=TRUE l2=TRUE l3=TRUE l4=TRUE g1=TRUE n1=TRUE
@@ -578,5 +597,5 @@ ERROR   conformance/undefined/timer_pt_zero.st
 ERROR   conformance/undefined/ton_pt_change.st
         type TON is outside this harness's scope
 
-101 tests: 39 pass, 8 fail, 4 same, 6 differs, 44 error
+105 tests: 42 pass, 8 fail, 4 same, 6 differs, 45 error
 exit 1

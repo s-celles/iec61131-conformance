@@ -136,3 +136,46 @@ Added 2026-11-15. Reported: https://github.com/ironplc/ironplc/issues/2615
   assigned to those results.
 
 Assisted-by: AI
+
+## OpenPLC `b5d4135` (matiec fork): a structure initialiser rejects non-integer literals
+
+Added 2026-11-16. Not reported upstream.
+
+- Reproducer: [struct_init.st](conformance/data/struct_init.st) and its trace.
+- `c : CFG := (k := 3, flag := TRUE);` with `flag : BOOL` gives "Initialization
+  element identifier (flag) is not declared in referenced structure/FB scope, or
+  is set to value of incompatible datatype". In reductions, a TIME member
+  (`T#1s`), a REAL member (`1.5`) and `BOOL#TRUE` give the same error. Integer
+  literals pass, also into a BOOL member (`flag := 1`) and into a WORD member
+  (`16#00FF`), in any member order. Upstream matiec `3a41303` accepts every case.
+  This is the same message as fork item 7 (structure initialisers inside an
+  array initialiser), so the two may share a cause.
+- Expected: a structure initialiser assigns a constant of each named member's
+  type, and leaves the other members at the type's initial values (ed.3
+  6.4.4.4.2, table 10; ed.2 2.3.3.1, 2.4.2). The other six runtimes compute the
+  trace.
+- Found by `tools/fuzz` (profile `structs`): the fork rejected every one of
+  the 999 defined programs, all on `p1 : PT := (x := 2, ok := TRUE)`.
+
+## Extensions of existing findings, 2026-11-16 (structures)
+
+- IronPLC's VAR_IN_OUT restriction (ironplc#2615, finding 29) also covers a
+  structure member: `BUMP(p.x, 5)` and `BUMP(pa[i].x, 1)` are P9999
+  (`pou/inout_struct_field`). Same cause: `place::variable_name` returns only
+  `Access::Named`, and a member access is not one. The VAR_OUTPUT forms
+  (`m => p.y`, `m => pa[i].y`, `pou/output_struct_field`) pass. This could be
+  added as a comment on #2615, which has not been done.
+- IronPLC's whole-element assignment of an array of structures (open upstream
+  issue ironplc#1471) shows in both directions, `pts[i] := p` and
+  `c := pts[i]` (`data/struct_element_copy`). `data/array_of_struct`, which
+  has `c := pts[3]`, stops earlier on its array initialiser (finding 22).
+  This was 650 of the 665 IronPLC failures in the structure campaigns. The
+  other 15 are a member passed to F_TICK's VAR_IN_OUT (first item).
+- matiec item 18 (beremiz/matiec#53) also covers a member of an array
+  element: `BUMP(pa[i].x, 1)` and `m => pa[i].y` give "`__ARRAY_OF_PT_3` has
+  no member named `table__ULINT_LITERAL`" (`tabledata__` with a variable
+  subscript; `pou/inout_struct_field`, `pou/output_struct_field`). A member of a plain structured variable
+  (`p.x`) builds and runs. The OpenPLC fork gives "has no member named
+  `table2`" (fork item 13). This was 23 of the 40 matiec failures in
+  `struct_calls`. The other 17 are item 17, a VAR_IN_OUT call inside another
+  call's argument.

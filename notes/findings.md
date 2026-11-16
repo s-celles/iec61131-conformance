@@ -378,4 +378,26 @@ Reported: https://github.com/ironplc/ironplc/issues/2549
   `Arg::Ref` only when `place::variable_name` resolves it to a named
   variable, which an indexed place is not; still so on `main` of
   2026-11-15. Found by `tools/fuzz` (profile `array_calls`).
+- A structure member is refused the same way, on a structured variable
+  and on an array element: `BUMP(p.x, 5)` and `BUMP(pa[i].x, 1)`
+  (`conformance/pou/inout_struct_field`, 2026-11-16). A member access is
+  not an `Access::Named` either. The VAR_OUTPUT forms
+  (`pou/output_struct_field`) pass. Found by `tools/fuzz` (profile
+  `struct_calls`).
+
+## 30. (Limitation) A whole element of an array of structures cannot be assigned
+
+- Upstream: https://github.com/ironplc/ironplc/issues/1471 (open, not ours).
+- Reproducer: `conformance/data/struct_element_copy.st` / `.trace`.
+- `pts[i] := p` and `c := pts[i]`, with `pts : ARRAY[1..3] OF POINT`, are
+  P9999 "Statement code generation does not support yet" on `6e40df2`
+  (0.252.0). `q := p` between two structured variables compiles
+  (`data/struct_internal` line 33), and so does member-by-member access to an
+  element.
+- Expected: assigning a structured variable copies its value (ed.3 7.3.2.1),
+  and an element of an array of structures is such a variable (6.4.4.3,
+  7.3.1). matiec, the OpenPLC fork, STruC++, rk and 4diac compute the trace.
+- `data/array_of_struct` has `c := pts[3]` too, but stops earlier on its
+  array initialiser (finding 22). This was 650 of the 665 IronPLC failures in
+  the 2026-11-16 structure campaigns (`tools/fuzz`, profile `structs`).
 

@@ -224,6 +224,17 @@ PASS    conformance/data/defaults.st
 4 pick=0 => code=1 is_green=FALSE same=FALSE
 5 pick=7 => code=1 is_green=FALSE same=TRUE
 PASS    conformance/data/enum.st
+### conformance/data/struct_element_copy.st
+0 i=1 k=3 => s1=13 s2=0 s3=0 cs=14
+1 i=3 k=-2 => s1=13 s2=0 s3=28 cs=29
+2 i=1 k=5 => s1=15 s2=0 s3=28 cs=16
+3 i=2 k=0 => s1=15 s2=20 s3=28 cs=21
+PASS    conformance/data/struct_element_copy.st
+### conformance/data/struct_init.st
+0 i=1 => dn=5 dflag=FALSE dk=0 cn=5 cflag=TRUE ck=4
+1 i=2 => dn=5 dflag=FALSE dk=0 cn=5 cflag=TRUE ck=6
+2 i=-6 => dn=5 dflag=FALSE dk=0 cn=5 cflag=TRUE ck=0
+PASS    conformance/data/struct_init.st
 ### conformance/data/struct_internal.st
 0 a=3 b=4 => qx=3 qy=4 px=0 area=12
 1 a=-2 b=5 => qx=-2 qy=5 px=0 area=-10
@@ -680,6 +691,50 @@ res0.c:(.text+<off>): undefined reference to `__MAIN_BUMP1'
 /usr/bin/ld: res0.c:(.text+<off>): undefined reference to `__MAIN_SPLIT5'
 collect2: error: ld returned 1 exit status
 
+### conformance/pou/inout_struct_field.st
+ERROR   conformance/pou/inout_struct_field.st
+        gcc failed:
+In file included from config.c:8:
+POUS.c: In function ‘__MAIN_BUMP2’:
+POUS.c:80:43: error: ‘__ARRAY_OF_PT_3’ has no member named ‘tabledata__’
+   80 |   INT __TMP_N = __GET_VAR(data__->PA.value.tabledata__->I.X,);
+      |                                           ^
+<matiec-lib>/C/accessor.h:177:9: note: in definition of macro ‘__GET_VAR’
+  177 |         name.value __VA_ARGS__
+      |         ^~~~
+POUS.c:85:30: error: ‘__ARRAY_OF_PT_3’ has no member named ‘tabledata__’
+   85 |   __SET_VAR(,data__->PA.value.tabledata__->I.X,,__TMP_N);
+      |                              ^
+<matiec-lib>/C/accessor.h:215:22: note: in definition of macro ‘__SET_VAR’
+  215 |         if (!(prefix name.flags & __IEC_FORCE_FLAG)) prefix name.value suffix = new_value
+      |                      ^~~~
+POUS.c:85:30: error: ‘__ARRAY_OF_PT_3’ has no member named ‘tabledata__’
+   85 |   __SET_VAR(,data__->PA.value.tabledata__->I.X,,__TMP_N);
+      |                              ^
+<matiec-lib>/C/accessor.h:215:61: note: in definition of macro ‘__SET_VAR’
+  215 |         if (!(prefix name.flags & __IEC_FORCE_FLAG)) prefix name.value suffix = new_value
+      |                                                             ^~~~
+In file included from res0.c:12:
+POUS.c: In function ‘__MAIN_BUMP2’:
+POUS.c:80:43: error: ‘__ARRAY_OF_PT_3’ has no member named ‘tabledata__’
+   80 |   INT __TMP_N = __GET_VAR(data__->PA.value.tabledata__->I.X,);
+      |                                           ^
+<matiec-lib>/C/accessor.h:177:9: note: in definition of macro ‘__GET_VAR’
+  177 |         name.value __VA_ARGS__
+      |         ^~~~
+POUS.c:85:30: error: ‘__ARRAY_OF_PT_3’ has no member named ‘tabledata__’
+   85 |   __SET_VAR(,data__->PA.value.tabledata__->I.X,,__TMP_N);
+      |                              ^
+<matiec-lib>/C/accessor.h:215:22: note: in definition of macro ‘__SET_VAR’
+  215 |         if (!(prefix name.flags & __IEC_FORCE_FLAG)) prefix name.value suffix = new_value
+      |                      ^~~~
+POUS.c:85:30: error: ‘__ARRAY_OF_PT_3’ has no member named ‘tabledata__’
+   85 |   __SET_VAR(,data__->PA.value.tabledata__->I.X,,__TMP_N);
+      |                              ^
+<matiec-lib>/C/accessor.h:215:61: note: in definition of macro ‘__SET_VAR’
+  215 |         if (!(prefix name.flags & __IEC_FORCE_FLAG)) prefix name.value suffix = new_value
+      |                                                             ^~~~
+
 ### conformance/pou/output_array_element.st
 ERROR   conformance/pou/output_array_element.st
         gcc failed:
@@ -733,6 +788,50 @@ POUS.c:62:44: error: ‘__ARRAY_OF_INT_3’ has no member named ‘tabledata__�
 POUS.c:68:31: error: ‘__ARRAY_OF_INT_3’ has no member named ‘tabledata__’
    68 |   __SET_VAR(,data__->ARR.value.tabledata__->I,,__TMP_M);
       |    
+### conformance/pou/output_struct_field.st
+ERROR   conformance/pou/output_struct_field.st
+        gcc failed:
+In file included from config.c:8:
+POUS.c: In function ‘__MAIN_DIVMOD2’:
+POUS.c:78:43: error: ‘__ARRAY_OF_PT_3’ has no member named ‘tabledata__’
+   78 |   INT __TMP_M = __GET_VAR(data__->PA.value.tabledata__->I.Y,);
+      |                                           ^
+<matiec-lib>/C/accessor.h:177:9: note: in definition of macro ‘__GET_VAR’
+  177 |         name.value __VA_ARGS__
+      |         ^~~~
+POUS.c:84:30: error: ‘__ARRAY_OF_PT_3’ has no member named ‘tabledata__’
+   84 |   __SET_VAR(,data__->PA.value.tabledata__->I.Y,,__TMP_M);
+      |                              ^
+<matiec-lib>/C/accessor.h:215:22: note: in definition of macro ‘__SET_VAR’
+  215 |         if (!(prefix name.flags & __IEC_FORCE_FLAG)) prefix name.value suffix = new_value
+      |                      ^~~~
+POUS.c:84:30: error: ‘__ARRAY_OF_PT_3’ has no member named ‘tabledata__’
+   84 |   __SET_VAR(,data__->PA.value.tabledata__->I.Y,,__TMP_M);
+      |                              ^
+<matiec-lib>/C/accessor.h:215:61: note: in definition of macro ‘__SET_VAR’
+  215 |         if (!(prefix name.flags & __IEC_FORCE_FLAG)) prefix name.value suffix = new_value
+      |                                                             ^~~~
+In file included from res0.c:12:
+POUS.c: In function ‘__MAIN_DIVMOD2’:
+POUS.c:78:43: error: ‘__ARRAY_OF_PT_3’ has no member named ‘tabledata__’
+   78 |   INT __TMP_M = __GET_VAR(data__->PA.value.tabledata__->I.Y,);
+      |                                           ^
+<matiec-lib>/C/accessor.h:177:9: note: in definition of macro ‘__GET_VAR’
+  177 |         name.value __VA_ARGS__
+      |         ^~~~
+POUS.c:84:30: error: ‘__ARRAY_OF_PT_3’ has no member named ‘tabledata__’
+   84 |   __SET_VAR(,data__->PA.value.tabledata__->I.Y,,__TMP_M);
+      |                              ^
+<matiec-lib>/C/accessor.h:215:22: note: in definition of macro ‘__SET_VAR’
+  215 |         if (!(prefix name.flags & __IEC_FORCE_FLAG)) prefix name.value suffix = new_value
+      |                      ^~~~
+POUS.c:84:30: error: ‘__ARRAY_OF_PT_3’ has no member named ‘tabledata__’
+   84 |   __SET_VAR(,data__->PA.value.tabledata__->I.Y,,__TMP_M);
+      |                              ^
+<matiec-lib>/C/accessor.h:215:61: note: in definition of macro ‘__SET_VAR’
+  215 |         if (!(prefix name.flags & __IEC_FORCE_FLAG)) prefix name.value suffix = new_value
+      |                                                             ^~~~
+
 ### conformance/strings/compare.st
 0 => e1=TRUE e2=FALSE l1=TRUE l2=TRUE l3=TRUE l4=TRUE g1=TRUE n1=TRUE
 1 => e1=TRUE e2=FALSE l1=TRUE l2=TRUE l3=TRUE l4=TRUE g1=TRUE n1=TRUE
@@ -985,5 +1084,5 @@ DIFFERS conformance/undefined/ton_pt_change.st
         cycle 10 (trace line 36): et expected T#800ms, got T#200ms
         cycle 11 (trace line 37): et expected T#800ms, got T#200ms
 
-101 tests: 70 pass, 5 fail, 11 same, 7 differs, 8 error
+105 tests: 72 pass, 5 fail, 11 same, 7 differs, 10 error
 exit 1
