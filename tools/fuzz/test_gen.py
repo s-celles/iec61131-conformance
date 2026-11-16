@@ -278,6 +278,26 @@ class Structs(unittest.TestCase):
                 self.assertNotRegex(m[0], r"\n\s*(p0|p1|pa\[[^]]+\]) := (p0|p1|pa\[[^]]+\]);")
                 self.assertNotIn(":= (x :=", m[0])
 
+    def test_finer_exclusions(self):
+        el = r"pa\[[^]]+\]"
+        for s in range(1, 41):
+            m = gen.make(s, 5, profile="struct_calls",
+                         excl=["struct_elem_copy", "struct_field_inout", "array_elem_args"])
+            if not m:
+                continue
+            body = m[0].split("PROGRAM main", 1)[1]
+            # no element on either side of a whole-structure assignment
+            self.assertNotRegex(body, rf"\n\s*{el} := (p0|p1|{el});")
+            self.assertNotRegex(body, rf"\n\s*(p0|p1) := {el};")
+            self.assertNotRegex(body, r"F_TICK\((n := )?(p0|p1|pa\[[^]]+\])\.")
+            self.assertNotRegex(body, rf"r => {el}\.")
+        # struct_field_inout still lets a field take a VAR_OUTPUT
+        p = gen.PROFILES["struct_calls"]
+        types = {n: t for n, t in p["inputs"] + p["outputs"] + p["internal"]}
+        g = gen.Gen(random.Random(3), types, ["struct_field_inout"], ["o0", "v0"], p["arrays"], p["structs"])
+        self.assertTrue(any(g.effect_target()[0] == "fld" for _ in range(50)))
+        self.assertFalse(any(g.effect_target(inout=True)[0] == "fld" for _ in range(50)))
+
 
 if __name__ == "__main__":
     unittest.main()

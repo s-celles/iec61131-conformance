@@ -109,7 +109,9 @@ EXCLUDABLE = {
     "array_elem_args": "array elements as VAR_IN_OUT / VAR_OUTPUT arguments (profile array_calls; IronPLC finding 29, matiec item 18)",
     "struct_copy": "assignment of a whole structure, p0 := pa[i] (profile structs)",
     "struct_init": "the initialiser of a structured variable, p1 : PT := (x := 2, ok := TRUE)",
+    "struct_elem_copy": "a whole structure assigned to or from an array element, pa[i] := p0 (IronPLC: ironplc#1471)",
     "struct_field_args": "structure fields as VAR_IN_OUT / VAR_OUTPUT arguments (profile struct_calls)",
+    "struct_field_inout": "structure fields as VAR_IN_OUT arguments only (IronPLC: pou/inout_struct_field)",
     "std_formal": "formal calls of standard functions, LIMIT(MX := .., IN := .., MN := ..) (profile calls; RuSTy: rusty#2035)",
 }
 
@@ -320,18 +322,19 @@ class Gen:
         _, dims, _ = self.arrays[name]
         return ("aref", name, ty, [self.subscript(lo, hi, depth - 1) for lo, hi in dims])
 
-    def struct_bases(self, sty):
-        return self.vars_of(sty) + self.arrays_of(sty)
+    def struct_bases(self, sty, vars_only=False):
+        return self.vars_of(sty) + ([] if vars_only else self.arrays_of(sty))
 
     def has_fields(self, ty):
         return any(t == ty and self.struct_bases(sty)
                    for sty, fields in self.structs.items() for _, t, _ in fields)
 
-    def struct_ref(self, sty, depth, simple=False):
+    def struct_ref(self, sty, depth, simple=False, vars_only=False):
         """A structured variable or array element of type sty; simple keeps
-        the subscripts to literals and variables."""
+        the subscripts to literals and variables, vars_only leaves out the
+        elements."""
         r = self.rng
-        name = r.choice(self.struct_bases(sty))
+        name = r.choice(self.struct_bases(sty, vars_only) or self.struct_bases(sty))
         if name not in self.arrays:
             return ("var", name)
         dims = self.arrays[name][1]
@@ -340,11 +343,11 @@ class Gen:
                                         else ("var", r.choice(self.vars_of("INT"))) for lo, hi in dims])
         return ("aref", name, sty, [self.subscript(lo, hi, depth - 1) for lo, hi in dims])
 
-    def field_ref(self, ty, depth, simple=False):
+    def field_ref(self, ty, depth, simple=False, vars_only=False):
         cands = [(sty, f) for sty, fields in self.structs.items() for f, t, _ in fields
-                 if t == ty and self.struct_bases(sty)]
+                 if t == ty and self.struct_bases(sty, vars_only)]
         sty, f = self.rng.choice(cands)
-        return ("fld", self.struct_ref(sty, depth, simple), f, ty)
+        return ("fld", self.struct_ref(sty, depth, simple, vars_only), f, ty)
 
     def arg(self, ty, depth):
         e = self.bit_expr(ty, depth) if ty in BIT_TYPES else self.int_expr(ty, depth)
@@ -450,12 +453,14 @@ class Gen:
                 "DELETE": lambda: [a(), p(), p()], "REPLACE": lambda: [a(), a(), p(), p()]}[fn]()
         return ("call", fn, args)
 
-    def effect_target(self):
-        """What a VAR_IN_OUT / VAR_OUTPUT argument writes: an INT variable,
-        or an array element whose subscripts are literals or variables."""
+    def effect_target(self, inout=False):
+        """What a VAR_IN_OUT (inout) or VAR_OUTPUT argument writes: an INT
+        variable, an array element whose subscripts are literals or
+        variables, or an INT field of either."""
         r = self.rng
-        if self.has_fields("INT") and "struct_field_args" not in self.excl and r.random() < 0.5:
-            return self.field_ref("INT", 0, simple=True)
+        fields_ok = "struct_field_args" not in self.excl and not (inout and "struct_field_inout" in self.excl)
+        if self.has_fields("INT") and fields_ok and r.random() < 0.5:
+            return self.field_ref("INT", 0, simple=True, vars_only="array_elem_args" in self.excl)
         arrays = self.arrays_of("INT")
         if arrays and "array_elem_args" not in self.excl and r.random() < 0.5:
             name = r.choice(arrays)
@@ -470,7 +475,7 @@ class Gen:
             return ("ucall", fn, [self.int_expr("INT", depth - 1), self.int_expr("INT", depth - 1)],
                     r.choice(["pos", "formal", "formal_rev"]))
         if fn == "F_TICK":
-            return ("ucall", fn, [self.effect_target(), self.int_expr("INT", depth - 1)],
+            return ("ucall", fn, [self.effect_target(inout=True), self.int_expr("INT", depth - 1)],
                     r.choice(["pos", "formal"]))
         b = self.int_expr("INT", depth - 1)
         while not has_var(b) and folds_to_zero(b, self.types):
@@ -526,7 +531,7 @@ class Gen:
 
     def expr(self, ty, depth):
         if ty in self.structs:
-            return self.struct_ref(ty, depth)
+            return self.struct_ref(ty, depth, vars_only="struct_elem_copy" in self.excl)
         if ty == "STRING":
             return self.str_expr(depth)
         if ty == "BOOL":
@@ -979,7 +984,8 @@ class ProgGen:
         copy = "struct_copy" not in self.excl and r.random() < 0.3
         if copy:
             sty = r.choice(list(self.structs))
-            lhs, rhs = g.struct_ref(sty, 2), g.struct_ref(sty, 2)
+            vo = "struct_elem_copy" in self.excl
+            lhs, rhs = g.struct_ref(sty, 2, vars_only=vo), g.struct_ref(sty, 2, vars_only=vo)
             g.effect_vars = saved
             return ("lassign", lhs, rhs)
         ty = r.choice([t for t in ("INT", "BOOL") if g.has_fields(t)])
