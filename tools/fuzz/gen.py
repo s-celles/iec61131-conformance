@@ -102,7 +102,7 @@ EXCLUDABLE = {
     "mux_unsigned": "MUX on UINT (rk has no unsigned MUX overload)",
     "string_order": "<, >, <=, >= between STRINGs (OpenPLC fork item 1)",
     "string_insert": "INSERT (STruC++ inserts before P instead of after; strings/insert_positions)",
-    "string_replace": "REPLACE (matiec#41: only L characters of IN2 are copied)",
+    "string_replace": "REPLACE (matiec#41 at 3a41303, fixed upstream in 4454518; still in the OpenPLC fork)",
     "string_int": "LEN/FIND as INT expressions (STruC++ returns size_t; strings/len_int and find_int)",
     "ext_concat": "CONCAT with more than two inputs (STruC++ lacks variadic IECStringVar overloads)",
     "array_index_expr": "array subscripts other than a literal, a variable or the loop variable (profile arrays)",
