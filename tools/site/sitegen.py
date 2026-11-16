@@ -10,6 +10,7 @@ pins on every build, so they cannot drift from them. See tools/site/build.sh.
 """
 import argparse
 import pathlib
+import posixpath
 import re
 import shutil
 
@@ -80,13 +81,14 @@ def upstream_refs(text):
     return sorted(r for r in refs if "/" in r[0] and not r[0].startswith("."))
 
 
-def rewrite_links(md):
-    """Relative Markdown links to files of the repository -> GitHub."""
+def rewrite_links(md, source=""):
+    """Relative Markdown links of the repository file `source` -> GitHub."""
+    base = posixpath.dirname(source)
     def fix(m):
         target = m.group(2)
         if re.match(r"[a-z]+:|#|/", target):
             return m.group(0)
-        return f"{m.group(1)}({BLOB}/{target})"
+        return f"{m.group(1)}({BLOB}/{posixpath.normpath(posixpath.join(base, target))})"
     return re.sub(r"(\[[^\]]*\])\(([^)\s]+)\)", fix, md)
 
 
@@ -210,7 +212,7 @@ Counts are recomputed from `notes/comparison.md` on every build. They are not a 
 
 ## What the results mean
 
-A runtime that fails a trace is a claim to verify against the cited clause, not a verdict. `status: implementation-defined` traces record one runtime's choice where the standard leaves the value open; `SAME`/`DIFFERS` only says whether another runtime made the same choice. `ERROR` is a limit of the harness or of the build. The results are for the pinned commits. See [the method]({{{{< relref "/docs/readme" >}}}}) for the full statement.
+A runtime that fails a trace is a claim to verify against the cited clause, not a verdict. `status: implementation-defined` traces record one runtime's choice where the standard leaves the value open; `SAME`/`DIFFERS` only says whether another runtime made the same choice. `ERROR` is a limit of the harness or of the build. The results are for the pinned commits. See [the method]({{{{< relref "/docs/guide" >}}}}) for the full statement.
 """
 
     def results(self):
@@ -256,7 +258,7 @@ A runtime that fails a trace is a claim to verify against the cited clause, not 
         summary = re.search(r"(?m)^\d+ tests: .*$", ev)
         return (front(name, weight) + f"Pinned: `{self.pins.get(RUNTIMES[rt][1], '?')}` · conformant tests passed: {self.passed(rt)} / {self.totals['conformant']} · "
                 f"[evidence]({BLOB}/notes/evidence/{rt}-run.txt) (`{summary.group(0) if summary else ''}`)\n\n"
-                f"## {heading}\n\n" + demote(rewrite_links(body)))
+                f"## {heading}\n\n" + demote(rewrite_links(body, src if src.endswith(".md") else "notes/comparison.md")))
 
     def upstream(self):
         out = [front("Upstream", 4), f"{len(self.refs)} upstream issues and pull requests cited in the notes, by repository. Their state is on GitHub; the notes say what each one covers.\n"]
@@ -266,10 +268,10 @@ A runtime that fails a trace is a claim to verify against the cited clause, not 
         return "\n".join(out) + "\n"
 
     def doc(self, rel, title, weight):
-        return front(title, weight) + f"From [`{rel}`]({BLOB}/{rel}).\n\n" + demote(rewrite_links(drop_title(self.read(rel))))
+        return front(title, weight) + f"From [`{rel}`]({BLOB}/{rel}).\n\n" + demote(rewrite_links(drop_title(self.read(rel)), rel))
 
     def docs(self):
-        pages = {"readme": ("README.md", "Method and layout"), "spec": ("SPEC.md", "Trace format"),
+        pages = {"guide": ("docs/guide.md", "Guide"), "spec": ("SPEC.md", "Trace format"),
                  "upstream-drafts": ("upstream-bugs.md", "Upstream drafts"), "changelog": ("CHANGELOG.md", "Changelog")}
         for i, p in enumerate(sorted(self.root.glob("notes/fuzz-*.md"))):
             pages[p.stem] = (p.relative_to(self.root).as_posix(), "Fuzz " + p.stem[5:])

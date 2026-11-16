@@ -58,6 +58,8 @@ Notable changes are recorded here following Keep a Changelog.
 
 ### Changed
 
+- The README is a short overview; the method, layout, CI and per-runtime
+  instructions moved to `docs/guide.md`, which the site renders as its Guide.
 - matiec pinned at upstream c316fe5 (was 3a41303): `config/priority_order`,
   `strings/functions`, `ops/date_time`, `ops/time_arith` and
   `ops/time_functions` now pass (upstream fixes of beremiz/matiec#43, #41

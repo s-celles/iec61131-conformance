@@ -75,6 +75,11 @@ class Parsing(unittest.TestCase):
         self.assertIn("a **FAIL** in a note", out)       # the note column is left alone
         self.assertIn("| test | IronPLC | matiec | note |", out)
 
+    def test_relative_links_resolve_from_the_file(self):
+        out = sitegen.rewrite_links("[r](../README.md), [s](spec.md)", "docs/guide.md")
+        self.assertIn(f"[r]({sitegen.BLOB}/README.md)", out)
+        self.assertIn(f"[s]({sitegen.BLOB}/docs/spec.md)", out)
+
     def test_description_from_leading_comment(self):
         st = "(* MUX whose selector\n   is a MUX call. *)\nPROGRAM main\nEND_PROGRAM\n"
         self.assertEqual(sitegen.description(st), "MUX whose selector is a MUX call.")
