@@ -24,3 +24,24 @@
 .dark .verdict--same { color: #b5d6ff; background: #203951; }
 .dark .verdict--differs { color: #dbc0f4; background: #392b4b; }
 @media (max-width: 760px) { .suite-stats { grid-template-columns: repeat(2, minmax(0, 1fr)); } .suite-stat strong { font-size: 1.8rem; } }
+.site-banner img { width: 100%; height: auto; margin: .5rem 0 1.5rem; }
+.disclaimer { border-left: 4px solid #b45309; background: #fff8eb; padding: .2rem 1rem; margin: 1.5rem 0; border-radius: .3rem; font-size: .92rem; }
+.dark .disclaimer { background: #33260f; border-color: #f59e0b; }
+.site-footer-note { font-size: .78rem; line-height: 1.5; padding: 1rem 0; }
+.verdict--fixed { color: #075c4d; background: #e6f5ef; }
+.verdict--reported { color: #174f8b; background: #e8f1ff; }
+.verdict--not-reported { color: #8d263b; background: #fce9ee; border-style: dashed; }
+.verdict--limitation, .verdict--not-a-defect { color: #465160; background: #edf0f3; border-style: dotted; }
+.dark .verdict--fixed { color: #9ee2c9; background: #123d35; }
+.dark .verdict--reported { color: #b5d6ff; background: #203951; }
+.dark .verdict--not-reported { color: #ffb8cb; background: #4c2533; }
+.dark .verdict--limitation, .dark .verdict--not-a-defect { color: #d1dbe5; background: #28313d; }
+.table-tools { display: flex; flex-wrap: wrap; gap: .6rem 1rem; align-items: center; margin: 1rem 0 .6rem; }
+.table-filter { flex: 1 1 18rem; box-sizing: border-box; padding: .55rem .75rem; border: 1px solid #94a3b8; border-radius: .3rem; background: transparent; color: inherit; font: inherit; }
+.table-summary { display: flex; gap: .8rem; align-items: center; font-size: .8rem; }
+.table-pagination button { border: 1px solid #94a3b8; border-radius: .3rem; padding: .15rem .5rem; margin: 0 .2rem; }
+.table-pagination button:disabled { opacity: .4; }
+.filterable table th { cursor: pointer; }
+.filterable table th[aria-sort="ascending"]::after { content: " ▲"; font-size: .7em; }
+.filterable table th[aria-sort="descending"]::after { content: " ▼"; font-size: .7em; }
+.filterable table tr[hidden] { display: none; }

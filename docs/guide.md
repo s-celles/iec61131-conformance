@@ -7,22 +7,29 @@ are relative to the repository root.
 
 ## Method, and what the results do and do not mean
 
-- The expected values of a `status: conformant` trace are derived by hand
-  from the text of IEC 61131-3 (edition 2, 2003, and edition 3, 2013:
-  the function block bodies and timing diagrams of its tables, the formulas
-  of its standard functions, the semantics clauses of ST). Each `.trace`
-  states the derivation and the clause it rests on. That is one reading of
-  the standard by one author; it is not a certification, and neither IEC
-  nor PLCopen is involved. Where the text leaves a value to the
-  implementer (the counters' limits PVmin and PVmax, NOTE under ed.3 table
-  46) the trace does not check it. A reading can be wrong: `F_TRIG` at
-  start-up and the counters' limits were, and were corrected from the text
-  of ed.3 tables 45 and 46 (`notes/findings.md` #6, #7).
-- The suite was written with AI assistance (Claude Code; the commits say
-  `Assisted-by: AI`). Every derivation was checked against the standard's
-  text by the author, but an error in a trace is possible: a runtime that
-  fails a trace is a claim to verify against the cited clause, not a
-  verdict. If you read a clause differently, open an issue with the clause.
+- This is an individual, non-commercial project. It is not produced,
+  endorsed or certified by IEC, PLCopen, any accredited or standards body,
+  or the projects whose runtimes it runs. Its aim is to help improve the
+  existing open-source implementations by reporting reproducible
+  differences.
+- The expected values of a `status: conformant` trace come from IEC
+  61131-3 (edition 2, 2003, and edition 3, 2013: the function block bodies
+  and timing diagrams of its tables, the formulas of its standard functions,
+  the semantics clauses of ST) as an AI assistant (Claude Code; the commits
+  say `Assisted-by: AI`) knows it. Each `.trace` states the derivation and
+  the clause, table or figure it cites. The author has no copy of the
+  standard, so neither the derivations nor the citations are checked
+  against its text: a clause or table number, or the reading itself, may be
+  wrong. Where the derivation finds a value left to the implementer (the
+  counters' limits PVmin and PVmax, NOTE under ed.3 table 46) the trace does
+  not check it. Readings have already been wrong: `F_TRIG` at start-up and
+  the counters' limits were corrected on a second reading
+  (`notes/findings.md` #6, #7).
+- The Lean 4 model encodes the same reading, so its proofs show that the
+  traces follow from that reading, not that the reading is the standard's.
+- A runtime that fails a trace is therefore a claim to check against the
+  standard, not a verdict. If you have the text and read a clause
+  differently, open an issue citing it.
 - `status: implementation-defined` traces record what one runtime (IronPLC)
   does on a corner the standard leaves open. They carry no normative weight;
   `SAME`/`DIFFERS` only says whether another runtime made the same choice.
@@ -126,8 +133,9 @@ notes/
 
 Each test is `<name>.st` + `<name>.trace`. Ninety-one tests under the first
 nine categories are `status: conformant`: their expected values were derived
-by hand from the standard's function block bodies and timing diagrams, and
-the derivation is written as a comment at the top of each `.trace` file.
+from the standard's function block bodies, timing diagrams and formulas as
+the AI assistant knows them (see the method above), and the derivation is
+written as a comment at the top of each `.trace` file.
 The eighteen tests under `undefined/` are `status: implementation-defined`: the
 trace records what IronPLC actually does, and the comment states what the
 standard says or leaves open; a mismatch on another runtime is a documented
@@ -169,7 +177,8 @@ file together.
 ## Project site
 
 https://s-celles.github.io/iec61131-conformance/ shows the same data as the
-repository: the results table, one page per test (program, hand-derived
+repository: the results table, the findings (one page each, in a
+filterable table), one page per test (program, expected
 trace, and what each pinned runtime recorded), the deviations of each
 runtime, the upstream issues the notes cite, and the documents (this guide,
 `SPEC.md`, the fuzz reports, the changelog). It also serves `llms.txt` and
@@ -329,7 +338,7 @@ at `t = cycle * period`).
 
 1. Write the program with one `PROGRAM`, inputs in `VAR_INPUT`, outputs in
    `VAR_OUTPUT`, no `CONFIGURATION`.
-2. Write the trace by hand from the standard. Say in the comment which
+2. Derive the trace from the standard. Say in the comment which
    clause, table or figure the expectation comes from, and which behaviour
    you assumed where the text is silent. `?` is allowed for a value the
    text leaves open, and must be justified.

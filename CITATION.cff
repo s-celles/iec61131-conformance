@@ -18,8 +18,8 @@ keywords:
   - Lean 4
 abstract: >-
   Plain Structured Text programs paired with plain-text expected input/output
-  traces, one record per scan cycle, derived by hand from the text of IEC
-  61131-3 (editions 2 and 3), with harnesses for IronPLC, matiec, OpenPLC's
+  traces, one record per scan cycle, derived from IEC 61131-3 (editions 2
+  and 3) by an AI assistant and not checked against the standard's text, with harnesses for IronPLC, matiec, OpenPLC's
   matiec fork, STruC++ and RuSTy, recorded differential results, and a Lean 4
   model of the standard function blocks from which the expected traces are
   proved to follow.

@@ -21,29 +21,32 @@ menu:
     - name: Results
       pageRef: /results
       weight: 1
+    - name: Findings
+      pageRef: /findings
+      weight: 2
     - name: Tests
       pageRef: /tests
-      weight: 2
+      weight: 3
     - name: Runtimes
       pageRef: /runtimes
-      weight: 3
+      weight: 4
     - name: Upstream
       pageRef: /upstream
-      weight: 4
+      weight: 5
     - name: Docs
       pageRef: /docs
-      weight: 5
+      weight: 6
     - name: GitHub
       url: https://github.com/s-celles/iec61131-conformance
-      weight: 6
+      weight: 7
       params:
         icon: github
     - name: Search
-      weight: 7
+      weight: 8
       params:
         type: search
 params:
-  description: Hand-derived IEC 61131-3 Structured Text conformance traces, run against seven runtimes.
+  description: IEC 61131-3 Structured Text conformance traces, run against seven runtimes. An individual, non-commercial project.
   navbar:
     displayTitle: true
     logo:

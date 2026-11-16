@@ -130,5 +130,65 @@ class Generation(unittest.TestCase):
         self.assertIn("ops/not_compare", full)
 
 
+class Findings(unittest.TestCase):
+    def test_items_of_a_section(self):
+        md = ("intro\n\n1. **First thing** (x#1): text\n   more text\n2. **Second `code`**: other\n\n"
+              "Also observed, not a deviation: a remark.\n\n10. **Tenth**: last\n")
+        items = sitegen.numbered_items(md)
+        self.assertEqual([(n, t) for n, t, _ in items], [(1, "First thing"), (2, "Second `code`"), (10, "Tenth")])
+        self.assertIn("more text", items[0][2])
+        self.assertNotIn("Also observed", items[1][2])
+
+    def test_status(self):
+        self.assertEqual(sitegen.status("(Resolved 2026-11-02) F_TRIG", ""), "fixed")
+        self.assertEqual(sitegen.status("REPLACE", "inserts only L. Fixed upstream in 4454518 (PR #46)."), "fixed")
+        self.assertEqual(sitegen.status("(Not a defect) CTU counts past PV", ""), "not a defect")
+        self.assertEqual(sitegen.status("(Limitation) One program instance", ""), "limitation")
+        self.assertEqual(sitegen.status("NOT on a BYTE", "(beremiz/matiec#54): stage 4"), "reported")
+        self.assertEqual(sitegen.status("A MUX crashes", "(`ops/x`, not yet reported upstream)"), "not reported")
+
+    def test_registry_of_the_repository(self):
+        site = sitegen.Site(ROOT)
+        f = {x["id"]: x for x in site.findings}
+        self.assertEqual(len(f), len(site.findings))          # ids are unique
+        self.assertGreater(len(f), 90)
+        self.assertEqual(f["rusty-10"]["status"], "not reported")
+        self.assertIn(("beremiz/matiec", 54), f["matiec-19"]["refs"])
+        self.assertEqual(f["matiec-19"]["status"], "reported")
+        self.assertEqual(f["ironplc-6"]["status"], "fixed")
+        self.assertEqual(f["ironplc-7"]["status"], "not a defect")
+        self.assertIn("ops/mux_nested_selector", f["rusty-10"]["tests"])
+        self.assertNotIn("matiec-1", f)                       # an IronPLC behaviour, finding ironplc-1
+        self.assertEqual(f["matiec-11"]["status"], "fixed")
+
+    def test_pages(self):
+        out = pathlib.Path(tempfile.mkdtemp(prefix="sitegen-"))
+        sitegen.generate(ROOT, out)
+        c = out / "content"
+        index = (c / "findings" / "_index.md").read_text()
+        self.assertIn('class="filterable"', index)
+        self.assertIn('relref "/findings/rusty-10"', index)
+        page = (c / "findings" / "rusty-10.md").read_text()
+        self.assertIn("MUX(MUX(k, a, b), a, b)", page)
+        self.assertIn('relref "/tests/ops/mux_nested_selector"', page)
+        test = (c / "tests" / "ops" / "mux_nested_selector.md").read_text()
+        self.assertIn('relref "/findings/rusty-10"', test)
+        self.assertIn('class="filterable"', (c / "results.md").read_text())
+
+
+class Wording(unittest.TestCase):
+    def test_disclaimer_and_provenance(self):
+        out = pathlib.Path(tempfile.mkdtemp(prefix="sitegen-"))
+        sitegen.generate(ROOT, out)
+        home = (out / "content" / "_index.md").read_text()
+        self.assertIn("non-commercial", home)
+        self.assertIn("not checked against", home)            # the derivations came from an AI
+        self.assertIn("scanard-banner.svg", home)
+        self.assertNotIn("by hand", home)
+        footer = (ROOT / "site/layouts/_partials/custom/footer.html").read_text()
+        self.assertIn("non-commercial", footer)
+        self.assertIn("non-commercial", (out / "static" / "llms.txt").read_text())
+
+
 if __name__ == "__main__":
     unittest.main()

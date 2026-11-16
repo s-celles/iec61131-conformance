@@ -1,2 +1,4 @@
 <meta name="theme-color" content="#173f66">
 <link rel="icon" href="{{ "brand/scanard-mark.svg" | relURL }}" type="image/svg+xml">
+{{- $tables := resources.Get "js/tables.js" | minify | fingerprint }}
+<script src="{{ $tables.RelPermalink }}" integrity="{{ $tables.Data.Integrity }}" defer></script>

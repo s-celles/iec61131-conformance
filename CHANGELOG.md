@@ -6,6 +6,10 @@ Notable changes are recorded here following Keep a Changelog.
 
 ### Added
 
+- Site: a findings registry, one page per finding of the notes (runtime,
+  status, upstream issues, tests) in a filterable, sortable table (as in
+  julia-findings), also used for the results table; test pages list the
+  findings that cite them. The home page shows the banner.
 - Project site on GitHub Pages (https://s-celles.github.io/iec61131-conformance/):
   results, a page per test with its program, trace and recorded outputs, the
   runtimes' deviations, the cited upstream issues and the documents, plus
@@ -58,6 +62,12 @@ Notable changes are recorded here following Keep a Changelog.
 
 ### Changed
 
+- README, guide, site and `CITATION.cff` say who wrote the expected values:
+  an AI assistant, from its knowledge of IEC 61131-3, without the standard's
+  text, so derivations and clause numbers are not checked against it. They
+  no longer say the traces were derived by hand or checked by the author. A
+  disclaimer (individual, non-commercial, not endorsed by any standards or
+  accredited body) is on the README and on every page of the site.
 - The README is a short overview; the method, layout, CI and per-runtime
   instructions moved to `docs/guide.md`, which the site renders as its Guide.
 - matiec pinned at upstream c316fe5 (was 3a41303): `config/priority_order`,

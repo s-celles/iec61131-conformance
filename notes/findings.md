@@ -50,6 +50,7 @@ Reported together with item 3: https://github.com/ironplc/ironplc/issues/2546
 - IronPLC: ET stays at PT until the next rising edge.
 - Cause: same `tp` function, ET is only rewritten when a pulse is running or
   starts. Minor, but visible to a program that compares ET.
+- Reported together with #2 in https://github.com/ironplc/ironplc/issues/2546.
 
 ## 4. TON Q stays TRUE after PT is raised above the elapsed time
 
