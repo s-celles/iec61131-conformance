@@ -342,10 +342,13 @@ Reported: https://github.com/ironplc/ironplc/issues/2549
   variables are P4026, expected ANY_NUM. Equal-length strings 'abc', 'abd',
   'abe' avoid any prefix-order corner. matiec, its OpenPLC fork and 4diac
   compute the trace. This extends the same finding, not a separate cause.
+- Fixed upstream after the pinned `6e40df2`: #2555 is closed, and on `main`
+  (f3eff1d, 2026-11-17) `stdlib_function.rs` declares MIN, MAX and LIMIT on
+  `ANY_ELEMENTARY`. Not rerun yet: the pin is unchanged.
 
 ## 28. (Defect) CONCAT accepts only two inputs
 
-- Local finding, no upstream issue created. Reproducer:
+- Reported: https://github.com/ironplc/ironplc/issues/2624 (2026-11-17). Reproducer:
   `conformance/strings/concat_ext.st` / `.trace`.
 - `CONCAT(a,b,c)` and `CONCAT(a,b,c,d)` with STRING variables give P4018,
   expected=2, actual=3/4 on `6e40df2` (0.252.0). The nested form

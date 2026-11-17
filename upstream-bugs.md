@@ -63,6 +63,8 @@ findings remain in [notes/findings.md](notes/findings.md) and
 
 ## IronPLC `6e40df2` (0.252.0): CONCAT still requires two inputs
 
+Reported: https://github.com/ironplc/ironplc/issues/2624 (2026-11-17).
+
 - Reproducer: [concat_ext.st](conformance/strings/concat_ext.st).
 - P4018: `function=CONCAT, expected=2, actual=3` (also actual=4).
 - CONCAT is extensible (ed.3 table 34). The same test passes both matiecs;
@@ -165,7 +167,8 @@ Added 2026-11-16. Not reported upstream.
   (`pou/inout_struct_field`). Same cause: `place::variable_name` returns only
   `Access::Named`, and a member access is not one. The VAR_OUTPUT forms
   (`m => p.y`, `m => pa[i].y`, `pou/output_struct_field`) pass. This could be
-  added as a comment on #2615, which has not been done.
+  added as a comment on #2615, done on 2026-11-17:
+  https://github.com/ironplc/ironplc/issues/2615#issuecomment-6938871041
 - IronPLC's whole-element assignment of an array of structures (open upstream
   issue ironplc#1471) shows in both directions, `pts[i] := p` and
   `c := pts[i]` (`data/struct_element_copy`). `data/array_of_struct`, which
