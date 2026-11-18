@@ -469,12 +469,12 @@ PASS    conformance/ops/time_functions.st
 0 => t1=T#4747ms t2=T#3495ms t3=T#3ms t4=T#4219ms t5=T#1263ms
 1 => t1=T#4747ms t2=T#3495ms t3=T#3ms t4=T#4219ms t5=T#1263ms
 FAIL    conformance/ops/time_literal_ms.st
-        cycle 0 (trace line 17): t1 expected T#4748ms, got T#4747ms
-        cycle 0 (trace line 17): t2 expected T#3496ms, got T#3495ms
-        cycle 0 (trace line 17): t3 expected T#4ms, got T#3ms
-        cycle 1 (trace line 18): t1 expected T#4748ms, got T#4747ms
-        cycle 1 (trace line 18): t2 expected T#3496ms, got T#3495ms
-        cycle 1 (trace line 18): t3 expected T#4ms, got T#3ms
+        cycle 0 (trace line 15): t1 expected T#4748ms, got T#4747ms
+        cycle 0 (trace line 15): t2 expected T#3496ms, got T#3495ms
+        cycle 0 (trace line 15): t3 expected T#4ms, got T#3ms
+        cycle 1 (trace line 16): t1 expected T#4748ms, got T#4747ms
+        cycle 1 (trace line 16): t2 expected T#3496ms, got T#3495ms
+        cycle 1 (trace line 16): t3 expected T#4ms, got T#3ms
 ### conformance/ops/time_mul.st
 0 t=T#1500ms n=2 => p=T#3000ms p4=T#-2147ms p44=T#3121852ms back=TRUE
 1 t=T#999ms n=3 => p=T#-2147ms p4=T#-2147ms p44=T#3121852ms back=FALSE
