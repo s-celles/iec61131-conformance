@@ -43,6 +43,9 @@ jobs:
           python3 -I tools/monitor/test_monitor.py
           python3 -I tools/monitor/monitor.py --check
 
+      - name: Evidence cites the right trace lines
+        run: python3 -I harness/check_trace_lines.py
+
       - name: Traces.lean is in sync with the .trace files
         run: |
           python3 -I formal/gen_traces.py

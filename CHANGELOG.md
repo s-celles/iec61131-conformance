@@ -103,6 +103,9 @@ Notable changes are recorded here following Keep a Changelog.
 
 ### Fixed
 
+- The OpenPLC fork's evidence for `ops/time_literal_ms` cited trace lines
+  shifted by a comment edit; `harness/check_trace_lines.py`, now in CI's
+  `formal` job, checks every such reference without running a runtime.
 - Ed.2 clause and table numbers in the comments of 22 traces (control-flow
   clauses cited from SFC, initialisation from declaration, operator tables off
   by one, TIME * ANY_NUM from table 24 instead of 30, among others). No
