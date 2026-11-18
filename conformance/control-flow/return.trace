@@ -1,6 +1,6 @@
 # RETURN in a function block and in a function.
 #
-# Derivation (ed.3 7.3.3.3.4 / ed.2 3.3.2.3: RETURN "provides early exit
+# Derivation (ed.3 7.3.3.3.4 / ed.2 3.3.2.2: RETURN "provides early exit
 # from a function, function block or program"):
 #   GUARD: calls is incremented before the test, so it counts every
 #   invocation; y is only written when x >= 0 and keeps its last value
@@ -15,7 +15,7 @@ program: main
 inputs: x
 outputs: y calls c
 status: conformant
-reference: IEC 61131-3 ed.3 7.3.3.3.4 (RETURN), 6.6.3.1 (FB outputs retained); ed.2 3.3.2.3
+reference: IEC 61131-3 ed.3 7.3.3.3.4 (RETURN), 6.6.3.1 (FB outputs retained); ed.2 3.3.2.2
 ---
 0 x=3 => y=6 calls=1 c=103
 1 x=-1 => y=6 calls=2 c=99

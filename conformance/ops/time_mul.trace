@@ -1,7 +1,7 @@
 # TIME * INT with large products.
 #
 # Derivation (ed.3 table 30: MUL on TIME and ANY_NUM gives the TIME
-# scaled by the number; ed.2 table 24 likewise; a duration is a single
+# scaled by the number; ed.2 table 30 likewise; a duration is a single
 # quantity, so T#700ms * 4 = T#2800ms however it is stored):
 #   p4  = 700 * 4 = 2800 ms (always)
 #   p44 = 71487 * 44 = 3145428 ms (always)
@@ -18,7 +18,7 @@ program: main
 inputs: t n
 outputs: p p4 p44 back
 status: conformant
-reference: IEC 61131-3 ed.3 table 30 (MUL on TIME); ed.2 table 24
+reference: IEC 61131-3 ed.3 table 30 (MUL on TIME); ed.2 table 30
 ---
 0 t=T#1500ms n=2 => p=T#3000ms p4=T#2800ms p44=T#3145428ms back=TRUE
 1 t=T#999ms n=3 => p=T#2997ms p4=T#2800ms p44=T#3145428ms back=TRUE

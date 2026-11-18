@@ -1,5 +1,5 @@
 # Single-byte character string literals (ed.3 6.3.3 table 6 / ed.2
-# 2.2.2 table 4): `$$` is a dollar, `$'` a quote, `$L` or `$N` a line
+# 2.2.2 table 5): `$$` is a dollar, `$'` a quote, `$L` or `$N` a line
 # feed, `$P` form feed, `$R` carriage return, `$T` tab, `$xx` the byte
 # with hex code xx. The trace writes a
 # space as `$20` and a line feed as `$L` (SPEC.md canonical rendering).

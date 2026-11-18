@@ -24,7 +24,11 @@ are relative to the repository root.
   counters' limits PVmin and PVmax, NOTE under ed.3 table 46) the trace does
   not check it. Readings have already been wrong: `F_TRIG` at start-up and
   the counters' limits were corrected on a second reading
-  (`notes/findings.md` #6, #7).
+  (`notes/findings.md` #6, #7). On 2026-11-18 the edition 2 citations and
+  the five traces most runtimes fail were checked against the text of
+  IEC 61131-3:2003, which corrected the citations of 22 traces and found one trace,
+  `pou/fb_en_eno`, asserting an optional feature as implicit
+  (`notes/trace-audit-2026-11-18.md`); edition 3 citations are unchecked.
 - The Lean 4 model encodes the same reading, so its proofs show that the
   traces follow from that reading, not that the reading is the standard's.
 - A runtime that fails a trace is therefore a claim to check against the

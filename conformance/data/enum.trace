@@ -1,4 +1,4 @@
-# Enumerated data types (ed.3 6.4.4.1 / ed.2 2.3.3.1): the default initial
+# Enumerated data types (ed.3 6.4.4.1 / ed.2 2.3.3.2): the default initial
 # value of an enumerated variable is the first value of the type (RED);
 # values can be assigned, compared for equality, and used as CASE labels.
 #   cycle 0: pick = -1 leaves c at its initial RED; prev = RED too.

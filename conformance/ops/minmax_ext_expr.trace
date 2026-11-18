@@ -1,5 +1,5 @@
 # MIN and MAX are extensible (ed.3 6.6.2.5.2 table 32, 6.6.1.7.3;
-# ed.2 2.5.1.5.3 table 27): all three inputs here are INT, including
+# ed.2 2.5.1.5.4 table 27): all three inputs here are INT, including
 # a * 2 and a - 10 (ed.3 table 30). Permuting their positions does not
 # change the selected minimum or maximum.
 # a=3, b=7: MAX(6,7,2)=7; MIN(-7,3,2)=-7.

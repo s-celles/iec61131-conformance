@@ -1,6 +1,6 @@
 # FUNCTION_BLOCK VAR_TEMP is not retained between calls.
 #
-# Derivation: ed.3 6.5.2.2 table 19 (ed.2 2.4.3 table 16b): VAR_TEMP
+# Derivation: ed.3 6.5.2.2 table 19 (ed.2 2.4.3 table 16 a)): VAR_TEMP
 # declares temporary variables, initialised at each invocation of the POU.
 # Hence y = x on every cycle; a retained t would give the running sum
 # instead (3, 7, 7, 2).

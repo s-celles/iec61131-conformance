@@ -1,4 +1,4 @@
-# CASE statement (ed.3 7.3.3.3.3 / ed.2 2.6.4.2): the selector is any
+# CASE statement (ed.3 7.3.3.3.3 / ed.2 3.3.2.3): the selector is any
 # expression of an integer type; a case list holds values and subranges;
 # exactly one branch runs; ELSE runs when no list matches. MOD keeps the
 # sign of the dividend, so x MOD 4 is in -3..3 (table 30).

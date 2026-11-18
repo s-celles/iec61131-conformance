@@ -114,6 +114,7 @@ EXCLUDABLE = {
     "struct_field_inout": "structure fields as VAR_IN_OUT arguments only (IronPLC: pou/inout_struct_field)",
     "std_formal": "formal calls of standard functions, LIMIT(MX := .., IN := .., MN := ..) (profile calls; RuSTy: rusty#2035)",
     "call_in_args": "an F_TICK / F_DM call inside the argument of another call, MIN(i0, F_TICK(..)) (matiec item 17: does not link)",
+    "bit_not_compare": "a bit-string NOT inside an operand of = or <>, (NOT b) = c (matiec item 19, beremiz/matiec#54: computed in int)",
     "mux_selector_call": "a MUX call inside the selector K of a MUX, MUX(ABS(MUX(..)) MOD n, ..) (RuSTy item 10: plc crashes)",
     "call_divisor": "an F_TICK / F_DM call in the divisor of MOD, a MOD F_TICK(..) (matiec item 16, beremiz/matiec#47: generated twice)",
 }
@@ -217,6 +218,15 @@ def iec_mod(ty, a, b):
     if b == 0:
         raise Undefined("MOD by zero")
     return chk(ty, a - iec_div(ty, a, b) * b)
+
+
+def has_kind(e, kind):
+    """e has a node of this kind ("bnot", "call", ...) somewhere."""
+    if not isinstance(e, tuple):
+        return False
+    if e and e[0] == kind:
+        return True
+    return any(has_kind(y, kind) for x in e[1:] for y in (x if isinstance(x, list) else [x]))
 
 
 def has_call(e, fn):
@@ -554,7 +564,10 @@ class Gen:
             return ("bin", op, self.int_expr(ty, depth - 1), self.int_expr(ty, depth - 1))
         if k < 0.5 and any(self.vars_of(t) for t in BIT_TYPES):
             ty = r.choice([t for t in BIT_TYPES if self.vars_of(t)])
-            return ("bin", r.choice(["=", "<>"]), self.bit_expr(ty, depth - 1), self.bit_expr(ty, depth - 1))
+            op, a, b = r.choice(["=", "<>"]), self.bit_expr(ty, depth - 1), self.bit_expr(ty, depth - 1)
+            if "bit_not_compare" in self.excl:
+                a, b = [self.var_or_lit(ty) if has_kind(x, "bnot") else x for x in (a, b)]
+            return ("bin", op, a, b)
         if k < 0.85:
             op = r.choice(["AND", "OR", "XOR"])
             return ("bin", op, self.bool_expr(depth - 1), self.bool_expr(depth - 1))

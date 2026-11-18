@@ -1,5 +1,5 @@
 # MIN, MAX and LIMIT accept ANY_ELEMENTARY, including STRING (ed.3
-# 6.6.2.5.2 table 32 / ed.2 2.5.1.5.3 table 27). String order is lexical
+# 6.6.2.5.2 table 32 / ed.2 2.5.1.5.4 table 27). String order is lexical
 # (ed.3 6.4.2, comparison functions table 28). These equal-length strings
 # differ only in their third character: 'abc' < 'abd' < 'abe'.
 # MIN(a,b)=a; MAX(a,b)=b; LIMIT(MN,IN,MX)=MIN(MAX(IN,MN),MX):

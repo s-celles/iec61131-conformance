@@ -467,5 +467,33 @@ class ConstantRange(unittest.TestCase):
         self.assertEqual(bad, [])
 
 
+def has_kind(e, kind):
+    if not isinstance(e, tuple):
+        return False
+    if e and e[0] == kind:
+        return True
+    return any(has_kind(y, kind) for x in e[1:] for y in (x if isinstance(x, list) else [x]))
+
+
+class BitNotCompare(unittest.TestCase):
+    def test_not_in_compared_bit_strings_can_be_excluded(self):
+        # matiec item 19 (beremiz/matiec#54): (NOT b) = c is computed in int.
+        def compared(excl):
+            n = 0
+            for seed in range(1, 200):
+                g = gen.Gen(random.Random(seed), {"b0": "BYTE", "w0": "WORD", "q0": "BOOL"}, excl)
+                for _ in range(20):
+                    e = g.bool_expr(3)
+                    for sub in [e] + [y for x in e[1:] for y in (x if isinstance(x, list) else [x]) if isinstance(y, tuple)]:
+                        if sub[0] == "bin" and sub[1] in ("=", "<>") and any(
+                                isinstance(o, tuple) and gen.type_of(o, {"b0": "BYTE", "w0": "WORD", "q0": "BOOL"}) in gen.BIT_TYPES and has_kind(o, "bnot")
+                                for o in sub[2:]):
+                            n += 1
+            return n
+        self.assertGreater(compared([]), 0)
+        self.assertEqual(compared(["bit_not_compare"]), 0)
+        self.assertIn("bit_not_compare", gen.EXCLUDABLE)
+
+
 if __name__ == "__main__":
     unittest.main()

@@ -16,7 +16,7 @@ program: main
 inputs: k
 outputs: sum_x sum_y px copy_y
 status: conformant
-reference: IEC 61131-3 ed.3 6.4.4.4.2 (initialisation), table 14 (array of structures); ed.2 2.4.3.1
+reference: IEC 61131-3 ed.3 6.4.4.4.2 (initialisation), table 14 (array of structures); ed.2 2.4.3.2
 ---
 0 k=1 => sum_x=7 sum_y=60 px=3 copy_y=30
 1 k=0 => sum_x=7 sum_y=60 px=3 copy_y=30

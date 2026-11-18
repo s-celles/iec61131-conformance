@@ -1,5 +1,5 @@
-# ABS, MIN, MAX, LIMIT, SEL, MUX (ed.3 tables 29 and 31 / ed.2 tables 24
-# and 26), positional arguments.
+# ABS, MIN, MAX, LIMIT, SEL, MUX (ed.3 tables 29 and 31 / ed.2 tables 23
+# and 27), positional arguments.
 #   ABS(x) = |x|; MIN/MAX the smaller/larger; LIMIT(MN, IN, MX) =
 #   MIN(MAX(IN, MN), MX); SEL(G, IN0, IN1) = IN0 if G is FALSE else IN1;
 #   MUX(K, IN0, IN1, IN2) = IN_K, K counted from 0.

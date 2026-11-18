@@ -1,5 +1,5 @@
 # FOR control variable after the loop. Implementation-defined: ed.3
-# 7.3.3.4.2 (ed.2 2.6.5.2) states that the value of the control variable
+# 7.3.3.4.2 (ed.2 3.3.2.4) states that the value of the control variable
 # after the loop terminates is implementation-dependent (and that it shall
 # not be modified inside the loop; for_bound_modified covers the bound).
 # sum is defined and checked; i_after records what IronPLC does: the

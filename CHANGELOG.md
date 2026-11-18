@@ -6,6 +6,14 @@ Notable changes are recorded here following Keep a Changelog.
 
 ### Added
 
+- `notes/trace-audit-2026-11-18.md`: the edition 2 citations of the traces and
+  the five conformant traces most runtimes fail, checked against the text of
+  IEC 61131-3:2003. `edge/f_trig`, `ops/limit_inverted`, `data/defaults` and
+  `config/priority_order` are confirmed. `pou/fb_en_eno` treats EN/ENO on a
+  function block as implicit, where ed.2 makes it optional (open question).
+- Fuzz exclusion `bit_not_compare`: no bit-string NOT inside an operand of `=`
+  or `<>` (matiec item 19, beremiz/matiec#54). Programs generated without it
+  are unchanged.
 - Site: a findings registry, one page per finding of the notes (runtime,
   status, upstream issues, tests) in a filterable, sortable table (as in
   julia-findings), also used for the results table; test pages list the
@@ -87,6 +95,10 @@ Notable changes are recorded here following Keep a Changelog.
 
 ### Fixed
 
+- Ed.2 clause and table numbers in the comments of 22 traces (control-flow
+  clauses cited from SFC, initialisation from declaration, operator tables off
+  by one, TIME * ANY_NUM from table 24 instead of 30, among others). No
+  expected value changed.
 - The fuzz generator no longer writes a constant subexpression whose value
   leaves its type's range (`UINT#6 - UINT#8`, `DINT_TO_UINT(-17)`, a negative
   TIME difference) in a branch that never runs: IronPLC and matiec reject it at

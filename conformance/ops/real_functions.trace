@@ -1,4 +1,4 @@
-# Numerical functions on ANY_REAL (ed.3 table 29 / ed.2 table 24): SQRT,
+# Numerical functions on ANY_REAL (ed.3 table 29 / ed.2 table 23): SQRT,
 # ABS, EXP, LN, SIN, COS. Expected values are the exact results rounded to
 # 7 significant digits; binary32 evaluation lands within the 1e-6 relative
 # tolerance of SPEC.md. SQRT and LN are applied to |x| so that negative x

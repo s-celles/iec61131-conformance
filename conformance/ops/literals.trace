@@ -1,4 +1,4 @@
-# Integer literals (ed.3 6.3.2 table 5 / ed.2 2.2.1 table 2): decimal,
+# Integer literals (ed.3 6.3.2 table 5 / ed.2 2.2.1 table 4): decimal,
 # 2#, 8#, 16# bases, single underscores between digits, optional type
 # prefix `Type#`, and a unary minus applied to a literal.
 #   16#FF = 255; 2#1010_1010 = 170; 8#17 = 15; 1_000_000; INT#-5;

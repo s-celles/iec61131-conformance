@@ -1,4 +1,4 @@
-# Comparison functions on ANY_REAL (ed.3 table 28 / ed.2 table 23). Equal
+# Comparison functions on ANY_REAL (ed.3 table 28 / ed.2 table 28). Equal
 # inputs are given as the same literal, so they are the same binary value
 # whatever the rounding; 1.0 and 1.0000000001 differ in LREAL.
 period_ms: 100

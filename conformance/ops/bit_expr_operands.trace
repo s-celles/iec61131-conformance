@@ -1,6 +1,6 @@
 # NOT, SHL, ROL, ROR on bit-string expressions.
 #
-# Derivation (ed.3 table 30 / ed.2 table 24: NOT, AND, OR, XOR bitwise on
+# Derivation (ed.3 table 30 / ed.2 table 26: NOT, AND, OR, XOR bitwise on
 # ANY_BIT; table 30 / ed.2 table 25: SHL fills with zeros on the right,
 # ROL / ROR rotate within the width; the operand of each is an
 # expression, evaluated first):
@@ -22,7 +22,7 @@ program: main
 inputs: a b w n
 outputs: n_xor n_and s_or r_xor r_w same
 status: conformant
-reference: IEC 61131-3 ed.3 table 30 (bit-string operators, SHL ROL ROR); ed.2 tables 24-25
+reference: IEC 61131-3 ed.3 table 30 (bit-string operators, SHL ROL ROR); ed.2 tables 25-26
 ---
 0 a=16#3C b=16#0F w=16#1234 n=0 => n_xor=16#CC n_and=16#FFCB s_or=16#3F r_xor=16#33 r_w=16#EDCB same=TRUE
 1 a=16#F0 b=16#F0 w=16#0000 n=4 => n_xor=16#FF n_and=16#FFFF s_or=16#00 r_xor=16#FF r_w=16#FFFF same=TRUE

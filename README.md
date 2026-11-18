@@ -25,6 +25,9 @@ proves their traces. Public domain (CC0 1.0).
 > standard. The author has no copy of IEC 61131-3, so they are not checked
 > against its text and may contain errors. A failed trace is a claim to
 > check, not a verdict; corrections from anyone with the text are welcome.
+> On 2026-11-18 the edition 2 citations and the five traces most runtimes
+> fail were checked against the text of IEC 61131-3:2003
+> ([notes/trace-audit-2026-11-18.md](notes/trace-audit-2026-11-18.md)).
 > The results cover the runtime commits pinned in CI only.
 
 ```

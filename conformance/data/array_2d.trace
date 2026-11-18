@@ -1,6 +1,6 @@
 # Two-dimensional array and array of arrays.
 #
-# Derivation (ed.3 6.4.4.4.2 / ed.2 2.4.3.1: an array initialiser lists the
+# Derivation (ed.3 6.4.4.4.2 / ed.2 2.4.3.2: an array initialiser lists the
 # elements with the rightmost subscript varying most rapidly, so
 # m = [[1, 2, 3], [4, 5, 6]] by rows; a nested initialiser is written per
 # sub-array):
@@ -15,7 +15,7 @@ program: main
 inputs: i j
 outputs: m_ij a_ij rsum csum
 status: conformant
-reference: IEC 61131-3 ed.3 6.4.4.4.2 (array initialisation), table 14; ed.2 2.4.3.1
+reference: IEC 61131-3 ed.3 6.4.4.4.2 (array initialisation), table 14; ed.2 2.4.3.2
 ---
 0 i=0 j=0 => m_ij=1 a_ij=10 rsum=6 csum=50
 1 i=1 j=2 => m_ij=6 a_ij=60 rsum=15 csum=90

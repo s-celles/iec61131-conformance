@@ -1,5 +1,5 @@
-# EN / ENO on a function block (ed.3 6.6.1.7 table 20 / ed.2 2.5.1.2
-# figure 10): when EN is FALSE at invocation, the body is not executed and
+# EN / ENO on a function block (ed.3 6.6.1.7 table 20 / ed.2 2.5.2.1a,
+# where it is optional): when EN is FALSE at invocation, the body is not executed and
 # ENO is set FALSE; when EN is TRUE the body runs and ENO is TRUE unless
 # the body or an error sets it FALSE. The FB's own state (total) is kept
 # while it is disabled.

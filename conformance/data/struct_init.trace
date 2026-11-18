@@ -5,7 +5,7 @@
 # default of its type (ed.3 table 10: FALSE for BOOL, 0 for INT). A
 # structured variable's initialiser names the members it sets, in any order
 # (ed.3 6.4.4.4.2); a member it leaves out keeps the type's initial value
-# (ed.2 2.3.3.1, 2.4.2). So d = (n 5, flag FALSE, k 0) and
+# (ed.2 2.3.3.2, 2.4.2). So d = (n 5, flag FALSE, k 0) and
 # c = (n 5, flag TRUE, k 3). Program variables keep their value between cycles,
 # and c.k accumulates i:
 #   cycle 0: i=1  -> c.k = 3+1 = 4
@@ -16,7 +16,7 @@ program: main
 inputs: i
 outputs: dn dflag dk cn cflag ck
 status: conformant
-reference: IEC 61131-3 ed.3 6.4.4.2 (structured data types), 6.4.4.4.2 (initialisation), table 10; ed.2 2.3.3.1, 2.4.2
+reference: IEC 61131-3 ed.3 6.4.4.2 (structured data types), 6.4.4.4.2 (initialisation), table 10; ed.2 2.3.3.2, 2.4.2
 ---
 0 i=1 => dn=5 dflag=FALSE dk=0 cn=5 cflag=TRUE ck=4
 1 i=2 => dn=5 dflag=FALSE dk=0 cn=5 cflag=TRUE ck=6
