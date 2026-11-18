@@ -10,7 +10,9 @@ Notable changes are recorded here following Keep a Changelog.
   the five conformant traces most runtimes fail, checked against the text of
   IEC 61131-3:2003. `edge/f_trig`, `ops/limit_inverted`, `data/defaults` and
   `config/priority_order` are confirmed. `pou/fb_en_eno` treats EN/ENO on a
-  function block as implicit, where ed.2 makes it optional (open question).
+  function block as implicit, where ed.2 makes it optional: it stays
+  conformant with a note (a compile rejection is a missing optional feature),
+  and ironplc#2549 and PLC-lang/rusty#2036 were corrected in a comment.
 - Fuzz exclusion `bit_not_compare`: no bit-string NOT inside an operand of `=`
   or `<>` (matiec item 19, beremiz/matiec#54). Programs generated without it
   are unchanged.

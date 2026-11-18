@@ -3,6 +3,12 @@
 # ENO is set FALSE; when EN is TRUE the body runs and ENO is TRUE unless
 # the body or an error sets it FALSE. The FB's own state (total) is kept
 # while it is disabled.
+#
+# EN/ENO on a function block is an optional feature: ed.2 2.5.2.1a says
+# they "can also be provided by the manufacturer or user" (checked against
+# the text, notes/trace-audit-2026-11-18.md; ed.3 not checked). The trace
+# gives the behaviour a runtime that provides them must have; a runtime
+# that rejects `c(EN := ...)` lacks the feature rather than breaking a rule.
 period_ms: 100
 program: main
 inputs: run_it inc

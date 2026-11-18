@@ -207,6 +207,11 @@ Reported: https://github.com/ironplc/ironplc/issues/2549
   rejected too) but does not accept it as the implicit input of ed.3
   6.6.1.7 table 20; `c.ENO` is not reached. matiec executes the body only
   while EN is TRUE and reports ENO as the table says.
+- Correction (2026-11-18): ed.2 2.5.2.1a makes EN/ENO on a function block an
+  optional feature ("can also be provided by the manufacturer or user"), so
+  this is a missing optional feature, not a defect; the report said
+  otherwise and was corrected in a comment on #2549
+  (`notes/trace-audit-2026-11-18.md`).
 
 ## 15. (Not a defect) Array index out of range is a trap
 

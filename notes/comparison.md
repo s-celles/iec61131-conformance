@@ -90,7 +90,7 @@ hand. CI checks the table is in sync with the evidence.
 | pou/fb_input_defaults | PASS | PASS | PASS | PASS | PASS | **ERROR** (see evidence) | PASS |  |
 | pou/function_var_not_retained | PASS | PASS | PASS | PASS | PASS | PASS | PASS |  |
 | pou/fb_var_temp | **FAIL** (compile) | PASS | PASS | **FAIL** (cycles 1-3) | PASS | **ERROR** (see evidence) | PASS | IronPLC: VAR_TEMP in an FB is P9999 not implemented (findings #10, ironplc#1969) |
-| pou/fb_en_eno | **FAIL** (compile) | PASS | PASS | PASS | **FAIL** (compile) | **ERROR** (see evidence) | **FAIL** (compile) | IronPLC: `EN :=` in an FB invocation is a syntax error P0002 (findings #14, ironplc#2549); RuSTy: E048 "Could not resolve reference to EN" (other runtimes #5) |
+| pou/fb_en_eno | **FAIL** (compile) | PASS | PASS | PASS | **FAIL** (compile) | **ERROR** (see evidence) | **FAIL** (compile) | IronPLC: `EN :=` in an FB invocation is a syntax error P0002 (findings #14, ironplc#2549); RuSTy: E048 "Could not resolve reference to EN" (other runtimes #5). EN/ENO on a function block is optional (ed.2 2.5.2.1a), so these are missing features, not defects |
 | ops/precedence | PASS | PASS | PASS | PASS | PASS | PASS | PASS |  |
 | ops/std_functions | PASS | PASS | PASS | PASS | PASS | **ERROR** (see evidence) | PASS |  |
 | ops/std_functions_ext | PASS | PASS | PASS | PASS | **FAIL** (compile) | **FAIL** (see evidence) | **FAIL** (compile) | IronPLC passes since 0.252.0 (MAX and MIN with three inputs were P4018, findings #11, fixed by ironplc#2551); RuSTy: formal argument names on a standard function (`LIMIT(MN := ..)`) are E048 "Could not resolve reference to MN" (other runtimes #4) |
@@ -502,7 +502,7 @@ Documented choices that make a conformant test fail to compile:
 5. **MIN/MAX take two inputs only** (adclz/rk#116; "no overload of 'MAX' takes 3
    parameters"), where table 32 makes them extensible; and `LT`, `GT`, ...
    exist only as operators (`ops/std_functions_ext`, `ops/time_functions`).
-6. **No EN/ENO** on a function block call (`pou/fb_en_eno`).
+6. **No EN/ENO** on a function block call (`pou/fb_en_eno`), an optional feature (ed.2 2.5.2.1a).
 7. **No SINGLE tasks**: "event-driven tasks (SINGLE) are not supported"
    (`E1410`, `config/event_single`).
 8. **A negative based literal is a syntax error** (adclz/rk#115): `-16#10` gives
@@ -574,7 +574,7 @@ in `conformance/` and the output in `notes/evidence/rusty-run.txt`:
    written with the standard's `S1`/`R` and `S`/`R1` (ed.3 table 42) fail to
    compile with `E048 Could not resolve reference to S1`.
 4. **Formal argument names on standard functions** (PLC-lang/rusty#2035, LIMIT declares MIN/MAX; fix in PR #2038): `LIMIT(MN := b, IN := a, MX := c)` and `SEL(G := g, IN0 := a, IN1 := b)` are rejected (E089 invalid call parameters, E048 could not resolve reference to MN), although table 31 names those parameters and 7.2.3.1 allows formal invocation of any function. The positional forms in `ops/std_functions` compile and pass. (`ops/std_functions_ext`)
-5. **EN/ENO on a function block invocation** (PLC-lang/rusty#2036): `c(EN := run_it, inc := inc)` is rejected (E089 invalid call parameters, E048 could not resolve reference to EN), so the implicit EN input of ed.3 6.6.1.7 table 20 is not available on function blocks. (`pou/fb_en_eno`)
+5. **EN/ENO on a function block invocation** (PLC-lang/rusty#2036): `c(EN := run_it, inc := inc)` is rejected (E089 invalid call parameters, E048 could not resolve reference to EN), so EN is not available on function blocks. (`pou/fb_en_eno`) That is an optional feature (ed.2 2.5.2.1a, "can also be provided by the manufacturer or user"), not a defect; corrected in a comment on PLC-lang/rusty#2036.
 6. **Untyped real literals are REAL** (PLC-lang/rusty#2037): in `big := 1.0E15 + 1.0` with `big : LREAL`, the sum is computed in binary32 and then widened, so `big` is 999999986991104 instead of 1000000000000001. ed.3 6.3.2 leaves the type of an untyped literal to its context; an `LREAL#` prefix would avoid it. (`ops/lreal_precision`)
 7. **A subrange variable starts at 0, not at its lower limit** (PLC-lang/rusty#2039)
    (`data/defaults`, `SMALL : INT (5..10)` reads 0 where ed.3 6.4.4.4.3 gives
