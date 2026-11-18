@@ -126,6 +126,7 @@ harness/
 formal/        Lean 4: executable FB semantics, trace theorems, properties
 tools/fuzz/    differential fuzzing: random well-defined programs + driver (not CI)
 tools/site/    generator and build script of the project site (GitHub Pages)
+tools/monitor/ rules from the ed.2 text for the standard blocks, checked on traces and evidence
 site/          Hugo configuration, layouts and style of the site (theme Hextra)
 notes/
   ironplcvm-io.md   how ironplcvm can (and cannot) be driven from outside
@@ -374,6 +375,39 @@ of the repository, a harness should:
   (from Linux, since C runtimes differ by platform), the commands to
   `notes/evidence/COMMANDS.md`, a column to `harness/summarize.py`'s
   `RUNTIMES`, and a section of deviations to `notes/comparison.md`.
+
+## Property monitors
+
+The expected traces were written by an AI assistant, so they are checked
+against a second oracle that does not depend on them. `tools/monitor`
+holds rules read off the text of IEC 61131-3 edition 2, one per sentence
+or table:
+
+- R_TRIG, F_TRIG: the bodies of table 35, with `M` starting FALSE, so
+  F_TRIG reports an edge on a first evaluation with CLK FALSE;
+- SR, RS: the bodies of table 34;
+- CTU, CTD, CTUD: the bodies of table 36, with CU and CD edge-triggered;
+  PVmin and PVmax are implementation-dependent, so a count may also stop at
+  PV (0 for CTD) or at the bound of INT, but it may not wrap;
+- TON, TOF, TP: the timing diagrams of table 38, as rules on Q and ET per
+  scan. The one instant the TP diagram leaves open, ET on the cycle a pulse
+  ends with IN already FALSE, accepts 0 or PT.
+
+They run, cycle by cycle, on the expected trace of every test that drives
+one of these blocks (`monitor.BINDINGS`) and on every runtime's recorded
+output in `notes/evidence/`:
+
+```sh
+python3 -I tools/monitor/test_monitor.py     # the rules on hand-made sequences
+python3 -I tools/monitor/monitor.py --check  # exit 1 if an expected trace violates a rule
+```
+
+CI runs both in the `formal` job. A runtime that violates a rule deviates
+from the text whatever the trace says; the site lists the result under
+"Properties" on each such test page. On 2026-11-18 every expected trace
+satisfied every rule, and each runtime violation was a deviation already in
+the notes (F_TRIG on four runtimes, IronPLC's counter wrap, TOF at power-up
+and TP retrigger, RuSTy's late timers).
 
 ## Differential fuzzing
 

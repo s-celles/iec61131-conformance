@@ -6,6 +6,12 @@ Notable changes are recorded here following Keep a Changelog.
 
 ### Added
 
+- `tools/monitor`: rules read off the text of ed.2 for R_TRIG, F_TRIG, SR, RS,
+  CTU, CTD, CTUD (block bodies) and TON, TOF, TP (timing diagrams), checked
+  cycle by cycle on the expected traces and on every runtime's recorded
+  output, as an oracle independent of the AI-written traces. CI fails if an
+  expected trace violates a rule; each block test's page on the site shows
+  the result per runtime.
 - `notes/trace-audit-2026-11-18.md`: the edition 2 citations of the traces and
   the five conformant traces most runtimes fail, checked against the text of
   IEC 61131-3:2003. `edge/f_trig`, `ops/limit_inverted`, `data/defaults` and

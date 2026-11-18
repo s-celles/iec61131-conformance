@@ -190,5 +190,16 @@ class Wording(unittest.TestCase):
         self.assertIn("non-commercial", (out / "static" / "llms.txt").read_text())
 
 
+class Properties(unittest.TestCase):
+    def test_block_tests_show_the_property_check(self):
+        out = pathlib.Path(tempfile.mkdtemp(prefix="sitegen-"))
+        sitegen.generate(ROOT, out)
+        ton = (out / "content" / "tests" / "timers" / "ton.md").read_text()
+        self.assertIn("## Properties", ton)
+        self.assertIn("TON.Q", ton)                    # RuSTy's late Q, PLC-lang/rusty#2032
+        self.assertIn("expected trace", ton)
+        self.assertNotIn("## Properties", (out / "content" / "tests" / "ops" / "not_compare.md").read_text())
+
+
 if __name__ == "__main__":
     unittest.main()

@@ -13,6 +13,10 @@ import pathlib
 import posixpath
 import re
 import shutil
+import sys
+
+sys.path.insert(0, str(pathlib.Path(__file__).resolve().parents[1] / "monitor"))
+import monitor  # noqa: E402
 
 REPO = "https://github.com/s-celles/iec61131-conformance"
 BLOB = REPO + "/blob/main"
@@ -256,6 +260,7 @@ class Site:
         notes += [p.read_text() for p in sorted(self.root.glob("notes/fuzz-*.md"))]
         self.refs = upstream_refs("\n".join(notes))
         self.findings = self.collect_findings()
+        self.properties = {(t, src): vs for t, src, vs in monitor.run(self.root)}
 
     def collect_findings(self):
         names = {p[12:-3] for p in self.tests}
@@ -344,7 +349,24 @@ A runtime that fails a trace is a claim to check against the standard, not a ver
         return (front(f"{cat}/{name}", linkTitle=name, description=desc or name) +
                 f"{desc}\n\nStatus: `{status.group(1) if status else '?'}` · [source]({BLOB}/{path}) · [trace]({BLOB}/{path[:-3]}.trace)\n\n"
                 "| Runtime | Result |\n|---|---|\n" + "\n".join(rows) + "\n\n## Program\n\n" + fence(st, "iecst") +
-                "\n## Expected trace\n\n" + fence(trace) + "\n## Recorded output\n\n" + "\n".join(details) + self.cited_by(path[12:-3]))
+                "\n## Expected trace\n\n" + fence(trace) + "\n## Recorded output\n\n" + "\n".join(details)
+                + self.properties_section(path[12:-3]) + self.cited_by(path[12:-3]))
+
+    def properties_section(self, name):
+        if name not in monitor.BINDINGS:
+            return ""
+        rows = []
+        for src in ("trace",) + monitor.RUNTIMES:
+            if (name, src) not in self.properties:
+                continue
+            vs = self.properties[(name, src)]
+            label = "expected trace" if src == "trace" else next((n for k, (n, _, _) in RUNTIMES.items() if k == src), src)
+            res = "holds" if not vs else "; ".join(f"`{v.prop}` cycle {v.cycle}: {v.message}" for v in vs[:3]) + (f" (+{len(vs) - 3})" if len(vs) > 3 else "")
+            rows.append(f"| {label} | {res} |")
+        blocks = ", ".join(b for b, _, _ in monitor.BINDINGS[name])
+        return (f"\n## Properties\n\nRules read off the text of IEC 61131-3 ed.2 for {blocks} (`tools/monitor`), checked cycle by cycle "
+                "against the expected trace and each runtime's recorded output, independently of the trace's values.\n\n"
+                "| Source | Result |\n|---|---|\n" + "\n".join(rows) + "\n")
 
     def cited_by(self, name):
         hits = [f for f in self.findings if name in f["tests"]]

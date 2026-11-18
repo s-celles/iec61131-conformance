@@ -33,7 +33,7 @@ proves their traces. Public domain (CC0 1.0).
 ```
 conformance/   the tests: <name>.st + <name>.trace     SPEC.md       trace format
 harness/       one driver per runtime                  notes/        results, findings, evidence
-formal/        Lean 4 model and trace theorems         tools/        fuzzer, site generator
+formal/        Lean 4 model and trace theorems         tools/        fuzzer, property monitors, site
 ```
 
 Running the runtimes, the CI, writing a test, fuzzing: [docs/guide.md](docs/guide.md).
