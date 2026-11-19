@@ -109,6 +109,8 @@ Notable changes are recorded here following Keep a Changelog.
 
 ### Fixed
 
+- CI's `trust` job builds without truST's `sccache` rustc wrapper, which the
+  runner lacks (`RUSTC_WRAPPER` set empty).
 - The OpenPLC fork's evidence for `ops/time_literal_ms` cited trace lines
   shifted by a comment edit; `harness/check_trace_lines.py`, now in CI's
   `formal` job, checks every such reference without running a runtime.

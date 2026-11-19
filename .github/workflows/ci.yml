@@ -381,6 +381,10 @@ jobs:
   trust:
     name: truST (vs evidence)
     runs-on: ubuntu-24.04
+    env:
+      # truST's .cargo/config.toml sets rustc-wrapper = "sccache", which the
+      # runner does not have; an empty RUSTC_WRAPPER overrides it (cargo docs)
+      RUSTC_WRAPPER: ""
     steps:
       - uses: actions/checkout@v4
 
