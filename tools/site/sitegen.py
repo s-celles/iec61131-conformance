@@ -241,6 +241,9 @@ def history(root):
         refs = upstream_refs("\n".join(git(root, "show", f"{sha}:{f}") for f in notes))
         rows.append({"sha": sha[:7], "date": date[:16].replace("T", " "), "tests": tests,
                      "conformant": totals[0], "passed": totals[1], "refs": len(refs)})
+    # commit dates need not grow along the history (a rebase, or the temporary
+    # merge commit CI builds for a pull request): order the points by time
+    rows.sort(key=lambda r: r["date"])
     return rows
 
 
