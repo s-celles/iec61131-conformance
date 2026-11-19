@@ -1,3 +1,0 @@
-{{- /* {{< badge "PASS" >}}: a test verdict (PASS FAIL SAME DIFFERS ERROR) or a finding status. */ -}}
-{{- $v := .Get 0 -}}
-<span class="verdict verdict--{{ lower $v | replaceRE " " "-" }}">{{ $v }}</span>

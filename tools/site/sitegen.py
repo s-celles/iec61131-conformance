@@ -152,6 +152,12 @@ def section(md, heading):
 STATE_LABEL = {"closed (not planned)": "not planned", "unknown": "unknown"}
 
 
+def kit_version(root):
+    """The site-kit tag the site pins in site/go.mod."""
+    m = re.search(r"github\.com/s-celles/site-kit (v[\w.-]+)", (pathlib.Path(root) / "site" / "go.mod").read_text())
+    return m.group(1) if m else "?"
+
+
 def upstream_snapshot(root):
     """{(repo, number): row} from notes/upstream-status.tsv (written by
     tools/site/upstream_status.py); {} if there is none."""
@@ -267,7 +273,7 @@ def line_svg(rows, series, ymax, title, unit="", height=220, width=760, direct_l
     span = max(t1 - t0, 1)
     X = lambda i: left + w * (times[i] - t0) / span
     Y = lambda v: top + h * (1 - v / ymax)
-    out = [f'<svg class="viz-chart" viewBox="0 0 {width} {height}" role="img" aria-label="{title}">']
+    out = [f'<svg class="viz-chart" data-viz="dense" tabindex="0" viewBox="0 0 {width} {height}" role="img" aria-label="{title}">']
     for k in range(5):                                   # recessive grid and y ticks
         v = ymax * k / 4
         out.append(f'<line class="viz-grid" x1="{left}" x2="{left + w}" y1="{Y(v):.1f}" y2="{Y(v):.1f}"/>'
@@ -291,9 +297,9 @@ def line_svg(rows, series, ymax, title, unit="", height=220, width=760, direct_l
         out.append(f'<path class="viz-line" style="stroke:var({var})" d="{path}"/>')
         for i, v in pts:
             r = rows[i]
-            out.append(f'<g class="viz-pt" tabindex="0" aria-label="{label}: {v:g}{unit}, {r["date"]}, commit {r["sha"]}"><circle class="viz-hit" cx="{X(i):.1f}" cy="{Y(v):.1f}" r="9"/>'
+            out.append(f'<g class="viz-pt" aria-label="{r["date"]}, {label}: {v:g}{unit}, commit {r["sha"]}"><circle class="viz-hit" cx="{X(i):.1f}" cy="{Y(v):.1f}" r="9"/>'
                        f'<circle class="viz-dot" style="fill:var({var})" cx="{X(i):.1f}" cy="{Y(v):.1f}" r="4"/>'
-                       f'<title>{label}: {v:g}{unit} · {r["date"]} · {r["sha"]}</title></g>')
+                       f'<title>{r["date"]} · {label}: {v:g}{unit} · {r["sha"]}</title></g>')
         if direct_labels:
             i, v = pts[-1]
             out.append(f'<text class="viz-label" x="{X(i) + 8:.1f}" y="{Y(v) + 4:.1f}">{label} {v:g}{unit}</text>')
@@ -479,7 +485,7 @@ Plain `.st` programs paired with plain-text expected input/output traces, one re
 
 </div>
 
-{{{{< stats tests="{t['tests']}" conformant="{t['conformant']}" runtimes="{len(RUNTIMES)}" upstream="{len(self.refs)}" >}}}}
+{{{{< stats >}}}}{{{{< stat value="{t['tests']}" label="tests" href="/tests" >}}}}{{{{< stat value="{t['conformant']}" label="with a conformant trace" href="/results" >}}}}{{{{< stat value="{len(RUNTIMES)}" label="runtimes pinned in CI" href="/runtimes" >}}}}{{{{< stat value="{len(self.refs)}" label="upstream issues cited" href="/upstream" >}}}}{{{{< /stats >}}}}
 
 [Browse the results →]({{{{< relref "/results" >}}}}) · [Findings →]({{{{< relref "/findings" >}}}}) · [Read a test →]({{{{< relref "/tests" >}}}}) · [Methodology →]({{{{< relref "/methodology" >}}}}) · [Statuses →]({{{{< relref "/statuses" >}}}})
 
@@ -579,7 +585,7 @@ The newest issues and pull requests the notes cite, with their state in the snap
                 f"Upstream: {up}\n\nTests: {tests}\n\n---\n\n" + demote(rewrite_links(f["body"], f["source"])))
 
     def tests_index(self):
-        out = [front("Tests", 3) + self.stamp, f"{len(self.tests)} tests in {len({p.split('/')[1] for p in self.tests})} directories. Each page shows the program, its expected trace and what every pinned runtime produced.\n"]
+        out = [front("Tests", 8) + self.stamp, f"{len(self.tests)} tests in {len({p.split('/')[1] for p in self.tests})} directories. Each page shows the program, its expected trace and what every pinned runtime produced.\n"]
         short = {rt: RUNTIMES[rt][0] for rt in RUNTIMES}
         for cat in sorted({p.split("/")[1] for p in self.tests}):
             out.append(f"\n## {cat}\n\n| Test | " + " | ".join(short.values()) + " |\n|---|" + "---|" * len(short))
@@ -603,9 +609,9 @@ The newest issues and pull requests the notes cite, with their state in the snap
 
     def history_page(self):
         rows = history(self.root)
-        head = front("History", 6) + self.stamp + ("The suite and its results over time, one point per commit of `main` that changed "
-                                      "`notes/comparison.md`, read from the git history at build time. Hover a point for its "
-                                      "value, date and commit; the table below has every value.\n\n")
+        head = front("History", 4) + self.stamp + ("The suite and its results over time, one point per commit of `main` that changed "
+                                      "`notes/comparison.md`, read from the git history at build time. Hover a chart, or tab to it and "
+                                      "use the arrow keys, for the values, date and commit; the table below has every value.\n\n")
         if not rows:
             return head + "The git history is not available in this build.\n"
         size = line_svg(rows, [("tests", "--viz-1", _xy(rows, "tests")), ("conformant", "--viz-2", _xy(rows, "conformant"))],
@@ -636,7 +642,7 @@ The newest issues and pull requests the notes cite, with their state in the snap
 
     def upstream(self):
         dated = max((r["closed"] or r["created"] for r in self.snapshot.values() if r.get("created")), default="")
-        out = [front("Upstream", 5) + self.stamp,
+        out = [front("Upstream", 3) + self.stamp,
                f"{len(self.refs)} upstream issues and pull requests cited in the notes, by repository, with their state in the "
                f"snapshot [`notes/upstream-status.tsv`]({BLOB}/notes/upstream-status.tsv) (latest change in it: {dated or 'none'}; "
                "refreshed with `python3 -I tools/site/upstream_status.py`). A closed issue is not proof that a fix reached a release; "
@@ -668,13 +674,16 @@ flowchart LR
   EV --> SITE
 ```
 """
-        return (front("Methodology", 7) + "How a test becomes a result, and what a result does and does not mean. CI checks every arrow "
+        return (front("Methodology", 5) + "How a test becomes a result, and what a result does and does not mean. CI checks every arrow "
                 "below: each runtime's output against its evidence file, the results table against the evidence, the traces "
                 "against the Lean model and against the ed.2 block rules.\n\n## Pipeline\n\n" + diagram +
                 "\n## What the results mean\n\n" + demote(rewrite_links(method, "docs/guide.md")) +
                 f"\n## Checks of the expected values\n\n- [Trace audit of 2026-11-18]({{{{< relref \"/docs/trace-audit-2026-11-18\" >}}}}): ed.2 citations and the traces most runtimes fail, checked against the text of IEC 61131-3:2003.\n"
                 "- Property monitors: rules read off the ed.2 text for the standard blocks, shown under *Properties* on each block test's page.\n"
-                f"- [Guide]({{{{< relref \"/docs/guide\" >}}}}): how to run each runtime, write a test, fuzz.\n")
+                f"- [Guide]({{{{< relref \"/docs/guide\" >}}}}): how to run each runtime, write a test, fuzz.\n"
+                f"\n## This site\n\nGenerated from the repository by `tools/site/sitegen.py` on every build and built with Hugo and Hextra. "
+                f"It follows the shared structure of [site-kit {kit_version(self.root)}](https://github.com/s-celles/site-kit/blob/{kit_version(self.root)}/SPEC.md), "
+                "whose checks run on the built site in CI.\n")
 
     def statuses(self):
         v = [("PASS", "conformant trace, every checked value matches"), ("FAIL", "conformant trace, a value differs or the program does not compile"),
@@ -686,7 +695,7 @@ flowchart LR
         u = [("open", "open issue or pull request"), ("closed", "closed issue, fixed or answered"), ("not planned", "closed as not planned"),
              ("merged", "merged pull request")]
         table = lambda rows: "| Status | Meaning |\n|---|---|\n" + "\n".join(f"| {badge(k)} | {m} |" for k, m in rows)
-        return (front("Statuses", 8) + "The words the site uses for a result, a finding and an upstream issue. A badge always carries its word, "
+        return (front("Statuses", 6) + "The words the site uses for a result, a finding and an upstream issue. A badge always carries its word, "
                 "so no meaning rests on colour alone.\n\n## Test results\n\n" + table(v) +
                 "\n\n## Findings\n\n" + table(f) + "\n\n## Upstream issues and pull requests\n\n" + table(u) +
                 f"\n\nStates come from the snapshot [`notes/upstream-status.tsv`]({BLOB}/notes/upstream-status.tsv).\n")
@@ -738,7 +747,7 @@ def generate(root, out):
         write(c / "tests" / cat / "_index.md", front(cat))
     for p in site.tests:
         write(c / "tests" / p.split("/")[1] / (pathlib.Path(p).stem + ".md"), site.test_page(p))
-    write(c / "runtimes/_index.md", front("Runtimes", 4) + "Each pinned runtime, how it was run, and the deviations the suite found, from the notes.\n")
+    write(c / "runtimes/_index.md", front("Runtimes", 9) + "Each pinned runtime, how it was run, and the deviations the suite found, from the notes.\n")
     for i, rt in enumerate(RUNTIMES):
         write(c / "runtimes" / f"{rt}.md", site.runtime_page(rt, i + 1))
     write(c / "upstream.md", site.upstream())
@@ -748,7 +757,9 @@ def generate(root, out):
     write(c / "findings/_index.md", site.findings_index())
     for i, f in enumerate(site.findings):
         write(c / "findings" / f"{f['id']}.md", site.finding_page(f, i + 1))
-    write(c / "docs/_index.md", front("Docs", 9) + "The repository's documents, rendered.\n")
+    write(c / "docs/_index.md", front("Docs", 7) + "The repository's documents, rendered, and the two reference sections: "
+          "[Tests]({{< relref \"/tests\" >}}), every program with its expected trace and what each runtime produced, and "
+          "[Runtimes]({{< relref \"/runtimes\" >}}), each pinned runtime and how it is run.\n")
     for k, text in site.docs().items():
         write(c / "docs" / f"{k}.md", text)
     short, full = site.llms()
