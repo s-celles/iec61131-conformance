@@ -91,7 +91,7 @@ hand. CI checks the table is in sync with the evidence.
 | pou/fb_input_defaults | PASS | PASS | PASS | PASS | PASS | **ERROR** (see evidence) | PASS | PASS |  |
 | pou/function_var_not_retained | PASS | PASS | PASS | PASS | PASS | PASS | PASS | PASS |  |
 | pou/fb_var_temp | **FAIL** (compile) | PASS | PASS | **FAIL** (cycles 1-3) | PASS | **ERROR** (see evidence) | PASS | PASS | IronPLC: VAR_TEMP in an FB is P9999 not implemented (findings #10, ironplc#1969) |
-| pou/fb_en_eno | **FAIL** (compile) | PASS | PASS | PASS | **FAIL** (compile) | **ERROR** (see evidence) | **FAIL** (compile) | **FAIL** (compile) | IronPLC: `EN :=` in an FB invocation is a syntax error P0002 (findings #14, ironplc#2549); RuSTy: E048 "Could not resolve reference to EN" (other runtimes #5). EN/ENO on a function block is optional (ed.2 2.5.2.1a), so these are missing features, not defects; truST: issue #16 (ed.3 6.6.1.5 rule 6 on reading ENO after the call) |
+| pou/fb_en_eno | **FAIL** (compile) | PASS | PASS | **ERROR** (build) | **FAIL** (cycles 0-5) | **ERROR** (see evidence) | **FAIL** (cycles 0-5) | PASS | COUNT declares EN and ENO itself (ed.2 2.5.2.1a, ed.3 6.6.1.5) and ENO is read with `ENO =>` in the call (issue #16). IronPLC rejects the declaration `EN : BOOL`, EN being reserved (P0002, findings #14); RuSTy and rk accept it but run the body whatever EN is and leave ENO FALSE (RuSTy #5, rk #6); STruC++ declares its own ENO as well and the C++ does not build (STruC++ #21); matiec, its fork and truST pass |
 | ops/precedence | PASS | PASS | PASS | PASS | PASS | PASS | PASS | PASS |  |
 | ops/std_functions | PASS | PASS | PASS | PASS | PASS | **ERROR** (see evidence) | PASS | PASS |  |
 | ops/std_functions_ext | PASS | PASS | PASS | PASS | **FAIL** (compile) | **FAIL** (see evidence) | **FAIL** (compile) | PASS | IronPLC passes since 0.252.0 (MAX and MIN with three inputs were P4018, findings #11, fixed by ironplc#2551); RuSTy: formal argument names on a standard function (`LIMIT(MN := ..)`) are E048 "Could not resolve reference to MN" (other runtimes #4) |
@@ -178,7 +178,7 @@ hand. CI checks the table is in sync with the evidence.
 | strings/compare_prefix | PASS | PASS | **FAIL** (cycles 0-1) | PASS | PASS | PASS | PASS | PASS | = and <> with a prefix: the OpenPLC fork compares only up to the shorter length, so 'ab' = 'abc' is TRUE (fork item 1). Found by tools/fuzz (`strings`) |
 | ops/not_compare | PASS | **FAIL** (cycles 0-1) | **FAIL** (cycles 0-1) | PASS | PASS | PASS | PASS | PASS | `(NOT b) = c` on BYTE and WORD: both matiecs print `~b == c`, and C promotes `b` to `int`, so `NOT 16#00` is -1, not 16#FF (matiec item 19, beremiz/matiec#54, fork item 15). Found by tools/fuzz (`wide`) |
 
-Totals (109 tests, 91 with `status: conformant`): conformant tests passed, IronPLC 64/91; matiec 80/91; OpenPLC's matiec 69/91; STruC++ 70/91; RuSTy 73/91; 4diac 45/91; rk 64/91; truST 85/91. 16 of the 109 tests have the same result on all eight runtimes.
+Totals (109 tests, 91 with `status: conformant`): conformant tests passed, IronPLC 64/91; matiec 80/91; OpenPLC's matiec 69/91; STruC++ 69/91; RuSTy 73/91; 4diac 45/91; rk 64/91; truST 86/91. 16 of the 109 tests have the same result on all eight runtimes.
 
 <!-- results:end -->
 
@@ -409,6 +409,11 @@ ed.3 table 46 permit. The failures are in the front end and the string codegen:
     arithmetic with constants is promoted to `int`, variables remain `IECVar<short>`.
     An expression in the third position is accepted through the mixed-type
     two-argument overload. Found by `tools/fuzz` (`calls`, seed 166).
+21. **A function block that declares ENO does not build**: STruC++ adds
+    its own `ENO` member to every function block, so a user declaration
+    `VAR_OUTPUT ENO : BOOL; END_VAR` (the form ed.2 2.5.2.1a and ed.3
+    6.6.1.5 give) is a C++ redeclaration (`pou/fb_en_eno`, since issue #16;
+    with the implicit form the test passed).
 
 ## 4diac (IDE 3.3.0 and FORTE 3.3.0)
 
@@ -503,7 +508,7 @@ Documented choices that make a conformant test fail to compile:
 5. **MIN/MAX take two inputs only** (adclz/rk#116; "no overload of 'MAX' takes 3
    parameters"), where table 32 makes them extensible; and `LT`, `GT`, ...
    exist only as operators (`ops/std_functions_ext`, `ops/time_functions`).
-6. **No EN/ENO** on a function block call (`pou/fb_en_eno`), an optional feature (ed.2 2.5.2.1a).
+6. **EN/ENO on a function block**: the implicit form is an optional feature (ed.2 2.5.2.1a); declared in the function block, as `pou/fb_en_eno` does since issue #16, they are taken as plain variables: the body runs whatever EN is and ENO stays FALSE, where ed.2 2.5.2.1a applies the EN/ENO rules "when these variables are used".
 7. **No SINGLE tasks**: "event-driven tasks (SINGLE) are not supported"
    (`E1410`, `config/event_single`).
 8. **A negative based literal is a syntax error** (adclz/rk#115): `-16#10` gives
@@ -569,8 +574,9 @@ runs with its own tasks. At this commit:
    resource starts at t = 0 and its periodic tasks run at t = 0, checked
    against the text); truST changes its scheduler to do so (to be bumped here
    with the release that has it).
-2. `pou/fb_method` passes since its methods are PUBLIC (issue #15);
-   `pou/fb_en_eno`: issue #16 of this repository.
+2. `pou/fb_method` passes since its methods are PUBLIC (issue #15), and
+   `pou/fb_en_eno` since the function block declares EN and ENO and ENO is
+   read in the call (issue #16).
 
 `ops/bit_literals` (a based literal at `SHL`'s input, which ed.3 6.3.2 makes
 a bit string literal) passes since trust-platform#629, which this commit
@@ -598,7 +604,7 @@ in `conformance/` and the output in `notes/evidence/rusty-run.txt`:
    written with the standard's `S1`/`R` and `S`/`R1` (ed.3 table 42) fail to
    compile with `E048 Could not resolve reference to S1`.
 4. **Formal argument names on standard functions** (PLC-lang/rusty#2035, LIMIT declares MIN/MAX; fix in PR #2038): `LIMIT(MN := b, IN := a, MX := c)` and `SEL(G := g, IN0 := a, IN1 := b)` are rejected (E089 invalid call parameters, E048 could not resolve reference to MN), although table 31 names those parameters and 7.2.3.1 allows formal invocation of any function. The positional forms in `ops/std_functions` compile and pass. (`ops/std_functions_ext`)
-5. **EN/ENO on a function block invocation** (PLC-lang/rusty#2036): `c(EN := run_it, inc := inc)` is rejected (E089 invalid call parameters, E048 could not resolve reference to EN), so EN is not available on function blocks. (`pou/fb_en_eno`) That is an optional feature (ed.2 2.5.2.1a, "can also be provided by the manufacturer or user"), not a defect; corrected in a comment on PLC-lang/rusty#2036.
+5. **EN/ENO on a function block invocation** (PLC-lang/rusty#2036): with the implicit form, `c(EN := run_it, inc := inc)` was rejected (E089 invalid call parameters, E048 could not resolve reference to EN); that is an optional feature (ed.2 2.5.2.1a, "can also be provided by the manufacturer or user"), corrected in a comment on PLC-lang/rusty#2036. Since issue #16 the test declares EN and ENO in the function block: RuSTy accepts the declarations but runs the body whatever EN is and leaves ENO FALSE, where ed.2 2.5.2.1a says that "when these variables are used" EN controls the execution and ENO (`pou/fb_en_eno`).
 6. **Untyped real literals are REAL** (PLC-lang/rusty#2037): in `big := 1.0E15 + 1.0` with `big : LREAL`, the sum is computed in binary32 and then widened, so `big` is 999999986991104 instead of 1000000000000001. ed.3 6.3.2 leaves the type of an untyped literal to its context; an `LREAL#` prefix would avoid it. (`ops/lreal_precision`)
 7. **A subrange variable starts at 0, not at its lower limit** (PLC-lang/rusty#2039)
    (`data/defaults`, `SMALL : INT (5..10)` reads 0 where ed.3 6.4.4.4.3 gives

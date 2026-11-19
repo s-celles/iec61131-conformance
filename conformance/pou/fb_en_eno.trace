@@ -1,20 +1,22 @@
-# EN / ENO on a function block (ed.3 6.6.1.7 table 20 / ed.2 2.5.2.1a,
-# where it is optional): when EN is FALSE at invocation, the body is not executed and
-# ENO is set FALSE; when EN is TRUE the body runs and ENO is TRUE unless
-# the body or an error sets it FALSE. The FB's own state (total) is kept
-# while it is disabled.
+# EN / ENO on a function block (ed.2 2.5.2.1a / ed.3 6.6.1.5, table 18):
+# when EN is FALSE at invocation, the body is not executed and ENO is set
+# FALSE; when EN is TRUE the body runs and ENO is TRUE unless the body or
+# an error sets it FALSE. The FB's own state (total) is kept while it is
+# disabled.
 #
-# EN/ENO on a function block is an optional feature: ed.2 2.5.2.1a says
-# they "can also be provided by the manufacturer or user" (checked against
-# the text, notes/trace-audit-2026-11-18.md; ed.3 not checked). The trace
-# gives the behaviour a runtime that provides them must have; a runtime
-# that rejects `c(EN := ...)` lacks the feature rather than breaking a rule.
+# EN/ENO on a function block is an optional feature that "can also be
+# provided by the manufacturer or user according to the declarations"
+# VAR_INPUT EN : BOOL := 1 and VAR_OUTPUT ENO : BOOL (ed.2 2.5.2.1a, checked
+# against the text, notes/trace-audit-2026-11-18.md). COUNT declares them,
+# so the rules apply on any runtime that takes the declarations; ENO is read
+# with ENO => in the call, as ed.3 6.6.1.5 rule 6 requires (issue #16; ed.3
+# numbers from #16, not checked against the text).
 period_ms: 100
 program: main
 inputs: run_it inc
 outputs: total done
 status: conformant
-reference: IEC 61131-3 ed.3 6.6.1.7 (EN and ENO)
+reference: IEC 61131-3 ed.2 2.5.2.1a; ed.3 6.6.1.5 (EN and ENO), table 18
 ---
 0 run_it=TRUE inc=5   => total=5  done=TRUE
 1 run_it=FALSE         => total=5  done=FALSE

@@ -679,12 +679,12 @@ PASS    conformance/ops/trunc.st
 FAIL    conformance/pou/fb_en_eno.st
         ironplcc failed to compile the program:
 error[P0002]: Syntax error
-   ┌─ <root>/conformance/pou/fb_en_eno.st:25:5
-   │
-25 │   c(EN := run_it, inc := inc);
-   │     ^^ Expected "..." (double byte string) | %[IQM][XBWDL]?[0-9](_?[0-9])*(\.[0-9](_?[0-9])*)* (direct address) | ' ' (space) | '\t' (tab) | '(' | '(* ... *)' (comment) | ')' | '+' | '-' | '...' (single byte string) | 'AND' | '&' | 'BOOL' | 'BYTE' | 'DATE' | 'D' | 'DATE_AND_TIME' | 'DT' | 'DINT' | 'DWORD' | 'FALSE' | 'F_EDGE' | 'INT' | 'LDATE' | 'LDATE_AND_TIME' | 'LDT' | 'LINT' | 'LREAL' | 'LTIME' | 'LTIME_OF_DAY' | 'LTOD' | 'LWORD' | 'MOD' | 'NOT' | 'NULL' | 'ON' | 'OR' | 'REAL' | 'REF' | 'R_EDGE' | 'SINT' | 'STEP' | 'STRING' | 'SUPER' | 'THIS' | 'TIME' | 'TIME_OF_DAY' | 'TOD' | 'TRUE' | 'UDINT' | 'UINT' | 'ULINT' | 'USINT' | 'WORD' | 'WSTRING' | 'XOR' | '\n' (new line) | '{ ... }' (pragma) | (fixed point) | (floating point) | (identifier) | 16#[0-9A-F][0-9A-F_]* (hexadecimal bit string) | 2#[0-1][0-1]* (binary bit string) | 8#[0-7][0-7]* (octal bit string) | D | T | [0-9][0-9_]* (integer). Found text 'EN' that matched token 'EN'
-   │
-   = Learn more: https://www.ironplc.com/reference/compiler/problems/P0002.html?version=0.252.0&channel=cli
+  ┌─ <root>/conformance/pou/fb_en_eno.st:7:5
+  │
+7 │     EN  : BOOL := TRUE;
+  │     ^^ Expected ' ' (space) | '\t' (tab) | '(* ... *)' (comment) | ';' | 'END_VAR' | 'F_EDGE' | 'NON_RETAIN' | 'ON' | 'RETAIN' | 'R_EDGE' | 'STEP' | '\n' (new line) | '{ ... }' (pragma) | (identifier). Found text 'EN' that matched token 'EN'
+  │
+  = Learn more: https://www.ironplc.com/reference/compiler/problems/P0002.html?version=0.252.0&channel=cli
 
 Error: "Compile failed with 1 problem(s)"
 

@@ -129,6 +129,11 @@ Notable changes are recorded here following Keep a Changelog.
   method is PROTECTED in ed.3 and may not be called from `main` (issue #15).
   The ed.3 citations are corrected to 6.6.7.2 and table 53. No expected value
   changed.
+- `pou/fb_en_eno` declares EN and ENO in its function block and reads ENO
+  with `ENO =>` in the call, which ed.3 6.6.1.5 rule 6 requires (issue #16).
+  No expected value changed. RuSTy and rk now run and fail it (EN ignored),
+  STruC++ does not build it (its own ENO is redeclared), and IronPLC rejects
+  the declaration of EN.
 - CI's `trust` job builds without truST's `sccache` rustc wrapper, which the
   runner lacks (`RUSTC_WRAPPER` set empty).
 - The OpenPLC fork's evidence for `ops/time_literal_ms` cited trace lines

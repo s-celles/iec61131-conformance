@@ -1459,28 +1459,21 @@ FAIL    conformance/ops/time_mul.st
 6 r=100.0 => t=100
 PASS    conformance/ops/trunc.st
 ### conformance/pou/fb_en_eno.st
+0 run_it=TRUE inc=5 => total=5 done=FALSE
+1 run_it=FALSE => total=10 done=FALSE
+2 inc=100 => total=110 done=FALSE
+3 run_it=TRUE => total=210 done=FALSE
+4 inc=-5 => total=205 done=FALSE
+5 run_it=FALSE => total=200 done=FALSE
 FAIL    conformance/pou/fb_en_eno.st
-        rk failed to compile the program:
-        [E0803] Error: unknown input parameter
-            ╭─[ src/main.st:26:5 ]
-            │
-         26 │   c(EN := run_it, inc := inc);
-            │     ─┬  
-            │      ╰── unknown input parameter 'EN'
-        ────╯
-        [E0202] Error: unknown field
-            ╭─[ src/main.st:28:14 ]
-            │
-          4 │ FUNCTION_BLOCK COUNT
-            │                ──┬──  
-            │                  ╰──── FUNCTION_BLOCK 'COUNT' is declared here
-            │ 
-         28 │   done  := c.ENO;
-            │              ─┬─  
-            │               ╰─── 'COUNT' has no field named 'ENO'
-        ────╯
-        compilation failed: 2 error(s) found, cannot compile.
-        
+        cycle 0 (trace line 21): done expected TRUE, got FALSE
+        cycle 1 (trace line 22): total expected 5, got 10
+        cycle 2 (trace line 23): total expected 5, got 110
+        cycle 3 (trace line 24): total expected 105, got 210
+        cycle 3 (trace line 24): done expected TRUE, got FALSE
+        cycle 4 (trace line 25): total expected 100, got 205
+        cycle 4 (trace line 25): done expected TRUE, got FALSE
+        cycle 5 (trace line 26): total expected 100, got 200
 ### conformance/pou/fb_in_out.st
 0 inc=5 => total=5 p=2 q=1 ok=TRUE
 1 inc=3 => total=8 p=1 q=2 ok=TRUE
