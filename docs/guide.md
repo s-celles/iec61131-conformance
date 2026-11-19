@@ -123,6 +123,8 @@ harness/
   4diac/       Python: PROGRAM -> 61499 basic FB (.fbt), 4diac IDE headless export
                to C++ (forte_ng), generated driver against libforte (no clock)
   rusty/       Python: plc (RuSTy) + mock-time stdlib + C driver
+  trust/       Python: truST's conformance_driver (native build through truST's
+               test harness, simulated time), fed one record per line
 formal/        Lean 4: executable FB semantics, trace theorems, properties
 tools/fuzz/    differential fuzzing: random well-defined programs + driver (not CI)
 tools/site/    generator and build script of the project site (GitHub Pages)
@@ -175,6 +177,9 @@ located variables.
   `harness/rk`.
 - `fourdiac`: the 4diac IDE 3.3.0 Linux package and FORTE 3.3.0 built as
   shared libraries, both cached; the IDE runs under `xvfb-run`.
+- `trust`: truST's `conformance_driver` and its native toolchain folder built
+  from source at `TRUST_SHA` (cached), with the Rust toolchain its
+  `rust-toolchain.toml` pins.
 
 To bump a runtime, update its SHA in the workflow `env` and the evidence
 file together.
@@ -289,6 +294,10 @@ git clone https://github.com/adclz/rk scratch/rk
 Each test becomes an rk workspace; the harness prepends one line of `USING`
 for rk's `Std.*` namespaces and appends a one-task CONFIGURATION to a bare
 PROGRAM (see `notes/comparison.md`, rk section).
+
+## Running against truST
+
+See `harness/trust/README.md`.
 
 ## Running against 4diac
 

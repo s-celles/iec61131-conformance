@@ -6,6 +6,12 @@ Notable changes are recorded here following Keep a Changelog.
 
 ### Added
 
+- `harness/trust`: the suite runs against truST
+  (johannesPettersson80/trust-platform), which compiles Structured Text to
+  native code. `run.py` feeds the records, one per line, to truST's
+  `conformance_driver` and compares its output with the shared `tracefmt`
+  rules; the CI job `trust` builds the driver and truST's native toolchain at
+  `TRUST_SHA` and diffs against `notes/evidence/trust-run.txt`.
 - `tools/monitor`: rules read off the text of ed.2 for R_TRIG, F_TRIG, SR, RS,
   CTU, CTD, CTUD (block bodies) and TON, TOF, TP (timing diagrams), checked
   cycle by cycle on the expected traces and on every runtime's recorded

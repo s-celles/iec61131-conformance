@@ -1,0 +1,864 @@
+### conformance/config/event_single.st
+0 trig=FALSE => ev_n=0 tick_n=0
+1 trig=TRUE => ev_n=1 tick_n=1
+2 => ev_n=1 tick_n=2
+3 trig=FALSE => ev_n=1 tick_n=3
+4 trig=TRUE => ev_n=2 tick_n=4
+5 trig=FALSE => ev_n=2 tick_n=5
+6 trig=TRUE => ev_n=3 tick_n=6
+FAIL    conformance/config/event_single.st
+        cycle 0 (trace line 11): tick_n expected 1, got 0
+        cycle 1 (trace line 12): tick_n expected 2, got 1
+        cycle 2 (trace line 14): tick_n expected 3, got 2
+        cycle 3 (trace line 15): tick_n expected 4, got 3
+        cycle 4 (trace line 16): tick_n expected 5, got 4
+        cycle 5 (trace line 17): tick_n expected 6, got 5
+        cycle 6 (trace line 18): tick_n expected 7, got 6
+### conformance/config/global_exchange.st
+0 => cmd=0 p_cons.ack=0 p_cons.changes=0
+1 => cmd=0 p_cons.ack=0 p_cons.changes=0
+2 => cmd=1 p_cons.ack=1 p_cons.changes=1
+3 => cmd=1 p_cons.ack=1 p_cons.changes=1
+4 => cmd=2 p_cons.ack=2 p_cons.changes=2
+5 => cmd=2 p_cons.ack=2 p_cons.changes=2
+FAIL    conformance/config/global_exchange.st
+        cycle 0 (trace line 11): cmd expected 1, got 0
+        cycle 0 (trace line 11): p_cons.ack expected 1, got 0
+        cycle 0 (trace line 11): p_cons.changes expected 1, got 0
+        cycle 1 (trace line 12): cmd expected 1, got 0
+        cycle 1 (trace line 12): p_cons.ack expected 1, got 0
+        cycle 1 (trace line 12): p_cons.changes expected 1, got 0
+        cycle 2 (trace line 13): cmd expected 2, got 1
+        cycle 2 (trace line 13): p_cons.ack expected 2, got 1
+        cycle 2 (trace line 13): p_cons.changes expected 2, got 1
+        cycle 3 (trace line 14): cmd expected 2, got 1
+        cycle 3 (trace line 14): p_cons.ack expected 2, got 1
+        cycle 3 (trace line 14): p_cons.changes expected 2, got 1
+        cycle 4 (trace line 15): cmd expected 3, got 2
+        cycle 4 (trace line 15): p_cons.ack expected 3, got 2
+        cycle 4 (trace line 15): p_cons.changes expected 3, got 2
+        cycle 5 (trace line 16): cmd expected 3, got 2
+        cycle 5 (trace line 16): p_cons.ack expected 3, got 2
+        cycle 5 (trace line 16): p_cons.changes expected 3, got 2
+### conformance/config/globals_external.st
+0 g_in=5 => g_cnt=0 g_sum=1000 p0.n=0
+1 g_in=-3 => g_cnt=1 g_sum=997 p0.n=1
+2 => g_cnt=2 g_sum=994 p0.n=2
+3 g_in=0 => g_cnt=3 g_sum=994 p0.n=3
+FAIL    conformance/config/globals_external.st
+        cycle 0 (trace line 12): g_cnt expected 1, got 0
+        cycle 0 (trace line 12): g_sum expected 1005, got 1000
+        cycle 0 (trace line 12): p0.n expected 1, got 0
+        cycle 1 (trace line 13): g_cnt expected 2, got 1
+        cycle 1 (trace line 13): g_sum expected 1002, got 997
+        cycle 1 (trace line 13): p0.n expected 2, got 1
+        cycle 2 (trace line 14): g_cnt expected 3, got 2
+        cycle 2 (trace line 14): g_sum expected 999, got 994
+        cycle 2 (trace line 14): p0.n expected 3, got 2
+        cycle 3 (trace line 15): g_cnt expected 4, got 3
+        cycle 3 (trace line 15): g_sum expected 999, got 994
+        cycle 3 (trace line 15): p0.n expected 4, got 3
+### conformance/config/priority_order.st
+0 => g=0 p_reader.seen=0
+1 => g=10 p_reader.seen=10
+2 => g=20 p_reader.seen=20
+3 => g=30 p_reader.seen=30
+FAIL    conformance/config/priority_order.st
+        cycle 0 (trace line 13): g expected 10, got 0
+        cycle 0 (trace line 13): p_reader.seen expected 10, got 0
+        cycle 1 (trace line 14): g expected 20, got 10
+        cycle 1 (trace line 14): p_reader.seen expected 20, got 10
+        cycle 2 (trace line 15): g expected 30, got 20
+        cycle 2 (trace line 15): p_reader.seen expected 30, got 20
+        cycle 3 (trace line 16): g expected 40, got 30
+        cycle 3 (trace line 16): p_reader.seen expected 40, got 30
+### conformance/config/two_periods.st
+0 => fast_n=0 slow_n=0
+1 => fast_n=1 slow_n=0
+2 => fast_n=2 slow_n=0
+3 => fast_n=3 slow_n=1
+4 => fast_n=4 slow_n=1
+5 => fast_n=5 slow_n=1
+6 => fast_n=6 slow_n=2
+7 => fast_n=7 slow_n=2
+FAIL    conformance/config/two_periods.st
+        cycle 0 (trace line 11): fast_n expected 1, got 0
+        cycle 0 (trace line 11): slow_n expected 1, got 0
+        cycle 1 (trace line 12): fast_n expected 2, got 1
+        cycle 1 (trace line 12): slow_n expected 1, got 0
+        cycle 2 (trace line 13): fast_n expected 3, got 2
+        cycle 2 (trace line 13): slow_n expected 1, got 0
+        cycle 3 (trace line 14): fast_n expected 4, got 3
+        cycle 3 (trace line 14): slow_n expected 2, got 1
+        cycle 4 (trace line 15): fast_n expected 5, got 4
+        cycle 4 (trace line 15): slow_n expected 2, got 1
+        cycle 5 (trace line 16): fast_n expected 6, got 5
+        cycle 5 (trace line 16): slow_n expected 2, got 1
+        cycle 6 (trace line 17): fast_n expected 7, got 6
+        cycle 6 (trace line 17): slow_n expected 3, got 2
+        cycle 7 (trace line 18): fast_n expected 8, got 7
+        cycle 7 (trace line 18): slow_n expected 3, got 2
+### conformance/control-flow/case_expr.st
+0 x=5 => branch=11 neg=FALSE cnt=0
+1 x=-5 => branch=11 neg=TRUE cnt=1
+2 x=6 => branch=12 neg=FALSE cnt=1
+3 x=-6 => branch=12 neg=TRUE cnt=2
+4 x=7 => branch=13 neg=FALSE cnt=2
+5 x=-7 => branch=13 neg=TRUE cnt=3
+6 x=0 => branch=10 neg=FALSE cnt=4
+7 x=-10 => branch=12 neg=TRUE cnt=5
+8 x=-11 => branch=13 neg=FALSE cnt=5
+9 x=8 => branch=10 neg=FALSE cnt=5
+PASS    conformance/control-flow/case_expr.st
+### conformance/control-flow/continue.st
+0 n=5 => odd_sum=9 w_count=4 inner=6
+1 n=0 => odd_sum=0 w_count=0 inner=6
+2 n=6 => odd_sum=9 w_count=5 inner=6
+3 n=1 => odd_sum=1 w_count=1 inner=6
+PASS    conformance/control-flow/continue.st
+### conformance/control-flow/for_exit.st
+0 n=0 => sum=0 last=0 count=0 down_count=4 down_sum=22
+1 n=-2 => sum=0 last=0 count=0 down_count=4 down_sum=22
+2 n=1 => sum=1 last=1 count=1 down_count=4 down_sum=22
+3 n=3 => sum=6 last=3 count=3 down_count=4 down_sum=22
+4 n=5 => sum=15 last=5 count=5 down_count=4 down_sum=22
+5 n=6 => sum=15 last=5 count=5 down_count=4 down_sum=22
+6 n=10 => sum=15 last=5 count=5 down_count=4 down_sum=22
+7 n=32767 => sum=15 last=5 count=5 down_count=4 down_sum=22
+8 n=2 => sum=3 last=2 count=2 down_count=4 down_sum=22
+PASS    conformance/control-flow/for_exit.st
+### conformance/control-flow/for_step.st
+0 lo=1 hi=3 => down_sum=22 down_n=4 by4_sum=15 by4_n=3 empty_n=0 up_n=3
+1 lo=3 hi=3 => down_sum=22 down_n=4 by4_sum=15 by4_n=3 empty_n=0 up_n=1
+2 lo=4 hi=3 => down_sum=22 down_n=4 by4_sum=15 by4_n=3 empty_n=0 up_n=0
+3 lo=-2 hi=2 => down_sum=22 down_n=4 by4_sum=15 by4_n=3 empty_n=0 up_n=5
+PASS    conformance/control-flow/for_step.st
+### conformance/control-flow/if_case.st
+0 x=-5 => sign=-1 bucket=0
+1 x=0 => sign=0 bucket=0
+2 x=1 => sign=1 bucket=10
+3 x=2 => sign=1 bucket=20
+4 x=3 => sign=1 bucket=20
+5 x=4 => sign=1 bucket=30
+6 x=5 => sign=1 bucket=30
+7 x=6 => sign=1 bucket=30
+8 x=7 => sign=1 bucket=0
+9 x=-1 => sign=-1 bucket=-10
+10 x=-32768 => sign=-1 bucket=0
+11 x=32767 => sign=1 bucket=0
+PASS    conformance/control-flow/if_case.st
+### conformance/control-flow/nested_exit.st
+0 n=0 => outer=3 inner=0 w=6
+1 n=4 => outer=3 inner=12 w=6
+2 n=10 => outer=3 inner=30 w=6
+3 n=15 => outer=3 inner=30 w=6
+4 n=-3 => outer=3 inner=0 w=6
+5 n=1 => outer=3 inner=3 w=6
+PASS    conformance/control-flow/nested_exit.st
+### conformance/control-flow/return.st
+0 x=3 => y=6 calls=1 c=103
+1 x=-1 => y=6 calls=2 c=99
+2 x=15 => y=30 calls=3 c=10
+3 x=0 => y=0 calls=4 c=100
+PASS    conformance/control-flow/return.st
+### conformance/control-flow/while.st
+0 n=0 => iters=0 acc=0 rep=1
+1 n=1 => iters=1 acc=1 rep=1
+2 n=4 => iters=4 acc=10 rep=4
+3 n=100 => iters=100 acc=5050 rep=100
+4 n=0 => iters=0 acc=0 rep=1
+5 n=1000 => iters=1000 acc=500500 rep=1000
+PASS    conformance/control-flow/while.st
+### conformance/counters/ctd.st
+0 cd=FALSE ld=FALSE => q=TRUE cv=0
+1 ld=TRUE => q=FALSE cv=3
+2 ld=FALSE => q=FALSE cv=3
+3 cd=TRUE => q=FALSE cv=2
+4 => q=FALSE cv=2
+5 cd=FALSE => q=FALSE cv=2
+6 cd=TRUE => q=FALSE cv=1
+7 cd=FALSE => q=FALSE cv=1
+8 cd=TRUE => q=TRUE cv=0
+9 cd=FALSE => q=TRUE cv=0
+10 cd=TRUE => q=TRUE cv=-1
+11 ld=TRUE => q=FALSE cv=3
+12 ld=FALSE => q=FALSE cv=3
+13 cd=FALSE => q=FALSE cv=3
+14 cd=TRUE => q=FALSE cv=2
+PASS    conformance/counters/ctd.st
+### conformance/counters/ctd_bounds.st
+0 cd=FALSE ld=FALSE => q=TRUE cv=0
+1 ld=TRUE => q=TRUE cv=-32768
+2 ld=FALSE => q=TRUE cv=-32768
+3 cd=TRUE => q=TRUE cv=-32768
+4 cd=FALSE => q=TRUE cv=-32768
+5 cd=TRUE => q=TRUE cv=-32768
+6 cd=FALSE => q=TRUE cv=-32768
+PASS    conformance/counters/ctd_bounds.st
+### conformance/counters/ctu.st
+0 cu=FALSE r=FALSE => q=FALSE cv=0
+1 cu=TRUE => q=FALSE cv=1
+2 => q=FALSE cv=1
+3 cu=FALSE => q=FALSE cv=1
+4 cu=TRUE => q=FALSE cv=2
+5 cu=FALSE => q=FALSE cv=2
+6 cu=TRUE => q=TRUE cv=3
+7 cu=FALSE => q=TRUE cv=3
+8 cu=TRUE => q=TRUE cv=4
+9 r=TRUE => q=FALSE cv=0
+10 r=FALSE => q=FALSE cv=0
+11 cu=FALSE => q=FALSE cv=0
+12 cu=TRUE => q=FALSE cv=1
+PASS    conformance/counters/ctu.st
+### conformance/counters/ctud.st
+0 cu=FALSE cd=FALSE r=FALSE ld=FALSE => qu=FALSE qd=TRUE cv=0
+1 cu=TRUE => qu=FALSE qd=FALSE cv=1
+2 cu=FALSE => qu=FALSE qd=FALSE cv=1
+3 cu=TRUE => qu=TRUE qd=FALSE cv=2
+4 cu=FALSE => qu=TRUE qd=FALSE cv=2
+5 cd=TRUE => qu=FALSE qd=FALSE cv=1
+6 cd=FALSE => qu=FALSE qd=FALSE cv=1
+7 cu=TRUE cd=TRUE => qu=FALSE qd=FALSE cv=1
+8 cu=FALSE cd=FALSE => qu=FALSE qd=FALSE cv=1
+9 ld=TRUE cu=TRUE => qu=TRUE qd=FALSE cv=2
+10 ld=FALSE cu=FALSE => qu=TRUE qd=FALSE cv=2
+11 r=TRUE ld=TRUE => qu=FALSE qd=TRUE cv=0
+12 r=FALSE => qu=TRUE qd=FALSE cv=2
+13 ld=FALSE => qu=TRUE qd=FALSE cv=2
+14 cd=TRUE => qu=FALSE qd=FALSE cv=1
+15 cd=FALSE => qu=FALSE qd=FALSE cv=1
+16 cd=TRUE => qu=FALSE qd=TRUE cv=0
+17 cd=FALSE => qu=FALSE qd=TRUE cv=0
+18 cd=TRUE => qu=FALSE qd=TRUE cv=-1
+19 cd=FALSE => qu=FALSE qd=TRUE cv=-1
+20 cu=TRUE => qu=FALSE qd=TRUE cv=0
+PASS    conformance/counters/ctud.st
+### conformance/counters/ctud_bounds.st
+0 cu=FALSE cd=FALSE r=FALSE ld=FALSE => qu=FALSE qd=TRUE cv=0
+1 ld=TRUE => qu=TRUE qd=FALSE cv=32767
+2 ld=FALSE => qu=TRUE qd=FALSE cv=32767
+3 cu=TRUE => qu=TRUE qd=FALSE cv=32767
+4 cu=FALSE => qu=TRUE qd=FALSE cv=32767
+5 cu=TRUE => qu=TRUE qd=FALSE cv=32767
+6 cu=FALSE cd=TRUE => qu=FALSE qd=FALSE cv=32766
+7 cd=FALSE => qu=FALSE qd=FALSE cv=32766
+8 cu=TRUE => qu=TRUE qd=FALSE cv=32767
+9 cu=FALSE r=TRUE => qu=FALSE qd=TRUE cv=0
+10 r=FALSE => qu=FALSE qd=TRUE cv=0
+PASS    conformance/counters/ctud_bounds.st
+### conformance/data/array_2d.st
+0 i=0 j=0 => m_ij=1 a_ij=10 rsum=6 csum=50
+1 i=1 j=2 => m_ij=6 a_ij=60 rsum=15 csum=90
+2 i=0 j=1 => m_ij=2 a_ij=20 rsum=6 csum=70
+3 i=1 j=0 => m_ij=4 a_ij=40 rsum=15 csum=50
+PASS    conformance/data/array_2d.st
+### conformance/data/array_init.st
+0 => s_list=24 s_rep=20 z=0 f=TRUE
+1 => s_list=24 s_rep=20 z=0 f=TRUE
+PASS    conformance/data/array_init.st
+### conformance/data/array_internal.st
+0 idx=0 val=10 => sum=10 at_idx=10 lo=10 hi=0
+1 idx=4 val=-3 => sum=7 at_idx=-3 lo=10 hi=-3
+2 idx=2 val=100 => sum=107 at_idx=100 lo=10 hi=-3
+3 idx=0 val=1 => sum=98 at_idx=1 lo=1 hi=-3
+4 idx=4 val=0 => sum=101 at_idx=0 lo=1 hi=0
+PASS    conformance/data/array_internal.st
+### conformance/data/array_of_struct.st
+0 k=1 => sum_x=7 sum_y=60 px=3 copy_y=30
+1 k=0 => sum_x=7 sum_y=60 px=3 copy_y=30
+2 k=5 => sum_x=12 sum_y=60 px=8 copy_y=30
+3 k=-8 => sum_x=4 sum_y=60 px=0 copy_y=30
+PASS    conformance/data/array_of_struct.st
+### conformance/data/defaults.st
+0 => b=FALSE i=0 d=0 u=0 bt=16#00 w=16#0000 dw=16#00000000 r=0.0 lr=0.0 t=T#0ms s='' slen=0 is_red=TRUE lo_lim=5 arr=0 pa=0 pb=FALSE
+1 => b=FALSE i=0 d=0 u=0 bt=16#00 w=16#0000 dw=16#00000000 r=0.0 lr=0.0 t=T#0ms s='' slen=0 is_red=TRUE lo_lim=5 arr=0 pa=0 pb=FALSE
+PASS    conformance/data/defaults.st
+### conformance/data/enum.st
+0 pick=-1 => code=1 is_green=FALSE same=TRUE
+1 pick=1 => code=2 is_green=TRUE same=FALSE
+2 pick=1 => code=2 is_green=TRUE same=TRUE
+3 pick=2 => code=3 is_green=FALSE same=FALSE
+4 pick=0 => code=1 is_green=FALSE same=FALSE
+5 pick=7 => code=1 is_green=FALSE same=TRUE
+PASS    conformance/data/enum.st
+### conformance/data/struct_element_copy.st
+0 i=1 k=3 => s1=13 s2=0 s3=0 cs=14
+1 i=3 k=-2 => s1=13 s2=0 s3=28 cs=29
+2 i=1 k=5 => s1=15 s2=0 s3=28 cs=16
+3 i=2 k=0 => s1=15 s2=20 s3=28 cs=21
+PASS    conformance/data/struct_element_copy.st
+### conformance/data/struct_init.st
+0 i=1 => dn=5 dflag=FALSE dk=0 cn=5 cflag=TRUE ck=4
+1 i=2 => dn=5 dflag=FALSE dk=0 cn=5 cflag=TRUE ck=6
+2 i=-6 => dn=5 dflag=FALSE dk=0 cn=5 cflag=TRUE ck=0
+PASS    conformance/data/struct_init.st
+### conformance/data/struct_internal.st
+0 a=3 b=4 => qx=3 qy=4 px=0 area=12
+1 a=-2 b=5 => qx=-2 qy=5 px=0 area=-10
+2 a=0 b=0 => qx=0 qy=0 px=0 area=0
+3 a=100 b=100 => qx=100 qy=100 px=0 area=10000
+PASS    conformance/data/struct_internal.st
+### conformance/edge/f_trig.st
+0 clk=FALSE => q=TRUE
+1 clk=TRUE => q=FALSE
+2 clk=FALSE => q=TRUE
+3 => q=FALSE
+4 clk=TRUE => q=FALSE
+5 clk=TRUE => q=FALSE
+6 clk=FALSE => q=TRUE
+7 clk=TRUE => q=FALSE
+8 clk=FALSE => q=TRUE
+9 clk=FALSE => q=FALSE
+PASS    conformance/edge/f_trig.st
+### conformance/edge/power_on_clk_true.st
+0 clk=TRUE => qr=TRUE qf=FALSE
+1 => qr=FALSE qf=FALSE
+2 clk=FALSE => qr=FALSE qf=TRUE
+3 => qr=FALSE qf=FALSE
+4 clk=TRUE => qr=TRUE qf=FALSE
+5 clk=FALSE => qr=FALSE qf=TRUE
+PASS    conformance/edge/power_on_clk_true.st
+### conformance/edge/r_trig.st
+0 clk=FALSE => q=FALSE
+1 clk=TRUE => q=TRUE
+2 => q=FALSE
+3 => q=FALSE
+4 clk=FALSE => q=FALSE
+5 clk=TRUE => q=TRUE
+6 clk=FALSE => q=FALSE
+7 clk=TRUE => q=TRUE
+8 clk=TRUE => q=FALSE
+PASS    conformance/edge/r_trig.st
+### conformance/edge/sr_rs.st
+0 s=FALSE r=FALSE => q_sr=FALSE q_rs=FALSE
+1 s=TRUE => q_sr=TRUE q_rs=TRUE
+2 s=FALSE => q_sr=TRUE q_rs=TRUE
+3 r=TRUE => q_sr=FALSE q_rs=FALSE
+4 r=FALSE => q_sr=FALSE q_rs=FALSE
+5 s=TRUE r=TRUE => q_sr=TRUE q_rs=FALSE
+6 s=FALSE r=FALSE => q_sr=TRUE q_rs=FALSE
+7 r=TRUE => q_sr=FALSE q_rs=FALSE
+8 r=FALSE => q_sr=FALSE q_rs=FALSE
+9 s=TRUE => q_sr=TRUE q_rs=TRUE
+10 r=TRUE => q_sr=TRUE q_rs=FALSE
+PASS    conformance/edge/sr_rs.st
+### conformance/ops/bit_expr_operands.st
+0 a=16#3C b=16#0F w=16#1234 n=0 => n_xor=16#CC n_and=16#FFCB s_or=16#3F r_xor=16#33 r_w=16#EDCB same=TRUE
+1 a=16#F0 b=16#F0 w=16#0000 n=4 => n_xor=16#FF n_and=16#FFFF s_or=16#00 r_xor=16#FF r_w=16#FFFF same=TRUE
+2 a=16#81 b=16#01 w=16#00FF n=1 => n_xor=16#7F n_and=16#FF00 s_or=16#02 r_xor=16#1D r_w=16#7F80 same=TRUE
+3 a=16#A5 b=16#5A w=16#8001 n=7 => n_xor=16#00 n_and=16#FFFE s_or=16#80 r_xor=16#55 r_w=16#FCFF same=TRUE
+PASS    conformance/ops/bit_expr_operands.st
+### conformance/ops/bit_literals.st
+0 b=16#3C w=16#1255 n=0 => ob=16#A5 ow=16#8001 b_and=16#0C w_or=16#FF55 b_xor=16#C3 w_shl=16#0001 lo55=TRUE tw=FALSE
+1 b=16#F0 w=16#1234 n=4 => ob=16#A5 ow=16#8001 b_and=16#00 w_or=16#FF34 b_xor=16#0F w_shl=16#0010 lo55=FALSE tw=TRUE
+2 b=16#FF w=16#0055 n=15 => ob=16#A5 ow=16#8001 b_and=16#0F w_or=16#FF55 b_xor=16#00 w_shl=16#8000 lo55=TRUE tw=FALSE
+3 b=16#00 w=16#FFFF n=1 => ob=16#A5 ow=16#8001 b_and=16#00 w_or=16#FFFF b_xor=16#FF w_shl=16#0002 lo55=FALSE tw=FALSE
+PASS    conformance/ops/bit_literals.st
+### conformance/ops/bit_ops.st
+0 b=16#F0 m=16#3C w=16#1234 d=16#80000001 n=4 => o_and=16#30 o_or=16#FC o_xor=16#CC o_not=16#0F w_shl=16#2340 w_shr=16#0123 w_rol=16#2341 w_ror=16#4123 d_shl=16#00000010 d_shr=16#08000000 d_rol=16#00000018 d_ror=16#18000000
+1 b=16#AA m=16#55 w=16#8001 d=16#00000001 n=1 => o_and=16#00 o_or=16#FF o_xor=16#FF o_not=16#55 w_shl=16#0002 w_shr=16#4000 w_rol=16#0003 w_ror=16#C000 d_shl=16#00000002 d_shr=16#00000000 d_rol=16#00000002 d_ror=16#80000000
+2 b=16#FF m=16#00 w=16#FFFF d=16#FFFFFFFF n=0 => o_and=16#00 o_or=16#FF o_xor=16#FF o_not=16#00 w_shl=16#FFFF w_shr=16#FFFF w_rol=16#FFFF w_ror=16#FFFF d_shl=16#FFFFFFFF d_shr=16#FFFFFFFF d_rol=16#FFFFFFFF d_ror=16#FFFFFFFF
+3 b=16#0F m=16#0F w=16#0001 d=16#80000000 n=15 => o_and=16#0F o_or=16#0F o_xor=16#00 o_not=16#F0 w_shl=16#8000 w_shr=16#0000 w_rol=16#8000 w_ror=16#0002 d_shl=16#00000000 d_shr=16#00010000 d_rol=16#00004000 d_ror=16#00010000
+4 b=16#00 m=16#00 w=16#1234 d=16#12345678 n=16 => o_and=16#00 o_or=16#00 o_xor=16#00 o_not=16#FF w_shl=16#0000 w_shr=16#0000 w_rol=16#1234 w_ror=16#1234 d_shl=16#56780000 d_shr=16#00001234 d_rol=16#56781234 d_ror=16#56781234
+PASS    conformance/ops/bit_ops.st
+### conformance/ops/conversions.st
+0 i=100 ip=100 d=-1000 dp=1000 u=30000 ub=30000 => i2d=100 i2u=100 d2i=-1000 d2u=1000 u2i=30000 u2d=30000
+1 i=0 ip=0 d=0 dp=0 u=0 ub=0 => i2d=0 i2u=0 d2i=0 d2u=0 u2i=0 u2d=0
+2 i=-32768 ip=32767 d=32767 dp=65535 u=32767 ub=1 => i2d=-32768 i2u=32767 d2i=32767 d2u=65535 u2i=32767 u2d=1
+3 i=-1 ip=1 d=-32768 dp=0 u=0 ub=65535 => i2d=-1 i2u=1 d2i=-32768 d2u=0 u2i=0 u2d=65535
+PASS    conformance/ops/conversions.st
+### conformance/ops/date_time.st
+0 => d_sub=T#259200000ms tod_sub=T#8069500ms dt_sub=T#45001000ms tod_add=T#48600000ms tod_min=T#1800000ms dt_add=T#90000000ms dt_min=T#84600000ms same_d=TRUE same_t=TRUE before=TRUE
+1 => d_sub=T#259200000ms tod_sub=T#8069500ms dt_sub=T#45001000ms tod_add=T#48600000ms tod_min=T#1800000ms dt_add=T#90000000ms dt_min=T#84600000ms same_d=TRUE same_t=TRUE before=TRUE
+PASS    conformance/ops/date_time.st
+### conformance/ops/div_call_divisor.st
+0 a=7 => q=3 m=1 calls=2
+1 a=-7 => q=-3 m=-1 calls=4
+2 a=10 => q=5 m=0 calls=6
+PASS    conformance/ops/div_call_divisor.st
+### conformance/ops/limit_inverted.st
+0 mn=0 x=0 mx=-16 => l=-16
+1 mn=5 x=3 mx=1 => l=1
+2 mn=5 x=7 mx=1 => l=1
+3 mn=5 x=10 mx=1 => l=1
+4 mn=1 x=3 mx=5 => l=3
+5 mn=-2 x=-9 mx=-5 => l=-5
+PASS    conformance/ops/limit_inverted.st
+### conformance/ops/literals.st
+0 => hex=255 bin=170 oct=15 under=1000000 typed=-5 neg=-16 tu=65535 dh=2147483647
+1 => hex=255 bin=170 oct=15 under=1000000 typed=-5 neg=-16 tu=65535 dh=2147483647
+PASS    conformance/ops/literals.st
+### conformance/ops/lreal_precision.st
+0 a=0.1 b=0.2 => sum=0.30000000000000004 quot=0.5 prod=0.020000000000000004 sq=0.31622776601683794 big=1000000000000001.0
+1 a=1.0 b=3.0 => sum=4.0 quot=0.3333333333333333 prod=3.0 sq=1.0 big=1000000000000001.0
+2 a=2.0 b=1.0E300 => sum=1e300 quot=2e-300 prod=2e300 sq=1.4142135623730951 big=1000000000000001.0
+3 a=1.0E16 b=1.0 => sum=1e16 quot=1e16 prod=1e16 sq=100000000.0 big=1000000000000001.0
+PASS    conformance/ops/lreal_precision.st
+### conformance/ops/minmax_ext_expr.st
+0 a=3 b=7 => max_first=7 max_second=7 max_last=7 min_first=-7 min_second=-7 min_last=-7
+1 a=-5 b=2 => max_first=2 max_second=2 max_last=2 min_first=-15 min_second=-15 min_last=-15
+2 a=8 b=-3 => max_first=16 max_second=16 max_last=16 min_first=-2 min_second=-2 min_last=-2
+PASS    conformance/ops/minmax_ext_expr.st
+### conformance/ops/mux_nested_selector.st
+0 k=0 => r=20 u=30
+1 k=1 => r=30 u=20
+2 k=2 => r=10 u=2
+3 k=0 => r=20 u=30
+PASS    conformance/ops/mux_nested_selector.st
+### conformance/ops/mux_types.st
+0 k=0 => mu=10 mb=16#0F mw=16#1234 mx=TRUE mt=T#1000ms
+1 k=1 => mu=65535 mb=16#F0 mw=16#FFFF mx=FALSE mt=T#250ms
+2 k=2 => mu=7 mb=16#AA mw=16#0000 mx=TRUE mt=T#0ms
+3 k=0 => mu=10 mb=16#0F mw=16#1234 mx=TRUE mt=T#1000ms
+PASS    conformance/ops/mux_types.st
+### conformance/ops/not_compare.st
+0 => q1=TRUE q2=FALSE q3=TRUE q4=FALSE
+1 => q1=TRUE q2=FALSE q3=TRUE q4=FALSE
+PASS    conformance/ops/not_compare.st
+### conformance/ops/precedence.st
+0 a=7 b=2 c=3 p=TRUE q=FALSE r=TRUE => e1=13 e2=27 e3=2 e4=9 e5=-1 e6=3 e7=9 l1=TRUE l2=TRUE l3=FALSE l4=FALSE l5=FALSE l6=TRUE
+1 a=-9 b=4 c=-2 p=FALSE q=TRUE r=FALSE => e1=-17 e2=10 e3=-11 e4=4 e5=1 e6=2 e7=-5 l1=FALSE l2=TRUE l3=TRUE l4=FALSE l5=FALSE l6=TRUE
+2 a=1 b=2 c=3 p=TRUE q=TRUE r=TRUE => e1=7 e2=9 e3=-4 e4=0 e5=-1 e6=3 e7=3 l1=TRUE l2=TRUE l3=FALSE l4=TRUE l5=TRUE l6=FALSE
+3 a=5 b=3 c=1 p=FALSE q=FALSE r=FALSE => e1=8 e2=8 e3=1 e4=1 e5=-2 e6=2 e7=8 l1=FALSE l2=FALSE l3=FALSE l4=FALSE l5=FALSE l6=FALSE
+PASS    conformance/ops/precedence.st
+### conformance/ops/real_arith.st
+0 x=1.5 y=0.25 => sum=1.75 diff=1.25 prod=0.375 quot=6.0 neg=-1.5 lit1=1000.0 lit2=1.5 lit3=-0.025
+1 x=1.0 y=3.0 => sum=4.0 diff=-2.0 prod=3.0 quot=0.33333334 neg=-1.0 lit1=1000.0 lit2=1.5 lit3=-0.025
+2 x=0.1 y=0.2 => sum=0.3 diff=-0.1 prod=0.020000001 quot=0.5 neg=-0.1 lit1=1000.0 lit2=1.5 lit3=-0.025
+3 x=1.0E10 y=1.0E10 => sum=20000000000.0 diff=0.0 prod=1e20 quot=1.0 neg=-10000000000.0 lit1=1000.0 lit2=1.5 lit3=-0.025
+4 x=-2.5 y=4.0 => sum=1.5 diff=-6.5 prod=-10.0 quot=-0.625 neg=2.5 lit1=1000.0 lit2=1.5 lit3=-0.025
+PASS    conformance/ops/real_arith.st
+### conformance/ops/real_compare.st
+0 x=1.5 y=2.5 a=0.1 b=0.1 => r_lt=TRUE r_eq=FALSE r_ge=FALSE l_lt=FALSE l_eq=TRUE l_ne=FALSE
+1 x=2.5 y=2.5 a=1.0E-300 b=0.0 => r_lt=FALSE r_eq=TRUE r_ge=TRUE l_lt=FALSE l_eq=FALSE l_ne=TRUE
+2 x=-1.0E-5 y=0.0 a=-5.0 b=-5.0 => r_lt=TRUE r_eq=FALSE r_ge=FALSE l_lt=FALSE l_eq=TRUE l_ne=FALSE
+3 x=3.0 y=-3.0 a=1.0 b=1.0000000001 => r_lt=FALSE r_eq=FALSE r_ge=TRUE l_lt=TRUE l_eq=FALSE l_ne=TRUE
+PASS    conformance/ops/real_compare.st
+### conformance/ops/real_conversions.st
+0 i=7 d=-100000 u=65535 x=2.25 l=123456.75 => i2r=7.0 d2l=-100000.0 u2r=65535.0 r2i=2 r2l=2.25 l2r=123456.75 l2d=123457
+1 i=-32768 d=2147483647 u=0 x=-2.75 l=-1.25 => i2r=-32768.0 d2l=2147483647.0 u2r=0.0 r2i=-3 r2l=-2.75 l2r=-1.25 l2d=-1
+2 i=0 d=0 u=1 x=0.125 l=1.0E6 => i2r=0.0 d2l=0.0 u2r=1.0 r2i=0 r2l=0.125 l2r=1000000.0 l2d=1000000
+3 i=100 d=-1 u=40000 x=2.75 l=2.75 => i2r=100.0 d2l=-1.0 u2r=40000.0 r2i=3 r2l=2.75 l2r=2.75 l2d=3
+4 i=1 d=1 u=2 x=-0.75 l=-123456.125 => i2r=1.0 d2l=1.0 u2r=2.0 r2i=-1 r2l=-0.75 l2r=-123456.125 l2d=-123456
+PASS    conformance/ops/real_conversions.st
+### conformance/ops/real_functions.st
+0 x=4.0 => o_sqrt=2.0 o_abs=4.0 o_exp=54.59815 o_ln=1.3862944 o_sin=-0.7568025 o_cos=-0.6536436
+1 x=1.0 => o_sqrt=1.0 o_abs=1.0 o_exp=2.7182817 o_ln=0.0 o_sin=0.84147096 o_cos=0.5403023
+2 x=2.25 => o_sqrt=1.5 o_abs=2.25 o_exp=9.487736 o_ln=0.8109302 o_sin=0.7780732 o_cos=-0.62817365
+3 x=-3.0 => o_sqrt=1.7320508 o_abs=3.0 o_exp=0.049787067 o_ln=1.0986123 o_sin=-0.14112 o_cos=-0.9899925
+4 x=0.5 => o_sqrt=0.70710677 o_abs=0.5 o_exp=1.6487212 o_ln=-0.6931472 o_sin=0.47942555 o_cos=0.87758255
+PASS    conformance/ops/real_functions.st
+### conformance/ops/real_power.st
+0 x=2.0 n=10 => o_expt=1024.0 o_pow2=4.0
+1 x=-1.5 n=3 => o_expt=-3.375 o_pow2=2.25
+2 x=10.0 n=-2 => o_expt=0.01 o_pow2=100.0
+3 x=1.0 n=0 => o_expt=1.0 o_pow2=1.0
+4 x=0.5 n=4 => o_expt=0.0625 o_pow2=0.25
+PASS    conformance/ops/real_power.st
+### conformance/ops/shl_width.st
+0 b=16#44 w=16#67CB => b_back=16#00 b_rol=16#04 w_back=16#00B0 w_ror=16#00CB b_or=16#44
+1 b=16#77 w=16#444A => b_back=16#08 b_rol=16#07 w_back=16#00A0 w_ror=16#004A b_or=16#4C
+2 b=16#E9 w=16#F0E8 => b_back=16#08 b_rol=16#09 w_back=16#0080 w_ror=16#00E8 b_or=16#4C
+3 b=16#FF w=16#FFFF => b_back=16#08 b_rol=16#0F w_back=16#00F0 w_ror=16#00FF b_or=16#4C
+4 b=16#00 w=16#0010 => b_back=16#00 b_rol=16#00 w_back=16#0000 w_ror=16#0010 b_or=16#44
+PASS    conformance/ops/shl_width.st
+### conformance/ops/std_formal_order.st
+0 i0=5 g=TRUE => l1=5 l2=5 s1=20 m1=200 x1=3
+1 i0=-4 g=FALSE => l1=0 l2=0 s1=10 m1=200 x1=3
+2 i0=42 g=TRUE => l1=10 l2=10 s1=20 m1=200 x1=3
+PASS    conformance/ops/std_formal_order.st
+### conformance/ops/std_functions.st
+0 a=-5 b=3 c=9 k=0 g=FALSE da=-100000 db=7 => o_abs=5 o_min=-5 o_max=3 o_limit=3 o_sel=-5 o_mux=-5 d_abs=100000 d_min=-100000
+1 a=12 b=-4 c=20 k=1 g=TRUE da=2147483647 db=-2147483648 => o_abs=12 o_min=-4 o_max=12 o_limit=12 o_sel=-4 o_mux=-4 d_abs=2147483647 d_min=-2147483648
+2 a=0 b=0 c=0 k=2 g=FALSE da=0 db=0 => o_abs=0 o_min=0 o_max=0 o_limit=0 o_sel=0 o_mux=0 d_abs=0 d_min=0
+3 a=30000 b=-30000 c=100 k=2 g=TRUE da=-1 db=1 => o_abs=30000 o_min=-30000 o_max=30000 o_limit=100 o_sel=-30000 o_mux=100 d_abs=1 d_min=-1
+4 a=-32767 b=-32767 c=-32767 k=0 g=FALSE da=5 db=5 => o_abs=32767 o_min=-32767 o_max=-32767 o_limit=-32767 o_sel=-32767 o_mux=-32767 d_abs=5 d_min=5
+PASS    conformance/ops/std_functions.st
+### conformance/ops/std_functions_expr.st
+0 k=0 a=3 b=5 p=TRUE q=FALSE => m=8 s=2 n_eq=TRUE n_xor=FALSE n_cmp=FALSE n_and=FALSE
+1 k=1 a=3 b=5 p=TRUE q=TRUE => m=6 s=2 n_eq=TRUE n_xor=TRUE n_cmp=FALSE n_and=FALSE
+2 k=2 a=7 b=5 p=FALSE q=TRUE => m=7 s=2 n_eq=TRUE n_xor=FALSE n_cmp=TRUE n_and=TRUE
+3 k=2 a=5 b=5 p=FALSE q=FALSE => m=5 s=0 n_eq=FALSE n_xor=TRUE n_cmp=FALSE n_and=TRUE
+PASS    conformance/ops/std_functions_expr.st
+### conformance/ops/std_functions_ext.st
+0 a=1 b=2 c=3 g=FALSE => max3=3 min3=1 add3=6 mul3=6 lim=2 selv=1
+1 a=-7 b=-7 c=10 g=TRUE => max3=10 min3=-7 add3=-4 mul3=490 lim=-7 selv=-7
+2 a=100 b=-100 c=2 g=FALSE => max3=100 min3=-100 add3=2 mul3=-20000 lim=2 selv=100
+3 a=0 b=0 c=0 g=TRUE => max3=0 min3=0 add3=0 mul3=0 lim=0 selv=0
+PASS    conformance/ops/std_functions_ext.st
+### conformance/ops/time_arith.st
+0 t1=T#1500ms t2=T#500ms => sum=T#2000ms diff=T#1000ms is_lt=FALSE is_gt=TRUE is_le=FALSE is_eq=FALSE lit1=T#90000ms lit2=T#3723004ms lit3=T#1500ms lit4=T#500ms lit5=T#172800000ms
+1 t1=T#0ms t2=T#0ms => sum=T#0ms diff=T#0ms is_lt=FALSE is_gt=FALSE is_le=TRUE is_eq=TRUE lit1=T#90000ms lit2=T#3723004ms lit3=T#1500ms lit4=T#500ms lit5=T#172800000ms
+2 t1=T#100ms t2=T#100ms => sum=T#200ms diff=T#0ms is_lt=FALSE is_gt=FALSE is_le=TRUE is_eq=TRUE lit1=T#90000ms lit2=T#3723004ms lit3=T#1500ms lit4=T#500ms lit5=T#172800000ms
+3 t1=T#3600000ms t2=T#1ms => sum=T#3600001ms diff=T#3599999ms is_lt=FALSE is_gt=TRUE is_le=FALSE is_eq=FALSE lit1=T#90000ms lit2=T#3723004ms lit3=T#1500ms lit4=T#500ms lit5=T#172800000ms
+PASS    conformance/ops/time_arith.st
+### conformance/ops/time_functions.st
+0 a=T#2000ms b=T#500ms k=0 => lo=T#500ms hi=T#2000ms clamp=T#2000ms big=T#2000ms pick=T#2000ms less=FALSE
+1 a=T#50ms b=T#3000ms k=1 => lo=T#50ms hi=T#3000ms clamp=T#100ms big=T#3000ms pick=T#3000ms less=TRUE
+2 a=T#9000ms b=T#9000ms k=2 => lo=T#9000ms hi=T#9000ms clamp=T#5000ms big=T#9000ms pick=T#18000ms less=FALSE
+3 a=T#0ms b=T#1ms k=2 => lo=T#0ms hi=T#1000ms clamp=T#100ms big=T#1ms pick=T#1ms less=TRUE
+PASS    conformance/ops/time_functions.st
+### conformance/ops/time_literal_ms.st
+0 => t1=T#4748ms t2=T#3496ms t3=T#4ms t4=T#4219ms t5=T#1263ms
+1 => t1=T#4748ms t2=T#3496ms t3=T#4ms t4=T#4219ms t5=T#1263ms
+PASS    conformance/ops/time_literal_ms.st
+### conformance/ops/time_mul.st
+0 t=T#1500ms n=2 => p=T#3000ms p4=T#2800ms p44=T#3145428ms back=TRUE
+1 t=T#999ms n=3 => p=T#2997ms p4=T#2800ms p44=T#3145428ms back=TRUE
+2 t=T#71487ms n=44 => p=T#3145428ms p4=T#2800ms p44=T#3145428ms back=TRUE
+3 t=T#250ms n=1 => p=T#250ms p4=T#2800ms p44=T#3145428ms back=TRUE
+4 t=T#0ms n=7 => p=T#0ms p4=T#2800ms p44=T#3145428ms back=TRUE
+PASS    conformance/ops/time_mul.st
+### conformance/ops/trunc.st
+0 r=3.7 => t=3
+1 r=-3.7 => t=-3
+2 r=2.5 => t=2
+3 r=-2.5 => t=-2
+4 r=0.99 => t=0
+5 r=-0.99 => t=0
+6 r=100.0 => t=100
+PASS    conformance/ops/trunc.st
+### conformance/pou/fb_en_eno.st
+FAIL    conformance/pou/fb_en_eno.st
+        truST failed to compile the program:
+file 0: error[E105]: unknown parameter 'EN': only a POU that declares `EN : BOOL` among its inputs takes an enable input (at 430..442)
+file 0: error[E105]: no member 'ENO' on type (at 490..493)
+### conformance/pou/fb_in_out.st
+0 inc=5 => total=5 p=2 q=1 ok=TRUE
+1 inc=3 => total=8 p=1 q=2 ok=TRUE
+2 inc=0 => total=8 p=2 q=1 ok=TRUE
+3 inc=-8 => total=0 p=1 q=2 ok=TRUE
+PASS    conformance/pou/fb_in_out.st
+### conformance/pou/fb_input_defaults.st
+0 => total=11 untouched=7 base=6
+1 => total=12 untouched=7 base=7
+2 => total=13 untouched=7 base=8
+PASS    conformance/pou/fb_input_defaults.st
+### conformance/pou/fb_input_retention.st
+0 set_inc=TRUE new_inc=1 set_enable=TRUE new_enable=TRUE => total=1
+1 set_inc=FALSE set_enable=FALSE => total=2
+2 set_inc=TRUE new_inc=5 => total=7
+3 set_inc=FALSE => total=12
+4 set_enable=TRUE new_enable=FALSE => total=12
+5 set_enable=FALSE => total=12
+6 set_inc=TRUE new_inc=-2 => total=12
+7 set_inc=FALSE set_enable=TRUE new_enable=TRUE => total=10
+8 set_enable=FALSE => total=8
+9 set_inc=TRUE set_enable=TRUE new_inc=100 new_enable=TRUE => total=108
+10 set_inc=FALSE set_enable=FALSE => total=208
+PASS    conformance/pou/fb_input_retention.st
+### conformance/pou/fb_method.st
+FAIL    conformance/pou/fb_method.st
+        truST failed to compile the program:
+file 0: error[E202]: cannot access PROTECTED member 'CLEAR' (at 796..801)
+file 0: error[E202]: cannot access PROTECTED member 'BUMP' (at 826..830)
+### conformance/pou/fb_two_instances.st
+0 enable_a=TRUE inc_a=5 enable_b=FALSE inc_b=100 => tot_a=5 tot_b=0 calls_a=1 calls_b=1
+1 => tot_a=10 tot_b=0 calls_a=2 calls_b=2
+2 enable_b=TRUE => tot_a=15 tot_b=100 calls_a=3 calls_b=3
+3 enable_a=FALSE => tot_a=15 tot_b=200 calls_a=4 calls_b=4
+4 inc_a=-1000 => tot_a=15 tot_b=300 calls_a=5 calls_b=5
+5 enable_a=TRUE enable_b=FALSE => tot_a=-985 tot_b=300 calls_a=6 calls_b=6
+6 inc_b=-300 => tot_a=-1985 tot_b=300 calls_a=7 calls_b=7
+7 enable_b=TRUE => tot_a=-2985 tot_b=0 calls_a=8 calls_b=8
+PASS    conformance/pou/fb_two_instances.st
+### conformance/pou/fb_var_temp.st
+0 x=3 => y=3
+1 x=4 => y=4
+2 x=0 => y=0
+3 x=-5 => y=-5
+PASS    conformance/pou/fb_var_temp.st
+### conformance/pou/function_call.st
+0 x=5 d=1 => y=5 e=11
+1 x=50 d=-4 => y=10 e=96
+2 x=-50 d=0 => y=-10 e=0
+3 x=-10 d=1000000 => y=-10 e=1000000
+4 x=200 d=-200 => y=10 e=0
+5 x=0 d=2147483647 => y=0 e=2147483647
+PASS    conformance/pou/function_call.st
+### conformance/pou/function_input_default.st
+0 x=4 => dflt=11 with_k=39 all=13
+1 x=0 => dflt=-1 with_k=-1 all=5
+2 x=-2 => dflt=-7 with_k=-21 all=1
+PASS    conformance/pou/function_input_default.st
+### conformance/pou/function_var_not_retained.st
+0 x=3 => f=3
+1 x=4 => f=4
+2 x=0 => f=0
+3 x=-5 => f=-5
+PASS    conformance/pou/function_var_not_retained.st
+### conformance/pou/function_var_output.st
+0 a=7 b=2 => ok=TRUE q=3 r=1
+1 a=7 b=0 => ok=FALSE q=0 r=0
+2 a=-7 b=2 => ok=TRUE q=-3 r=-1
+3 a=9 b=3 => ok=TRUE q=3 r=0
+PASS    conformance/pou/function_var_output.st
+### conformance/pou/inout_array_element.st
+0 i=1 => r=5 s=1 e1=5 e2=0 e3=1
+1 i=3 => r=6 s=7 e1=5 e2=0 e3=7
+2 i=2 => r=5 s=8 e1=5 e2=5 e3=8
+PASS    conformance/pou/inout_array_element.st
+### conformance/pou/inout_call_in_std_arg.st
+0 i0=25 => a=9 m=2 s=3 x=2 q=4 r=7 calls=4
+1 i0=-31 => a=5 m=-31 s=7 x=-3 q=8 r=7 calls=8
+PASS    conformance/pou/inout_call_in_std_arg.st
+### conformance/pou/inout_struct_field.st
+0 i=1 => r1=5 r2=1 px=5 e1=1 e2=0 e3=0
+1 i=3 => r1=10 r2=1 px=10 e1=1 e2=0 e3=1
+2 i=1 => r1=15 r2=2 px=15 e1=2 e2=0 e3=1
+PASS    conformance/pou/inout_struct_field.st
+### conformance/pou/output_array_element.st
+0 i=1 x=9 => q=2 q2=2 e1=1 e2=0 e3=2
+1 i=2 x=7 => q=1 q2=2 e1=1 e2=3 e3=0
+2 i=3 x=6 => q=1 q2=1 e1=1 e2=3 e3=3
+PASS    conformance/pou/output_array_element.st
+### conformance/pou/output_struct_field.st
+0 i=1 x=9 => q=2 q2=2 py=1 e1=2 e2=0 e3=0
+1 i=3 x=10 => q=2 q2=2 py=2 e1=2 e2=0 e3=3
+2 i=2 x=5 => q=1 q2=1 py=1 e1=2 e2=2 e3=3
+PASS    conformance/pou/output_struct_field.st
+### conformance/strings/compare.st
+0 => e1=TRUE e2=FALSE l1=TRUE l2=TRUE l3=TRUE l4=TRUE g1=TRUE n1=TRUE
+1 => e1=TRUE e2=FALSE l1=TRUE l2=TRUE l3=TRUE l4=TRUE g1=TRUE n1=TRUE
+PASS    conformance/strings/compare.st
+### conformance/strings/compare_le_ge.st
+0 => le1=TRUE le2=TRUE le3=FALSE ge1=FALSE ge2=TRUE ge3=TRUE
+1 => le1=TRUE le2=TRUE le3=FALSE ge1=FALSE ge2=TRUE ge3=TRUE
+PASS    conformance/strings/compare_le_ge.st
+### conformance/strings/compare_prefix.st
+0 => eq1=FALSE eq2=FALSE eq3=TRUE ne1=TRUE ne2=TRUE ne3=FALSE
+1 => eq1=FALSE eq2=FALSE eq3=TRUE ne1=TRUE ne2=TRUE ne3=FALSE
+PASS    conformance/strings/compare_prefix.st
+### conformance/strings/concat_assign.st
+0 push=TRUE => acc='x' n=1 copy='ab'
+1 push=TRUE => acc='xx' n=2 copy='abz'
+2 push=FALSE => acc='xx' n=2 copy='abzz'
+3 push=TRUE => acc='xxx' n=3 copy='abzzz'
+PASS    conformance/strings/concat_assign.st
+### conformance/strings/concat_ext.st
+0 => joined3='abCDef' joined4='abCDefGH' nested='abCDef'
+1 => joined3='abCDef' joined4='abCDefGH' nested='abCDef'
+PASS    conformance/strings/concat_ext.st
+### conformance/strings/declared_length.st
+0 => s3='xyz' s4='init' s5='abcde' n3=3 n4=4 n5=5 cat='xyzinit'
+1 => s3='xyz' s4='init' s5='abcde' n3=3 n4=4 n5=5 cat='xyzinit'
+PASS    conformance/strings/declared_length.st
+### conformance/strings/find_int.st
+0 i0=-11 => m=2 n=-11 c=TRUE d=-3 absent=0
+1 i0=7 => m=7 n=2 c=FALSE d=-3 absent=0
+PASS    conformance/strings/find_int.st
+### conformance/strings/functions.st
+0 n=1 => o_len=5 o_concat='abcd' o_left='h' o_right='o' o_mid='e' o_insert='hXXello' o_delete='hllo' o_replace='hYYllo' o_find=3 o_find0=0
+1 n=2 => o_len=5 o_concat='abcd' o_left='he' o_right='lo' o_mid='el' o_insert='heXXllo' o_delete='hlo' o_replace='hYYlo' o_find=3 o_find0=0
+2 n=3 => o_len=5 o_concat='abcd' o_left='hel' o_right='llo' o_mid='ell' o_insert='helXXlo' o_delete='ho' o_replace='hYYo' o_find=3 o_find0=0
+3 n=4 => o_len=5 o_concat='abcd' o_left='hell' o_right='ello' o_mid='ello' o_insert='hellXXo' o_delete='h' o_replace='hYY' o_find=3 o_find0=0
+PASS    conformance/strings/functions.st
+### conformance/strings/insert_positions.st
+0 pos=1 => inserted='aXYbcde'
+1 pos=2 => inserted='abXYcde'
+2 pos=4 => inserted='abcdXYe'
+3 pos=5 => inserted='abcdeXY'
+PASS    conformance/strings/insert_positions.st
+### conformance/strings/len_int.st
+0 i0=-11 => m=0 n=-11 c=TRUE d=-2
+1 i0=7 => m=7 n=3 c=FALSE d=-2
+PASS    conformance/strings/len_int.st
+### conformance/strings/literals_escapes.st
+0 => s1='abc' s2='' s3='it$'s' s4='$$' s5='a$20b' s6='tab$Tx' s7='nl$Ly' s8='AB' n1=3
+1 => s1='abc' s2='' s3='it$'s' s4='$$' s5='a$20b' s6='tab$Tx' s7='nl$Ly' s8='AB' n1=3
+PASS    conformance/strings/literals_escapes.st
+### conformance/strings/min_max_limit.st
+0 => lo='abc' hi='abd' at_low='abd' within='abd' at_high='abd'
+1 => lo='abc' hi='abd' at_low='abd' within='abd' at_high='abd'
+PASS    conformance/strings/min_max_limit.st
+### conformance/timers/tof.st
+0 in=FALSE => q=FALSE et=T#0ms
+1 in=TRUE => q=TRUE et=T#0ms
+2 => q=TRUE et=T#0ms
+3 in=FALSE => q=TRUE et=T#0ms
+4 => q=TRUE et=T#100ms
+5 => q=FALSE et=T#200ms
+6 => q=FALSE et=T#200ms
+7 in=TRUE => q=TRUE et=T#0ms
+8 in=FALSE => q=TRUE et=T#0ms
+9 in=TRUE => q=TRUE et=T#0ms
+10 in=FALSE => q=TRUE et=T#0ms
+11 => q=TRUE et=T#100ms
+12 => q=FALSE et=T#200ms
+PASS    conformance/timers/tof.st
+### conformance/timers/ton.st
+0 in=FALSE => q=FALSE et=T#0ms
+1 in=TRUE => q=FALSE et=T#0ms
+2 => q=FALSE et=T#100ms
+3 => q=FALSE et=T#200ms
+4 => q=TRUE et=T#300ms
+5 => q=TRUE et=T#300ms
+6 in=FALSE => q=FALSE et=T#0ms
+7 in=TRUE => q=FALSE et=T#0ms
+8 => q=FALSE et=T#100ms
+9 in=FALSE => q=FALSE et=T#0ms
+10 => q=FALSE et=T#0ms
+PASS    conformance/timers/ton.st
+### conformance/timers/tp.st
+0 in=FALSE => q=FALSE et=T#0ms
+1 in=TRUE => q=TRUE et=T#0ms
+2 in=FALSE => q=TRUE et=T#100ms
+3 => q=TRUE et=T#200ms
+4 => q=FALSE et=T#300ms
+5 => q=FALSE et=T#0ms
+6 in=TRUE => q=TRUE et=T#0ms
+7 => q=TRUE et=T#100ms
+8 => q=TRUE et=T#200ms
+9 => q=FALSE et=T#300ms
+10 => q=FALSE et=T#300ms
+11 => q=FALSE et=T#300ms
+12 in=FALSE => q=FALSE et=T#0ms
+13 in=TRUE => q=TRUE et=T#0ms
+14 in=FALSE => q=TRUE et=T#100ms
+15 in=TRUE => q=TRUE et=T#200ms
+16 => q=FALSE et=T#300ms
+17 => q=FALSE et=T#300ms
+18 in=FALSE => q=FALSE et=T#0ms
+PASS    conformance/timers/tp.st
+### conformance/undefined/abs_int_min.st
+0 x=-7 d=-7 => ax=7 nx=7 ad=7 nd=7
+1 x=-32768 d=-2147483648 => trap: arithmetic overflow
+DIFFERS conformance/undefined/abs_int_min.st
+        cycle 1 (trace line 15): unexpected trap (trap: arithmetic overflow)
+### conformance/undefined/array_out_of_bounds.st
+0 idx=2 => v=20 ok=TRUE
+1 idx=3 => v=30 ok=TRUE
+2 idx=4 => trap: array index 4 out of bounds [0..3]
+SAME    conformance/undefined/array_out_of_bounds.st
+### conformance/undefined/ctu_pv_zero.st
+0 cu=FALSE r=FALSE => q=TRUE cv=0
+1 cu=TRUE => q=TRUE cv=1
+2 cu=FALSE => q=TRUE cv=1
+3 cu=TRUE => q=TRUE cv=2
+4 r=TRUE => q=TRUE cv=0
+5 r=FALSE cu=FALSE => q=TRUE cv=0
+SAME    conformance/undefined/ctu_pv_zero.st
+### conformance/undefined/dint_to_int_overflow.st
+0 d=100 i=100 u=100 => d2i=100 d2u=100 i2u=100 u2i=100
+1 d=40000 i=-1 u=65535 => trap: arithmetic overflow
+DIFFERS conformance/undefined/dint_to_int_overflow.st
+        cycle 1 (trace line 15): unexpected trap (trap: arithmetic overflow)
+### conformance/undefined/div_zero.st
+0 a=7 b=2 => q=3 m=1
+1 a=-7 b=2 => q=-3 m=-1
+2 a=7 b=0 => trap: division by zero
+SAME    conformance/undefined/div_zero.st
+### conformance/undefined/eval_order.st
+0 reset=TRUE => y=-19 c=2
+1 reset=TRUE => y=-19 c=2
+2 reset=FALSE => y=-37 c=4
+SAME    conformance/undefined/eval_order.st
+### conformance/undefined/for_bound_modified.st
+DIFFERS conformance/undefined/for_bound_modified.st
+        truST failed to compile the program:
+file 0: error[E202]: FOR loop control variables must not be modified in the loop body (at 331..338)
+### conformance/undefined/for_var_after_loop.st
+0 n=3 => i_after=4 sum=6
+1 n=0 => i_after=1 sum=0
+2 n=1 => i_after=2 sum=1
+3 n=-2 => i_after=1 sum=0
+SAME    conformance/undefined/for_var_after_loop.st
+### conformance/undefined/int_overflow.st
+0 a=1 b=2 => s=3 d=-1
+1 a=32767 b=1 => trap: arithmetic overflow
+DIFFERS conformance/undefined/int_overflow.st
+        cycle 1 (trace line 21): unexpected trap (trap: arithmetic overflow)
+### conformance/undefined/real_div_zero.st
+0 x=1.0 y=2.0 => q=0.5
+1 x=1.0 y=0.0 => trap: division by zero
+DIFFERS conformance/undefined/real_div_zero.st
+        cycle 1 (trace line 13): unexpected trap (trap: division by zero)
+### conformance/undefined/real_to_int_ties.st
+0 x=2.5 l=2.5 => i=2 d=2
+1 x=3.5 l=3.5 => i=4 d=4
+2 x=-2.5 l=-2.5 => i=-2 d=-2
+3 x=-3.5 l=-3.5 => i=-4 d=-4
+4 x=0.5 l=0.5 => i=0 d=0
+DIFFERS conformance/undefined/real_to_int_ties.st
+        cycle 1 (trace line 20): i expected 3, got 4
+        cycle 1 (trace line 20): d expected 3, got 4
+        cycle 3 (trace line 22): i expected -3, got -4
+        cycle 3 (trace line 22): d expected -3, got -4
+### conformance/undefined/short_circuit.st
+0 g=FALSE => a=FALSE o=TRUE n_and=0 n_or=1
+1 g=TRUE => a=TRUE o=TRUE n_and=1 n_or=0
+2 g=FALSE => a=FALSE o=TRUE n_and=0 n_or=1
+DIFFERS conformance/undefined/short_circuit.st
+        cycle 0 (trace line 16): n_and expected 1, got 0
+        cycle 1 (trace line 17): n_or expected 1, got 0
+        cycle 2 (trace line 18): n_and expected 1, got 0
+### conformance/undefined/string_conversions.st
+0 i=42 => s_i='42' back=42 s_d='-2147483648'
+1 i=-7 => s_i='-7' back=42 s_d='-2147483648'
+2 i=0 => s_i='0' back=42 s_d='-2147483648'
+SAME    conformance/undefined/string_conversions.st
+### conformance/undefined/string_truncate.st
+DIFFERS conformance/undefined/string_truncate.st
+        truST failed to compile the program:
+file 0: error[E304]: STRING literal length 6 exceeds STRING[3] capacity (at 173..182)
+### conformance/undefined/subrange_out_of_range.st
+0 v=7 => s=7
+1 v=20 => trap: value 20 outside declared subrange 5..10
+DIFFERS conformance/undefined/subrange_out_of_range.st
+        cycle 1 (trace line 16): unexpected trap (trap: value 20 outside declared subrange 5..10)
+### conformance/undefined/tasks_same_priority.st
+0 => marks=0
+1 => marks=12
+2 => marks=1212
+3 => marks=121212
+4 => marks=12121212
+DIFFERS conformance/undefined/tasks_same_priority.st
+        cycle 0 (trace line 12): marks expected 12, got 0
+        cycle 1 (trace line 13): marks expected 1212, got 12
+        cycle 2 (trace line 14): marks expected 121212, got 1212
+        cycle 3 (trace line 15): marks expected 12121212, got 121212
+        cycle 4 (trace line 16): marks expected 1212121212, got 12121212
+### conformance/undefined/timer_pt_zero.st
+0 in=FALSE => q_ton=FALSE et_ton=T#0ms q_tof=FALSE et_tof=T#0ms q_tp=FALSE et_tp=T#0ms
+1 in=TRUE => q_ton=TRUE et_ton=T#0ms q_tof=TRUE et_tof=T#0ms q_tp=FALSE et_tp=T#0ms
+2 => q_ton=TRUE et_ton=T#0ms q_tof=TRUE et_tof=T#0ms q_tp=FALSE et_tp=T#0ms
+3 in=FALSE => q_ton=FALSE et_ton=T#0ms q_tof=FALSE et_tof=T#0ms q_tp=FALSE et_tp=T#0ms
+4 => q_ton=FALSE et_ton=T#0ms q_tof=FALSE et_tof=T#0ms q_tp=FALSE et_tp=T#0ms
+5 in=TRUE => q_ton=TRUE et_ton=T#0ms q_tof=TRUE et_tof=T#0ms q_tp=FALSE et_tp=T#0ms
+6 in=FALSE => q_ton=FALSE et_ton=T#0ms q_tof=FALSE et_tof=T#0ms q_tp=FALSE et_tp=T#0ms
+DIFFERS conformance/undefined/timer_pt_zero.st
+        cycle 0 (trace line 22): q_tof expected TRUE, got FALSE
+        cycle 1 (trace line 23): q_ton expected FALSE, got TRUE
+        cycle 1 (trace line 23): q_tp expected TRUE, got FALSE
+        cycle 3 (trace line 25): q_tof expected TRUE, got FALSE
+        cycle 5 (trace line 27): q_ton expected FALSE, got TRUE
+        cycle 5 (trace line 27): q_tp expected TRUE, got FALSE
+        cycle 6 (trace line 28): q_tof expected TRUE, got FALSE
+### conformance/undefined/ton_pt_change.st
+0 in=FALSE pt=T#500ms => q=FALSE et=T#0ms
+1 in=TRUE => q=FALSE et=T#0ms
+2 => q=FALSE et=T#100ms
+3 pt=T#200ms => q=TRUE et=T#200ms
+4 => q=TRUE et=T#200ms
+5 pt=T#800ms => q=FALSE et=T#300ms
+6 => q=FALSE et=T#400ms
+7 => q=FALSE et=T#500ms
+8 => q=FALSE et=T#600ms
+9 => q=FALSE et=T#700ms
+10 => q=TRUE et=T#800ms
+11 => q=TRUE et=T#800ms
+12 in=FALSE => q=FALSE et=T#0ms
+DIFFERS conformance/undefined/ton_pt_change.st
+        cycle 5 (trace line 31): q expected TRUE, got FALSE
+        cycle 5 (trace line 31): et expected T#400ms, got T#300ms
+        cycle 6 (trace line 32): q expected TRUE, got FALSE
+        cycle 6 (trace line 32): et expected T#500ms, got T#400ms
+        cycle 7 (trace line 33): q expected TRUE, got FALSE
+        cycle 7 (trace line 33): et expected T#600ms, got T#500ms
+        cycle 8 (trace line 34): q expected TRUE, got FALSE
+        cycle 8 (trace line 34): et expected T#700ms, got T#600ms
+        cycle 9 (trace line 35): q expected TRUE, got FALSE
+        cycle 9 (trace line 35): et expected T#800ms, got T#700ms
+
+109 tests: 84 pass, 7 fail, 6 same, 12 differs, 0 error
+exit 1

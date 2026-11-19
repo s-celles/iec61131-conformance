@@ -31,6 +31,7 @@ RUNTIMES = {
     "rusty": ("RuSTy", "RUSTY_SHA", "## RuSTy deviations"),
     "4diac": ("4diac", "FOURDIAC_VERSION", "## 4diac ("),
     "rk": ("rk", "RK_SHA", "## rk ("),
+    "trust": ("truST", "TRUST_SHA", "## truST ("),
 }
 VERDICTS = ("PASS", "FAIL", "SAME", "DIFFERS", "ERROR")
 # short forms used in the notes -> GitHub repository
@@ -38,6 +39,7 @@ ALIASES = {
     "ironplc": "ironplc/ironplc", "rusty": "PLC-lang/rusty", "STruCpp": "Autonomy-Logic/STruCpp",
     "matiec": "beremiz/matiec", "4diac-ide": "eclipse-4diac/4diac-ide",
     "4diac-forte": "eclipse-4diac/4diac-forte", "rk": "adclz/rk",
+    "trust-platform": "johannesPettersson80/trust-platform",
 }
 # where the numbered findings live: id prefix -> (runtime label, source,
 # upstream repositories whose issues count as "reported")
@@ -49,6 +51,7 @@ FINDINGS = {
     "rusty": ("RuSTy", "## RuSTy deviations", ("PLC-lang/rusty",)),
     "4diac": ("4diac", "## 4diac (", ("eclipse-4diac/4diac-ide", "eclipse-4diac/4diac-forte")),
     "rk": ("rk", "## rk (", ("adclz/rk",)),
+    "trust": ("truST", "## truST (", ("johannesPettersson80/trust-platform",)),
 }
 # The matiec section of notes/comparison.md opens with one-line summaries of
 # where IronPLC and matiec disagree; items 1-7 and 9 are IronPLC behaviours,
@@ -301,7 +304,7 @@ class Site:
 
 **An open, runtime-agnostic conformance suite for IEC 61131-3 Structured Text runtimes.**
 
-Plain `.st` programs paired with plain-text expected input/output traces, one record per scan cycle, run against seven runtimes through simulated-clock harnesses. A Lean 4 model of the function blocks, written from the same reading of the standard, proves that their traces follow from it. Public domain (CC0 1.0).
+Plain `.st` programs paired with plain-text expected input/output traces, one record per scan cycle, run against eight runtimes through simulated-clock harnesses. A Lean 4 model of the function blocks, written from the same reading of the standard, proves that their traces follow from it. Public domain (CC0 1.0).
 
 <div class="disclaimer">
 

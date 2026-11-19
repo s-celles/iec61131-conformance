@@ -62,6 +62,16 @@ git clone https://github.com/adclz/rk scratch/rk
 ./harness/rk/target/release/iec61131-conformance-rk --rk scratch/rk/target/release/rk --record conformance \
     > notes/evidence/rk-run.txt
 
+# truST b5e8820 (2026-11-19; Rust 1.99.0 from its rust-toolchain.toml)
+git init -q scratch/trust
+git -C scratch/trust fetch -q --depth 1 https://github.com/johannesPettersson80/trust-platform b5e8820ad838136b4580ba6271a1f288362b16d0
+git -C scratch/trust checkout -q FETCH_HEAD
+(cd scratch/trust && rustup toolchain install && cargo fetch --locked \
+    && cargo build --release --locked -p trust-runtime --example conformance_driver \
+    && bash scripts/native/build_toolchain_libraries.sh "$PWD/toolchain" x86_64-unknown-linux-gnu)
+python3 -I harness/trust/run.py --driver scratch/trust/target/release/examples/conformance_driver \
+    --toolchain scratch/trust/toolchain --record conformance > notes/evidence/trust-run.txt
+
 # Lean 4.35.0 (elan)
 curl -sSfL https://github.com/leanprover/elan/releases/latest/download/elan-x86_64-unknown-linux-gnu.tar.gz | tar xz
 ./elan-init -y --default-toolchain stable
