@@ -107,8 +107,9 @@ def upstream_refs(text):
     refs = set()
     for owner, repo, n in re.findall(r"github\.com/([\w.-]+)/([\w.-]+)/(?:issues|pull)/(\d+)", text):
         refs.add((f"{owner}/{repo}", int(n)))
-    for full, n in re.findall(r"(?<![\w/.-])([\w.-]+/[\w.-]+)#(\d+)", text):
-        refs.add((full, int(n)))
+    for full, n in re.findall(r"(?<![\w/.-])([\w-]+/[\w.-]+)#(\d+)", text):
+        if not full.endswith(".md"):          # notes/findings.md#28 is an anchor, not an issue
+            refs.add((full, int(n)))
     for short, n in re.findall(r"(?<![\w/.-])(" + "|".join(map(re.escape, ALIASES)) + r")#(\d+)", text):
         refs.add((ALIASES[short], int(n)))
     return sorted(r for r in refs if "/" in r[0] and not r[0].startswith("."))
@@ -144,6 +145,55 @@ def section(md, heading):
         if on:
             out.append(line)
     return out[0] if out else "", "\n".join(out[1:]).strip() + "\n"
+
+
+# ----------------------------------------------------------- upstream states
+
+STATE_LABEL = {"closed (not planned)": "not planned", "unknown": "unknown"}
+
+
+def upstream_snapshot(root):
+    """{(repo, number): row} from notes/upstream-status.tsv (written by
+    tools/site/upstream_status.py); {} if there is none."""
+    p = pathlib.Path(root) / "notes" / "upstream-status.tsv"
+    if not p.exists():
+        return {}
+    lines = p.read_text().splitlines()
+    cols = lines[0].split("\t")
+    rows = [dict(zip(cols, l.split("\t"))) for l in lines[1:] if l.strip()]
+    return {(r["repo"], int(r["number"])): r for r in rows}
+
+
+def md_text(text):
+    """Plain text (an issue title) safe inside Markdown: no emphasis, no table cell break."""
+    return re.sub(r"([\\`*_\[\]<>|])", r"\\\1", text)
+
+
+def state_badge(row):
+    if not row:
+        return ""
+    return " " + badge(STATE_LABEL.get(row["state"], row["state"]))
+
+
+def data_stamp(root):
+    """"Data at commit ... (date)" for the commit the site is built from."""
+    try:
+        sha, day = git(root, "log", "-1", "--format=%h %cs").split()
+    except (OSError, subprocess.CalledProcessError, ValueError):
+        return ""
+    return f'<p class="data-stamp">Data at commit <a href="{REPO}/commit/{sha}"><code>{sha}</code></a> ({day}).</p>\n\n'
+
+
+def citation(root):
+    """Title, authors, version, date, licence and repository from CITATION.cff."""
+    p = pathlib.Path(root) / "CITATION.cff"
+    if not p.exists():
+        return {}
+    t = p.read_text()
+    get = lambda k: (re.search(rf'(?m)^{k}:\s*"?([^"\n]+)"?', t) or [None, ""])[1].strip()
+    authors = [f"{g} {f}" for f, g in re.findall(r"family-names:\s*(.+)\n\s+given-names:\s*(.+)", t)]
+    return {"title": get("title"), "authors": ", ".join(authors), "version": get("version"),
+            "date": get("date-released"), "license": get("license"), "url": get("repository-code")}
 
 
 # ------------------------------------------------------------------ history
@@ -191,6 +241,9 @@ def history(root):
         refs = upstream_refs("\n".join(git(root, "show", f"{sha}:{f}") for f in notes))
         rows.append({"sha": sha[:7], "date": date[:16].replace("T", " "), "tests": tests,
                      "conformant": totals[0], "passed": totals[1], "refs": len(refs)})
+    # commit dates need not grow along the history (a rebase, or the temporary
+    # merge commit CI builds for a pull request): order the points by time
+    rows.sort(key=lambda r: r["date"])
     return rows
 
 
@@ -238,7 +291,7 @@ def line_svg(rows, series, ymax, title, unit="", height=220, width=760, direct_l
         out.append(f'<path class="viz-line" style="stroke:var({var})" d="{path}"/>')
         for i, v in pts:
             r = rows[i]
-            out.append(f'<g class="viz-pt"><circle class="viz-hit" cx="{X(i):.1f}" cy="{Y(v):.1f}" r="9"/>'
+            out.append(f'<g class="viz-pt" tabindex="0" aria-label="{label}: {v:g}{unit}, {r["date"]}, commit {r["sha"]}"><circle class="viz-hit" cx="{X(i):.1f}" cy="{Y(v):.1f}" r="9"/>'
                        f'<circle class="viz-dot" style="fill:var({var})" cx="{X(i):.1f}" cy="{Y(v):.1f}" r="4"/>'
                        f'<title>{label}: {v:g}{unit} · {r["date"]} · {r["sha"]}</title></g>')
         if direct_labels:
@@ -369,6 +422,8 @@ class Site:
         self.refs = upstream_refs("\n".join(notes))
         self.findings = self.collect_findings()
         self.properties = {(t, src): vs for t, src, vs in monitor.run(self.root)}
+        self.snapshot = upstream_snapshot(self.root)
+        self.stamp = data_stamp(self.root)
 
     def collect_findings(self):
         names = {p[12:-3] for p in self.tests}
@@ -403,7 +458,12 @@ class Site:
         t = self.totals
         rows = "\n".join(f"| [{name}]({{{{< relref \"/runtimes/{rt}\" >}}}}) | `{self.pin(rt)}` | {self.passed(rt)} / {t['conformant']} |"
                          for rt, (name, _, _) in RUNTIMES.items())
-        return front("IEC 61131-3 conformance traces", 0) + f"""<p class="site-banner"><img src="brand/scanard-banner.svg" alt="SCANard: expected vs. observed, one scan at a time"></p>
+        cite = citation(self.root)
+        recent = sorted((r for r in self.snapshot.values() if r.get("created")), key=lambda r: (r["created"], r["repo"], int(r["number"])), reverse=True)[:8]
+        recent_md = "\n".join(f"| {r['created']} | [{r['repo']}#{r['number']}](https://github.com/{r['repo']}/issues/{r['number']}) | {md_text(r['title'])} |{state_badge(r)} |" for r in recent)
+        cite_md = (f"> {cite['authors']}. *{cite['title']}*. Version {cite['version']} ({cite['date']}). {cite['url']}. Licence {cite['license']}."
+                   f"\n\nMetadata in [`CITATION.cff`]({BLOB}/CITATION.cff)." if cite else "")
+        return front("IEC 61131-3 conformance traces", 0) + self.stamp + f"""<p class="site-banner"><img src="brand/scanard-banner.svg" alt="SCANard: expected vs. observed, one scan at a time"></p>
 
 <div class="project-kicker">IEC 61131-3 · Structured Text · differential testing</div>
 
@@ -421,7 +481,7 @@ Plain `.st` programs paired with plain-text expected input/output traces, one re
 
 {{{{< stats tests="{t['tests']}" conformant="{t['conformant']}" runtimes="{len(RUNTIMES)}" upstream="{len(self.refs)}" >}}}}
 
-[Browse the results →]({{{{< relref "/results" >}}}}) · [Findings →]({{{{< relref "/findings" >}}}}) · [Read a test →]({{{{< relref "/tests" >}}}}) · [Upstream issues →]({{{{< relref "/upstream" >}}}}) · [Trace format →]({{{{< relref "/docs/spec" >}}}})
+[Browse the results →]({{{{< relref "/results" >}}}}) · [Findings →]({{{{< relref "/findings" >}}}}) · [Read a test →]({{{{< relref "/tests" >}}}}) · [Methodology →]({{{{< relref "/methodology" >}}}}) · [Statuses →]({{{{< relref "/statuses" >}}}})
 
 ## Conformant tests passed
 
@@ -433,12 +493,24 @@ Counts are recomputed from `notes/comparison.md` on every build. They are not a 
 
 ## What the results mean
 
-A runtime that fails a trace is a claim to check against the standard, not a verdict: the trace itself may be wrong (see the provenance note above). `status: implementation-defined` traces record one runtime's choice where the standard leaves the value open; `SAME`/`DIFFERS` only says whether another runtime made the same choice. `ERROR` is a limit of the harness or of the build. The results are for the pinned commits. See [the method]({{{{< relref "/docs/guide" >}}}}) for the full statement.
+A runtime that fails a trace is a claim to check against the standard, not a verdict: the trace itself may be wrong (see the provenance note above). `status: implementation-defined` traces record one runtime's choice where the standard leaves the value open; `SAME`/`DIFFERS` only says whether another runtime made the same choice. `ERROR` is a limit of the harness or of the build. The results are for the pinned commits. Every status is defined in [Statuses]({{{{< relref "/statuses" >}}}}); the method is in [Methodology]({{{{< relref "/methodology" >}}}}).
+
+## Recent upstream reports
+
+The newest issues and pull requests the notes cite, with their state in the snapshot [`notes/upstream-status.tsv`]({BLOB}/notes/upstream-status.tsv).
+
+| Opened | Issue | Title | State |
+|---|---|---|---|
+{recent_md}
+
+## Cite
+
+{cite_md}
 """
 
     def results(self):
         table = results_rows(between_markers(self.comparison))
-        return (front("Results", 1) + "Every test on every runtime, from `notes/comparison.md` (regenerated from the evidence files by `harness/summarize.py`; the note column is written by hand). Type in the field to filter the rows, click a heading to sort.\n\n"
+        return (front("Results", 1) + self.stamp + "Every test on every runtime, from `notes/comparison.md` (regenerated from the evidence files by `harness/summarize.py`; the note column is written by hand). Type in the field to filter the rows, click a heading to sort.\n\n"
                 + filterable(rewrite_links(table.strip(), "notes/comparison.md")))
 
     def test_page(self, path):
@@ -492,7 +564,7 @@ A runtime that fails a trace is a claim to check against the standard, not a ver
         for f in self.findings:
             counts[f["status"]] = counts.get(f["status"], 0) + 1
         summary = " · ".join(f"{v} {k}" for k, v in sorted(counts.items()))
-        return (front("Findings", 2) + f"{len(self.findings)} findings from the notes, one page each ({summary}). "
+        return (front("Findings", 2) + self.stamp + f"{len(self.findings)} findings from the notes, one page each ({summary}). "
                 "A finding is a difference between a runtime and the expected trace, or between runtimes; it is a claim to check, "
                 "and the expected trace itself may be wrong. Status: *reported* has an issue on the runtime's tracker, *fixed* is "
                 "fixed upstream or resolved, *not a defect* and *limitation* are recorded for completeness. Type in the field to "
@@ -500,14 +572,14 @@ A runtime that fails a trace is a claim to check against the standard, not a ver
                 + filterable("| Finding | Runtime | Title | Status | Upstream | Tests |\n|---|---|---|---|---|---|\n" + "\n".join(rows)))
 
     def finding_page(self, f, weight):
-        up = " · ".join(f"[{r}#{n}](https://github.com/{r}/issues/{n})" for r, n in f["refs"]) or "none"
+        up = " · ".join(f"[{r}#{n}](https://github.com/{r}/issues/{n}){state_badge(self.snapshot.get((r, n)))}" for r, n in f["refs"]) or "none"
         tests = " · ".join(f"[{t}]({{{{< relref \"/tests/{t}\" >}}}})" for t in f["tests"]) or "none"
         return (front(f"{f['id']}: {plain(f['title'])}", weight, linkTitle=f["id"]) +
                 f"Runtime: **{f['runtime']}** · status: {badge(f['status'])} · from [`{f['source']}`]({BLOB}/{f['source']})\n\n"
                 f"Upstream: {up}\n\nTests: {tests}\n\n---\n\n" + demote(rewrite_links(f["body"], f["source"])))
 
     def tests_index(self):
-        out = [front("Tests", 3), f"{len(self.tests)} tests in {len({p.split('/')[1] for p in self.tests})} directories. Each page shows the program, its expected trace and what every pinned runtime produced.\n"]
+        out = [front("Tests", 3) + self.stamp, f"{len(self.tests)} tests in {len({p.split('/')[1] for p in self.tests})} directories. Each page shows the program, its expected trace and what every pinned runtime produced.\n"]
         short = {rt: RUNTIMES[rt][0] for rt in RUNTIMES}
         for cat in sorted({p.split("/")[1] for p in self.tests}):
             out.append(f"\n## {cat}\n\n| Test | " + " | ".join(short.values()) + " |\n|---|" + "---|" * len(short))
@@ -531,7 +603,7 @@ A runtime that fails a trace is a claim to check against the standard, not a ver
 
     def history_page(self):
         rows = history(self.root)
-        head = front("History", 6) + ("The suite and its results over time, one point per commit of `main` that changed "
+        head = front("History", 6) + self.stamp + ("The suite and its results over time, one point per commit of `main` that changed "
                                       "`notes/comparison.md`, read from the git history at build time. Hover a point for its "
                                       "value, date and commit; the table below has every value.\n\n")
         if not rows:
@@ -563,11 +635,61 @@ A runtime that fails a trace is a claim to check against the standard, not a ver
                 + filterable("\n".join(table)))
 
     def upstream(self):
-        out = [front("Upstream", 5), f"{len(self.refs)} upstream issues and pull requests cited in the notes, by repository. Their state is on GitHub; the notes say what each one covers.\n"]
+        dated = max((r["closed"] or r["created"] for r in self.snapshot.values() if r.get("created")), default="")
+        out = [front("Upstream", 5) + self.stamp,
+               f"{len(self.refs)} upstream issues and pull requests cited in the notes, by repository, with their state in the "
+               f"snapshot [`notes/upstream-status.tsv`]({BLOB}/notes/upstream-status.tsv) (latest change in it: {dated or 'none'}; "
+               "refreshed with `python3 -I tools/site/upstream_status.py`). A closed issue is not proof that a fix reached a release; "
+               "the notes say what each one covers.\n"]
         for repo in sorted({r for r, _ in self.refs}, key=str.lower):
-            nums = [n for r, n in self.refs if r == repo]
-            out.append(f"\n## {repo}\n\n" + " · ".join(f"[#{n}](https://github.com/{repo}/issues/{n})" for n in nums))
+            rows = []
+            for r, n in self.refs:
+                if r != repo:
+                    continue
+                snap = self.snapshot.get((r, n), {})
+                rows.append(f"| [#{n}](https://github.com/{r}/issues/{n}) | {snap.get('kind', '')} |{state_badge(snap) or ' '} | "
+                            f"{snap.get('created', '')} | {snap.get('closed', '')} | {md_text(snap.get('title', ''))} |")
+            out.append(f"\n## {repo}\n\n| # | Kind | State | Opened | Closed | Title |\n|---|---|---|---|---|---|\n" + "\n".join(rows))
         return "\n".join(out) + "\n"
+
+    def methodology(self):
+        _, method = section(self.read("docs/guide.md"), "## Method")
+        diagram = """```mermaid
+flowchart LR
+  ST[".st program"] --> H["harness per runtime"]
+  TR[".trace expected records"] --> H
+  H --> EV["notes/evidence runtime outputs"]
+  EV --> CMP["notes/comparison.md results table"]
+  TR --> LEAN["Lean 4 model and trace theorems"]
+  TR --> MON["tools/monitor ed.2 block rules"]
+  EV --> MON
+  CMP --> SITE["this site"]
+  MON --> SITE
+  EV --> SITE
+```
+"""
+        return (front("Methodology", 7) + "How a test becomes a result, and what a result does and does not mean. CI checks every arrow "
+                "below: each runtime's output against its evidence file, the results table against the evidence, the traces "
+                "against the Lean model and against the ed.2 block rules.\n\n## Pipeline\n\n" + diagram +
+                "\n## What the results mean\n\n" + demote(rewrite_links(method, "docs/guide.md")) +
+                f"\n## Checks of the expected values\n\n- [Trace audit of 2026-11-18]({{{{< relref \"/docs/trace-audit-2026-11-18\" >}}}}): ed.2 citations and the traces most runtimes fail, checked against the text of IEC 61131-3:2003.\n"
+                "- Property monitors: rules read off the ed.2 text for the standard blocks, shown under *Properties* on each block test's page.\n"
+                f"- [Guide]({{{{< relref \"/docs/guide\" >}}}}): how to run each runtime, write a test, fuzz.\n")
+
+    def statuses(self):
+        v = [("PASS", "conformant trace, every checked value matches"), ("FAIL", "conformant trace, a value differs or the program does not compile"),
+             ("SAME", "implementation-defined trace, the runtime made the recorded choice"), ("DIFFERS", "implementation-defined trace, another choice"),
+             ("ERROR", "the harness or the build could not run the test: a limit of this suite, not a result about the runtime")]
+        f = [("reported", "an issue on the runtime's own tracker covers it"), ("fixed", "fixed upstream or resolved; the pinned runtime may predate the fix"),
+             ("not reported", "no upstream report yet"), ("limitation", "a feature the runtime does not have, recorded for completeness"),
+             ("not a defect", "a behaviour the standard permits, recorded for completeness")]
+        u = [("open", "open issue or pull request"), ("closed", "closed issue, fixed or answered"), ("not planned", "closed as not planned"),
+             ("merged", "merged pull request")]
+        table = lambda rows: "| Status | Meaning |\n|---|---|\n" + "\n".join(f"| {badge(k)} | {m} |" for k, m in rows)
+        return (front("Statuses", 8) + "The words the site uses for a result, a finding and an upstream issue. A badge always carries its word, "
+                "so no meaning rests on colour alone.\n\n## Test results\n\n" + table(v) +
+                "\n\n## Findings\n\n" + table(f) + "\n\n## Upstream issues and pull requests\n\n" + table(u) +
+                f"\n\nStates come from the snapshot [`notes/upstream-status.tsv`]({BLOB}/notes/upstream-status.tsv).\n")
 
     def doc(self, rel, title, weight):
         return front(title, weight) + f"From [`{rel}`]({BLOB}/{rel}).\n\n" + demote(rewrite_links(drop_title(self.read(rel)), rel))
@@ -621,10 +743,12 @@ def generate(root, out):
         write(c / "runtimes" / f"{rt}.md", site.runtime_page(rt, i + 1))
     write(c / "upstream.md", site.upstream())
     write(c / "history.md", site.history_page())
+    write(c / "methodology.md", site.methodology())
+    write(c / "statuses.md", site.statuses())
     write(c / "findings/_index.md", site.findings_index())
     for i, f in enumerate(site.findings):
         write(c / "findings" / f"{f['id']}.md", site.finding_page(f, i + 1))
-    write(c / "docs/_index.md", front("Docs", 6) + "The repository's documents, rendered.\n")
+    write(c / "docs/_index.md", front("Docs", 9) + "The repository's documents, rendered.\n")
     for k, text in site.docs().items():
         write(c / "docs" / f"{k}.md", text)
     short, full = site.llms()

@@ -6,6 +6,14 @@ Notable changes are recorded here following Keep a Changelog.
 
 ### Added
 
+- Site: the state of every cited upstream issue and pull request (open, closed,
+  merged, not planned), from the snapshot `notes/upstream-status.tsv` that
+  `tools/site/upstream_status.py` refreshes. It is shown on the Upstream page, on
+  each finding and among the recent reports on the home page. Also added: a
+  Methodology page with the pipeline as a diagram, a Statuses page that defines
+  every badge, a citation block from `CITATION.cff`, the data commit on every
+  page with numbers, and chart tooltips that work with the keyboard, with a
+  crosshair.
 - Site: a History page, with the suite's size, each runtime's share of
   conformant tests passed (small multiples on one scale) and the upstream
   issues cited, over time. It is read from the git history of
@@ -115,6 +123,8 @@ Notable changes are recorded here following Keep a Changelog.
 
 ### Fixed
 
+- Site: a link anchor such as `notes/findings.md#28` was counted as an upstream
+  issue.
 - CI's `trust` job builds without truST's `sccache` rustc wrapper, which the
   runner lacks (`RUSTC_WRAPPER` set empty).
 - The OpenPLC fork's evidence for `ops/time_literal_ms` cited trace lines

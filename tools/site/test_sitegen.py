@@ -225,5 +225,52 @@ class History(unittest.TestCase):
         self.assertIn("fetch-depth: 0", (ROOT / ".github/workflows/site.yml").read_text())
 
 
+class Quality(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        cls.out = pathlib.Path(tempfile.mkdtemp(prefix="sitegen-"))
+        sitegen.generate(ROOT, cls.out)
+        cls.c = cls.out / "content"
+
+    def test_issue_titles_are_plain_text(self):
+        self.assertEqual(sitegen.md_text("emitted outside #ifndef __POUS_INIT_ONLY__ | x"), "emitted outside #ifndef \\_\\_POUS\\_INIT\\_ONLY\\_\\_ \\| x")
+
+    def test_anchor_links_are_not_issues(self):
+        self.assertEqual(sitegen.upstream_refs("see [28](notes/findings.md#28-defect) and ironplc#2624"),
+                         [("ironplc/ironplc", 2624)])
+
+    def test_upstream_states_from_the_snapshot(self):
+        snap = sitegen.upstream_snapshot(ROOT)
+        self.assertEqual(snap[("beremiz/matiec", 41)]["state"], "closed")
+        page = (self.c / "upstream.md").read_text()
+        self.assertIn("notes/upstream-status.tsv", page)
+        self.assertIn('badge "closed"', page)
+        f = (self.c / "findings" / "matiec-19.md").read_text()
+        self.assertIn("beremiz/matiec#54", f)
+        self.assertIn('badge "open"', f)
+
+    def test_stamp_line_on_pages_with_numbers(self):
+        for page in ("_index.md", "results.md", "history.md", "findings/_index.md", "tests/_index.md"):
+            self.assertIn("Data at commit", (self.c / page).read_text(), page)
+
+    def test_methodology_and_vocabulary_pages(self):
+        m = (self.c / "methodology.md").read_text()
+        self.assertIn("```mermaid", m)
+        self.assertIn("AI assistant", m)
+        v = (self.c / "statuses.md").read_text()
+        for word in ("PASS", "FAIL", "SAME", "DIFFERS", "ERROR", "not reported", "limitation", "merged"):
+            self.assertIn(word, v)
+
+    def test_home_has_cite_block_and_recent_reports(self):
+        home = (self.c / "_index.md").read_text()
+        self.assertIn("## Cite", home)
+        self.assertIn("Celles", home)
+        self.assertIn("## Recent upstream reports", home)
+        self.assertIn('relref "/statuses"', home)
+
+    def test_chart_points_are_keyboard_reachable(self):
+        self.assertIn('tabindex="0"', (self.c / "history.md").read_text())
+
+
 if __name__ == "__main__":
     unittest.main()

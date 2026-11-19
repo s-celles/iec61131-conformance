@@ -60,3 +60,18 @@
 .viz-panel { margin: 0; }
 .viz-panel figcaption { font-size: .85rem; color: var(--viz-ink); }
 @media (max-width: 760px) { .viz-multiples { grid-template-columns: minmax(0, 1fr); } }
+.data-stamp { font-size: .8rem; color: #54677e; margin: 0 0 1rem; }
+.dark .data-stamp { color: #b1c0d1; }
+.verdict--open { color: #8b3d00; background: #fff0db; }
+.verdict--closed, .verdict--merged { color: #075c4d; background: #e6f5ef; }
+.verdict--not-planned, .verdict--unknown { color: #465160; background: #edf0f3; border-style: dotted; }
+.dark .verdict--open { color: #ffd0a0; background: #4a301d; }
+.dark .verdict--closed, .dark .verdict--merged { color: #9ee2c9; background: #123d35; }
+.dark .verdict--not-planned, .dark .verdict--unknown { color: #d1dbe5; background: #28313d; }
+.viz-pt:focus { outline: none; }
+.viz-pt:focus .viz-dot { r: 6; stroke: var(--viz-ink); }
+.viz-guide { stroke: var(--viz-ink); stroke-width: 1; stroke-dasharray: 3 3; opacity: .7; }
+.viz-tooltip { position: absolute; transform: translate(-50%, -100%); pointer-events: none; z-index: 50;
+  background: #fcfcfb; color: #0b0b0b; border: 1px solid #cbd5e1; border-radius: .3rem; padding: .25rem .5rem;
+  font: 12px ui-sans-serif, system-ui, sans-serif; white-space: nowrap; box-shadow: 0 2px 6px rgba(0,0,0,.12); }
+.dark .viz-tooltip { background: #1a1a19; color: #f0efec; border-color: #3c5269; }
