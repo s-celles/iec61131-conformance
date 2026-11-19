@@ -8,7 +8,7 @@
 An open, runtime-agnostic conformance suite for IEC 61131-3 Structured Text:
 plain `.st` programs paired with expected input/output traces, one record
 per scan cycle. The suite runs against IronPLC, matiec, OpenPLC's matiec fork,
-STruC++, 4diac, rk and RuSTy, and a Lean 4 model of the function blocks
+STruC++, 4diac, rk, RuSTy and truST, and a Lean 4 model of the function blocks
 proves their traces. Public domain (CC0 1.0).
 
 **Results, tests and findings: https://s-celles.github.io/iec61131-conformance/**

@@ -43,7 +43,7 @@ BINDINGS = {
     "timers/tof": [("TOF", {"IN": "in", "Q": "q", "ET": "et"}, {"PT": 200})],
     "timers/tp": [("TP", {"IN": "in", "Q": "q", "ET": "et"}, {"PT": 300})],
 }
-RUNTIMES = ("ironplc", "matiec", "openplc", "strucpp", "rusty", "4diac", "rk")
+RUNTIMES = ("ironplc", "matiec", "openplc", "strucpp", "rusty", "4diac", "rk", "trust")
 
 
 # ------------------------------------------------------------------ records
