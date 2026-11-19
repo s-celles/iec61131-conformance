@@ -13,6 +13,7 @@ import pathlib
 import posixpath
 import re
 import shutil
+import subprocess
 import sys
 
 sys.path.insert(0, str(pathlib.Path(__file__).resolve().parents[1] / "monitor"))
@@ -143,6 +144,108 @@ def section(md, heading):
         if on:
             out.append(line)
     return out[0] if out else "", "\n".join(out[1:]).strip() + "\n"
+
+
+# ------------------------------------------------------------------ history
+
+HISTORY_NAMES = ("IronPLC", "OpenPLC's matiec", "matiec", "STruC++", "RuSTy", "4diac", "rk", "truST")
+
+
+def history_totals(text):
+    """(conformant tests, {runtime: passed}) from the totals paragraph of a
+    notes/comparison.md, in its current or its first format."""
+    m = re.search(r"(?m)^Totals[^\n]*(?:\n(?!\n)[^\n]*)*", text)
+    if not m:
+        return None
+    para = " ".join(m.group(0).split())
+    names = "|".join(re.escape(n) for n in HISTORY_NAMES)
+    passed, dens = {}, []
+    for name, fork, num, den in re.findall(rf"({names})( fork)? (\d+)/(\d+)", para):
+        passed.setdefault(name, int(num))
+        dens.append(int(den))
+    return (max(dens), passed) if dens else None
+
+
+def git(root, *args):
+    return subprocess.run(["git", "-C", str(root), *args], capture_output=True, text=True, check=True).stdout
+
+
+def history(root):
+    """One row per first-parent commit that changed notes/comparison.md:
+    date, commit, tests in the suite, conformant tests, passed per runtime,
+    distinct upstream issues cited. [] without the git history."""
+    try:
+        log = git(root, "log", "--first-parent", "--reverse", "--format=%H %cI", "HEAD", "--", "notes/comparison.md")
+    except (OSError, subprocess.CalledProcessError):
+        return []
+    rows = []
+    for line in log.splitlines():
+        sha, date = line.split()
+        totals = history_totals(git(root, "show", f"{sha}:notes/comparison.md"))
+        if not totals:
+            continue
+        files = git(root, "ls-tree", "-r", "--name-only", sha).splitlines()
+        tests = sum(1 for f in files if re.fullmatch(r"conformance/[^/]+/[^/]+\.st", f))
+        notes = [f for f in files if f in ("notes/comparison.md", "notes/findings.md", "upstream-bugs.md")
+                 or re.fullmatch(r"notes/fuzz-[^/]+\.md", f)]
+        refs = upstream_refs("\n".join(git(root, "show", f"{sha}:{f}") for f in notes))
+        rows.append({"sha": sha[:7], "date": date[:16].replace("T", " "), "tests": tests,
+                     "conformant": totals[0], "passed": totals[1], "refs": len(refs)})
+    return rows
+
+
+def _xy(rows, key):
+    return [(i, r[key]) for i, r in enumerate(rows) if r.get(key) is not None]
+
+
+def _epoch(date):
+    import datetime
+    return datetime.datetime.fromisoformat(date).timestamp()
+
+
+def line_svg(rows, series, ymax, title, unit="", height=220, width=760, direct_labels=True):
+    """An SVG line chart on a time axis (the rows' commit dates, a tick per
+    day): series = [(label, css var, [(row index, value)])]. One y axis from 0."""
+    import datetime
+    left, right, top, bottom = 44, 120 if direct_labels else 16, 14, 30
+    w, h = width - left - right, height - top - bottom
+    times = [_epoch(r["date"]) for r in rows]
+    t0, t1 = min(times), max(times)
+    span = max(t1 - t0, 1)
+    X = lambda i: left + w * (times[i] - t0) / span
+    Y = lambda v: top + h * (1 - v / ymax)
+    out = [f'<svg class="viz-chart" viewBox="0 0 {width} {height}" role="img" aria-label="{title}">']
+    for k in range(5):                                   # recessive grid and y ticks
+        v = ymax * k / 4
+        out.append(f'<line class="viz-grid" x1="{left}" x2="{left + w}" y1="{Y(v):.1f}" y2="{Y(v):.1f}"/>'
+                   f'<text class="viz-tick" x="{left - 6}" y="{Y(v) + 4:.1f}" text-anchor="end">{v:g}{unit}</text>')
+    d = datetime.datetime.fromtimestamp(t0).replace(hour=0, minute=0)
+    days = []
+    while d.timestamp() <= t1:
+        days.append(d)
+        d += datetime.timedelta(days=1)
+    every = max(1, -(-len(days) * 56 // w))            # at least 56 px between two date labels
+    for k, d in enumerate(days):                         # a tick per day, a label every few days
+        x = left + w * (max(d.timestamp(), t0) - t0) / span
+        out.append(f'<line class="viz-axis" x1="{x:.1f}" x2="{x:.1f}" y1="{top + h}" y2="{top + h + 4}"/>')
+        if k % every == 0:
+            out.append(f'<text class="viz-tick" x="{x:.1f}" y="{top + h + 18}" text-anchor="middle">{d:%m-%d}</text>')
+    out.append(f'<line class="viz-axis" x1="{left}" x2="{left + w}" y1="{top + h}" y2="{top + h}"/>')
+    for label, var, pts in series:
+        if not pts:
+            continue
+        path = " ".join(f"{'M' if j == 0 else 'L'}{X(i):.1f},{Y(v):.1f}" for j, (i, v) in enumerate(pts))
+        out.append(f'<path class="viz-line" style="stroke:var({var})" d="{path}"/>')
+        for i, v in pts:
+            r = rows[i]
+            out.append(f'<g class="viz-pt"><circle class="viz-hit" cx="{X(i):.1f}" cy="{Y(v):.1f}" r="9"/>'
+                       f'<circle class="viz-dot" style="fill:var({var})" cx="{X(i):.1f}" cy="{Y(v):.1f}" r="4"/>'
+                       f'<title>{label}: {v:g}{unit} · {r["date"]} · {r["sha"]}</title></g>')
+        if direct_labels:
+            i, v = pts[-1]
+            out.append(f'<text class="viz-label" x="{X(i) + 8:.1f}" y="{Y(v) + 4:.1f}">{label} {v:g}{unit}</text>')
+    out.append("</svg>")
+    return "".join(out)
 
 
 def numbered_items(md):
@@ -426,6 +529,39 @@ A runtime that fails a trace is a claim to check against the standard, not a ver
                 f"[evidence]({BLOB}/notes/evidence/{rt}-run.txt) (`{summary.group(0) if summary else ''}`)\n\n"
                 f"## {heading}\n\n" + demote(rewrite_links(body, src if src.endswith(".md") else "notes/comparison.md")))
 
+    def history_page(self):
+        rows = history(self.root)
+        head = front("History", 6) + ("The suite and its results over time, one point per commit of `main` that changed "
+                                      "`notes/comparison.md`, read from the git history at build time. Hover a point for its "
+                                      "value, date and commit; the table below has every value.\n\n")
+        if not rows:
+            return head + "The git history is not available in this build.\n"
+        size = line_svg(rows, [("tests", "--viz-1", _xy(rows, "tests")), ("conformant", "--viz-2", _xy(rows, "conformant"))],
+                        ymax=max(r["tests"] for r in rows) * 1.1 // 10 * 10 + 10, title="Tests in the suite")
+        refs = line_svg(rows, [("issues cited", "--viz-1", _xy(rows, "refs"))],
+                        ymax=max(r["refs"] for r in rows) * 1.1 // 10 * 10 + 10, title="Upstream issues cited", direct_labels=False)
+        panels = []
+        for rt, (name, _, _) in RUNTIMES.items():
+            pts = [(i, round(100 * r["passed"][name] / r["conformant"])) for i, r in enumerate(rows) if name in r["passed"]]
+            last = rows[pts[-1][0]] if pts else None
+            caption = f"{last['passed'][name]} of {last['conformant']} now" if last else "no data"
+            panels.append(f'<figure class="viz-panel"><figcaption><strong>{name}</strong> · {caption}</figcaption>'
+                          + line_svg(rows, [(name, "--viz-1", pts)], ymax=100, unit="%", title=f"{name}: conformant tests passed",
+                                     height=170, width=380, direct_labels=False) + "</figure>")
+        names = [n for n, _, _ in RUNTIMES.values()]
+        table = ["| date | commit | tests | conformant | " + " | ".join(names) + " | issues cited |",
+                 "|---|---|---:|---:|" + "---:|" * len(names) + "---:|"]
+        for r in reversed(rows):
+            table.append(f"| {r['date']} | [`{r['sha']}`]({REPO}/commit/{r['sha']}) | {r['tests']} | {r['conformant']} | "
+                         + " | ".join(str(r["passed"].get(n, "")) for n in names) + f" | {r['refs']} |")
+        return (head + '<div class="viz">\n\n## Tests in the suite\n\n' + size +
+                "\n\n## Conformant tests passed, per runtime\n\nThe share of the conformant tests of that day each runtime "
+                "passed, at its pinned commit; a runtime starts when it joined the suite. The share drops when new tests "
+                "that it fails are added, not only when it regresses.\n\n"
+                '<div class="viz-multiples">' + "".join(panels) + "</div>\n\n## Upstream issues cited\n\nDistinct issues and pull "
+                "requests of other projects that the notes cite.\n\n" + refs + "\n\n</div>\n\n## Data\n\n"
+                + filterable("\n".join(table)))
+
     def upstream(self):
         out = [front("Upstream", 5), f"{len(self.refs)} upstream issues and pull requests cited in the notes, by repository. Their state is on GitHub; the notes say what each one covers.\n"]
         for repo in sorted({r for r, _ in self.refs}, key=str.lower):
@@ -484,6 +620,7 @@ def generate(root, out):
     for i, rt in enumerate(RUNTIMES):
         write(c / "runtimes" / f"{rt}.md", site.runtime_page(rt, i + 1))
     write(c / "upstream.md", site.upstream())
+    write(c / "history.md", site.history_page())
     write(c / "findings/_index.md", site.findings_index())
     for i, f in enumerate(site.findings):
         write(c / "findings" / f"{f['id']}.md", site.finding_page(f, i + 1))

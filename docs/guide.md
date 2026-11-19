@@ -191,8 +191,11 @@ repository: the results table, the findings (one page each, in a
 filterable table), one page per test (program, expected
 trace, and what each pinned runtime recorded), the deviations of each
 runtime, the upstream issues the notes cite, and the documents (this guide,
-`SPEC.md`, the fuzz reports, the changelog). It also serves `llms.txt` and
-`llms-full.txt`.
+`SPEC.md`, the fuzz reports, the changelog), and a History page charting the
+suite's size, each runtime's share of conformant tests passed and the
+upstream issues cited, from the git history of `notes/comparison.md` (the
+Site workflow checks out the full history for it). It also serves `llms.txt`
+and `llms-full.txt`.
 
 The pages are not stored in the repository. `tools/site/sitegen.py` derives
 them on every build from `conformance/`, `notes/` and the CI pins, and

@@ -6,6 +6,12 @@ Notable changes are recorded here following Keep a Changelog.
 
 ### Added
 
+- Site: a History page, with the suite's size, each runtime's share of
+  conformant tests passed (small multiples on one scale) and the upstream
+  issues cited, over time. It is read from the git history of
+  `notes/comparison.md` at build time, so the Site workflow checks out the
+  full history. Each point has a tooltip, and a filterable table holds every
+  value.
 - `harness/trust`: the suite runs against truST
   (johannesPettersson80/trust-platform), which compiles Structured Text to
   native code. `run.py` feeds the records, one per line, to truST's

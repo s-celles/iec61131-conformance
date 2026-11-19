@@ -201,5 +201,29 @@ class Properties(unittest.TestCase):
         self.assertNotIn("## Properties", (out / "content" / "tests" / "ops" / "not_compare.md").read_text())
 
 
+class History(unittest.TestCase):
+    def test_totals_in_both_historical_formats(self):
+        new = "Totals (90 tests, 72 with `status: conformant`): conformant tests passed, IronPLC 50/72; matiec 62/72; rk 51/72. 19 of the 90"
+        old = "Totals: IronPLC 38/51 conformant pass; matiec 43/51; OpenPLC's matiec fork\n40/51; RuSTy RUSTY_TOTAL/35. No test"
+        self.assertEqual(sitegen.history_totals(new), (72, {"IronPLC": 50, "matiec": 62, "rk": 51}))
+        self.assertEqual(sitegen.history_totals(old), (51, {"IronPLC": 38, "matiec": 43, "OpenPLC's matiec": 40}))
+
+    def test_history_page(self):
+        out = pathlib.Path(tempfile.mkdtemp(prefix="sitegen-"))
+        sitegen.generate(ROOT, out)
+        page = (out / "content" / "history.md").read_text()
+        self.assertIn("<svg", page)
+        self.assertIn("RuSTy", page)
+        self.assertIn("| date | commit |", page)   # the data behind the charts
+        rows = sitegen.history(ROOT)
+        self.assertGreater(len(rows), 10)
+        self.assertEqual(rows[-1]["tests"], len(list(ROOT.glob("conformance/*/*.st"))))
+        dates = [r["date"] for r in rows]
+        self.assertEqual(dates, sorted(dates))
+
+    def test_site_workflow_fetches_the_history(self):
+        self.assertIn("fetch-depth: 0", (ROOT / ".github/workflows/site.yml").read_text())
+
+
 if __name__ == "__main__":
     unittest.main()
