@@ -144,7 +144,7 @@ hand. CI checks the table is in sync with the evidence.
 | ops/date_time | PASS | PASS | PASS | **FAIL** (compile) | PASS | PASS | **FAIL** (compile) | PASS | IronPLC and the OpenPLC fork compute all of table 30; upstream matiec `3a41303` did not build (`_____time_sub`, beremiz/matiec#40, fixed upstream in 45f5f27); STruC++ types `TOD - TOD` as TOD (STruC++ #8, STruCpp#259) |
 | ops/trunc | PASS | PASS | PASS | PASS | PASS | **FAIL** (see evidence) | PASS | PASS | TRUNC toward zero on all |
 | pou/fb_in_out | **FAIL** (compile) | PASS | PASS | PASS | PASS | **ERROR** (see evidence) | PASS | PASS | IronPLC does not lower VAR_IN_OUT of an FB (findings #21); upstream matiec builds the function with VAR_IN_OUT only where an implicit declaration is not an error (matiec #13, beremiz/matiec#49) |
-| pou/fb_method | **FAIL** (compile) | **FAIL** (compile) | **FAIL** (compile) | PASS | PASS | **ERROR** (see evidence) | PASS | **FAIL** (compile) | ed.3 METHOD: STruC++ only; IronPLC (findings #20) and both matiecs are ed.2; truST: a method without an access specifier is PROTECTED in ed.3, so the call from outside is refused (issue #15 questions this trace) |
+| pou/fb_method | **FAIL** (compile) | **FAIL** (compile) | **FAIL** (compile) | PASS | PASS | **ERROR** (see evidence) | PASS | PASS | ed.3 METHOD, both PUBLIC since issue #15 (without an access specifier a method is PROTECTED and not callable from main, ed.3 table 53): STruC++, RuSTy, rk and truST pass; IronPLC (findings #20) and both matiecs are ed.2 |
 | pou/function_input_default | **FAIL** (compile) | PASS | PASS | PASS | PASS | **FAIL** (cycles 0-2) | PASS | PASS | IronPLC requires every function input (P4018, findings #23, ironplc#2552); the others apply the initial value |
 | pou/function_var_output | PASS | PASS | PASS | PASS | PASS | PASS | PASS | PASS | function VAR_OUTPUT read with `=>`: all agree; upstream matiec builds it with an implicit-declaration warning (matiec #13) |
 | undefined/short_circuit | SAME | **DIFFERS** (cycles 0-2) | **DIFFERS** (cycles 0-2) | SAME | SAME | **ERROR** (see evidence) | SAME | **DIFFERS** (cycles 0-2) | records IronPLC (full evaluation); both matiecs short-circuit (fork #8), STruC++ and RuSTy evaluate fully |
@@ -178,7 +178,7 @@ hand. CI checks the table is in sync with the evidence.
 | strings/compare_prefix | PASS | PASS | **FAIL** (cycles 0-1) | PASS | PASS | PASS | PASS | PASS | = and <> with a prefix: the OpenPLC fork compares only up to the shorter length, so 'ab' = 'abc' is TRUE (fork item 1). Found by tools/fuzz (`strings`) |
 | ops/not_compare | PASS | **FAIL** (cycles 0-1) | **FAIL** (cycles 0-1) | PASS | PASS | PASS | PASS | PASS | `(NOT b) = c` on BYTE and WORD: both matiecs print `~b == c`, and C promotes `b` to `int`, so `NOT 16#00` is -1, not 16#FF (matiec item 19, beremiz/matiec#54, fork item 15). Found by tools/fuzz (`wide`) |
 
-Totals (109 tests, 91 with `status: conformant`): conformant tests passed, IronPLC 64/91; matiec 80/91; OpenPLC's matiec 69/91; STruC++ 70/91; RuSTy 73/91; 4diac 45/91; rk 64/91; truST 84/91. 16 of the 109 tests have the same result on all eight runtimes.
+Totals (109 tests, 91 with `status: conformant`): conformant tests passed, IronPLC 64/91; matiec 80/91; OpenPLC's matiec 69/91; STruC++ 70/91; RuSTy 73/91; 4diac 45/91; rk 64/91; truST 85/91. 16 of the 109 tests have the same result on all eight runtimes.
 
 <!-- results:end -->
 
@@ -569,8 +569,8 @@ runs with its own tasks. At this commit:
    resource starts at t = 0 and its periodic tasks run at t = 0, checked
    against the text); truST changes its scheduler to do so (to be bumped here
    with the release that has it).
-2. `pou/fb_method` and `pou/fb_en_eno`: issues #15 and #16 of this
-   repository.
+2. `pou/fb_method` passes since its methods are PUBLIC (issue #15);
+   `pou/fb_en_eno`: issue #16 of this repository.
 
 `ops/bit_literals` (a based literal at `SHL`'s input, which ed.3 6.3.2 makes
 a bit string literal) passes since trust-platform#629, which this commit

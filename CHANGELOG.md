@@ -125,6 +125,10 @@ Notable changes are recorded here following Keep a Changelog.
 
 - Site: a link anchor such as `notes/findings.md#28` was counted as an upstream
   issue.
+- `pou/fb_method` declares its methods PUBLIC: without an access specifier a
+  method is PROTECTED in ed.3 and may not be called from `main` (issue #15).
+  The ed.3 citations are corrected to 6.6.7.2 and table 53. No expected value
+  changed.
 - CI's `trust` job builds without truST's `sccache` rustc wrapper, which the
   runner lacks (`RUSTC_WRAPPER` set empty).
 - The OpenPLC fork's evidence for `ops/time_literal_ms` cited trace lines
