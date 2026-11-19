@@ -31,6 +31,9 @@ COMPARISON = ROOT / "notes" / "comparison.md"
 CONFORMANCE = ROOT / "conformance"
 
 # (column title, evidence file stem), in table order
+NUMBER_WORDS = {5: "five", 6: "six", 7: "seven", 8: "eight", 9: "nine", 10: "ten", 11: "eleven", 12: "twelve"}
+
+
 RUNTIMES = [
     ("IronPLC", "ironplc"),
     ("matiec", "matiec"),
@@ -158,7 +161,7 @@ def build(text):
     lines += ["",
               f"Totals ({len(rows)} tests, {conformant} with `status: conformant`): "
               f"conformant tests passed, {totals}. "
-              f"{agree} of the {len(rows)} tests have the same result on all eight runtimes.",
+              f"{agree} of the {len(rows)} tests have the same result on all {NUMBER_WORDS.get(len(RUNTIMES), len(RUNTIMES))} runtimes.",
               "", END]
     return "\n".join(lines)
 

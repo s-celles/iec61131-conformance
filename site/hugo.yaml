@@ -46,7 +46,7 @@ menu:
       params:
         type: search
 params:
-  description: IEC 61131-3 Structured Text conformance traces, run against seven runtimes. An individual, non-commercial project.
+  description: IEC 61131-3 Structured Text conformance traces, run against the pinned open-source runtimes. An individual, non-commercial project.
   navbar:
     displayTitle: true
     logo:

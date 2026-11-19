@@ -722,13 +722,13 @@ PASS    conformance/timers/ton.st
 PASS    conformance/timers/tp.st
 ### conformance/undefined/abs_int_min.st
 0 x=-7 d=-7 => ax=7 nx=7 ad=7 nd=7
-1 x=-32768 d=-2147483648 => trap: arithmetic overflow
+1 x=-32768 d=-2147483648 => trap   # arithmetic overflow
 DIFFERS conformance/undefined/abs_int_min.st
         cycle 1 (trace line 15): unexpected trap (trap: arithmetic overflow)
 ### conformance/undefined/array_out_of_bounds.st
 0 idx=2 => v=20 ok=TRUE
 1 idx=3 => v=30 ok=TRUE
-2 idx=4 => trap: array index 4 out of bounds [0..3]
+2 idx=4 => trap   # array index 4 out of bounds [0..3]
 SAME    conformance/undefined/array_out_of_bounds.st
 ### conformance/undefined/ctu_pv_zero.st
 0 cu=FALSE r=FALSE => q=TRUE cv=0
@@ -740,13 +740,13 @@ SAME    conformance/undefined/array_out_of_bounds.st
 SAME    conformance/undefined/ctu_pv_zero.st
 ### conformance/undefined/dint_to_int_overflow.st
 0 d=100 i=100 u=100 => d2i=100 d2u=100 i2u=100 u2i=100
-1 d=40000 i=-1 u=65535 => trap: arithmetic overflow
+1 d=40000 i=-1 u=65535 => trap   # arithmetic overflow
 DIFFERS conformance/undefined/dint_to_int_overflow.st
         cycle 1 (trace line 15): unexpected trap (trap: arithmetic overflow)
 ### conformance/undefined/div_zero.st
 0 a=7 b=2 => q=3 m=1
 1 a=-7 b=2 => q=-3 m=-1
-2 a=7 b=0 => trap: division by zero
+2 a=7 b=0 => trap   # division by zero
 SAME    conformance/undefined/div_zero.st
 ### conformance/undefined/eval_order.st
 0 reset=TRUE => y=-19 c=2
@@ -765,12 +765,12 @@ file 0: error[E202]: FOR loop control variables must not be modified in the loop
 SAME    conformance/undefined/for_var_after_loop.st
 ### conformance/undefined/int_overflow.st
 0 a=1 b=2 => s=3 d=-1
-1 a=32767 b=1 => trap: arithmetic overflow
+1 a=32767 b=1 => trap   # arithmetic overflow
 DIFFERS conformance/undefined/int_overflow.st
         cycle 1 (trace line 21): unexpected trap (trap: arithmetic overflow)
 ### conformance/undefined/real_div_zero.st
 0 x=1.0 y=2.0 => q=0.5
-1 x=1.0 y=0.0 => trap: division by zero
+1 x=1.0 y=0.0 => trap   # division by zero
 DIFFERS conformance/undefined/real_div_zero.st
         cycle 1 (trace line 13): unexpected trap (trap: division by zero)
 ### conformance/undefined/real_to_int_ties.st
@@ -803,7 +803,7 @@ DIFFERS conformance/undefined/string_truncate.st
 file 0: error[E304]: STRING literal length 6 exceeds STRING[3] capacity (at 173..182)
 ### conformance/undefined/subrange_out_of_range.st
 0 v=7 => s=7
-1 v=20 => trap: value 20 outside declared subrange 5..10
+1 v=20 => trap   # value 20 outside declared subrange 5..10
 DIFFERS conformance/undefined/subrange_out_of_range.st
         cycle 1 (trace line 16): unexpected trap (trap: value 20 outside declared subrange 5..10)
 ### conformance/undefined/tasks_same_priority.st

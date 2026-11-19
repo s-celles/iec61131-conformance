@@ -405,9 +405,9 @@ jobs:
           cp target/release/examples/conformance_driver rust-toolchain.toml "$RUNNER_TEMP/trust-bin/"
 
       - name: Install the Rust toolchain truST pins (its toolchain folder links its rustc)
-        run: |
-          channel=$(sed -n 's/^channel *= *"\(.*\)"/\1/p' "$RUNNER_TEMP/trust-bin/rust-toolchain.toml")
-          rustup toolchain install "$channel" --profile minimal
+        # from the cached rust-toolchain.toml, with its components, as on a cache miss
+        working-directory: ${{ runner.temp }}/trust-bin
+        run: rustup toolchain install
 
       - name: Run suite and compare with notes/evidence/trust-run.txt
         run: |

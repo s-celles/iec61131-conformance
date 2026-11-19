@@ -256,3 +256,17 @@ the minimal program `a := ABS(BUMP(calls)); b := BUMP(calls);`. It leaves
 `__MAIN_BUMP2` undefined: the wrapper generator skips the nested call, so
 the one wrapper it emits, `__MAIN_BUMP1`, is `b`'s. Reproducer in the suite:
 `pou/inout_call_in_std_arg`.
+
+## truST `b5e8820`: a periodic task first runs one interval after its start
+
+Added 2026-11-19 with the truST harness (PR #18). Known to truST's author,
+who maintains the harness; the scheduler change is in progress there.
+
+- Reproducers: `config/two_periods`, `config/priority_order`,
+  `config/global_exchange`, `config/globals_external`, `config/event_single`
+  (comparison item truST 1). Every output a periodic task writes is one scan
+  behind the trace.
+- Ed.2 2.7.2 only says a task with a non-zero INTERVAL is scheduled
+  "periodically at the specified interval", but its table 50 examples start
+  the resource at t = 0 and run the periodic tasks at t = 0; truST cites ed.3
+  6.8.2 and table 63 to the same effect.

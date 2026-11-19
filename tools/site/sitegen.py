@@ -23,6 +23,8 @@ BLOB = REPO + "/blob/main"
 
 # evidence file stem -> (display name, CI pin variable, section of
 # notes/comparison.md with its deviations, or a whole file)
+NUMBER_WORDS = {5: "five", 6: "six", 7: "seven", 8: "eight", 9: "nine", 10: "ten", 11: "eleven", 12: "twelve"}
+
 RUNTIMES = {
     "ironplc": ("IronPLC", "IRONPLC_SHA", "notes/findings.md"),
     "matiec": ("matiec", "MATIEC_SHA", "## Where the two runtimes disagree"),
@@ -304,7 +306,7 @@ class Site:
 
 **An open, runtime-agnostic conformance suite for IEC 61131-3 Structured Text runtimes.**
 
-Plain `.st` programs paired with plain-text expected input/output traces, one record per scan cycle, run against eight runtimes through simulated-clock harnesses. A Lean 4 model of the function blocks, written from the same reading of the standard, proves that their traces follow from it. Public domain (CC0 1.0).
+Plain `.st` programs paired with plain-text expected input/output traces, one record per scan cycle, run against {NUMBER_WORDS.get(len(RUNTIMES), len(RUNTIMES))} runtimes through simulated-clock harnesses. A Lean 4 model of the function blocks, written from the same reading of the standard, proves that their traces follow from it. Public domain (CC0 1.0).
 
 <div class="disclaimer">
 
