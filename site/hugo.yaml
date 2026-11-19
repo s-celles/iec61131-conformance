@@ -33,16 +33,19 @@ menu:
     - name: Upstream
       pageRef: /upstream
       weight: 5
+    - name: History
+      pageRef: /history
+      weight: 6
     - name: Docs
       pageRef: /docs
-      weight: 6
+      weight: 7
     - name: GitHub
       url: https://github.com/s-celles/iec61131-conformance
-      weight: 7
+      weight: 8
       params:
         icon: github
     - name: Search
-      weight: 8
+      weight: 9
       params:
         type: search
 params:
