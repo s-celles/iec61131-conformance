@@ -1,6 +1,8 @@
-(* Methods of a function block (ed.3 6.6.3.5, table 48, new in ed.3): a
+(* Methods of a function block (ed.3 6.6.7.2, table 53, new in ed.3): a
    METHOD has access to the instance's variables, takes inputs and returns
-   a value; it is called as instance.method(...). *)
+   a value; it is called as instance.method(...). Both methods are PUBLIC:
+   without an access specifier a method is PROTECTED and may only be called
+   from inside the function block (table 53, feature 5d; issue #15). *)
 FUNCTION_BLOCK COUNTER
   VAR_OUTPUT
     cv : INT;
@@ -8,14 +10,14 @@ FUNCTION_BLOCK COUNTER
   VAR
     bodies : INT;   (* times the FB body itself ran: never, here *)
   END_VAR
-  METHOD BUMP : INT
+  METHOD PUBLIC BUMP : INT
     VAR_INPUT
       n : INT;
     END_VAR
     cv := cv + n;
     BUMP := cv;
   END_METHOD
-  METHOD CLEAR : BOOL
+  METHOD PUBLIC CLEAR : BOOL
     cv := 0;
     CLEAR := TRUE;
   END_METHOD

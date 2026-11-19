@@ -731,10 +731,10 @@ PASS    conformance/pou/fb_input_retention.st
 FAIL    conformance/pou/fb_method.st
         ironplcc failed to compile the program:
 error[P0002]: Syntax error
-   ┌─ <root>/conformance/pou/fb_method.st:11:10
+   ┌─ <root>/conformance/pou/fb_method.st:13:10
    │
-11 │   METHOD BUMP : INT
-   │          ^^^^ Expected ' ' (space) | '\t' (tab) | '(' | '(* ... *)' (comment) | '.' | ':=' | 'REF' | '[' | '\n' (new line) | '^' | '{ ... }' (pragma) | R | REF | S. Found text 'BUMP' that matched token (identifier)
+13 │   METHOD PUBLIC BUMP : INT
+   │          ^^^^^^ Expected ' ' (space) | '\t' (tab) | '(' | '(* ... *)' (comment) | '.' | ':=' | 'REF' | '[' | '\n' (new line) | '^' | '{ ... }' (pragma) | R | REF | S. Found text 'PUBLIC' that matched token (identifier)
    │
    = Learn more: https://www.ironplc.com/reference/compiler/problems/P0002.html?version=0.252.0&channel=cli
 

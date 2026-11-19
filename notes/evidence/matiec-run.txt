@@ -519,23 +519,23 @@ PASS    conformance/pou/fb_input_retention.st
 ### conformance/pou/fb_method.st
 FAIL    conformance/pou/fb_method.st
         iec2c failed to compile the program:
-prog.st:11: error: invalid variable before ':=' in ST assignment statement.
-prog.st:16: error: invalid variable before ':=' in ST assignment statement.
-prog.st:17: error: invalid variable before ':=' in ST assignment statement.
-prog.st:20: error: invalid variable before ':=' in ST assignment statement.
-prog.st:21: error: invalid variable before ':=' in ST assignment statement.
-prog.st:38: error: invalid variable before ':=' in ST assignment statement.
-prog.st:40: error: ';' missing at the end of statement in ST statement.
+prog.st:13: error: invalid variable before ':=' in ST assignment statement.
+prog.st:18: error: invalid variable before ':=' in ST assignment statement.
+prog.st:19: error: invalid variable before ':=' in ST assignment statement.
+prog.st:22: error: invalid variable before ':=' in ST assignment statement.
+prog.st:23: error: invalid variable before ':=' in ST assignment statement.
 prog.st:40: error: invalid variable before ':=' in ST assignment statement.
-prog.st:40: error: ';' missing at the end of statement in ST statement.
-prog.st:40: error: invalid statement in ST statement.
+prog.st:42: error: ';' missing at the end of statement in ST statement.
 prog.st:42: error: invalid variable before ':=' in ST assignment statement.
-prog.st:47: error: ';' missing at the end of statement in ST statement.
-prog.st:47: error: invalid variable before ':=' in ST assignment statement.
-prog.st:47: error: ';' missing at the end of statement in ST statement.
-prog.st:47: error: invalid statement in ST statement.
-prog.st:48: error: invalid statement in ST statement.
-prog.st:49: error: syntax error
+prog.st:42: error: ';' missing at the end of statement in ST statement.
+prog.st:42: error: invalid statement in ST statement.
+prog.st:44: error: invalid variable before ':=' in ST assignment statement.
+prog.st:49: error: ';' missing at the end of statement in ST statement.
+prog.st:49: error: invalid variable before ':=' in ST assignment statement.
+prog.st:49: error: ';' missing at the end of statement in ST statement.
+prog.st:49: error: invalid statement in ST statement.
+prog.st:50: error: invalid statement in ST statement.
+prog.st:51: error: syntax error
 
 Parsing failed because of too many consecutive syntax errors. Bailing out!
 
