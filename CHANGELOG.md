@@ -4,6 +4,19 @@ Notable changes are recorded here following Keep a Changelog.
 
 ## [Unreleased]
 
+### Changed
+
+- Site: follows s-celles/site-kit v0.2.0, imported as a Hugo module before
+  Hextra. Its badges (one tone per status word, set in `site/hugo.yaml`),
+  stat tiles, head, footer, styles and scripts replace the site's own copies.
+  The menu has eight entries: Tests and Runtimes moved under Docs, at the
+  same URLs. The History charts are one tab stop each; the arrow keys step
+  through the dates. The Site workflow checks the built site with site-kit's
+  `check_site.py` and checks that two builds are identical.
+- `notes/upstream-status.tsv` uses site-kit's snapshot columns, adding
+  `merged`, `fixes` and `cited_by` (the findings that cite each reference);
+  "closed (not planned)" is now "not planned".
+
 ### Added
 
 - Site: the state of every cited upstream issue and pull request (open, closed,

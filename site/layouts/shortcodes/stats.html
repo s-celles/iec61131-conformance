@@ -1,7 +1,0 @@
-{{- /* {{< stats tests=".." conformant=".." runtimes=".." upstream=".." >}} */ -}}
-<div class="suite-stats">
-  <a class="suite-stat" href="{{ relref . "/tests" }}"><strong>{{ .Get "tests" }}</strong><span>tests</span></a>
-  <a class="suite-stat" href="{{ relref . "/results" }}"><strong>{{ .Get "conformant" }}</strong><span>with a conformant trace</span></a>
-  <a class="suite-stat" href="{{ relref . "/runtimes" }}"><strong>{{ .Get "runtimes" }}</strong><span>runtimes pinned in CI</span></a>
-  <a class="suite-stat" href="{{ relref . "/upstream" }}"><strong>{{ .Get "upstream" }}</strong><span>upstream issues cited</span></a>
-</div>

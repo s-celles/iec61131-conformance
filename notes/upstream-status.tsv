@@ -1,67 +1,67 @@
-repo	number	kind	state	created	closed	title
-Autonomy-Logic/STruCpp	201	issue	open	2026-07-30		add support for interrupt triggered tasks
-Autonomy-Logic/STruCpp	216	issue	open	2026-08-20		Lexer errors with qualified enum literals and single-character string literals
-Autonomy-Logic/STruCpp	255	issue	open	2026-11-01		Typed literal with a negative value (INT#-5) is not lexed
-Autonomy-Logic/STruCpp	256	issue	open	2026-11-01		STRING[n] (limited-length string type) is not parsed
-Autonomy-Logic/STruCpp	257	issue	open	2026-11-01		String literal operands of LEN, CONCAT and comparisons are emitted as const char[], which the runtime does not accept
-Autonomy-Logic/STruCpp	258	issue	open	2026-11-01		VAR_TEMP variables are emitted as members and keep their value between calls
-Autonomy-Logic/STruCpp	259	issue	open	2026-11-01		TOD - TOD (and DT - DT, DATE - DATE) is typed as the operand type, not TIME
-Autonomy-Logic/STruCpp	260	issue	open	2026-11-01		a subrange variable is initialised to 0, not to its lower limit
-Autonomy-Logic/STruCpp	261	issue	open	2026-11-01		CONTINUE is not parsed
-Autonomy-Logic/STruCpp	262	issue	open	2026-11-01		MUX with expression inputs does not compile (template deduction, int vs IEC_INT)
-Autonomy-Logic/STruCpp	263	issue	closed	2026-11-01	2026-11-09	NOT of an AND/OR/XOR of comparisons does not compile
-PLC-lang/rusty	2032	issue	open	2026-11-01		TON, TOF and TP switch one scan after ET reaches PT (is_in_preset_range uses <=)
-PLC-lang/rusty	2033	issue	open	2026-11-01		TP ignores the next rising edge after a pulse that ended with IN already FALSE
-PLC-lang/rusty	2034	issue	open	2026-11-01		SR and RS inputs are named SET1/RESET and SET/RESET1 instead of the standard S1/R and S/R1
-PLC-lang/rusty	2035	issue	open	2026-11-01		LIMIT inputs are named MIN/MAX instead of the standard MN/MX, so LIMIT(MN := ...) does not resolve
-PLC-lang/rusty	2036	issue	open	2026-11-01		EN := and .ENO are not available on a function block invocation (E048)
-PLC-lang/rusty	2037	issue	open	2026-11-01		Untyped real literals assigned to an LREAL are evaluated in REAL: 1.0E15 + 1.0 gives 999999986991104
-PLC-lang/rusty	2039	issue	open	2026-11-01		A subrange variable without an initial value starts at 0 instead of its lower limit
-PLC-lang/rusty	2040	issue	open	2026-11-01		LIMIT with MN > MX returns MN instead of MIN(MAX(IN, MN), MX)
-adclz/rk	114	issue	closed	2026-11-02	2026-11-04	MUX has no overload for unsigned integers, SINT, bit strings or dates (SEL has them)
-adclz/rk	115	issue	closed	2026-11-02	2026-11-02	-16#10 is a syntax error (unary minus before a based literal)
-adclz/rk	116	issue	closed	2026-11-02	2026-11-03	MIN/MAX are not extensible, and the comparison functions GT/GE/EQ/LE/LT/NE are missing
-adclz/rk	117	issue	closed	2026-11-02	2026-11-02	CTU/CTD/CTUD and F_TRIG follow the 2001 FDIS bodies, not ed.3
-beremiz/matiec	38	issue	open	2026-11-01		Integer division by zero with the / operator depends on the CPU: SIGFPE on x86-64, silent 0 on AArch64 (MOD and DIV() are guarded)
-beremiz/matiec	39	issue	open	2026-11-01		Inline function-call wrappers are emitted outside #ifndef __POUS_INIT_ONLY__, so config.c calls an undeclared function (build error with clang >= 16 and gcc >= 14)
-beremiz/matiec	40	issue	open	2026-11-01		The + - * / operators on TIME generate calls to _____time_add etc., which do not exist, so the program does not build
-beremiz/matiec	41	issue	closed	2026-11-01	2026-11-07	REPLACE(IN1, IN2, L, P) inserts only the first L characters of IN2
-beremiz/matiec	42	issue	open	2026-11-01		A STRING[n] variable is parsed but then reported "not declared in this scope" (stage3 visitors commented out)
-beremiz/matiec	43	issue	closed	2026-11-01	2026-11-07	Tasks of a resource run in declaration order: PRIORITY is ignored when several tasks are due at the same tick
-beremiz/matiec	44	issue	open	2026-11-01		A duration literal with milliseconds is 1 ns short: T#1h2m3s4ms gives tv_nsec = 3999999
-beremiz/matiec	47	pr	open	2026-11-01		Guard the integer / operator against a zero divisor
-beremiz/matiec	49	issue	open	2026-11-01		functions with VAR_OUTPUT / VAR_IN_OUT are called before their declaration under __POUS_INIT_ONLY__ (clang / gcc 14 error)
-beremiz/matiec	50	issue	open	2026-11-01		LIMIT with MN > MX returns MN instead of MX (MIN(MAX(IN, MN), MX))
-beremiz/matiec	51	issue	open	2026-11-01		__time_mul (TIME * n) overflows a 32-bit int on the nanosecond part: T#700ms * 4 gives T#2147ms
-beremiz/matiec	53	issue	open	2026-11-15		An array element as a function's VAR_OUTPUT or VAR_IN_OUT argument generates invalid C ('table' + subscript without brackets)
-beremiz/matiec	54	issue	open	2026-11-16		NOT on a BYTE or WORD inside a comparison is computed as an int: (NOT b) = c is FALSE for b = 16#00, c = 16#FF
-beremiz/matiec	55	issue	open	2026-11-16		A VAR_IN_OUT / VAR_OUTPUT function call inside another call's argument does not link (its per-call wrapper is not generated, and later wrappers are misnumbered)
-eclipse-4diac/4diac-forte	1133	issue	open	2026-11-01		DELETE refuses a range that ends at the last character (off-by-one bound check)
-eclipse-4diac/4diac-forte	1134	issue	closed	2026-11-01	2026-11-06	func_LIMIT.h uses func_MAX / func_MIN without including them
-eclipse-4diac/4diac-forte	1135	issue	open	2026-11-01		no func_MUX.h, although the 4diac IDE 3.3.0 exports an include for it
-eclipse-4diac/4diac-forte	1155	pr	merged	2026-11-03	2026-11-06	Make func_LIMIT.h include its MIN and MAX dependencies
-eclipse-4diac/4diac-ide	3130	issue	open	2026-11-01		an input omitted from a formal function call is 0 instead of its declared initial value
-eclipse-4diac/4diac-ide	3131	issue	open	2026-11-01		ST lexer: T#1.5s is not accepted, and an identifier named t is taken for a T# literal prefix
-eclipse-4diac/4diac-ide	3132	issue	open	2026-11-01		ST standard functions: LIMIT/SEL formal parameter names, TRUNC, *_TO_STRING
-ironplc/ironplc	1163	issue	open	2026-07-12		MCP run: implement stimuli (time-ordered input drives)
-ironplc/ironplc	1471	issue	open	2026-08-29		Whole-element assignment of an array-of-struct element is not implemented
-ironplc/ironplc	1613	issue	open	2026-09-03		Support more than one PROGRAM in a compiled container
-ironplc/ironplc	1618	issue	closed	2026-09-03	2026-09-05	Extensible standard functions (ADD, MUL, AND, OR, XOR) accept only two inputs
-ironplc/ironplc	1813	issue	open	2026-09-26		REAL_TO_INT truncates instead of rounding
-ironplc/ironplc	1969	issue	closed	2026-10-01	2026-11-16	A VAR_TEMP variable of a function block passes check but fails to compile
-ironplc/ironplc	2332	issue	closed	2026-10-16	2026-10-17	CTU, CTD and CTUD of INT count past the range of INT, so CV wraps when stored in an INT
-ironplc/ironplc	2545	issue	open	2026-11-01		TOF starts an off-delay at power-up although IN was never TRUE
-ironplc/ironplc	2546	issue	open	2026-11-01		TP retriggers while IN stays TRUE, and holds ET = PT after the pulse with IN FALSE
-ironplc/ironplc	2547	issue	open	2026-11-01		Proposal: an open, runtime-agnostic IEC 61131-3 conformance trace suite (67 tests, CC0)
-ironplc/ironplc	2548	issue	closed	2026-11-01	2026-11-01	MAX and MIN accept only two inputs although they are extensible (table 31); ADD and MUL accept three
-ironplc/ironplc	2549	issue	open	2026-11-01		EN := in a function block invocation is a syntax error (P0002), so EN/ENO cannot be used on function blocks
-ironplc/ironplc	2550	issue	open	2026-11-01		Assigning a structure to a structure-typed field (r.tl := q) is P9999 not implemented, while q := p compiles
-ironplc/ironplc	2551	pr	merged	2026-11-01	2026-11-01	Make MIN and MAX extensible, folding three or more inputs from the left
-ironplc/ironplc	2552	issue	open	2026-11-01		an input omitted from a formal function call is rejected (P4018) instead of taking its initial value
-ironplc/ironplc	2553	issue	open	2026-11-01		SHL on BYTE/WORD keeps the bits shifted beyond the width (SHR/OR of a SHL result sees them)
-ironplc/ironplc	2554	issue	open	2026-11-01		An untyped based literal (16#A5) is ANY_INT and cannot be assigned to or combined with a BYTE/WORD
-ironplc/ironplc	2555	issue	closed	2026-11-01	2026-11-17	MIN, MAX and LIMIT reject TIME operands (expected=ANY_NUM) although they are declared on ANY_ELEMENTARY
-ironplc/ironplc	2565	issue	open	2026-11-06		F_TRIG reports no edge on its first execution with CLK FALSE (ed.3 table 45 gives Q = TRUE)
-ironplc/ironplc	2615	issue	open	2026-11-15		An array element as the VAR_IN_OUT argument of a function is P9999 (only a named variable is passed by reference)
-ironplc/ironplc	2624	issue	open	2026-11-17		CONCAT accepts only two inputs (P4018), although it is extensible like MIN and MAX
-johannesPettersson80/trust-platform	629	pr	merged	2026-11-19	2026-11-19	Take an untyped based literal as a bit string where one goes (G224)
+repo	number	kind	state	created	closed	merged	fixes	cited_by	title
+Autonomy-Logic/STruCpp	201	issue	open	2026-07-30				strucpp-7	add support for interrupt triggered tasks
+Autonomy-Logic/STruCpp	216	issue	open	2026-08-20				strucpp-1	Lexer errors with qualified enum literals and single-character string literals
+Autonomy-Logic/STruCpp	255	issue	open	2026-11-01				strucpp-1	Typed literal with a negative value (INT#-5) is not lexed
+Autonomy-Logic/STruCpp	256	issue	open	2026-11-01				strucpp-2	STRING[n] (limited-length string type) is not parsed
+Autonomy-Logic/STruCpp	257	issue	open	2026-11-01				strucpp-3	String literal operands of LEN, CONCAT and comparisons are emitted as const char[], which the runtime does not accept
+Autonomy-Logic/STruCpp	258	issue	open	2026-11-01				strucpp-4	VAR_TEMP variables are emitted as members and keep their value between calls
+Autonomy-Logic/STruCpp	259	issue	open	2026-11-01				strucpp-8	TOD - TOD (and DT - DT, DATE - DATE) is typed as the operand type, not TIME
+Autonomy-Logic/STruCpp	260	issue	open	2026-11-01				strucpp-9	a subrange variable is initialised to 0, not to its lower limit
+Autonomy-Logic/STruCpp	261	issue	open	2026-11-01				strucpp-10	CONTINUE is not parsed
+Autonomy-Logic/STruCpp	262	issue	open	2026-11-01				strucpp-11	MUX with expression inputs does not compile (template deduction, int vs IEC_INT)
+Autonomy-Logic/STruCpp	263	issue	closed	2026-11-01	2026-11-09			strucpp-12	NOT of an AND/OR/XOR of comparisons does not compile
+PLC-lang/rusty	2032	issue	open	2026-11-01				rusty-1	TON, TOF and TP switch one scan after ET reaches PT (is_in_preset_range uses <=)
+PLC-lang/rusty	2033	issue	open	2026-11-01				rusty-2	TP ignores the next rising edge after a pulse that ended with IN already FALSE
+PLC-lang/rusty	2034	issue	open	2026-11-01				rusty-3	SR and RS inputs are named SET1/RESET and SET/RESET1 instead of the standard S1/R and S/R1
+PLC-lang/rusty	2035	issue	open	2026-11-01				rusty-4	LIMIT inputs are named MIN/MAX instead of the standard MN/MX, so LIMIT(MN := ...) does not resolve
+PLC-lang/rusty	2036	issue	open	2026-11-01				rusty-5	EN := and .ENO are not available on a function block invocation (E048)
+PLC-lang/rusty	2037	issue	open	2026-11-01				rusty-6	Untyped real literals assigned to an LREAL are evaluated in REAL: 1.0E15 + 1.0 gives 999999986991104
+PLC-lang/rusty	2039	issue	open	2026-11-01				rusty-7	A subrange variable without an initial value starts at 0 instead of its lower limit
+PLC-lang/rusty	2040	issue	open	2026-11-01				rusty-8	LIMIT with MN > MX returns MN instead of MIN(MAX(IN, MN), MX)
+adclz/rk	114	issue	closed	2026-11-02	2026-11-04			rk-8	MUX has no overload for unsigned integers, SINT, bit strings or dates (SEL has them)
+adclz/rk	115	issue	closed	2026-11-02	2026-11-02			rk-8	-16#10 is a syntax error (unary minus before a based literal)
+adclz/rk	116	issue	closed	2026-11-02	2026-11-03			rk-5	MIN/MAX are not extensible, and the comparison functions GT/GE/EQ/LE/LT/NE are missing
+adclz/rk	117	issue	closed	2026-11-02	2026-11-02			ironplc-6 rk-10 rk-11	CTU/CTD/CTUD and F_TRIG follow the 2001 FDIS bodies, not ed.3
+beremiz/matiec	38	issue	open	2026-11-01				strucpp-5	Integer division by zero with the / operator depends on the CPU: SIGFPE on x86-64, silent 0 on AArch64 (MOD and DIV() are guarded)
+beremiz/matiec	39	issue	open	2026-11-01				matiec-13 openplc-5	Inline function-call wrappers are emitted outside #ifndef __POUS_INIT_ONLY__, so config.c calls an undeclared function (build error with clang >= 16 and gcc >= 14)
+beremiz/matiec	40	issue	open	2026-11-01				matiec-8 openplc-4	The + - * / operators on TIME generate calls to _____time_add etc., which do not exist, so the program does not build
+beremiz/matiec	41	issue	closed	2026-11-01	2026-11-07			matiec-11	REPLACE(IN1, IN2, L, P) inserts only the first L characters of IN2
+beremiz/matiec	42	issue	open	2026-11-01				matiec-10	A STRING[n] variable is parsed but then reported "not declared in this scope" (stage3 visitors commented out)
+beremiz/matiec	43	issue	closed	2026-11-01	2026-11-07			matiec-12	Tasks of a resource run in declaration order: PRIORITY is ignored when several tasks are due at the same tick
+beremiz/matiec	44	issue	open	2026-11-01				openplc-4	A duration literal with milliseconds is 1 ns short: T#1h2m3s4ms gives tv_nsec = 3999999
+beremiz/matiec	47	pr	open	2026-11-01			beremiz/matiec#38	matiec-16	Guard the integer / operator against a zero divisor
+beremiz/matiec	49	issue	open	2026-11-01				matiec-13	functions with VAR_OUTPUT / VAR_IN_OUT are called before their declaration under __POUS_INIT_ONLY__ (clang / gcc 14 error)
+beremiz/matiec	50	issue	open	2026-11-01				matiec-14	LIMIT with MN > MX returns MN instead of MX (MIN(MAX(IN, MN), MX))
+beremiz/matiec	51	issue	open	2026-11-01				matiec-15	__time_mul (TIME * n) overflows a 32-bit int on the nanosecond part: T#700ms * 4 gives T#2147ms
+beremiz/matiec	53	issue	open	2026-11-15				matiec-18	An array element as a function's VAR_OUTPUT or VAR_IN_OUT argument generates invalid C ('table' + subscript without brackets)
+beremiz/matiec	54	issue	open	2026-11-16				matiec-19	NOT on a BYTE or WORD inside a comparison is computed as an int: (NOT b) = c is FALSE for b = 16#00, c = 16#FF
+beremiz/matiec	55	issue	open	2026-11-16				matiec-17	A VAR_IN_OUT / VAR_OUTPUT function call inside another call's argument does not link (its per-call wrapper is not generated, and later wrappers are misnumbered)
+eclipse-4diac/4diac-forte	1133	issue	open	2026-11-01				4diac-1	DELETE refuses a range that ends at the last character (off-by-one bound check)
+eclipse-4diac/4diac-forte	1134	issue	closed	2026-11-01	2026-11-06			4diac-2	func_LIMIT.h uses func_MAX / func_MIN without including them
+eclipse-4diac/4diac-forte	1135	issue	open	2026-11-01				4diac-3	no func_MUX.h, although the 4diac IDE 3.3.0 exports an include for it
+eclipse-4diac/4diac-forte	1155	pr	merged	2026-11-03	2026-11-06	2026-11-06	eclipse-4diac/4diac-forte#1134	4diac-2	Make func_LIMIT.h include its MIN and MAX dependencies
+eclipse-4diac/4diac-ide	3130	issue	open	2026-11-01				4diac-4	an input omitted from a formal function call is 0 instead of its declared initial value
+eclipse-4diac/4diac-ide	3131	issue	open	2026-11-01				4diac-6 4diac-7	ST lexer: T#1.5s is not accepted, and an identifier named t is taken for a T# literal prefix
+eclipse-4diac/4diac-ide	3132	issue	open	2026-11-01				4diac-5 4diac-8 4diac-9	ST standard functions: LIMIT/SEL formal parameter names, TRUNC, *_TO_STRING
+ironplc/ironplc	1163	issue	open	2026-07-12				ironplc-19	MCP run: implement stimuli (time-ordered input drives)
+ironplc/ironplc	1471	issue	open	2026-08-29				ironplc-13 ironplc-30	Whole-element assignment of an array-of-struct element is not implemented
+ironplc/ironplc	1613	issue	open	2026-09-03				ironplc-18	Support more than one PROGRAM in a compiled container
+ironplc/ironplc	1618	issue	closed	2026-09-03	2026-09-05			ironplc-11	Extensible standard functions (ADD, MUL, AND, OR, XOR) accept only two inputs
+ironplc/ironplc	1813	issue	open	2026-09-26				ironplc-16	REAL_TO_INT truncates instead of rounding
+ironplc/ironplc	1969	issue	closed	2026-10-01	2026-11-16			ironplc-10	A VAR_TEMP variable of a function block passes check but fails to compile
+ironplc/ironplc	2332	issue	closed	2026-10-16	2026-10-17			ironplc-9	CTU, CTD and CTUD of INT count past the range of INT, so CV wraps when stored in an INT
+ironplc/ironplc	2545	issue	open	2026-11-01				ironplc-1	TOF starts an off-delay at power-up although IN was never TRUE
+ironplc/ironplc	2546	issue	open	2026-11-01				ironplc-2 ironplc-3	TP retriggers while IN stays TRUE, and holds ET = PT after the pulse with IN FALSE
+ironplc/ironplc	2547	issue	open	2026-11-01				ironplc-19	Proposal: an open, runtime-agnostic IEC 61131-3 conformance trace suite (67 tests, CC0)
+ironplc/ironplc	2548	issue	closed	2026-11-01	2026-11-01			ironplc-11	MAX and MIN accept only two inputs although they are extensible (table 31); ADD and MUL accept three
+ironplc/ironplc	2549	issue	open	2026-11-01				ironplc-14	EN := in a function block invocation is a syntax error (P0002), so EN/ENO cannot be used on function blocks
+ironplc/ironplc	2550	issue	open	2026-11-01				ironplc-13	Assigning a structure to a structure-typed field (r.tl := q) is P9999 not implemented, while q := p compiles
+ironplc/ironplc	2551	pr	merged	2026-11-01	2026-11-01	2026-11-01	ironplc/ironplc#2548	ironplc-11	Make MIN and MAX extensible, folding three or more inputs from the left
+ironplc/ironplc	2552	issue	open	2026-11-01				ironplc-23	an input omitted from a formal function call is rejected (P4018) instead of taking its initial value
+ironplc/ironplc	2553	issue	open	2026-11-01				ironplc-25	SHL on BYTE/WORD keeps the bits shifted beyond the width (SHR/OR of a SHL result sees them)
+ironplc/ironplc	2554	issue	open	2026-11-01				ironplc-26	An untyped based literal (16#A5) is ANY_INT and cannot be assigned to or combined with a BYTE/WORD
+ironplc/ironplc	2555	issue	closed	2026-11-01	2026-11-17			ironplc-27	MIN, MAX and LIMIT reject TIME operands (expected=ANY_NUM) although they are declared on ANY_ELEMENTARY
+ironplc/ironplc	2565	issue	open	2026-11-06				ironplc-6	F_TRIG reports no edge on its first execution with CLK FALSE (ed.3 table 45 gives Q = TRUE)
+ironplc/ironplc	2615	issue	open	2026-11-15				ironplc-29	An array element as the VAR_IN_OUT argument of a function is P9999 (only a named variable is passed by reference)
+ironplc/ironplc	2624	issue	open	2026-11-17				ironplc-28	CONCAT accepts only two inputs (P4018), although it is extensible like MIN and MAX
+johannesPettersson80/trust-platform	629	pr	merged	2026-11-19	2026-11-19	2026-11-19			Take an untyped based literal as a bit string where one goes (G224)

@@ -214,6 +214,24 @@ python3 -m http.server -d /tmp/iec-site/public      # the base URL is the Pages 
                                                     # set HUGO_BASEURL=http://localhost:8000/ to browse locally
 ```
 
+The site follows the shared structure of
+[s-celles/site-kit](https://github.com/s-celles/site-kit) (its `SPEC.md`),
+imported as a Hugo module before Hextra and pinned in `site/go.mod`: the
+badges, stat tiles, page head and footer, styles and the `tables.js` and
+`viz.js` scripts come from it. The badge tones (one per status word) and the
+footer line are set under `params.siteKit` in `site/hugo.yaml`; the menu and
+the other declarations the checks read are in `site-kit.json`. The Site
+workflow runs site-kit's `check_site.py` on the built site and builds it a
+second time to check, with `compare_builds.py`, that both builds are
+identical. Locally, with a clone of site-kit next to the repository:
+
+```sh
+python3 -I ../site-kit/tools/check_site.py --site /tmp/iec-site/public --config site-kit.json --hugo site/hugo.yaml --repo .
+```
+
+The menu has eight entries; the Tests and Runtimes sections are reached from
+Docs, the home page tiles and the results table.
+
 ## Building the runtimes on NixOS
 
 `shell.nix` provides the toolchains of CI's ubuntu-24.04 job: gcc 13 (gcc 14

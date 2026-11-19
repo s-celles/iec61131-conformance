@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """Checks for the site generator. Run with python3 -I tools/site/test_sitegen.py."""
 import pathlib
+import re
 import sys
 import tempfile
 import unittest
@@ -185,8 +186,9 @@ class Wording(unittest.TestCase):
         self.assertIn("not checked against", home)            # the derivations came from an AI
         self.assertIn("scanard-banner.svg", home)
         self.assertNotIn("by hand", home)
-        footer = (ROOT / "site/layouts/_partials/custom/footer.html").read_text()
+        footer = (ROOT / "site/hugo.yaml").read_text().split("    footer: >-", 1)[1]   # site-kit's siteKit.footer
         self.assertIn("non-commercial", footer)
+        self.assertIn("AI assistant", footer)
         self.assertIn("non-commercial", (out / "static" / "llms.txt").read_text())
 
 
@@ -268,8 +270,77 @@ class Quality(unittest.TestCase):
         self.assertIn("## Recent upstream reports", home)
         self.assertIn('relref "/statuses"', home)
 
-    def test_chart_points_are_keyboard_reachable(self):
-        self.assertIn('tabindex="0"', (self.c / "history.md").read_text())
+
+
+class SiteKit(unittest.TestCase):
+    """The site follows site-kit's SPEC (s-celles/site-kit); CI runs its
+    check_site.py on the built site, these check the generator's side."""
+    @classmethod
+    def setUpClass(cls):
+        cls.out = pathlib.Path(tempfile.mkdtemp(prefix="sitegen-"))
+        sitegen.generate(ROOT, cls.out)
+        cls.c = cls.out / "content"
+        cls.hugo = (ROOT / "site/hugo.yaml").read_text()
+
+    def test_module_imported_before_hextra(self):
+        kit, hextra = self.hugo.index("github.com/s-celles/site-kit"), self.hugo.index("github.com/imfing/hextra")
+        self.assertLess(kit, hextra)
+        self.assertRegex((ROOT / "site/go.mod").read_text(), r"github\.com/s-celles/site-kit v\d+\.\d+\.\d+")
+
+    def test_menu_has_at_most_eight_entries_and_matches_site_kit_json(self):
+        import json
+        names = re.findall(r"(?m)^    - name: (.+)$", self.hugo)
+        self.assertEqual(names, ["Results", "Findings", "Upstream", "History", "Methodology", "Docs", "GitHub", "Search"])
+        self.assertEqual(json.loads((ROOT / "site-kit.json").read_text())["menu"], names)
+
+    def test_no_local_copies_of_the_kit(self):
+        for f in ("layouts/shortcodes/badge.html", "layouts/shortcodes/stats.html", "layouts/_partials/custom/head-end.html",
+                  "layouts/_partials/custom/footer.html", "assets/js/tables.js", "assets/js/viz.js"):
+            self.assertFalse((ROOT / "site" / f).exists(), f)
+
+    def test_every_status_word_has_a_tone(self):
+        tones = dict(re.findall(r"(?m)^      ([a-z ]+): ([a-z-]+)$", self.hugo.split("badgeTones:", 1)[1].split("\n    footer", 1)[0]))
+        words = re.findall(r'badge "([^"]+)"', (self.c / "statuses.md").read_text())
+        self.assertTrue(words)
+        for w in words:
+            self.assertIn(w.lower(), tones, w)
+
+    def test_tests_and_runtimes_are_under_docs(self):
+        docs = (self.c / "docs/_index.md").read_text()
+        self.assertIn('relref "/tests"', docs)
+        self.assertIn('relref "/runtimes"', docs)
+
+    def test_methodology_names_the_pinned_kit(self):
+        tag = re.search(r"github\.com/s-celles/site-kit (v[\d.]+)", (ROOT / "site/go.mod").read_text()).group(1)
+        self.assertIn(f"site-kit {tag}", (self.c / "methodology.md").read_text())
+
+    def test_home_uses_the_kit_stat_tiles(self):
+        home = (self.c / "_index.md").read_text()
+        self.assertIn("{{< stats >}}", home)
+        self.assertEqual(home.count("{{< stat "), 4)
+
+    def test_history_charts_are_dense(self):
+        page = (self.c / "history.md").read_text()
+        self.assertIn('data-viz="dense" tabindex="0"', page)
+        self.assertNotIn('class="viz-pt" tabindex', page)
+        for label in re.findall(r'class="viz-pt" aria-label="([^"]+)"', page):
+            self.assertRegex(label, r"^\d{4}-\d{2}-\d{2}( \d{2}:\d{2})?, ")
+
+    def test_snapshot_has_the_shared_columns(self):
+        head = (ROOT / "notes/upstream-status.tsv").read_text().splitlines()[0].split("\t")
+        self.assertEqual(head, ["repo", "number", "kind", "state", "created", "closed", "merged", "fixes", "cited_by", "title"])
+        snap = sitegen.upstream_snapshot(ROOT)
+        self.assertIn("matiec-19", snap[("beremiz/matiec", 54)]["cited_by"].split())
+
+    def test_snapshot_rows(self):
+        import upstream_status as us
+        pr = {"number": 9, "title": "Fix\tit", "state": "closed", "pull_request": {"merged_at": "2026-11-04T00:00:00Z"},
+              "created_at": "2026-11-02T00:00:00Z", "closed_at": "2026-11-04T00:00:00Z", "body": "Fixes #7"}
+        r = us.row("a/b", pr, {"F-2", "F-1"})
+        self.assertEqual((r["kind"], r["state"], r["merged"], r["fixes"], r["cited_by"], r["title"]),
+                         ("pr", "merged", "2026-11-04", "a/b#7", "F-1 F-2", "Fix it"))
+        np = {"number": 3, "title": "x", "state": "closed", "state_reason": "not_planned", "created_at": "2026-01-01T00:00:00Z"}
+        self.assertEqual(us.row("a/b", np, set())["state"], "not planned")
 
 
 if __name__ == "__main__":

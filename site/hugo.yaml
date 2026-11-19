@@ -9,6 +9,7 @@ noBuildLock: true
 disableKinds: [taxonomy, term]
 module:
   imports:
+    - path: github.com/s-celles/site-kit   # first: its badge and hooks win over Hextra's
     - path: github.com/imfing/hextra
 markup:
   goldmark:
@@ -24,31 +25,25 @@ menu:
     - name: Findings
       pageRef: /findings
       weight: 2
-    - name: Tests
-      pageRef: /tests
-      weight: 3
-    - name: Runtimes
-      pageRef: /runtimes
-      weight: 4
     - name: Upstream
       pageRef: /upstream
-      weight: 5
+      weight: 3
     - name: History
       pageRef: /history
-      weight: 6
+      weight: 4
     - name: Methodology
       pageRef: /methodology
-      weight: 7
+      weight: 5
     - name: Docs
       pageRef: /docs
-      weight: 8
+      weight: 6
     - name: GitHub
       url: https://github.com/s-celles/iec61131-conformance
-      weight: 9
+      weight: 7
       params:
         icon: github
     - name: Search
-      weight: 10
+      weight: 8
       params:
         type: search
 params:
@@ -73,3 +68,27 @@ params:
   footer:
     displayCopyright: false
     displayPoweredBy: false
+  siteKit:             # s-celles/site-kit: head, footer, badges (SPEC.md)
+    themeColor: "#173f66"
+    icon: brand/scanard-mark.svg
+    badgeTones:        # one tone per status word (lower case), site-wide
+      pass: good
+      fail: bad
+      error: warn-dashed
+      same: info
+      differs: alt
+      fixed: good
+      reported: info
+      not reported: bad-dashed
+      limitation: neutral
+      not a defect: neutral
+      open: warn
+      closed: good
+      merged: good
+      not planned: neutral
+      unknown: neutral
+    footer: >-
+      Individual, non-commercial project, not produced, endorsed or certified by IEC, PLCopen, any accredited or
+      standards body, or the projects whose runtimes it runs; its aim is to help improve open-source IEC 61131-3
+      implementations. The expected traces were derived by an AI assistant without access to the standard's text
+      and may contain errors. Public domain (CC0 1.0).
