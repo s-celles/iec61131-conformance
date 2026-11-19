@@ -519,29 +519,21 @@ PASS    conformance/ops/time_mul.st
 6 r=100.0 => t=100
 PASS    conformance/ops/trunc.st
 ### conformance/pou/fb_en_eno.st
+0 run_it=TRUE inc=5 => total=5 done=FALSE
+1 run_it=FALSE => total=10 done=FALSE
+2 inc=100 => total=110 done=FALSE
+3 run_it=TRUE => total=210 done=FALSE
+4 inc=-5 => total=205 done=FALSE
+5 run_it=FALSE => total=200 done=FALSE
 FAIL    conformance/pou/fb_en_eno.st
-        plc failed to compile the program:
-error[E089]: Invalid call parameters
-   ┌─ <tmpdir>/prog.st:25:5
-   │
-25 │   c(EN := run_it, inc := inc);
-   │     ^^^^^^^^^^^^ Invalid call parameters
-
-error[E048]: Could not resolve reference to EN
-   ┌─ <tmpdir>/prog.st:25:5
-   │
-25 │   c(EN := run_it, inc := inc);
-   │     ^^ Could not resolve reference to EN
-
-error[E048]: Could not resolve reference to ENO
-   ┌─ <tmpdir>/prog.st:27:14
-   │
-27 │   done  := c.ENO;
-   │              ^^^ Could not resolve reference to ENO
-
-error: Compilation aborted due to critical errors.
-Hint: You can use `plc explain <ErrorCode>` for more information
-
+        cycle 0 (trace line 21): done expected TRUE, got FALSE
+        cycle 1 (trace line 22): total expected 5, got 10
+        cycle 2 (trace line 23): total expected 5, got 110
+        cycle 3 (trace line 24): total expected 105, got 210
+        cycle 3 (trace line 24): done expected TRUE, got FALSE
+        cycle 4 (trace line 25): total expected 100, got 205
+        cycle 4 (trace line 25): done expected TRUE, got FALSE
+        cycle 5 (trace line 26): total expected 100, got 200
 ### conformance/pou/fb_in_out.st
 0 inc=5 => total=5 p=2 q=1 ok=TRUE
 1 inc=3 => total=8 p=1 q=2 ok=TRUE

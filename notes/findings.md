@@ -212,6 +212,10 @@ Reported: https://github.com/ironplc/ironplc/issues/2549
   this is a missing optional feature, not a defect; the report said
   otherwise and was corrected in a comment on #2549
   (`notes/trace-audit-2026-11-18.md`).
+- Since issue #16 (2026-11-19) the test declares `EN` and `ENO` in the
+  function block, the user form of ed.2 2.5.2.1a. IronPLC rejects the
+  declaration `EN : BOOL := TRUE;` with P0002, `EN` being reserved, so a
+  user cannot provide the feature either.
 
 ## 15. (Not a defect) Array index out of range is a trap
 

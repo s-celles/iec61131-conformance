@@ -519,10 +519,13 @@ PASS    conformance/ops/time_mul.st
 6 r=100.0 => t=100
 PASS    conformance/ops/trunc.st
 ### conformance/pou/fb_en_eno.st
-FAIL    conformance/pou/fb_en_eno.st
-        truST failed to compile the program:
-file 0: error[E105]: unknown parameter 'EN': only a POU that declares `EN : BOOL` among its inputs takes an enable input (at 430..442)
-file 0: error[E105]: no member 'ENO' on type (at 490..493)
+0 run_it=TRUE inc=5 => total=5 done=TRUE
+1 run_it=FALSE => total=5 done=FALSE
+2 inc=100 => total=5 done=FALSE
+3 run_it=TRUE => total=105 done=TRUE
+4 inc=-5 => total=100 done=TRUE
+5 run_it=FALSE => total=100 done=FALSE
+PASS    conformance/pou/fb_en_eno.st
 ### conformance/pou/fb_in_out.st
 0 inc=5 => total=5 p=2 q=1 ok=TRUE
 1 inc=3 => total=8 p=1 q=2 ok=TRUE
@@ -861,5 +864,5 @@ DIFFERS conformance/undefined/ton_pt_change.st
         cycle 9 (trace line 35): q expected TRUE, got FALSE
         cycle 9 (trace line 35): et expected T#800ms, got T#700ms
 
-109 tests: 85 pass, 6 fail, 6 same, 12 differs, 0 error
+109 tests: 86 pass, 5 fail, 6 same, 12 differs, 0 error
 exit 1

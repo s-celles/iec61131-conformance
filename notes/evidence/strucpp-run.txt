@@ -592,13 +592,23 @@ PASS    conformance/ops/time_mul.st
 6 r=100.0 => t=100
 PASS    conformance/ops/trunc.st
 ### conformance/pou/fb_en_eno.st
-0 run_it=TRUE inc=5 => total=5 done=TRUE
-1 run_it=FALSE => total=5 done=FALSE
-2 inc=100 => total=5 done=FALSE
-3 run_it=TRUE => total=105 done=TRUE
-4 inc=-5 => total=100 done=TRUE
-5 run_it=FALSE => total=100 done=FALSE
-PASS    conformance/pou/fb_en_eno.st
+ERROR   conformance/pou/fb_en_eno.st
+        g++ failed:
+In file included from prog.cpp:4:
+prog.hpp:75:20: error: redeclaration of ‘strucpp::IEC_BOOL strucpp::COUNT::ENO’
+   75 |     IEC_BOOL ENO = true;
+      |                    ^~~~
+prog.hpp:71:14: note: previous declaration ‘strucpp::IEC_BOOL strucpp::COUNT::ENO’
+   71 |     IEC_BOOL ENO;
+      |              ^~~
+In file included from driver.cpp:9:
+prog.hpp:75:20: error: redeclaration of ‘strucpp::IEC_BOOL strucpp::COUNT::ENO’
+   75 |     IEC_BOOL ENO = true;
+      |                    ^~~~
+prog.hpp:71:14: note: previous declaration ‘strucpp::IEC_BOOL strucpp::COUNT::ENO’
+   71 |     IEC_BOOL ENO;
+      |              ^~~
+
 ### conformance/pou/fb_in_out.st
 0 inc=5 => total=5 p=2 q=1 ok=TRUE
 1 inc=3 => total=8 p=1 q=2 ok=TRUE
@@ -1187,5 +1197,5 @@ DIFFERS conformance/undefined/ton_pt_change.st
         cycle 10 (trace line 36): et expected T#800ms, got T#200ms
         cycle 11 (trace line 37): et expected T#800ms, got T#200ms
 
-109 tests: 70 pass, 13 fail, 12 same, 6 differs, 8 error
+109 tests: 69 pass, 13 fail, 12 same, 6 differs, 9 error
 exit 1
