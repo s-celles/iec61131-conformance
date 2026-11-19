@@ -195,7 +195,10 @@ runtime, the upstream issues the notes cite, and the documents (this guide,
 suite's size, each runtime's share of conformant tests passed and the
 upstream issues cited, from the git history of `notes/comparison.md` (the
 Site workflow checks out the full history for it). It also serves `llms.txt`
-and `llms-full.txt`.
+and `llms-full.txt`. The state of the cited upstream issues comes from
+`notes/upstream-status.tsv`, a dated snapshot that
+`python3 -I tools/site/upstream_status.py` refreshes (it needs `gh`); the
+build itself does not go online.
 
 The pages are not stored in the repository. `tools/site/sitegen.py` derives
 them on every build from `conformance/`, `notes/` and the CI pins, and
