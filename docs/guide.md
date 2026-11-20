@@ -15,12 +15,12 @@ are relative to the repository root.
 - The expected values of a `status: conformant` trace come from IEC
   61131-3 (edition 2, 2003, and edition 3, 2013: the function block bodies
   and timing diagrams of its tables, the formulas of its standard functions,
-  the semantics clauses of ST) as an AI assistant (Claude Code; the commits
-  say `Assisted-by: AI`) knows it. Each `.trace` states the derivation and
-  the clause, table or figure it cites. The author has no copy of the
-  standard, so neither the derivations nor the citations are checked
-  against its text: a clause or table number, or the reading itself, may be
-  wrong. Where the derivation finds a value left to the implementer (the
+  the semantics clauses of ST) as an AI assistant (the commits say
+  `Assisted-by: AI`) knows it. Each `.trace` states the derivation and
+  the clause, table or figure it cites. The author does not consult the
+  standard's text for this project, so neither the derivations nor the
+  citations are checked against it: a clause or table number, or the
+  reading itself, may be wrong. Where the derivation finds a value left to the implementer (the
   counters' limits PVmin and PVmax, NOTE under ed.3 table 46) the trace does
   not check it. Readings have already been wrong: `F_TRIG` at start-up and
   the counters' limits were corrected on a second reading
@@ -472,6 +472,19 @@ Run `python3 -I tools/fuzz/test_gen.py` to check the string, array and structure
 table examples and its range guards. The search campaign and reduced cases
 of 2026-11-07, 2026-11-15 and 2026-11-16 are recorded in `notes/fuzz-*.md`; local upstream bug
 drafts are in `upstream-bugs.md`.
+
+## Conflict of interest
+
+Every contributor declares their relations to the evaluated runtimes and
+how an AI assistant was used, as rows of `docs/disclosures.tsv` (columns
+contributor, orcid, project, kind, role, note; kind is one of "the suite",
+"evaluated implementation", "AI assistance", "other"). It is the only place
+the declarations are written: the site generates its Conflict of interest
+page, with a matrix of runtimes by contributors, and the one-line summary
+on the home page from it. An AI assistance row says what the assistant did
+and how its output was reviewed, without naming the tool. A change made
+for a new contributor is not complete without their rows
+(`CONTRIBUTING.md`).
 
 ## Citing
 

@@ -6,6 +6,8 @@ Notable changes are recorded here following Keep a Changelog.
 
 ### Changed
 
+- The provenance statement (README, site, guide) says the author does not
+  consult the text of IEC 61131-3 for this project.
 - truST: the CI job `trust` pins trust-platform `d9ac48c`, where a periodic
   task runs at its start, then every interval (trust-platform#640). truST
   now passes the five `config/*` tests it failed one scan late, 91 of the
@@ -23,6 +25,13 @@ Notable changes are recorded here following Keep a Changelog.
 
 ### Added
 
+- Conflict of interest and AI assistance declarations: `docs/disclosures.tsv`
+  holds one row per contributor and relation (the suite, each evaluated
+  runtime, AI assistance); the site generates a Conflict of interest page
+  from it, with a matrix of runtimes by contributors, and a one-line summary
+  on the home page, in the footer, `llms.txt`, the README and
+  `CITATION.cff`. `CONTRIBUTING.md` asks every contributor for their rows.
+  Johannes Pettersson's rows wait for his confirmation (#27).
 - Site: the state of every cited upstream issue and pull request (open, closed,
   merged, not planned), from the snapshot `notes/upstream-status.tsv` that
   `tools/site/upstream_status.py` refreshes. It is shown on the Upstream page, on

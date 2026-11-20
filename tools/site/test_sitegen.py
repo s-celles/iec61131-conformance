@@ -343,5 +343,62 @@ class SiteKit(unittest.TestCase):
         self.assertEqual(us.row("a/b", np, set())["state"], "not planned")
 
 
+class Disclosure(unittest.TestCase):
+    """Conflict of interest and AI assistance declarations: docs/disclosures.tsv
+    is the only source; the page and the one-line summaries are generated."""
+    @classmethod
+    def setUpClass(cls):
+        cls.out = pathlib.Path(tempfile.mkdtemp(prefix="sitegen-"))
+        sitegen.generate(ROOT, cls.out)
+        cls.c = cls.out / "content"
+        cls.rows = sitegen.disclosures(ROOT)
+
+    def test_the_file_parses_with_the_vocabulary(self):
+        self.assertTrue(self.rows)
+        for r in self.rows:
+            self.assertEqual(set(r), set(sitegen.DISCLOSURE_COLUMNS))
+            self.assertIn(r["kind"], sitegen.DISCLOSURE_KINDS, r)
+            self.assertTrue(r["contributor"] and r["project"] and r["role"], r)
+            if r["orcid"]:
+                self.assertRegex(r["orcid"], r"^\d{4}-\d{4}-\d{4}-\d{3}[\dX]$")
+
+    def test_every_contributor_declares_ai_assistance(self):
+        people = {r["contributor"] for r in self.rows}
+        with_ai = {r["contributor"] for r in self.rows if r["kind"] == "AI assistance"}
+        self.assertEqual(people, with_ai)
+
+    def test_no_tool_is_named(self):
+        text = (ROOT / "docs/disclosures.tsv").read_text()
+        for name in ("Claude", "ChatGPT", "Copilot", "GPT", "Gemini", "Codex"):
+            self.assertNotIn(name, text)
+
+    def test_projects_are_evaluated_runtimes_or_the_suite(self):
+        names = {name for name, _, _ in sitegen.RUNTIMES.values()}
+        for r in self.rows:
+            if r["kind"] == "evaluated implementation":
+                self.assertIn(r["project"], names, r)
+
+    def test_page(self):
+        page = (self.c / "disclosure.md").read_text()
+        for heading in ("## Matrix", "## Use of AI assistants", "## What limits the bias", "## How to report an unfair test"):
+            self.assertIn(heading, page)
+        for person in {r["contributor"] for r in self.rows}:
+            self.assertIn(f"## {person}", page)
+        matrix = page.split("## Matrix", 1)[1].split("\n## ", 1)[0]
+        for name, _, _ in sitegen.RUNTIMES.values():
+            self.assertIn(f"| {name} |", matrix)
+        self.assertIn("| none |", matrix)                    # an absence of relation is visible
+        self.assertNotIn("\u2014", page)                     # no em-dash
+
+    def test_summary_is_linked_everywhere(self):
+        url = sitegen.SITE + "disclosure/"
+        self.assertIn('relref "/disclosure"', (self.c / "_index.md").read_text())
+        self.assertIn(url, (ROOT / "site/hugo.yaml").read_text())
+        self.assertIn(url, (ROOT / "README.md").read_text())
+        self.assertIn(url, (ROOT / "CITATION.cff").read_text())
+        self.assertIn(url, (self.out / "static/llms.txt").read_text())
+        self.assertIn("docs/disclosures.tsv", (ROOT / "CONTRIBUTING.md").read_text())
+
+
 if __name__ == "__main__":
     unittest.main()
