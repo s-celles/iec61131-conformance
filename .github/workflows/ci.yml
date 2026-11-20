@@ -25,7 +25,7 @@ env:
   RUSTY_SHA: e911ee5e0bce0ba60086ff5269d74090a27c32d6
   FOURDIAC_VERSION: "3.3.0"   # 4diac IDE release and the 4diac-forte git tag
   RK_SHA: 20761dd5c3e559ef5962055490c42cf05dc3e43e   # also harness/rk/Cargo.toml (debug_format)
-  TRUST_SHA: b5e8820ad838136b4580ba6271a1f288362b16d0
+  TRUST_SHA: d9ac48cfcdda898d94d7b59e71d66a0aab8f738a
 
 jobs:
   formal:

@@ -62,9 +62,9 @@ git clone https://github.com/adclz/rk scratch/rk
 ./harness/rk/target/release/iec61131-conformance-rk --rk scratch/rk/target/release/rk --record conformance \
     > notes/evidence/rk-run.txt
 
-# truST b5e8820 (2026-11-19; Rust 1.99.0 from its rust-toolchain.toml)
+# truST d9ac48c (2026-11-20; Rust 1.99.0 from its rust-toolchain.toml)
 git init -q scratch/trust
-git -C scratch/trust fetch -q --depth 1 https://github.com/johannesPettersson80/trust-platform b5e8820ad838136b4580ba6271a1f288362b16d0
+git -C scratch/trust fetch -q --depth 1 https://github.com/johannesPettersson80/trust-platform d9ac48cfcdda898d94d7b59e71d66a0aab8f738a
 git -C scratch/trust checkout -q FETCH_HEAD
 (cd scratch/trust && rustup toolchain install && cargo fetch --locked \
     && cargo build --release --locked -p trust-runtime --example conformance_driver \

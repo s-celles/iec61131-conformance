@@ -6,6 +6,10 @@ Notable changes are recorded here following Keep a Changelog.
 
 ### Changed
 
+- truST: the CI job `trust` pins trust-platform `d9ac48c`, where a periodic
+  task runs at its start, then every interval (trust-platform#640). truST
+  now passes the five `config/*` tests it failed one scan late, 91 of the
+  91 conformant tests.
 - Site: follows s-celles/site-kit v0.2.0, imported as a Hugo module before
   Hextra. Its badges (one tone per status word, set in `site/hugo.yaml`),
   stat tiles, head, footer, styles and scripts replace the site's own copies.
