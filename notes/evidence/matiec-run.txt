@@ -220,6 +220,16 @@ PASS    conformance/data/defaults.st
 4 pick=0 => code=1 is_green=FALSE same=FALSE
 5 pick=7 => code=1 is_green=FALSE same=TRUE
 PASS    conformance/data/enum.st
+### conformance/data/enum_qualified.st
+0 pick=0 => ccode=3 lcode=2 is_green=FALSE
+1 pick=1 => ccode=2 lcode=1 is_green=TRUE
+2 pick=0 => ccode=2 lcode=1 is_green=TRUE
+3 pick=2 => ccode=1 lcode=0 is_green=FALSE
+PASS    conformance/data/enum_qualified.st
+### conformance/data/long_types.st
+0 => max_ok=TRUE min_ok=TRUE u_ok=TRUE p_div=12000000 w_hi=16#01234567 w_lo=16#89ABCDEF r_hi=16#00000000 r_lo=16#00000003
+1 => max_ok=TRUE min_ok=TRUE u_ok=TRUE p_div=12000000 w_hi=16#01234567 w_lo=16#89ABCDEF r_hi=16#00000000 r_lo=16#00000003
+PASS    conformance/data/long_types.st
 ### conformance/data/struct_element_copy.st
 0 i=1 k=3 => s1=13 s2=0 s3=0 cs=14
 1 i=3 k=-2 => s1=13 s2=0 s3=28 cs=29
@@ -237,6 +247,11 @@ PASS    conformance/data/struct_init.st
 2 a=0 b=0 => qx=0 qy=0 px=0 area=0
 3 a=100 b=100 => qx=100 qy=100 px=0 area=10000
 PASS    conformance/data/struct_internal.st
+### conformance/data/var_constant.st
+0 x=1 => sum=10 scaled=1000 limit_hit=FALSE period=T#2000ms
+1 x=2 => sum=10 scaled=2000 limit_hit=TRUE period=T#2000ms
+2 x=-3 => sum=10 scaled=-3000 limit_hit=FALSE period=T#2000ms
+PASS    conformance/data/var_constant.st
 ### conformance/edge/f_trig.st
 0 clk=FALSE => q=TRUE
 1 clk=TRUE => q=FALSE
@@ -281,6 +296,12 @@ PASS    conformance/edge/r_trig.st
 9 s=TRUE => q_sr=TRUE q_rs=TRUE
 10 r=TRUE => q_sr=TRUE q_rs=FALSE
 PASS    conformance/edge/sr_rs.st
+### conformance/ops/bcd_conversions.st
+0 n=1234 w=16#1234 => to_bcd=16#1234 from_bcd=1234 round_trip=1234
+1 n=0 w=16#0099 => to_bcd=16#0000 from_bcd=99 round_trip=0
+2 n=9999 w=16#9999 => to_bcd=16#9999 from_bcd=9999 round_trip=9999
+3 n=7 w=16#1000 => to_bcd=16#0007 from_bcd=1000 round_trip=7
+PASS    conformance/ops/bcd_conversions.st
 ### conformance/ops/bit_expr_operands.st
 0 a=16#3C b=16#0F w=16#1234 n=0 => n_xor=16#CC n_and=16#FFCB s_or=16#3F r_xor=16#33 r_w=16#EDCB same=TRUE
 1 a=16#F0 b=16#F0 w=16#0000 n=4 => n_xor=16#FF n_and=16#FFFF s_or=16#00 r_xor=16#FF r_w=16#FFFF same=TRUE
@@ -300,6 +321,10 @@ PASS    conformance/ops/bit_literals.st
 3 b=16#0F m=16#0F w=16#0001 d=16#80000000 n=15 => o_and=16#0F o_or=16#0F o_xor=16#00 o_not=16#F0 w_shl=16#8000 w_shr=16#0000 w_rol=16#8000 w_ror=16#0002 d_shl=16#00000000 d_shr=16#00010000 d_rol=16#00004000 d_ror=16#00010000
 4 b=16#00 m=16#00 w=16#1234 d=16#12345678 n=16 => o_and=16#00 o_or=16#00 o_xor=16#00 o_not=16#FF w_shl=16#0000 w_shr=16#0000 w_rol=16#1234 w_ror=16#1234 d_shl=16#56780000 d_shr=16#00001234 d_rol=16#56781234 d_ror=16#56781234
 PASS    conformance/ops/bit_ops.st
+### conformance/ops/compare_extensible.st
+0 => q1=TRUE q2=FALSE q3=TRUE q4=TRUE q5=FALSE q6=TRUE q7=FALSE q8=FALSE
+1 => q1=TRUE q2=FALSE q3=TRUE q4=TRUE q5=FALSE q6=TRUE q7=FALSE q8=FALSE
+PASS    conformance/ops/compare_extensible.st
 ### conformance/ops/conversions.st
 0 i=100 ip=100 d=-1000 dp=1000 u=30000 ub=30000 => i2d=100 i2u=100 d2i=-1000 d2u=1000 u2i=30000 u2d=30000
 1 i=0 ip=0 d=0 dp=0 u=0 ub=0 => i2d=0 i2u=0 d2i=0 d2u=0 u2i=0 u2d=0
@@ -343,6 +368,18 @@ PASS    conformance/ops/lreal_precision.st
 1 a=-5 b=2 => max_first=2 max_second=2 max_last=2 min_first=-15 min_second=-15 min_last=-15
 2 a=8 b=-3 => max_first=16 max_second=16 max_last=16 min_first=-2 min_second=-2 min_last=-2
 PASS    conformance/ops/minmax_ext_expr.st
+### conformance/ops/mod_negative.st
+0 a=7 b=2 ad=7 bd=2 => q=3 m=1 qd=3 md=1
+1 a=-7 b=2 ad=-7 bd=2 => q=-3 m=-1 qd=-3 md=-1
+2 a=7 b=-2 ad=7 bd=-2 => q=-3 m=1 qd=-3 md=1
+3 a=-7 b=-2 ad=-7 bd=-2 => q=3 m=-1 qd=3 md=-1
+4 a=-6 b=3 ad=-6 bd=3 => q=-2 m=0 qd=-2 md=0
+5 a=-1 b=5 ad=-1 bd=5 => q=0 m=-1 qd=0 md=-1
+PASS    conformance/ops/mod_negative.st
+### conformance/ops/move.st
+0 i=4 b=FALSE k=4.0 => mi=4 mr=10 mb=TRUE mt=T#1500ms mw=16#BEEF ms='move' mx=20
+1 i=-3 b=TRUE k=-3.0 => mi=-3 mr=-7.5 mb=FALSE mt=T#1500ms mw=16#BEEF ms='move' mx=20
+PASS    conformance/ops/move.st
 ### conformance/ops/mux_nested_selector.st
 0 k=0 => r=20 u=30
 1 k=1 => r=30 u=20
@@ -484,6 +521,12 @@ FAIL    conformance/ops/time_mul.st
 5 r=-0.99 => t=0
 6 r=100.0 => t=100
 PASS    conformance/ops/trunc.st
+### conformance/pou/fb_edge_inputs.st
+FAIL    conformance/pou/fb_edge_inputs.st
+        iec2c failed to compile the program:
+prog.st:23-6..23-6: error: Invalid data type for 'IF' condition (should be BOOL).
+1 error(s) found. Bailing out!
+
 ### conformance/pou/fb_en_eno.st
 0 run_it=TRUE inc=5 => total=5 done=TRUE
 1 run_it=FALSE => total=5 done=FALSE
@@ -1041,5 +1084,5 @@ DIFFERS conformance/undefined/ton_pt_change.st
         cycle 10 (trace line 36): et expected T#800ms, got T#200ms
         cycle 11 (trace line 37): et expected T#800ms, got T#200ms
 
-109 tests: 80 pass, 5 fail, 11 same, 7 differs, 6 error
+117 tests: 87 pass, 6 fail, 11 same, 7 differs, 6 error
 exit 1
