@@ -14,16 +14,16 @@ by:
 
 - one row per evaluated runtime you have a relation with (author,
   maintainer, contributor, employee, funded by, issue reporter), kind
-  `evaluated implementation`; a runtime without a row shows as "none";
+  `examined system`; a runtime without a row shows as "none";
 - one row of kind `AI assistance`: what an AI assistant did and how you
   reviewed its output, or that you used none. Do not name the tool;
-- your relation to the suite itself (kind `the suite`), and anything else
+- your relation to the suite itself (kind `benchmark`), and anything else
   a reader should know (kind `other`).
 
 An AI agent working on the repository adds or updates these rows for the
 person it works for, and describes itself in the AI assistance row as "an
-AI assistant". The site's Conflict of interest page is generated from the
-file; do not write the declarations anywhere else.
+AI assistant". Lines starting with `#` are comments. The site's Conflict of interest
+page (menu entry Disclosure) is generated from the file; do not write the declarations anywhere else.
 
 ## Rules
 
