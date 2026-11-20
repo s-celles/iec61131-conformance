@@ -23,6 +23,18 @@ Notable changes are recorded here following Keep a Changelog.
 
 ### Added
 
+- Eight tests: `pou/fb_edge_inputs` (R_EDGE and F_EDGE inputs),
+  `ops/compare_extensible` (GT, GE, EQ, LE, LT with three inputs),
+  `ops/mod_negative` (integer division and MOD on negative operands),
+  `data/long_types` (LINT, ULINT, LWORD), `ops/bcd_conversions`,
+  `ops/move`, `data/enum_qualified` (type-qualified enumerated values) and
+  `data/var_constant`. Their traces are AI-derived and wait for a person's
+  check against the standard.
+- `notes/verification.md`: sheets through which anyone with a licensed copy
+  of the standard can check the traces, without quoting its text. It covers the eight new tests, one open question and
+  the twelve conformant traces that three or more runtimes fail. Rendered
+  under Docs on the site.
+
 - Site: the state of every cited upstream issue and pull request (open, closed,
   merged, not planned), from the snapshot `notes/upstream-status.tsv` that
   `tools/site/upstream_status.py` refreshes. It is shown on the Upstream page, on
@@ -140,6 +152,13 @@ Notable changes are recorded here following Keep a Changelog.
 
 ### Fixed
 
+- Site: the History rows are ordered by the commits' times in UTC. Their
+  local timestamps were sorted as text, so in a pull request's CI build
+  (whose merge commit is dated in UTC) the last point could be an older
+  commit of `main`.
+- CI: the evidence check masks the thread id and heap addresses of a Rust
+  compiler panic, and leaves the 4diac IDE's export detail lines out of
+  the comparison, whose order varies from run to run.
 - Site: a link anchor such as `notes/findings.md#28` was counted as an upstream
   issue.
 - `pou/fb_method` declares its methods PUBLIC: without an access specifier a

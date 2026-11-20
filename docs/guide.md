@@ -15,8 +15,8 @@ are relative to the repository root.
 - The expected values of a `status: conformant` trace come from IEC
   61131-3 (edition 2, 2003, and edition 3, 2013: the function block bodies
   and timing diagrams of its tables, the formulas of its standard functions,
-  the semantics clauses of ST) as an AI assistant (Claude Code; the commits
-  say `Assisted-by: AI`) knows it. Each `.trace` states the derivation and
+  the semantics clauses of ST) as an AI assistant (the commits say
+  `Assisted-by: AI`) knows it. Each `.trace` states the derivation and
   the clause, table or figure it cites. The author has no copy of the
   standard, so neither the derivations nor the citations are checked
   against its text: a clause or table number, or the reading itself, may be
@@ -382,6 +382,19 @@ at `t = cycle * period`).
    text leaves open, and must be justified.
 3. Run it on at least two runtimes before calling it conformant. If they
    disagree, the comment should say which one the trace follows and why.
+4. Add a sheet to `notes/verification.md`: the claim in your own words,
+   where to look, a closed question. Until a sheet is answered, the trace
+   comment says "verification pending" with the sheet's number.
+
+### Verification sheets
+
+`notes/verification.md` holds one sheet per claim, written without the
+text of the standard: the claim, where to look, a closed question. Anyone
+with a licensed copy can answer a sheet, in an issue or a pull request,
+with a verdict and a clause or table number, without quoting the text. A
+verdict then changes the trace: "checked against ed.N, clause" in its
+comment, a corrected value, or `status: implementation-defined` where the
+standard leaves the value open. No sheet has been answered yet.
 
 ## Adding a runtime
 

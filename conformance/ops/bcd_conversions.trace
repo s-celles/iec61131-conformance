@@ -1,0 +1,23 @@
+# BCD conversions on WORD.
+#
+# Derivation (AI-derived, not checked against the text; verification
+# pending, notes/verification.md V-05): a BCD WORD holds four decimal
+# digits, one per nibble, most significant first; 1234 <-> 16#1234. The
+# records keep n <= 9999 and w a valid BCD value (each nibble 0-9); the
+# other cases are left to the standard's error rules.
+# cycle 0: n=1234 -> 16#1234; w=16#1234 -> 1234
+# cycle 1: n=0    -> 16#0000; w=16#0099 -> 99
+# cycle 2: n=9999 -> 16#9999; w=16#9999 -> 9999
+# cycle 3: n=7    -> 16#0007; w=16#1000 -> 1000
+# round_trip = n.
+period_ms: 100
+program: main
+inputs: n w
+outputs: to_bcd from_bcd round_trip
+status: conformant
+reference: IEC 61131-3 ed.3 table 22 (BCD conversion); ed.2 table 22
+---
+0 n=1234 w=16#1234 => to_bcd=16#1234 from_bcd=1234 round_trip=1234
+1 n=0    w=16#0099 => to_bcd=16#0000 from_bcd=99   round_trip=0
+2 n=9999 w=16#9999 => to_bcd=16#9999 from_bcd=9999 round_trip=9999
+3 n=7    w=16#1000 => to_bcd=16#0007 from_bcd=1000 round_trip=7

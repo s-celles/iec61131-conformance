@@ -223,6 +223,13 @@ class History(unittest.TestCase):
         dates = [r["date"] for r in rows]
         self.assertEqual(dates, sorted(dates))
 
+    def test_commit_times_are_ordered_across_timezones(self):
+        # GitHub's merge commit for a pull request is dated in UTC, local
+        # commits carry their own offset: 06:59+00:00 is after 07:02+01:00
+        self.assertEqual(sitegen.commit_time("2026-11-20T07:02:09+01:00"), "2026-11-20 06:02")
+        self.assertEqual(sitegen.commit_time("2026-11-20T06:59:04+00:00"), "2026-11-20 06:59")
+        self.assertLess(sitegen.commit_time("2026-11-20T07:02:09+01:00"), sitegen.commit_time("2026-11-20T06:59:04+00:00"))
+
     def test_site_workflow_fetches_the_history(self):
         self.assertIn("fetch-depth: 0", (ROOT / ".github/workflows/site.yml").read_text())
 
@@ -304,6 +311,11 @@ class SiteKit(unittest.TestCase):
         self.assertTrue(words)
         for w in words:
             self.assertIn(w.lower(), tones, w)
+
+    def test_verification_sheets_are_published(self):
+        page = (self.c / "docs/verification.md").read_text()
+        self.assertIn("V-01", page)
+        self.assertIn("notes/verification.md", page)
 
     def test_tests_and_runtimes_are_under_docs(self):
         docs = (self.c / "docs/_index.md").read_text()

@@ -245,7 +245,7 @@ def history(root):
         notes = [f for f in files if f in ("notes/comparison.md", "notes/findings.md", "upstream-bugs.md")
                  or re.fullmatch(r"notes/fuzz-[^/]+\.md", f)]
         refs = upstream_refs("\n".join(git(root, "show", f"{sha}:{f}") for f in notes))
-        rows.append({"sha": sha[:7], "date": date[:16].replace("T", " "), "tests": tests,
+        rows.append({"sha": sha[:7], "date": commit_time(date), "tests": tests,
                      "conformant": totals[0], "passed": totals[1], "refs": len(refs)})
     # commit dates need not grow along the history (a rebase, or the temporary
     # merge commit CI builds for a pull request): order the points by time
@@ -257,9 +257,18 @@ def _xy(rows, key):
     return [(i, r[key]) for i, r in enumerate(rows) if r.get(key) is not None]
 
 
-def _epoch(date):
+def commit_time(iso):
+    """A commit date (ISO 8601 with its offset) as "YYYY-MM-DD HH:MM" in UTC,
+    so that the strings sort in time order whatever offset each commit has."""
     import datetime
-    return datetime.datetime.fromisoformat(date).timestamp()
+    return datetime.datetime.fromisoformat(iso).astimezone(datetime.timezone.utc).strftime("%Y-%m-%d %H:%M")
+
+
+def _epoch(date):
+    """Seconds since the epoch of a commit_time() string (UTC)."""
+    import datetime
+    d = datetime.datetime.fromisoformat(date)
+    return (d if d.tzinfo else d.replace(tzinfo=datetime.timezone.utc)).timestamp()
 
 
 def line_svg(rows, series, ymax, title, unit="", height=220, width=760, direct_labels=True):
@@ -278,7 +287,7 @@ def line_svg(rows, series, ymax, title, unit="", height=220, width=760, direct_l
         v = ymax * k / 4
         out.append(f'<line class="viz-grid" x1="{left}" x2="{left + w}" y1="{Y(v):.1f}" y2="{Y(v):.1f}"/>'
                    f'<text class="viz-tick" x="{left - 6}" y="{Y(v) + 4:.1f}" text-anchor="end">{v:g}{unit}</text>')
-    d = datetime.datetime.fromtimestamp(t0).replace(hour=0, minute=0)
+    d = datetime.datetime.fromtimestamp(t0, datetime.timezone.utc).replace(hour=0, minute=0)
     days = []
     while d.timestamp() <= t1:
         days.append(d)
@@ -610,7 +619,7 @@ The newest issues and pull requests the notes cite, with their state in the snap
     def history_page(self):
         rows = history(self.root)
         head = front("History", 4) + self.stamp + ("The suite and its results over time, one point per commit of `main` that changed "
-                                      "`notes/comparison.md`, read from the git history at build time. Hover a chart, or tab to it and "
+                                      "`notes/comparison.md`, read from the git history at build time (times in UTC). Hover a chart, or tab to it and "
                                       "use the arrow keys, for the values, date and commit; the table below has every value.\n\n")
         if not rows:
             return head + "The git history is not available in this build.\n"
@@ -705,7 +714,8 @@ flowchart LR
 
     def docs(self):
         pages = {"guide": ("docs/guide.md", "Guide"), "spec": ("SPEC.md", "Trace format"),
-                 "upstream-drafts": ("upstream-bugs.md", "Upstream drafts"), "changelog": ("CHANGELOG.md", "Changelog")}
+                 "upstream-drafts": ("upstream-bugs.md", "Upstream drafts"), "verification": ("notes/verification.md", "Verification"),
+                 "changelog": ("CHANGELOG.md", "Changelog")}
         for i, p in enumerate(sorted(self.root.glob("notes/fuzz-*.md"))):
             pages[p.stem] = (p.relative_to(self.root).as_posix(), "Fuzz " + p.stem[5:])
         for p in sorted(self.root.glob("notes/trace-audit-*.md")):
