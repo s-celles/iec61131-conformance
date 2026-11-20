@@ -1,12 +1,14 @@
+# Conflict of interest and AI assistance declarations (site-kit SPEC §15).
+# kind: examined system (a runtime the suite evaluates), benchmark (this suite), AI assistance, other.
 contributor	orcid	project	kind	role	note
-Sébastien Celles	0000-0001-9987-4338	iec61131-conformance	the suite	author and maintainer	writes the tests and harnesses with an AI assistant and decides what is reported upstream
-Sébastien Celles	0000-0001-9987-4338	IronPLC	evaluated implementation	contributor	issues and pull requests to ironplc/ironplc, some merged, as s-celles and s-celles-bot
-Sébastien Celles	0000-0001-9987-4338	matiec	evaluated implementation	contributor	issues and pull requests to beremiz/matiec, one merged
-Sébastien Celles	0000-0001-9987-4338	RuSTy	evaluated implementation	issue reporter	issues and pull requests from this suite's findings, none merged
-Sébastien Celles	0000-0001-9987-4338	STruC++	evaluated implementation	issue reporter	issues from this suite's findings
-Sébastien Celles	0000-0001-9987-4338	4diac	evaluated implementation	issue reporter	issues to 4diac-forte and 4diac-ide from this suite's findings
-Sébastien Celles	0000-0001-9987-4338	rk	evaluated implementation	issue reporter	issues from this suite's findings
+Sébastien Celles	0000-0001-9987-4338	iec61131-conformance	benchmark	author and maintainer	writes the tests and harnesses with an AI assistant and decides what is reported upstream
+Sébastien Celles	0000-0001-9987-4338	IronPLC	examined system	contributor	issues and pull requests to ironplc/ironplc, some merged, as s-celles and s-celles-bot
+Sébastien Celles	0000-0001-9987-4338	matiec	examined system	contributor	issues and pull requests to beremiz/matiec, one merged
+Sébastien Celles	0000-0001-9987-4338	RuSTy	examined system	issue reporter	issues and pull requests from this suite's findings, none merged
+Sébastien Celles	0000-0001-9987-4338	STruC++	examined system	issue reporter	issues from this suite's findings
+Sébastien Celles	0000-0001-9987-4338	4diac	examined system	issue reporter	issues to 4diac-forte and 4diac-ide from this suite's findings
+Sébastien Celles	0000-0001-9987-4338	rk	examined system	issue reporter	issues from this suite's findings
 Sébastien Celles	0000-0001-9987-4338	iec61131-conformance	AI assistance	an AI assistant writes the code, the tests, the expected traces and the texts	the author directs the work and approves what is published and what is reported upstream; CI runs every change on the pinned runtimes; neither the author nor the assistant checks the traces against the standard's text
-Johannes Pettersson		truST	evaluated implementation	author and maintainer	not yet confirmed by him (issue #27)
-Johannes Pettersson		iec61131-conformance	the suite	contributor	the truST harness (#18) and its pin update (#25); not yet confirmed by him (issue #27)
+Johannes Pettersson		truST	examined system	author and maintainer	not yet confirmed by him (issue #27)
+Johannes Pettersson		iec61131-conformance	benchmark	contributor	the truST harness (#18) and its pin update (#25); not yet confirmed by him (issue #27)
 Johannes Pettersson		iec61131-conformance	AI assistance	not yet declared	#18 and #25 say Assisted by AI; not yet confirmed by him (issue #27)

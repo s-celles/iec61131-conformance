@@ -477,10 +477,12 @@ drafts are in `upstream-bugs.md`.
 
 Every contributor declares their relations to the evaluated runtimes and
 how an AI assistant was used, as rows of `docs/disclosures.tsv` (columns
-contributor, orcid, project, kind, role, note; kind is one of "the suite",
-"evaluated implementation", "AI assistance", "other"). It is the only place
+contributor, orcid, project, kind, role, note; kind is one of "benchmark"
+for this suite, "examined system" for a runtime it evaluates, "AI
+assistance", "other", as site-kit's SPEC §15 defines them; lines starting
+with `#` are comments). It is the only place
 the declarations are written: the site generates its Conflict of interest
-page, with a matrix of runtimes by contributors, and the one-line summary
+page (`/conflict-of-interest/`, menu entry Disclosure), with a matrix of runtimes by contributors, and the one-line summary
 on the home page from it. An AI assistance row says what the assistant did
 and how its output was reviewed, without naming the tool. A change made
 for a new contributor is not complete without their rows

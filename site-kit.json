@@ -1,6 +1,6 @@
 {
-  "spec": "0.2",
-  "menu": ["Results", "Findings", "Upstream", "History", "Methodology", "Docs", "GitHub", "Search"],
+  "spec": "0.3",
+  "menu": ["Results", "Findings", "Upstream", "History", "Methodology", "Disclosure", "Docs", "GitHub", "Search"],
   "omit": {},
   "volatile": []
 }

@@ -287,10 +287,10 @@ class SiteKit(unittest.TestCase):
         self.assertLess(kit, hextra)
         self.assertRegex((ROOT / "site/go.mod").read_text(), r"github\.com/s-celles/site-kit v\d+\.\d+\.\d+")
 
-    def test_menu_has_at_most_eight_entries_and_matches_site_kit_json(self):
+    def test_menu_follows_site_kit_and_matches_site_kit_json(self):
         import json
         names = re.findall(r"(?m)^    - name: (.+)$", self.hugo)
-        self.assertEqual(names, ["Results", "Findings", "Upstream", "History", "Methodology", "Docs", "GitHub", "Search"])
+        self.assertEqual(names, ["Results", "Findings", "Upstream", "History", "Methodology", "Disclosure", "Docs", "GitHub", "Search"])
         self.assertEqual(json.loads((ROOT / "site-kit.json").read_text())["menu"], names)
 
     def test_no_local_copies_of_the_kit(self):
@@ -357,10 +357,23 @@ class Disclosure(unittest.TestCase):
         self.assertTrue(self.rows)
         for r in self.rows:
             self.assertEqual(set(r), set(sitegen.DISCLOSURE_COLUMNS))
-            self.assertIn(r["kind"], sitegen.DISCLOSURE_KINDS, r)
+            self.assertTrue(sitegen.disclosure_kind_ok(r["kind"]), r)
             self.assertTrue(r["contributor"] and r["project"] and r["role"], r)
             if r["orcid"]:
                 self.assertRegex(r["orcid"], r"^\d{4}-\d{4}-\d{4}-\d{3}[\dX]$")
+
+    def test_comment_lines_are_skipped(self):
+        with tempfile.TemporaryDirectory() as t:
+            (pathlib.Path(t) / "docs").mkdir()
+            (pathlib.Path(t) / "docs/disclosures.tsv").write_text(
+                "# a comment before the header\n" + "\t".join(sitegen.DISCLOSURE_COLUMNS) + "\n# another\n"
+                "A\t\tx\tAI assistance\tnone\t\n")
+            self.assertEqual([r["contributor"] for r in sitegen.disclosures(t)], ["A"])
+
+    def test_kinds_are_site_kit_s(self):
+        self.assertIn("examined system", sitegen.DISCLOSURE_KINDS)
+        self.assertTrue(sitegen.disclosure_kind_ok("source of IEC 61131-3"))
+        self.assertFalse(sitegen.disclosure_kind_ok("evaluated implementation"))
 
     def test_every_contributor_declares_ai_assistance(self):
         people = {r["contributor"] for r in self.rows}
@@ -375,11 +388,11 @@ class Disclosure(unittest.TestCase):
     def test_projects_are_evaluated_runtimes_or_the_suite(self):
         names = {name for name, _, _ in sitegen.RUNTIMES.values()}
         for r in self.rows:
-            if r["kind"] == "evaluated implementation":
+            if r["kind"] == "examined system":
                 self.assertIn(r["project"], names, r)
 
     def test_page(self):
-        page = (self.c / "disclosure.md").read_text()
+        page = (self.c / "conflict-of-interest.md").read_text()
         for heading in ("## Matrix", "## Use of AI assistants", "## What limits the bias", "## How to report an unfair test"):
             self.assertIn(heading, page)
         for person in {r["contributor"] for r in self.rows}:
@@ -391,8 +404,10 @@ class Disclosure(unittest.TestCase):
         self.assertNotIn("\u2014", page)                     # no em-dash
 
     def test_summary_is_linked_everywhere(self):
-        url = sitegen.SITE + "disclosure/"
-        self.assertIn('relref "/disclosure"', (self.c / "_index.md").read_text())
+        url = sitegen.SITE + "conflict-of-interest/"
+        self.assertIn('relref "/conflict-of-interest"', (self.c / "_index.md").read_text())
+        for f in ("README.md", "CITATION.cff", "site/hugo.yaml"):
+            self.assertNotIn(sitegen.SITE + "disclosure/", (ROOT / f).read_text(), f)
         self.assertIn(url, (ROOT / "site/hugo.yaml").read_text())
         self.assertIn(url, (ROOT / "README.md").read_text())
         self.assertIn(url, (ROOT / "CITATION.cff").read_text())

@@ -154,7 +154,12 @@ STATE_LABEL = {"closed (not planned)": "not planned", "unknown": "unknown"}
 
 
 DISCLOSURE_COLUMNS = ("contributor", "orcid", "project", "kind", "role", "note")
-DISCLOSURE_KINDS = ("the suite", "evaluated implementation", "AI assistance", "other")
+# site-kit SPEC 0.3 §15; "source of NAME" takes any NAME
+DISCLOSURE_KINDS = ("examined system", "compared system", "tool", "benchmark", "AI assistance", "other")
+
+
+def disclosure_kind_ok(kind):
+    return kind in DISCLOSURE_KINDS or (kind.startswith("source of ") and len(kind) > len("source of "))
 
 
 def disclosures(root):
@@ -163,7 +168,7 @@ def disclosures(root):
     p = pathlib.Path(root) / "docs" / "disclosures.tsv"
     if not p.exists():
         return []
-    lines = [l for l in p.read_text().splitlines() if l.strip()]
+    lines = [l for l in p.read_text().splitlines() if l.strip() and not l.startswith("#")]
     cols = lines[0].split("\t")
     return [dict(zip(cols, l.split("\t") + [""] * (len(cols) - len(l.split("\t"))))) for l in lines[1:]]
 
@@ -175,7 +180,7 @@ def disclosure_summary(rows):
     for who in people:
         rel = {}
         for r in rows:
-            if r["contributor"] == who and r["kind"] == "evaluated implementation":
+            if r["contributor"] == who and r["kind"] == "examined system":
                 rel.setdefault(r["role"], []).append(r["project"])
         said = "; ".join(f"{role} of {', '.join(ps)}" for role, ps in rel.items()) or "no relation to the evaluated runtimes"
         parts.append(f"{who}: {said}")
@@ -514,7 +519,7 @@ Plain `.st` programs paired with plain-text expected input/output traces, one re
 
 **Provenance of the expected values.** {PROVENANCE}
 
-**Conflict of interest.** {disclosure_summary(disclosures(self.root))} [Declarations]({{{{< relref "/disclosure" >}}}}).
+**Conflict of interest.** {disclosure_summary(disclosures(self.root))} [Declarations]({{{{< relref "/conflict-of-interest" >}}}}).
 
 </div>
 
@@ -618,7 +623,7 @@ The newest issues and pull requests the notes cite, with their state in the snap
                 f"Upstream: {up}\n\nTests: {tests}\n\n---\n\n" + demote(rewrite_links(f["body"], f["source"])))
 
     def tests_index(self):
-        out = [front("Tests", 8) + self.stamp, f"{len(self.tests)} tests in {len({p.split('/')[1] for p in self.tests})} directories. Each page shows the program, its expected trace and what every pinned runtime produced.\n"]
+        out = [front("Tests", 9) + self.stamp, f"{len(self.tests)} tests in {len({p.split('/')[1] for p in self.tests})} directories. Each page shows the program, its expected trace and what every pinned runtime produced.\n"]
         short = {rt: RUNTIMES[rt][0] for rt in RUNTIMES}
         for cat in sorted({p.split("/")[1] for p in self.tests}):
             out.append(f"\n## {cat}\n\n| Test | " + " | ".join(short.values()) + " |\n|---|" + "---|" * len(short))
@@ -728,7 +733,7 @@ flowchart LR
         u = [("open", "open issue or pull request"), ("closed", "closed issue, fixed or answered"), ("not planned", "closed as not planned"),
              ("merged", "merged pull request")]
         table = lambda rows: "| Status | Meaning |\n|---|---|\n" + "\n".join(f"| {badge(k)} | {m} |" for k, m in rows)
-        return (front("Statuses", 6) + "The words the site uses for a result, a finding and an upstream issue. A badge always carries its word, "
+        return (front("Statuses", 7) + "The words the site uses for a result, a finding and an upstream issue. A badge always carries its word, "
                 "so no meaning rests on colour alone.\n\n## Test results\n\n" + table(v) +
                 "\n\n## Findings\n\n" + table(f) + "\n\n## Upstream issues and pull requests\n\n" + table(u) +
                 f"\n\nStates come from the snapshot [`notes/upstream-status.tsv`]({BLOB}/notes/upstream-status.tsv).\n")
@@ -736,7 +741,7 @@ flowchart LR
     def disclosure(self):
         rows = disclosures(self.root)
         people = list(dict.fromkeys(r["contributor"] for r in rows))
-        out = [front("Conflict of interest", 10, description="Conflict of interest and AI assistance declarations of the contributors"),
+        out = [front("Conflict of interest", 6, linkTitle="Disclosure", description="Conflict of interest and AI assistance declarations of the contributors"),
                disclosure_summary(rows) + "\n\n"
                f"Every contributor declares their relations to the implementations the suite evaluates, and how an AI "
                f"assistant was used. The declarations are the rows of [`docs/disclosures.tsv`]({BLOB}/docs/disclosures.tsv), "
@@ -749,7 +754,7 @@ flowchart LR
                        + "\n".join(f"| {md_text(r['project'])} | {r['kind']} | {md_text(r['role'])} | {md_text(r['note'])} |" for r in mine) + "\n")
         names = [n for n, _, _ in RUNTIMES.values()]
         cell = lambda who, n: next((r["role"] for r in rows if r["contributor"] == who and r["project"] == n
-                                    and r["kind"] == "evaluated implementation"), "none")
+                                    and r["kind"] == "examined system"), "none")
         out.append("\n## Matrix\n\nEach evaluated runtime against each contributor: the declared role, or none.\n\n"
                    "| Runtime | " + " | ".join(people) + " |\n|---|" + "---|" * len(people) + "\n"
                    + "\n".join(f"| {n} | " + " | ".join(md_text(cell(w, n)) for w in people) + " |" for n in names) + "\n")
@@ -789,7 +794,7 @@ flowchart LR
                 f"{', '.join(n for n, _, _ in RUNTIMES.values())}. Public domain.\n\n{DISCLAIMER}\n\n{PROVENANCE}\n\n")
         links = "## Pages\n\n" + "".join(f"- [{n}](runtimes/{rt}/): deviations and results\n" for rt, (n, _, _) in RUNTIMES.items())
         links += "- [Results](results/)\n- [Findings](findings/)\n- [Tests](tests/)\n- [Upstream issues](upstream/)\n- [Trace format](docs/spec/)\n"
-        links += f"- [Conflict of interest]({SITE}disclosure/): {disclosure_summary(disclosures(self.root))}\n"
+        links += f"- [Conflict of interest]({SITE}conflict-of-interest/): {disclosure_summary(disclosures(self.root))}\n"
         full = [head, "## Trace format\n\n", drop_title(self.read("SPEC.md")), "\n## Findings\n"]
         full += [f"\n### {f['id']} ({f['runtime']}, {f['status']}): {plain(f['title'])}\n\n{plain(f['body'])}" for f in self.findings]
         full.append("\n## Tests\n")
@@ -818,18 +823,18 @@ def generate(root, out):
         write(c / "tests" / cat / "_index.md", front(cat))
     for p in site.tests:
         write(c / "tests" / p.split("/")[1] / (pathlib.Path(p).stem + ".md"), site.test_page(p))
-    write(c / "runtimes/_index.md", front("Runtimes", 9) + "Each pinned runtime, how it was run, and the deviations the suite found, from the notes.\n")
+    write(c / "runtimes/_index.md", front("Runtimes", 10) + "Each pinned runtime, how it was run, and the deviations the suite found, from the notes.\n")
     for i, rt in enumerate(RUNTIMES):
         write(c / "runtimes" / f"{rt}.md", site.runtime_page(rt, i + 1))
     write(c / "upstream.md", site.upstream())
     write(c / "history.md", site.history_page())
     write(c / "methodology.md", site.methodology())
     write(c / "statuses.md", site.statuses())
-    write(c / "disclosure.md", site.disclosure())
+    write(c / "conflict-of-interest.md", site.disclosure())
     write(c / "findings/_index.md", site.findings_index())
     for i, f in enumerate(site.findings):
         write(c / "findings" / f"{f['id']}.md", site.finding_page(f, i + 1))
-    write(c / "docs/_index.md", front("Docs", 7) + "The repository's documents, rendered, and the two reference sections: "
+    write(c / "docs/_index.md", front("Docs", 8) + "The repository's documents, rendered, and the two reference sections: "
           "[Tests]({{< relref \"/tests\" >}}), every program with its expected trace and what each runtime produced, and "
           "[Runtimes]({{< relref \"/runtimes\" >}}), each pinned runtime and how it is run.\n")
     for k, text in site.docs().items():

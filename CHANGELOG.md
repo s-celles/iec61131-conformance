@@ -6,6 +6,11 @@ Notable changes are recorded here following Keep a Changelog.
 
 ### Changed
 
+- Site: follows site-kit v0.3: the Conflict of interest page moves to
+  `/conflict-of-interest/`, with the menu entry Disclosure after
+  Methodology; `docs/disclosures.tsv` uses site-kit's kinds (`examined
+  system` for a runtime the suite evaluates, `benchmark` for the suite) and
+  may hold `#` comment lines. The old `/disclosure/` address is gone.
 - The provenance statement (README, site, guide) says the author does not
   consult the text of IEC 61131-3 for this project.
 - truST: the CI job `trust` pins trust-platform `d9ac48c`, where a periodic

@@ -2,3 +2,5 @@ github.com/imfing/hextra v0.13.0 h1:1zhCYy0tA9ZRErFBlU6NJEgR1HjK69bgd52EmpwnG00=
 github.com/imfing/hextra v0.13.0/go.mod h1:vi+yhpq8YPp/aghvJlNKVnJKcPJ/VyAEcfC1BSV9ARo=
 github.com/s-celles/site-kit v0.2.0 h1:vG3TchD5gXchjjgHcs3ymd8zD0Ko0VlsrN4CpgXrNTU=
 github.com/s-celles/site-kit v0.2.0/go.mod h1:MR+9RsQvn+O2mqTtzoJNkND2OyTdXjnGp2iB8nrvpg4=
+github.com/s-celles/site-kit v0.3.0 h1:BXK78cL/FOKoRWVEQNGX/+NxdrIi4f27WYD91VlC+c0=
+github.com/s-celles/site-kit v0.3.0/go.mod h1:MR+9RsQvn+O2mqTtzoJNkND2OyTdXjnGp2iB8nrvpg4=
