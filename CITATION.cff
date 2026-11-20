@@ -23,5 +23,7 @@ abstract: >-
   matiec fork, STruC++, RuSTy, 4diac, rk and truST, recorded differential results, a Lean 4
   model of the standard function blocks from which the expected traces are
   proved to follow, and monitors of the edition 2 block rules.
+  Conflicts of interest and AI assistance are declared at
+  https://s-celles.github.io/iec61131-conformance/disclosure/.
 date-released: 2026-11-01
 version: 0.1.0
