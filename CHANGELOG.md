@@ -152,6 +152,13 @@ Notable changes are recorded here following Keep a Changelog.
 
 ### Fixed
 
+- Site: the History rows are ordered by the commits' times in UTC. Their
+  local timestamps were sorted as text, so in a pull request's CI build
+  (whose merge commit is dated in UTC) the last point could be an older
+  commit of `main`.
+- CI: the evidence check masks the thread id and heap addresses of a Rust
+  compiler panic, and leaves the 4diac IDE's export detail lines out of
+  the comparison, whose order varies from run to run.
 - Site: a link anchor such as `notes/findings.md#28` was counted as an upstream
   issue.
 - `pou/fb_method` declares its methods PUBLIC: without an access specifier a
