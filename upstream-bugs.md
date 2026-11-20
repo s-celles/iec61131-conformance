@@ -260,7 +260,10 @@ the one wrapper it emits, `__MAIN_BUMP1`, is `b`'s. Reproducer in the suite:
 ## truST `b5e8820`: a periodic task first runs one interval after its start
 
 Added 2026-11-19 with the truST harness (PR #18). Known to truST's author,
-who maintains the harness; the scheduler change is in progress there.
+who maintains the harness.
+
+Fixed: johannesPettersson80/trust-platform#640 (merged 2026-11-20). The
+harness pins its merge, `d9ac48c`, where the five reproducers pass.
 
 - Reproducers: `config/two_periods`, `config/priority_order`,
   `config/global_exchange`, `config/globals_external`, `config/event_single`

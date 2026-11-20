@@ -65,3 +65,4 @@ ironplc/ironplc	2565	issue	open	2026-11-06				ironplc-6	F_TRIG reports no edge o
 ironplc/ironplc	2615	issue	open	2026-11-15				ironplc-29	An array element as the VAR_IN_OUT argument of a function is P9999 (only a named variable is passed by reference)
 ironplc/ironplc	2624	issue	open	2026-11-17				ironplc-28	CONCAT accepts only two inputs (P4018), although it is extensible like MIN and MAX
 johannesPettersson80/trust-platform	629	pr	merged	2026-11-19	2026-11-19	2026-11-19			Take an untyped based literal as a bit string where one goes (G224)
+johannesPettersson80/trust-platform	640	pr	merged	2026-11-20	2026-11-20	2026-11-20			A periodic task runs at its start, then every interval (G223)

@@ -1,103 +1,42 @@
 ### conformance/config/event_single.st
-0 trig=FALSE => ev_n=0 tick_n=0
-1 trig=TRUE => ev_n=1 tick_n=1
-2 => ev_n=1 tick_n=2
-3 trig=FALSE => ev_n=1 tick_n=3
-4 trig=TRUE => ev_n=2 tick_n=4
-5 trig=FALSE => ev_n=2 tick_n=5
-6 trig=TRUE => ev_n=3 tick_n=6
-FAIL    conformance/config/event_single.st
-        cycle 0 (trace line 11): tick_n expected 1, got 0
-        cycle 1 (trace line 12): tick_n expected 2, got 1
-        cycle 2 (trace line 14): tick_n expected 3, got 2
-        cycle 3 (trace line 15): tick_n expected 4, got 3
-        cycle 4 (trace line 16): tick_n expected 5, got 4
-        cycle 5 (trace line 17): tick_n expected 6, got 5
-        cycle 6 (trace line 18): tick_n expected 7, got 6
+0 trig=FALSE => ev_n=0 tick_n=1
+1 trig=TRUE => ev_n=1 tick_n=2
+2 => ev_n=1 tick_n=3
+3 trig=FALSE => ev_n=1 tick_n=4
+4 trig=TRUE => ev_n=2 tick_n=5
+5 trig=FALSE => ev_n=2 tick_n=6
+6 trig=TRUE => ev_n=3 tick_n=7
+PASS    conformance/config/event_single.st
 ### conformance/config/global_exchange.st
-0 => cmd=0 p_cons.ack=0 p_cons.changes=0
-1 => cmd=0 p_cons.ack=0 p_cons.changes=0
-2 => cmd=1 p_cons.ack=1 p_cons.changes=1
-3 => cmd=1 p_cons.ack=1 p_cons.changes=1
-4 => cmd=2 p_cons.ack=2 p_cons.changes=2
-5 => cmd=2 p_cons.ack=2 p_cons.changes=2
-FAIL    conformance/config/global_exchange.st
-        cycle 0 (trace line 11): cmd expected 1, got 0
-        cycle 0 (trace line 11): p_cons.ack expected 1, got 0
-        cycle 0 (trace line 11): p_cons.changes expected 1, got 0
-        cycle 1 (trace line 12): cmd expected 1, got 0
-        cycle 1 (trace line 12): p_cons.ack expected 1, got 0
-        cycle 1 (trace line 12): p_cons.changes expected 1, got 0
-        cycle 2 (trace line 13): cmd expected 2, got 1
-        cycle 2 (trace line 13): p_cons.ack expected 2, got 1
-        cycle 2 (trace line 13): p_cons.changes expected 2, got 1
-        cycle 3 (trace line 14): cmd expected 2, got 1
-        cycle 3 (trace line 14): p_cons.ack expected 2, got 1
-        cycle 3 (trace line 14): p_cons.changes expected 2, got 1
-        cycle 4 (trace line 15): cmd expected 3, got 2
-        cycle 4 (trace line 15): p_cons.ack expected 3, got 2
-        cycle 4 (trace line 15): p_cons.changes expected 3, got 2
-        cycle 5 (trace line 16): cmd expected 3, got 2
-        cycle 5 (trace line 16): p_cons.ack expected 3, got 2
-        cycle 5 (trace line 16): p_cons.changes expected 3, got 2
+0 => cmd=1 p_cons.ack=1 p_cons.changes=1
+1 => cmd=1 p_cons.ack=1 p_cons.changes=1
+2 => cmd=2 p_cons.ack=2 p_cons.changes=2
+3 => cmd=2 p_cons.ack=2 p_cons.changes=2
+4 => cmd=3 p_cons.ack=3 p_cons.changes=3
+5 => cmd=3 p_cons.ack=3 p_cons.changes=3
+PASS    conformance/config/global_exchange.st
 ### conformance/config/globals_external.st
-0 g_in=5 => g_cnt=0 g_sum=1000 p0.n=0
-1 g_in=-3 => g_cnt=1 g_sum=997 p0.n=1
-2 => g_cnt=2 g_sum=994 p0.n=2
-3 g_in=0 => g_cnt=3 g_sum=994 p0.n=3
-FAIL    conformance/config/globals_external.st
-        cycle 0 (trace line 12): g_cnt expected 1, got 0
-        cycle 0 (trace line 12): g_sum expected 1005, got 1000
-        cycle 0 (trace line 12): p0.n expected 1, got 0
-        cycle 1 (trace line 13): g_cnt expected 2, got 1
-        cycle 1 (trace line 13): g_sum expected 1002, got 997
-        cycle 1 (trace line 13): p0.n expected 2, got 1
-        cycle 2 (trace line 14): g_cnt expected 3, got 2
-        cycle 2 (trace line 14): g_sum expected 999, got 994
-        cycle 2 (trace line 14): p0.n expected 3, got 2
-        cycle 3 (trace line 15): g_cnt expected 4, got 3
-        cycle 3 (trace line 15): g_sum expected 999, got 994
-        cycle 3 (trace line 15): p0.n expected 4, got 3
+0 g_in=5 => g_cnt=1 g_sum=1005 p0.n=1
+1 g_in=-3 => g_cnt=2 g_sum=1002 p0.n=2
+2 => g_cnt=3 g_sum=999 p0.n=3
+3 g_in=0 => g_cnt=4 g_sum=999 p0.n=4
+PASS    conformance/config/globals_external.st
 ### conformance/config/priority_order.st
-0 => g=0 p_reader.seen=0
-1 => g=10 p_reader.seen=10
-2 => g=20 p_reader.seen=20
-3 => g=30 p_reader.seen=30
-FAIL    conformance/config/priority_order.st
-        cycle 0 (trace line 13): g expected 10, got 0
-        cycle 0 (trace line 13): p_reader.seen expected 10, got 0
-        cycle 1 (trace line 14): g expected 20, got 10
-        cycle 1 (trace line 14): p_reader.seen expected 20, got 10
-        cycle 2 (trace line 15): g expected 30, got 20
-        cycle 2 (trace line 15): p_reader.seen expected 30, got 20
-        cycle 3 (trace line 16): g expected 40, got 30
-        cycle 3 (trace line 16): p_reader.seen expected 40, got 30
+0 => g=10 p_reader.seen=10
+1 => g=20 p_reader.seen=20
+2 => g=30 p_reader.seen=30
+3 => g=40 p_reader.seen=40
+PASS    conformance/config/priority_order.st
 ### conformance/config/two_periods.st
-0 => fast_n=0 slow_n=0
-1 => fast_n=1 slow_n=0
-2 => fast_n=2 slow_n=0
-3 => fast_n=3 slow_n=1
-4 => fast_n=4 slow_n=1
-5 => fast_n=5 slow_n=1
-6 => fast_n=6 slow_n=2
-7 => fast_n=7 slow_n=2
-FAIL    conformance/config/two_periods.st
-        cycle 0 (trace line 11): fast_n expected 1, got 0
-        cycle 0 (trace line 11): slow_n expected 1, got 0
-        cycle 1 (trace line 12): fast_n expected 2, got 1
-        cycle 1 (trace line 12): slow_n expected 1, got 0
-        cycle 2 (trace line 13): fast_n expected 3, got 2
-        cycle 2 (trace line 13): slow_n expected 1, got 0
-        cycle 3 (trace line 14): fast_n expected 4, got 3
-        cycle 3 (trace line 14): slow_n expected 2, got 1
-        cycle 4 (trace line 15): fast_n expected 5, got 4
-        cycle 4 (trace line 15): slow_n expected 2, got 1
-        cycle 5 (trace line 16): fast_n expected 6, got 5
-        cycle 5 (trace line 16): slow_n expected 2, got 1
-        cycle 6 (trace line 17): fast_n expected 7, got 6
-        cycle 6 (trace line 17): slow_n expected 3, got 2
-        cycle 7 (trace line 18): fast_n expected 8, got 7
-        cycle 7 (trace line 18): slow_n expected 3, got 2
+0 => fast_n=1 slow_n=1
+1 => fast_n=2 slow_n=1
+2 => fast_n=3 slow_n=1
+3 => fast_n=4 slow_n=2
+4 => fast_n=5 slow_n=2
+5 => fast_n=6 slow_n=2
+6 => fast_n=7 slow_n=3
+7 => fast_n=8 slow_n=3
+PASS    conformance/config/two_periods.st
 ### conformance/control-flow/case_expr.st
 0 x=5 => branch=11 neg=FALSE cnt=0
 1 x=-5 => branch=11 neg=TRUE cnt=1
@@ -811,17 +750,12 @@ file 0: error[E304]: STRING literal length 6 exceeds STRING[3] capacity (at 173.
 DIFFERS conformance/undefined/subrange_out_of_range.st
         cycle 1 (trace line 16): unexpected trap (trap: value 20 outside declared subrange 5..10)
 ### conformance/undefined/tasks_same_priority.st
-0 => marks=0
-1 => marks=12
-2 => marks=1212
-3 => marks=121212
-4 => marks=12121212
-DIFFERS conformance/undefined/tasks_same_priority.st
-        cycle 0 (trace line 12): marks expected 12, got 0
-        cycle 1 (trace line 13): marks expected 1212, got 12
-        cycle 2 (trace line 14): marks expected 121212, got 1212
-        cycle 3 (trace line 15): marks expected 12121212, got 121212
-        cycle 4 (trace line 16): marks expected 1212121212, got 12121212
+0 => marks=12
+1 => marks=1212
+2 => marks=121212
+3 => marks=12121212
+4 => marks=1212121212
+SAME    conformance/undefined/tasks_same_priority.st
 ### conformance/undefined/timer_pt_zero.st
 0 in=FALSE => q_ton=FALSE et_ton=T#0ms q_tof=FALSE et_tof=T#0ms q_tp=FALSE et_tp=T#0ms
 1 in=TRUE => q_ton=TRUE et_ton=T#0ms q_tof=TRUE et_tof=T#0ms q_tp=FALSE et_tp=T#0ms
@@ -864,5 +798,5 @@ DIFFERS conformance/undefined/ton_pt_change.st
         cycle 9 (trace line 35): q expected TRUE, got FALSE
         cycle 9 (trace line 35): et expected T#800ms, got T#700ms
 
-109 tests: 86 pass, 5 fail, 6 same, 12 differs, 0 error
-exit 1
+109 tests: 91 pass, 0 fail, 7 same, 11 differs, 0 error
+exit 0

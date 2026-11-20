@@ -15,7 +15,7 @@ another runtime. See `notes/fuzz-2026-11-07.md` for the latest search.
 | 4diac | Eclipse 4diac IDE 3.3.0 (its Structured Text compiler, run headless through the `fordiac.*` Ant tasks) and FORTE 3.3.0 built as a shared library with CMake | `harness/4diac` (Python): each PROGRAM rewritten as a basic function block (`.fbt`, inputs/outputs/internals, the body as the algorithm of the state entered on `REQ`), FUNCTIONs as `.fct`, exported to C++ by the IDE, a generated driver fires `REQ` once per record against libforte; no clock (nothing in its scope reads one) |
 | rk | adclz/rk commit `20761dd` (2026-10-30), Rust (Salsa, HIR/MIR), compiles a workspace to one WebAssembly core module; built from source with `cargo build --release -p rk` | `harness/rk` (Rust): writes an rk workspace (`USING` lines for the `Std.*` namespaces prepended, a one-task CONFIGURATION appended to a bare PROGRAM), runs `rk compile`, hosts `core.wasm` on wasmtime 45 (the version `rk test` uses) with a simulated WASI monotonic clock, runs the program bodies in `rk.schedule` order, variables by name through rk's `debug_format` crate |
 | RuSTy (plc) | commit `e911ee5` (2026-10-30), built with LLVM 21 from apt.llvm.org (`LLVM_SYS_211_PREFIX`, `LLVM_CONFIG`); stdlib built with `--features mock_time` | `harness/rusty/run.py`: the program is renamed `conf_prog`, ST accessor functions are appended, `plc -c` with the stdlib `.st` declarations as `-i` includes, a C driver calls `__mock_time_set_ns(cycle * period)` then the accessors. Note: in this build `TIME` is a 32-bit millisecond count (`ET` is `i32` in the IR) |
-| truST | johannesPettersson80/trust-platform commit `b5e8820` (2026-11-19), Rust; compiles Structured Text to native code through its test harness, with the native toolchain folder of `scripts/native/build_toolchain_libraries.sh`; built from source with `cargo build --release -p trust-runtime --example conformance_driver` | `harness/trust/run.py`: truST's `conformance_driver` reads one record per line, writes the inputs, runs one scan at `cycle * period_ms` and prints the outputs; a CONFIGURATION runs with its own tasks |
+| truST | johannesPettersson80/trust-platform commit `d9ac48c` (2026-11-20), Rust; compiles Structured Text to native code through its test harness, with the native toolchain folder of `scripts/native/build_toolchain_libraries.sh`; built from source with `cargo build --release -p trust-runtime --example conformance_driver` | `harness/trust/run.py`: truST's `conformance_driver` reads one record per line, writes the inputs, runs one scan at `cycle * period_ms` and prints the outputs; a CONFIGURATION runs with its own tasks |
 
 Commands (from the suite root, `ironplc-src` symlink pointing at the IronPLC checkout):
 
@@ -114,11 +114,11 @@ hand. CI checks the table is in sync with the evidence.
 | strings/functions | PASS | PASS | **FAIL** (cycles 0-3) | **ERROR** (build) | PASS | **FAIL** (cycle 3) | **FAIL** (compile) | PASS | matiec `3a41303`: `REPLACE(IN1, IN2, L, P)` copies only min(LEN(IN2), L) characters of IN2 (`__replace`, `iec_std_functions.h`), so with L = 1 'hYllo' instead of 'hYYllo' (beremiz/matiec#41, fixed upstream in 4454518 from PR #46) |
 | strings/compare | PASS | PASS | **FAIL** (cycles 0-1) | **ERROR** (build) | PASS | PASS | PASS | PASS |  |
 | strings/concat_assign | PASS | PASS | PASS | PASS | PASS | PASS | **FAIL** (compile) | PASS |  |
-| config/globals_external | PASS | PASS | PASS | PASS | **ERROR** (configuration) | **ERROR** (configuration) | **FAIL** (compile) | **FAIL** (cycles 0-3) | SPEC version 2; RuSTy's harness does not take configurations (RuSTy compiles one program); truST runs a periodic task one interval after its start, so it is one scan late (truST item 1) |
-| config/two_periods | **FAIL** (compile) | PASS | PASS | PASS | **ERROR** (configuration) | **ERROR** (configuration) | PASS | **FAIL** (cycles 0-7) | IronPLC: one program instance only (findings #18, ironplc#1613); truST runs a periodic task one interval after its start, so it is one scan late (truST item 1) |
-| config/priority_order | **FAIL** (compile) | PASS | **FAIL** (cycles 0-3) | **FAIL** (cycles 0-3) | **ERROR** (configuration) | **ERROR** (configuration) | PASS | **FAIL** (cycles 0-3) | matiec `3a41303` ran the tasks of a resource in declaration order, ignoring PRIORITY (`RES0_run__` in the generated res0.c; beremiz/matiec#43, PR #48), so the reader saw g one step late; fixed upstream in 7a7f933, the OpenPLC fork still does it; truST runs a periodic task one interval after its start, so it is one scan late (truST item 1) |
-| config/global_exchange | **FAIL** (compile) | PASS | PASS | PASS | **ERROR** (configuration) | **ERROR** (configuration) | PASS | **FAIL** (cycles 0-5) | truST runs a periodic task one interval after its start, so it is one scan late (truST item 1) |
-| config/event_single | **FAIL** (compile) | PASS | PASS | **ERROR** (SINGLE not driven) | **ERROR** (configuration) | **ERROR** (configuration) | **FAIL** (compile) | **FAIL** (cycles 0-6) | IronPLC: P4047 SINGLE not supported (findings #18); matiec: an R_TRIG on the SINGLE input, one run per rising edge; truST runs a periodic task one interval after its start, so it is one scan late (truST item 1) |
+| config/globals_external | PASS | PASS | PASS | PASS | **ERROR** (configuration) | **ERROR** (configuration) | **FAIL** (compile) | PASS | SPEC version 2; RuSTy's harness does not take configurations (RuSTy compiles one program) |
+| config/two_periods | **FAIL** (compile) | PASS | PASS | PASS | **ERROR** (configuration) | **ERROR** (configuration) | PASS | PASS | IronPLC: one program instance only (findings #18, ironplc#1613) |
+| config/priority_order | **FAIL** (compile) | PASS | **FAIL** (cycles 0-3) | **FAIL** (cycles 0-3) | **ERROR** (configuration) | **ERROR** (configuration) | PASS | PASS | matiec `3a41303` ran the tasks of a resource in declaration order, ignoring PRIORITY (`RES0_run__` in the generated res0.c; beremiz/matiec#43, PR #48), so the reader saw g one step late; fixed upstream in 7a7f933, the OpenPLC fork still does it |
+| config/global_exchange | **FAIL** (compile) | PASS | PASS | PASS | **ERROR** (configuration) | **ERROR** (configuration) | PASS | PASS |  |
+| config/event_single | **FAIL** (compile) | PASS | PASS | **ERROR** (SINGLE not driven) | **ERROR** (configuration) | **ERROR** (configuration) | **FAIL** (compile) | PASS | IronPLC: P4047 SINGLE not supported (findings #18); matiec: an R_TRIG on the SINGLE input, one run per rising edge |
 | undefined/int_overflow | SAME | SAME | SAME | SAME | SAME | SAME | SAME | **DIFFERS** (cycle 1) | all three wrap in two's complement |
 | undefined/div_zero | SAME | SAME | SAME | SAME | SAME | **DIFFERS** (cycle 2) | SAME | SAME | IronPLC: VM trap "divide by zero"; matiec and RuSTy: native integer division, the process receives SIGFPE (the drivers report it as `trap`). All stop the scan; none computes `MOD`. matiec's `/` is a bare C division, so on AArch64 it returns 0 instead of trapping (beremiz/matiec#38, fix in PR #47); its `MOD` and `DIV()` are guarded |
 | undefined/eval_order | SAME | SAME | SAME | SAME | SAME | **ERROR** (see evidence) | SAME | SAME | all three evaluate the left operand of `-` first |
@@ -134,7 +134,7 @@ hand. CI checks the table is in sync with the evidence.
 | undefined/real_to_int_ties | SAME | **DIFFERS** (cycles 1, 3) | **DIFFERS** (cycles 1, 3) | **DIFFERS** (cycles 0-4) | **DIFFERS** (cycles 0-4) | **DIFFERS** (cycles 1, 3) | **DIFFERS** (cycles 1, 3) | **DIFFERS** (cycles 1, 3) | three behaviours: IronPLC truncates (3.5 -> 3), matiec rounds half to even (3.5 -> 4, ed.2 2.5.1.5.1), RuSTy rounds half away from zero (2.5 -> 3, -2.5 -> -3) |
 | undefined/string_truncate | SAME | **DIFFERS** (compile) | **DIFFERS** (compile) | **DIFFERS** (compile) | SAME | **ERROR** (see evidence) | **DIFFERS** (compile) | **DIFFERS** (compile) | IronPLC truncates to the declared length; matiec cannot declare `STRING[n]` (see declared_length) |
 | undefined/string_conversions | SAME | SAME | SAME | **DIFFERS** (compile) | SAME | **DIFFERS** (see evidence) | **DIFFERS** (compile) | SAME | plain decimal, leading minus, on all |
-| undefined/tasks_same_priority | **DIFFERS** (compile) | SAME | SAME | SAME | **ERROR** (configuration) | **ERROR** (configuration) | SAME | **DIFFERS** (cycles 0-4) | records matiec (IronPLC cannot run two instances): declaration order |
+| undefined/tasks_same_priority | **DIFFERS** (compile) | SAME | SAME | SAME | **ERROR** (configuration) | **ERROR** (configuration) | SAME | SAME | records matiec (IronPLC cannot run two instances): declaration order |
 | control-flow/continue | **FAIL** (compile) | PASS | PASS | **FAIL** (compile) | PASS | PASS | PASS | PASS | ed.3 CONTINUE: matiec and the fork have it; IronPLC (findings #20) and STruC++ (STruC++ #10) do not parse it |
 | control-flow/for_step | PASS | PASS | PASS | PASS | PASS | PASS | PASS | PASS | negative BY, overshooting BY, empty range: all agree |
 | control-flow/return | PASS | PASS | PASS | PASS | PASS | **ERROR** (see evidence) | PASS | PASS | RETURN in an FB and in a function, on all |
@@ -178,7 +178,7 @@ hand. CI checks the table is in sync with the evidence.
 | strings/compare_prefix | PASS | PASS | **FAIL** (cycles 0-1) | PASS | PASS | PASS | PASS | PASS | = and <> with a prefix: the OpenPLC fork compares only up to the shorter length, so 'ab' = 'abc' is TRUE (fork item 1). Found by tools/fuzz (`strings`) |
 | ops/not_compare | PASS | **FAIL** (cycles 0-1) | **FAIL** (cycles 0-1) | PASS | PASS | PASS | PASS | PASS | `(NOT b) = c` on BYTE and WORD: both matiecs print `~b == c`, and C promotes `b` to `int`, so `NOT 16#00` is -1, not 16#FF (matiec item 19, beremiz/matiec#54, fork item 15). Found by tools/fuzz (`wide`) |
 
-Totals (109 tests, 91 with `status: conformant`): conformant tests passed, IronPLC 64/91; matiec 80/91; OpenPLC's matiec 69/91; STruC++ 69/91; RuSTy 73/91; 4diac 45/91; rk 64/91; truST 86/91. 16 of the 109 tests have the same result on all eight runtimes.
+Totals (109 tests, 91 with `status: conformant`): conformant tests passed, IronPLC 64/91; matiec 80/91; OpenPLC's matiec 69/91; STruC++ 69/91; RuSTy 73/91; 4diac 45/91; rk 64/91; truST 91/91. 16 of the 109 tests have the same result on all eight runtimes.
 
 <!-- results:end -->
 
@@ -558,22 +558,21 @@ configurations with globals and several instances, task priority. Integer
 division by zero and an index out of bounds stop the scan as the IronPLC
 records do (`undefined/div_zero`, `undefined/array_out_of_bounds`: SAME).
 
-## truST (commit `b5e8820`)
+## truST (commit `d9ac48c`)
 
 truST compiles a test to native code through its test harness, the same
 build its runtime runs, and the driver runs one scan per record at the
 record's PLC time, with the inputs written before the scan; a CONFIGURATION
-runs with its own tasks. At this commit:
+runs with its own tasks. At this commit it passes all 91 conformant tests:
 
-1. **A periodic task first runs one interval after its start**
-   (`config/event_single`, `config/global_exchange`,
+1. A periodic task runs at its start, then every interval, since
+   trust-platform#640 (`config/event_single`, `config/global_exchange`,
    `config/globals_external`, `config/priority_order`,
-   `config/two_periods`): every output a periodic task writes is one scan
-   behind the trace. ed.3 6.8.2 and the examples of Table 63 run a periodic
-   task at its start, and so does ed.2 (2.7.2, table 50, example 1: the
-   resource starts at t = 0 and its periodic tasks run at t = 0, checked
-   against the text); truST changes its scheduler to do so (to be bumped here
-   with the release that has it).
+   `config/two_periods`). Before it, a periodic task first ran one
+   interval after its start, so every output it wrote was one scan behind
+   the trace. ed.3 6.8.2 and the examples of Table 63 run a periodic task
+   at its start, and so does ed.2 (2.7.2, table 50, example 1: the
+   resource starts at t = 0 and its periodic tasks run at t = 0).
 2. `pou/fb_method` passes since its methods are PUBLIC (issue #15), and
    `pou/fb_en_eno` since the function block declares EN and ENO and ENO is
    read in the call (issue #16).
