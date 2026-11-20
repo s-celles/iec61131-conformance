@@ -9,6 +9,6 @@ Sébastien Celles	0000-0001-9987-4338	STruC++	examined system	issue reporter	iss
 Sébastien Celles	0000-0001-9987-4338	4diac	examined system	issue reporter	issues to 4diac-forte and 4diac-ide from this suite's findings
 Sébastien Celles	0000-0001-9987-4338	rk	examined system	issue reporter	issues from this suite's findings
 Sébastien Celles	0000-0001-9987-4338	iec61131-conformance	AI assistance	an AI assistant writes the code, the tests, the expected traces and the texts	the author directs the work and approves what is published and what is reported upstream; CI runs every change on the pinned runtimes; neither the author nor the assistant checks the traces against the standard's text
-Johannes Pettersson		truST	examined system	author and maintainer	not yet confirmed by him (issue #27)
-Johannes Pettersson		iec61131-conformance	benchmark	contributor	the truST harness (#18) and its pin update (#25); not yet confirmed by him (issue #27)
-Johannes Pettersson		iec61131-conformance	AI assistance	not yet declared	#18 and #25 say Assisted by AI; not yet confirmed by him (issue #27)
+Johannes Pettersson		truST	examined system	author and maintainer	confirmed by him (#27); truST itself is developed with an AI assistant; no other relation to the evaluated runtimes
+Johannes Pettersson		iec61131-conformance	benchmark	contributor	the truST harness (#18), its pin update (#25) and issue reports #15 to #17; confirmed by him (#27)
+Johannes Pettersson		iec61131-conformance	AI assistance	an AI assistant wrote the harness (#18), the pin update (#25) and the issue reports #15 to #17, ran them against the suite and against truST's own tests, and drafted the pull request texts	he decided what to submit; each change ran in the suite's CI before the author reviewed and merged it; confirmed by him (#27)
