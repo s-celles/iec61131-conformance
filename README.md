@@ -32,7 +32,7 @@ proves their traces. Public domain (CC0 1.0).
 > The results cover the runtime commits pinned in CI only.
 >
 > Conflicts of interest and AI assistance of each contributor are declared
-> at https://s-celles.github.io/iec61131-conformance/conflict-of-interest/.
+> at https://s-celles.github.io/iec61131-conformance/disclosures/.
 
 ```
 conformance/   the tests: <name>.st + <name>.trace     SPEC.md       trace format

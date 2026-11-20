@@ -22,8 +22,9 @@ by:
 
 An AI agent working on the repository adds or updates these rows for the
 person it works for, and describes itself in the AI assistance row as "an
-AI assistant". Lines starting with `#` are comments. The site's Conflict of interest
-page (menu entry Disclosure) is generated from the file; do not write the declarations anywhere else.
+AI assistant". Lines starting with `#` are comments. The site's
+Disclosures page is generated from the file; do not write the declarations
+anywhere else.
 
 ## Rules
 

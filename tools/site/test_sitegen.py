@@ -290,7 +290,7 @@ class SiteKit(unittest.TestCase):
     def test_menu_follows_site_kit_and_matches_site_kit_json(self):
         import json
         names = re.findall(r"(?m)^    - name: (.+)$", self.hugo)
-        self.assertEqual(names, ["Results", "Findings", "Upstream", "History", "Methodology", "Disclosure", "Docs", "GitHub", "Search"])
+        self.assertEqual(names, ["Results", "Findings", "Upstream", "History", "Methodology", "Disclosures", "Docs", "GitHub", "Search"])
         self.assertEqual(json.loads((ROOT / "site-kit.json").read_text())["menu"], names)
 
     def test_no_local_copies_of_the_kit(self):
@@ -392,7 +392,8 @@ class Disclosure(unittest.TestCase):
                 self.assertIn(r["project"], names, r)
 
     def test_page(self):
-        page = (self.c / "conflict-of-interest.md").read_text()
+        page = (self.c / "disclosures.md").read_text()
+        self.assertIn("aliases: [/conflict-of-interest/]", page)          # the 0.3 address redirects
         for heading in ("## Matrix", "## Use of AI assistants", "## What limits the bias", "## How to report an unfair test"):
             self.assertIn(heading, page)
         for person in {r["contributor"] for r in self.rows}:
@@ -404,10 +405,10 @@ class Disclosure(unittest.TestCase):
         self.assertNotIn("\u2014", page)                     # no em-dash
 
     def test_summary_is_linked_everywhere(self):
-        url = sitegen.SITE + "conflict-of-interest/"
-        self.assertIn('relref "/conflict-of-interest"', (self.c / "_index.md").read_text())
+        url = sitegen.SITE + "disclosures/"
+        self.assertIn('relref "/disclosures"', (self.c / "_index.md").read_text())
         for f in ("README.md", "CITATION.cff", "site/hugo.yaml"):
-            self.assertNotIn(sitegen.SITE + "disclosure/", (ROOT / f).read_text(), f)
+            self.assertNotIn(sitegen.SITE + "conflict-of-interest/", (ROOT / f).read_text(), f)
         self.assertIn(url, (ROOT / "site/hugo.yaml").read_text())
         self.assertIn(url, (ROOT / "README.md").read_text())
         self.assertIn(url, (ROOT / "CITATION.cff").read_text())

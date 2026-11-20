@@ -6,6 +6,9 @@ Notable changes are recorded here following Keep a Changelog.
 
 ### Changed
 
+- Site: follows site-kit v0.4.0: the declarations page is `/disclosures/`,
+  with the menu entry Disclosures, the name of `docs/disclosures.tsv`;
+  `/conflict-of-interest/` redirects to it.
 - `docs/disclosures.tsv`: Johannes Pettersson confirmed his rows and
   described his use of an AI assistant (#27); they are no longer marked
   unconfirmed.

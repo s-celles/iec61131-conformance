@@ -410,7 +410,10 @@ def front(title, weight=None, **extra):
     if weight is not None:
         lines.append(f"weight: {weight}")
     for k, v in extra.items():
-        lines.append(f"{k}: {quote(v) if isinstance(v, str) else v}")
+        if isinstance(v, (list, tuple)):
+            lines.append(f"{k}: [{', '.join(v)}]")
+        else:
+            lines.append(f"{k}: {quote(v) if isinstance(v, str) else v}")
     return "\n".join(lines + ["---", "", GENERATED])
 
 
@@ -519,7 +522,7 @@ Plain `.st` programs paired with plain-text expected input/output traces, one re
 
 **Provenance of the expected values.** {PROVENANCE}
 
-**Conflict of interest.** {disclosure_summary(disclosures(self.root))} [Declarations]({{{{< relref "/conflict-of-interest" >}}}}).
+**Conflict of interest.** {disclosure_summary(disclosures(self.root))} [Declarations]({{{{< relref "/disclosures" >}}}}).
 
 </div>
 
@@ -741,7 +744,7 @@ flowchart LR
     def disclosure(self):
         rows = disclosures(self.root)
         people = list(dict.fromkeys(r["contributor"] for r in rows))
-        out = [front("Conflict of interest", 6, linkTitle="Disclosure", description="Conflict of interest and AI assistance declarations of the contributors"),
+        out = [front("Disclosures", 6, aliases=["/conflict-of-interest/"], description="Conflict of interest and AI assistance declarations of the contributors"),
                disclosure_summary(rows) + "\n\n"
                f"Every contributor declares their relations to the implementations the suite evaluates, and how an AI "
                f"assistant was used. The declarations are the rows of [`docs/disclosures.tsv`]({BLOB}/docs/disclosures.tsv), "
@@ -794,7 +797,7 @@ flowchart LR
                 f"{', '.join(n for n, _, _ in RUNTIMES.values())}. Public domain.\n\n{DISCLAIMER}\n\n{PROVENANCE}\n\n")
         links = "## Pages\n\n" + "".join(f"- [{n}](runtimes/{rt}/): deviations and results\n" for rt, (n, _, _) in RUNTIMES.items())
         links += "- [Results](results/)\n- [Findings](findings/)\n- [Tests](tests/)\n- [Upstream issues](upstream/)\n- [Trace format](docs/spec/)\n"
-        links += f"- [Conflict of interest]({SITE}conflict-of-interest/): {disclosure_summary(disclosures(self.root))}\n"
+        links += f"- [Disclosures]({SITE}disclosures/): {disclosure_summary(disclosures(self.root))}\n"
         full = [head, "## Trace format\n\n", drop_title(self.read("SPEC.md")), "\n## Findings\n"]
         full += [f"\n### {f['id']} ({f['runtime']}, {f['status']}): {plain(f['title'])}\n\n{plain(f['body'])}" for f in self.findings]
         full.append("\n## Tests\n")
@@ -830,7 +833,7 @@ def generate(root, out):
     write(c / "history.md", site.history_page())
     write(c / "methodology.md", site.methodology())
     write(c / "statuses.md", site.statuses())
-    write(c / "conflict-of-interest.md", site.disclosure())
+    write(c / "disclosures.md", site.disclosure())
     write(c / "findings/_index.md", site.findings_index())
     for i, f in enumerate(site.findings):
         write(c / "findings" / f"{f['id']}.md", site.finding_page(f, i + 1))

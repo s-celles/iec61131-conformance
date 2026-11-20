@@ -34,8 +34,8 @@ menu:
     - name: Methodology
       pageRef: /methodology
       weight: 5
-    - name: Disclosure
-      pageRef: /conflict-of-interest
+    - name: Disclosures
+      pageRef: /disclosures
       weight: 6
     - name: Docs
       pageRef: /docs
@@ -95,4 +95,4 @@ params:
       standards body, or the projects whose runtimes it runs; its aim is to help improve open-source IEC 61131-3
       implementations. The expected traces were derived by an AI assistant without access to the standard's text
       and may contain errors. Conflicts of interest and AI assistance are declared on
-      [Conflict of interest](https://s-celles.github.io/iec61131-conformance/conflict-of-interest/). Public domain (CC0 1.0).
+      [Disclosures](https://s-celles.github.io/iec61131-conformance/disclosures/). Public domain (CC0 1.0).
