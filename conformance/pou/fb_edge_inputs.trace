@@ -1,0 +1,31 @@
+# Edge-detecting inputs (R_EDGE, F_EDGE) of a function block.
+#
+# Derivation (AI-derived, not checked against the text; verification
+# pending, notes/verification.md V-01): an input declared R_EDGE reads as
+# the Q of an implicit R_TRIG on the actual input, F_EDGE as the Q of an
+# implicit F_TRIG, evaluated at each invocation of the instance:
+#   R_TRIG: Q := CLK AND NOT M; M := CLK          (M starts FALSE)
+#   F_TRIG: Q := NOT CLK AND NOT M; M := NOT CLK  (M starts FALSE)
+# x is TRUE at cycle 0, so F_TRIG's first-evaluation case (CLK FALSE at
+# the first call, edge/f_trig) does not arise here.
+# cycle 0: x=T  r: T AND NOT F = T, nr=1    f: F                 (M_f=F)
+# cycle 1: x=T  r: F                        f: F
+# cycle 2: x=F  r: F                        f: T AND NOT F = T, nf=1 (M_f=T)
+# cycle 3: x=F  r: F                        f: T AND NOT T = F
+# cycle 4: x=T  r: T, nr=2                  f: F                 (M_f=F)
+# cycle 5: x=F  r: F                        f: T, nf=2
+# cycle 6: x=T  r: T, nr=3                  f: F
+period_ms: 100
+program: main
+inputs: x
+outputs: rq fq nr nf
+status: conformant
+reference: IEC 61131-3 ed.2 2.5.2.2 (edge-detecting inputs, R_EDGE F_EDGE); ed.3 to locate
+---
+0 x=TRUE  => rq=TRUE  fq=FALSE nr=1 nf=0
+1 x=TRUE  => rq=FALSE fq=FALSE nr=1 nf=0
+2 x=FALSE => rq=FALSE fq=TRUE  nr=1 nf=1
+3 x=FALSE => rq=FALSE fq=FALSE nr=1 nf=1
+4 x=TRUE  => rq=TRUE  fq=FALSE nr=2 nf=1
+5 x=FALSE => rq=FALSE fq=TRUE  nr=2 nf=2
+6 x=TRUE  => rq=TRUE  fq=FALSE nr=3 nf=2

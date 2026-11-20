@@ -334,6 +334,11 @@ class SiteKit(unittest.TestCase):
         for w in words:
             self.assertIn(w.lower(), tones, w)
 
+    def test_verification_sheets_are_published(self):
+        page = (self.c / "docs/verification.md").read_text()
+        self.assertIn("V-01", page)
+        self.assertIn("notes/verification.md", page)
+
     def test_tests_and_runtimes_are_under_docs(self):
         docs = (self.c / "docs/_index.md").read_text()
         self.assertIn('relref "/tests"', docs)

@@ -792,7 +792,8 @@ flowchart LR
 
     def docs(self):
         pages = {"guide": ("docs/guide.md", "Guide"), "spec": ("SPEC.md", "Trace format"),
-                 "upstream-drafts": ("upstream-bugs.md", "Upstream drafts"), "changelog": ("CHANGELOG.md", "Changelog")}
+                 "upstream-drafts": ("upstream-bugs.md", "Upstream drafts"), "verification": ("notes/verification.md", "Verification"),
+                 "changelog": ("CHANGELOG.md", "Changelog")}
         for i, p in enumerate(sorted(self.root.glob("notes/fuzz-*.md"))):
             pages[p.stem] = (p.relative_to(self.root).as_posix(), "Fuzz " + p.stem[5:])
         for p in sorted(self.root.glob("notes/trace-audit-*.md")):

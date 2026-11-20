@@ -43,6 +43,17 @@ Notable changes are recorded here following Keep a Changelog.
   on the home page, in the footer, `llms.txt`, the README and
   `CITATION.cff`. `CONTRIBUTING.md` asks every contributor for their rows.
   Johannes Pettersson's rows wait for his confirmation (#27).
+- Eight tests: `pou/fb_edge_inputs` (R_EDGE and F_EDGE inputs),
+  `ops/compare_extensible` (GT, GE, EQ, LE, LT with three inputs),
+  `ops/mod_negative` (integer division and MOD on negative operands),
+  `data/long_types` (LINT, ULINT, LWORD), `ops/bcd_conversions`,
+  `ops/move`, `data/enum_qualified` (type-qualified enumerated values) and
+  `data/var_constant`. Their traces are AI-derived and not checked against
+  the standard's text.
+- `notes/verification.md`: sheets through which anyone with a licensed copy
+  of the standard can check the traces, without quoting its text. It covers
+  the eight new tests, one open question and the twelve conformant traces
+  that three or more runtimes fail. Rendered under Docs on the site.
 - Site: the state of every cited upstream issue and pull request (open, closed,
   merged, not planned), from the snapshot `notes/upstream-status.tsv` that
   `tools/site/upstream_status.py` refreshes. It is shown on the Upstream page, on
