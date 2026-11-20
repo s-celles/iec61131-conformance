@@ -17,7 +17,12 @@
 # "Learn more" URL carries by <file>, since compiler diagnostics quote them;
 # the 4diac harness's temporary dirs, FORTE path and the Eclipse log
 # timestamps (!ENTRY lines) are masked too, as are the linker's temporary
-# object (/tmp/ccXXXXXX.o) and code offsets in an undefined-reference error.
+# object (/tmp/ccXXXXXX.o) and code offsets in an undefined-reference error,
+# and the thread id and heap addresses a Rust compiler panic prints.
+# The 4diac IDE's "[fordiac.exportProjectFBs] ..." detail lines are left out
+# of the comparison (they stay in the evidence): when a project has several
+# types, the IDE stops at the first file it meets, and that order varies
+# from run to run, while the verdict does not.
 #
 # Usage: check-evidence.sh EVIDENCE_FILE -- COMMAND...
 set -uo pipefail
@@ -30,7 +35,7 @@ name=$(basename "$evidence")
 cp "$out" "${RUNNER_TEMP:-/tmp}/$name"
 summary=$(grep -E '^[0-9]+ tests:' "$out" || echo "no summary line")
 root=$(pwd -P)
-normalise() { sed -E -e $'s/\x1b\\[[0-9;]*m//g' -e 's#/tmp/[A-Za-z0-9_.-]+/#<tmpdir>/#g' -e 's#/tmp/cc[A-Za-z0-9]+\.o#<obj>#g' -e 's#\(\.text\+0x[0-9a-f]+\)#(.text+<off>)#g' -e "s#$root/#<root>/#g" -e "s#${RUNNER_TEMP:-/nonexistent}/#<tmp>/#g" -e 's#<tmp>/strucpp/#<strucpp>/#g'  -e 's/&file=[^&]*&line=[0-9]+/\&file=<file>\&line=<n>/g' -e 's#/private/var/folders/[^ ]*/T/4diac-[A-Za-z0-9_]+/#<tmpdir>/#g' -e 's#/var/folders/[^ ]*/T/4diac-[A-Za-z0-9_]+/#<tmpdir>/#g' -e 's#<tmp>/4diac-forte/#<forte>/#g' -e 's#<tmpdir>/4diac-[A-Za-z0-9_]+/#<tmpdir>/#g' -e 's/^([[:space:]]*!(ENTRY|SESSION) .*) [0-9]{4}-[0-9]{2}-[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2}\.[0-9]+/\1 <timestamp>/' "$1"; }
+normalise() { sed -E -e $'s/\x1b\\[[0-9;]*m//g' -e 's#/tmp/[A-Za-z0-9_.-]+/#<tmpdir>/#g' -e 's#/tmp/cc[A-Za-z0-9]+\.o#<obj>#g' -e 's#\(\.text\+0x[0-9a-f]+\)#(.text+<off>)#g' -e "s#thread '([^']+)' \\([0-9]+\\) panicked#thread '\\1' (<tid>) panicked#" -e 's#address: 0x[0-9a-f]+#address: <addr>#g' -e "s#$root/#<root>/#g" -e "s#${RUNNER_TEMP:-/nonexistent}/#<tmp>/#g" -e 's#<tmp>/strucpp/#<strucpp>/#g'  -e 's/&file=[^&]*&line=[0-9]+/\&file=<file>\&line=<n>/g' -e 's#/private/var/folders/[^ ]*/T/4diac-[A-Za-z0-9_]+/#<tmpdir>/#g' -e 's#/var/folders/[^ ]*/T/4diac-[A-Za-z0-9_]+/#<tmpdir>/#g' -e 's#<tmp>/4diac-forte/#<forte>/#g' -e 's#<tmpdir>/4diac-[A-Za-z0-9_]+/#<tmpdir>/#g' -e 's/^([[:space:]]*!(ENTRY|SESSION) .*) [0-9]{4}-[0-9]{2}-[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2}\.[0-9]+/\1 <timestamp>/' "$1" | sed -E '/^[[:space:]]*\[fordiac\.exportProjectFBs\] /d'; }
 if diff -u --label "$evidence" --label "harness output" <(normalise "$evidence") <(normalise "$out"); then
   echo "### $name: matches evidence — $summary" >> "${GITHUB_STEP_SUMMARY:-/dev/null}"
 else
