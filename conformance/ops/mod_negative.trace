@@ -1,0 +1,28 @@
+# Integer division and MOD on negative operands, INT and DINT.
+#
+# Derivation (AI-derived, not checked against the text; verification
+# pending, notes/verification.md V-03): integer division truncates toward
+# zero; MOD(IN1, IN2) = IN1 - (IN1 / IN2) * IN2 for IN2 <> 0. No record
+# divides by zero (undefined/div_zero covers it). The DINT inputs ad, bd
+# carry the same values as a, b.
+# cycle 0:  7 /  2 =  3,  7 MOD  2 =  7 - 6    =  1
+# cycle 1: -7 /  2 = -3, -7 MOD  2 = -7 - (-6) = -1
+# cycle 2:  7 / -2 = -3,  7 MOD -2 =  7 - 6    =  1
+# cycle 3: -7 / -2 =  3, -7 MOD -2 = -7 - (-6) = -1
+# cycle 4: -6 /  3 = -2, -6 MOD  3 = 0
+# cycle 5: -1 /  5 =  0, -1 MOD  5 = -1
+# A floor division gives -4 and 1 on cycle 1, -4 and -1 on cycle 2, and
+# -1 and 4 on cycle 5.
+period_ms: 100
+program: main
+inputs: a b ad bd
+outputs: q m qd md
+status: conformant
+reference: IEC 61131-3 ed.3 table 29 (DIV, MOD); ed.2 table 24
+---
+0 a=7  b=2  ad=7  bd=2  => q=3  m=1  qd=3  md=1
+1 a=-7 b=2  ad=-7 bd=2  => q=-3 m=-1 qd=-3 md=-1
+2 a=7  b=-2 ad=7  bd=-2 => q=-3 m=1  qd=-3 md=1
+3 a=-7 b=-2 ad=-7 bd=-2 => q=3  m=-1 qd=3  md=-1
+4 a=-6 b=3  ad=-6 bd=3  => q=-2 m=0  qd=-2 md=0
+5 a=-1 b=5  ad=-1 bd=5  => q=0  m=-1 qd=0  md=-1

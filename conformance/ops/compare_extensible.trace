@@ -1,0 +1,26 @@
+# Comparison functions with three inputs.
+#
+# Derivation (AI-derived, not checked against the text; verification
+# pending, notes/verification.md V-02): the comparison functions other
+# than NE are extensible, and with inputs IN1 ... INn the result is
+# (IN1 op IN2) AND (IN2 op IN3) AND ... AND (INn-1 op INn).
+#   q1 GT(3, 2, 1): 3>2 AND 2>1 = TRUE
+#   q2 GT(3, 1, 2): 3>1 AND 1>2 = FALSE
+#   q3 GE(3, 3, 1): 3>=3 AND 3>=1 = TRUE
+#   q4 EQ(5, 5, 5): TRUE
+#   q5 EQ(5, 5, 6): 5=5 AND 5=6 = FALSE
+#   q6 LT(1, 2, 3): TRUE
+#   q7 LE(1, 3, 2): 1<=3 AND 3<=2 = FALSE
+#   q8 GT(4, 1, 3): 4>1 AND 1>3 = FALSE
+# An implementation that compares IN1 with each other input gives TRUE
+# for q2 and q8; one that keeps only the first two inputs gives TRUE for
+# q2, q5, q7 and q8.
+period_ms: 100
+program: main
+inputs:
+outputs: q1 q2 q3 q4 q5 q6 q7 q8
+status: conformant
+reference: IEC 61131-3 ed.3 table 28 (comparison functions, extensible); ed.2 table 28
+---
+0 => q1=TRUE q2=FALSE q3=TRUE q4=TRUE q5=FALSE q6=TRUE q7=FALSE q8=FALSE
+1 => q1=TRUE q2=FALSE q3=TRUE q4=TRUE q5=FALSE q6=TRUE q7=FALSE q8=FALSE

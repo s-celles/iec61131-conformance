@@ -1,0 +1,23 @@
+# LINT, ULINT and LWORD.
+#
+# Derivation (AI-derived, not checked against the text; verification
+# pending, notes/verification.md V-04): LINT is a 64-bit signed integer
+# (-2^63 .. 2^63-1), ULINT 64-bit unsigned (0 .. 2^64-1), LWORD a 64-bit
+# bit string; a conversion from a bit string to a shorter one keeps the
+# least significant bits.
+#   max_ok: 2^63-1 > 2^31-1 and 2^63-1 - 1 = 2^63-2: TRUE
+#   min_ok: small = -(2^63-1) - 1 = -2^63 < 0 and -2^63 + 2^63-1 = -1: TRUE
+#   u_ok:   2^64-1 > 2^63-1 and 2^64-1 - 1 = 2^64-2: TRUE
+#   p_div:  4000000000 * 3 = 12000000000, / 1000 = 12000000 (fits DINT)
+#   w_hi, w_lo: 16#01234567, 16#89ABCDEF
+#   r = ROL(16#8000000000000001, 1) = 16#0000000000000003: r_hi 0, r_lo 3
+# No inputs; two cycles.
+period_ms: 100
+program: main
+inputs:
+outputs: max_ok min_ok u_ok p_div w_hi w_lo r_hi r_lo
+status: conformant
+reference: IEC 61131-3 ed.3 table 10 (elementary data types), table 22 (conversion), table 26 (shift, rotate); ed.2 table 10
+---
+0 => max_ok=TRUE min_ok=TRUE u_ok=TRUE p_div=12000000 w_hi=16#01234567 w_lo=16#89ABCDEF r_hi=16#00000000 r_lo=16#00000003
+1 => max_ok=TRUE min_ok=TRUE u_ok=TRUE p_div=12000000 w_hi=16#01234567 w_lo=16#89ABCDEF r_hi=16#00000000 r_lo=16#00000003
