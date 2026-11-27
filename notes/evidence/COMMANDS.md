@@ -163,3 +163,15 @@ Only the blocks of seven tests and the summary line changed:
 to PASS (45f5f27), and `ops/time_mul` ERROR to FAIL (it builds now, and
 shows the `__time_mul` overflow of comparison item 15). The OpenPLC fork's
 pin and evidence are unchanged.
+
+## Batch 1 of 2026-11-20
+
+Eight tests were added (`pou/fb_edge_inputs`, `ops/compare_extensible`,
+`ops/mod_negative`, `data/long_types`, `ops/bcd_conversions`, `ops/move`,
+`data/enum_qualified`, `data/var_constant`). Their blocks come from the CI
+run of pull request #26 at the pinned commits of all eight runtimes (run
+44689825668, the CI jobs' own commands above). They were normalised as
+`check-evidence.sh` does (ANSI codes stripped, the runner's checkout and
+temporary directory written `<root>` and `<tmp>`, `<tmpdir>`, `<forte>`)
+and inserted in each file in test order, with the summary line recounted.
+The blocks already recorded are unchanged.

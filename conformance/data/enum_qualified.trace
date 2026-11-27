@@ -1,0 +1,21 @@
+# Type-qualified enumerated values.
+#
+# Derivation (AI-derived, not checked against the text; verification
+# pending, notes/verification.md V-07): the same value name may belong to
+# several enumerated types; Type#name names the value of that type. The
+# declared initial values apply: c = Color#blue, l = Light#green.
+# cycle 0: pick=0 -> unchanged: ccode=3 lcode=2 is_green=FALSE
+# cycle 1: pick=1 -> Color#green, Light#red: ccode=2 lcode=1 is_green=TRUE
+# cycle 2: pick=0 -> unchanged:  ccode=2 lcode=1 is_green=TRUE
+# cycle 3: pick=2 -> Color#red, Light#off: ccode=1 lcode=0 is_green=FALSE
+period_ms: 100
+program: main
+inputs: pick
+outputs: ccode lcode is_green
+status: conformant
+reference: IEC 61131-3 ed.3 6.4.4.1 (enumerated data types); ed.2 2.3.3.1
+---
+0 pick=0 => ccode=3 lcode=2 is_green=FALSE
+1 pick=1 => ccode=2 lcode=1 is_green=TRUE
+2 pick=0 => ccode=2 lcode=1 is_green=TRUE
+3 pick=2 => ccode=1 lcode=0 is_green=FALSE

@@ -288,6 +288,23 @@ PASS    conformance/data/defaults.st
 4 pick=0 => code=1 is_green=FALSE same=FALSE
 5 pick=7 => code=1 is_green=FALSE same=TRUE
 PASS    conformance/data/enum.st
+### conformance/data/enum_qualified.st
+FAIL    conformance/data/enum_qualified.st
+        ironplcc failed to compile the program:
+error[P0002]: Syntax error
+   ┌─ <root>/conformance/data/enum_qualified.st:25:15
+   │
+25 │     c := Color#green;
+   │               ^ Expected ' ' (space) | '\t' (tab) | '(' | '(* ... *)' (comment) | '*' | '**' | '+' | '-' | '.' | '/' | ';' | '<' | '<=' | '<>' | '=' | '>' | '>=' | 'AND' | '&' | 'AND_THEN' | 'MOD' | 'OR' | 'OR_ELSE' | 'XOR' | '\n' (new line) | '^' | '{ ... }' (pragma). Found text '#' that matched token '#'
+   │
+   = Learn more: https://www.ironplc.com/reference/compiler/problems/P0002.html?version=0.252.0&channel=cli
+
+Error: "Compile failed with 1 problem(s)"
+
+### conformance/data/long_types.st
+0 => max_ok=TRUE min_ok=TRUE u_ok=TRUE p_div=12000000 w_hi=16#01234567 w_lo=16#89ABCDEF r_hi=16#00000000 r_lo=16#00000003
+1 => max_ok=TRUE min_ok=TRUE u_ok=TRUE p_div=12000000 w_hi=16#01234567 w_lo=16#89ABCDEF r_hi=16#00000000 r_lo=16#00000003
+PASS    conformance/data/long_types.st
 ### conformance/data/struct_element_copy.st
 FAIL    conformance/data/struct_element_copy.st
         ironplcc failed to compile the program:
@@ -319,6 +336,11 @@ error[P9999]: Capability is not implemented (yet!)
 
 Error: "Compile failed with 1 problem(s)"
 
+### conformance/data/var_constant.st
+0 x=1 => sum=10 scaled=1000 limit_hit=FALSE period=T#2000ms
+1 x=2 => sum=10 scaled=2000 limit_hit=TRUE period=T#2000ms
+2 x=-3 => sum=10 scaled=-3000 limit_hit=FALSE period=T#2000ms
+PASS    conformance/data/var_constant.st
 ### conformance/edge/f_trig.st
 0 clk=FALSE => q=FALSE
 1 clk=TRUE => q=FALSE
@@ -364,6 +386,43 @@ PASS    conformance/edge/r_trig.st
 9 s=TRUE => q_sr=TRUE q_rs=TRUE
 10 r=TRUE => q_sr=TRUE q_rs=FALSE
 PASS    conformance/edge/sr_rs.st
+### conformance/ops/bcd_conversions.st
+FAIL    conformance/ops/bcd_conversions.st
+        ironplcc failed to compile the program:
+error[P4017]: Function is not declared (function=UINT_TO_BCD_WORD)
+   ┌─ <root>/conformance/ops/bcd_conversions.st:16:13
+   │
+16 │   to_bcd := UINT_TO_BCD_WORD(n);
+   │             ^^^^^^^^^^^^^^^^ Function call
+   │
+   = Learn more: https://www.ironplc.com/reference/compiler/problems/P4017.html?version=0.252.0&channel=cli
+
+error[P4017]: Function is not declared (function=WORD_BCD_TO_UINT)
+   ┌─ <root>/conformance/ops/bcd_conversions.st:17:15
+   │
+17 │   from_bcd := WORD_BCD_TO_UINT(w);
+   │               ^^^^^^^^^^^^^^^^ Function call
+   │
+   = Learn more: https://www.ironplc.com/reference/compiler/problems/P4017.html?version=0.252.0&channel=cli
+
+error[P4017]: Function is not declared (function=WORD_BCD_TO_UINT)
+   ┌─ <root>/conformance/ops/bcd_conversions.st:18:17
+   │
+18 │   round_trip := WORD_BCD_TO_UINT(UINT_TO_BCD_WORD(n));
+   │                 ^^^^^^^^^^^^^^^^ Function call
+   │
+   = Learn more: https://www.ironplc.com/reference/compiler/problems/P4017.html?version=0.252.0&channel=cli
+
+error[P4017]: Function is not declared (function=UINT_TO_BCD_WORD)
+   ┌─ <root>/conformance/ops/bcd_conversions.st:18:34
+   │
+18 │   round_trip := WORD_BCD_TO_UINT(UINT_TO_BCD_WORD(n));
+   │                                  ^^^^^^^^^^^^^^^^ Function call
+   │
+   = Learn more: https://www.ironplc.com/reference/compiler/problems/P4017.html?version=0.252.0&channel=cli
+
+Error: "Compile failed with 4 problem(s)"
+
 ### conformance/ops/bit_expr_operands.st
 0 a=16#3C b=16#0F w=16#1234 n=0 => n_xor=16#CC n_and=16#FFCB s_or=16#3F r_xor=16#33 r_w=16#EDCB same=TRUE
 1 a=16#F0 b=16#F0 w=16#0000 n=4 => n_xor=16#FF n_and=16#FFFF s_or=16#00 r_xor=16#FF r_w=16#FFFF same=TRUE
@@ -438,6 +497,75 @@ Error: "Compile failed with 7 problem(s)"
 3 b=16#0F m=16#0F w=16#0001 d=16#80000000 n=15 => o_and=16#0F o_or=16#0F o_xor=16#00 o_not=16#F0 w_shl=16#8000 w_shr=16#0000 w_rol=16#8000 w_ror=16#0002 d_shl=16#00000000 d_shr=16#00010000 d_rol=16#00004000 d_ror=16#00010000
 4 b=16#00 m=16#00 w=16#1234 d=16#12345678 n=16 => o_and=16#00 o_or=16#00 o_xor=16#00 o_not=16#FF w_shl=16#0000 w_shr=16#0000 w_rol=16#1234 w_ror=16#1234 d_shl=16#56780000 d_shr=16#00001234 d_rol=16#56781234 d_ror=16#56781234
 PASS    conformance/ops/bit_ops.st
+### conformance/ops/compare_extensible.st
+FAIL    conformance/ops/compare_extensible.st
+        ironplcc failed to compile the program:
+error[P4018]: Function call has wrong number of arguments (function=GT, expected=2, actual=3)
+   ┌─ <root>/conformance/ops/compare_extensible.st:25:9
+   │
+25 │   q1 := GT(a, b, c);
+   │         ^^ Function call
+   │
+   = Learn more: https://www.ironplc.com/reference/compiler/problems/P4018.html?version=0.252.0&channel=cli
+
+error[P4018]: Function call has wrong number of arguments (function=GT, expected=2, actual=3)
+   ┌─ <root>/conformance/ops/compare_extensible.st:26:9
+   │
+26 │   q2 := GT(a, c, b);
+   │         ^^ Function call
+   │
+   = Learn more: https://www.ironplc.com/reference/compiler/problems/P4018.html?version=0.252.0&channel=cli
+
+error[P4018]: Function call has wrong number of arguments (function=GE, expected=2, actual=3)
+   ┌─ <root>/conformance/ops/compare_extensible.st:27:9
+   │
+27 │   q3 := GE(a, a, c);
+   │         ^^ Function call
+   │
+   = Learn more: https://www.ironplc.com/reference/compiler/problems/P4018.html?version=0.252.0&channel=cli
+
+error[P4018]: Function call has wrong number of arguments (function=EQ, expected=2, actual=3)
+   ┌─ <root>/conformance/ops/compare_extensible.st:28:9
+   │
+28 │   q4 := EQ(e, e, e);
+   │         ^^ Function call
+   │
+   = Learn more: https://www.ironplc.com/reference/compiler/problems/P4018.html?version=0.252.0&channel=cli
+
+error[P4018]: Function call has wrong number of arguments (function=EQ, expected=2, actual=3)
+   ┌─ <root>/conformance/ops/compare_extensible.st:29:9
+   │
+29 │   q5 := EQ(e, e, f);
+   │         ^^ Function call
+   │
+   = Learn more: https://www.ironplc.com/reference/compiler/problems/P4018.html?version=0.252.0&channel=cli
+
+error[P4018]: Function call has wrong number of arguments (function=LT, expected=2, actual=3)
+   ┌─ <root>/conformance/ops/compare_extensible.st:30:9
+   │
+30 │   q6 := LT(c, b, a);
+   │         ^^ Function call
+   │
+   = Learn more: https://www.ironplc.com/reference/compiler/problems/P4018.html?version=0.252.0&channel=cli
+
+error[P4018]: Function call has wrong number of arguments (function=LE, expected=2, actual=3)
+   ┌─ <root>/conformance/ops/compare_extensible.st:31:9
+   │
+31 │   q7 := LE(c, a, b);
+   │         ^^ Function call
+   │
+   = Learn more: https://www.ironplc.com/reference/compiler/problems/P4018.html?version=0.252.0&channel=cli
+
+error[P4018]: Function call has wrong number of arguments (function=GT, expected=2, actual=3)
+   ┌─ <root>/conformance/ops/compare_extensible.st:32:9
+   │
+32 │   q8 := GT(d, c, a);
+   │         ^^ Function call
+   │
+   = Learn more: https://www.ironplc.com/reference/compiler/problems/P4018.html?version=0.252.0&channel=cli
+
+Error: "Compile failed with 8 problem(s)"
+
 ### conformance/ops/conversions.st
 0 i=100 ip=100 d=-1000 dp=1000 u=30000 ub=30000 => i2d=100 i2u=100 d2i=-1000 d2u=1000 u2i=30000 u2d=30000
 1 i=0 ip=0 d=0 dp=0 u=0 ub=0 => i2d=0 i2u=0 d2i=0 d2u=0 u2i=0 u2d=0
@@ -476,6 +604,18 @@ PASS    conformance/ops/lreal_precision.st
 1 a=-5 b=2 => max_first=2 max_second=2 max_last=2 min_first=-15 min_second=-15 min_last=-15
 2 a=8 b=-3 => max_first=16 max_second=16 max_last=16 min_first=-2 min_second=-2 min_last=-2
 PASS    conformance/ops/minmax_ext_expr.st
+### conformance/ops/mod_negative.st
+0 a=7 b=2 ad=7 bd=2 => q=3 m=1 qd=3 md=1
+1 a=-7 b=2 ad=-7 bd=2 => q=-3 m=-1 qd=-3 md=-1
+2 a=7 b=-2 ad=7 bd=-2 => q=-3 m=1 qd=-3 md=1
+3 a=-7 b=-2 ad=-7 bd=-2 => q=3 m=-1 qd=3 md=-1
+4 a=-6 b=3 ad=-6 bd=3 => q=-2 m=0 qd=-2 md=0
+5 a=-1 b=5 ad=-1 bd=5 => q=0 m=-1 qd=0 md=-1
+PASS    conformance/ops/mod_negative.st
+### conformance/ops/move.st
+0 i=4 b=FALSE k=4.0 => mi=4 mr=10 mb=TRUE mt=T#1500ms mw=16#BEEF ms='move' mx=20
+1 i=-3 b=TRUE k=-3.0 => mi=-3 mr=-7.5 mb=FALSE mt=T#1500ms mw=16#BEEF ms='move' mx=20
+PASS    conformance/ops/move.st
 ### conformance/ops/mux_nested_selector.st
 0 k=0 => r=20 u=30
 1 k=1 => r=30 u=20
@@ -675,6 +815,45 @@ PASS    conformance/ops/time_mul.st
 5 r=-0.99 => t=0
 6 r=100.0 => t=100
 PASS    conformance/ops/trunc.st
+### conformance/pou/fb_edge_inputs.st
+FAIL    conformance/pou/fb_edge_inputs.st
+        ironplcc failed to compile the program:
+error[P4002]: Function invocation assigns named (formal) input that is not defined (invocation=EDGES, undefined input=r)
+   ┌─ <root>/conformance/pou/fb_edge_inputs.st:41:3
+   │  
+ 7 │ ╭ FUNCTION_BLOCK EDGES
+ 8 │ │   VAR_INPUT
+ 9 │ │     r : BOOL R_EDGE;
+10 │ │     f : BOOL F_EDGE;
+   · │
+25 │ │   END_IF;
+26 │ │ END_FUNCTION_BLOCK
+   │ ╰──────────────────' Function block declaration
+   ·  
+41 │     e(r := x, f := x);
+   │     ^^^^^^^^^^^^^^^^^ Function block invocation
+   │  
+   = Learn more: https://www.ironplc.com/reference/compiler/problems/P4002.html?version=0.252.0&channel=cli
+
+error[P4002]: Function invocation assigns named (formal) input that is not defined (invocation=EDGES, undefined input=f)
+   ┌─ <root>/conformance/pou/fb_edge_inputs.st:41:3
+   │  
+ 7 │ ╭ FUNCTION_BLOCK EDGES
+ 8 │ │   VAR_INPUT
+ 9 │ │     r : BOOL R_EDGE;
+10 │ │     f : BOOL F_EDGE;
+   · │
+25 │ │   END_IF;
+26 │ │ END_FUNCTION_BLOCK
+   │ ╰──────────────────' Function block declaration
+   ·  
+41 │     e(r := x, f := x);
+   │     ^^^^^^^^^^^^^^^^^ Function block invocation
+   │  
+   = Learn more: https://www.ironplc.com/reference/compiler/problems/P4002.html?version=0.252.0&channel=cli
+
+Error: "Compile failed with 2 problem(s)"
+
 ### conformance/pou/fb_en_eno.st
 FAIL    conformance/pou/fb_en_eno.st
         ironplcc failed to compile the program:
@@ -1216,5 +1395,5 @@ SAME    conformance/undefined/timer_pt_zero.st (implementation-defined)
 12 in=FALSE => q=FALSE et=T#0ms
 SAME    conformance/undefined/ton_pt_change.st (implementation-defined)
 
-109 tests: 64 pass, 27 fail, 17 same, 1 differs, 0 error
+117 tests: 68 pass, 31 fail, 17 same, 1 differs, 0 error
 exit 1

@@ -1,0 +1,20 @@
+# Constants declared with VAR CONSTANT.
+#
+# Derivation (AI-derived, not checked against the text; verification
+# pending, notes/verification.md V-08): a variable declared CONSTANT has
+# its declared value and may be read wherever a variable of its type may
+# be, here in an expression, a comparison, a FOR bound and an assignment.
+# sum = 1 + 2 + 3 + 4 = 10 and period = T#2s on every cycle.
+# cycle 0: x=1  -> scaled=1000,  1000 >= 2000: FALSE
+# cycle 1: x=2  -> scaled=2000,  TRUE
+# cycle 2: x=-3 -> scaled=-3000, FALSE
+period_ms: 100
+program: main
+inputs: x
+outputs: sum scaled limit_hit period
+status: conformant
+reference: IEC 61131-3 ed.2 2.4.3 (CONSTANT); ed.3 to locate
+---
+0 x=1  => sum=10 scaled=1000  limit_hit=FALSE period=T#2000ms
+1 x=2  => sum=10 scaled=2000  limit_hit=TRUE  period=T#2000ms
+2 x=-3 => sum=10 scaled=-3000 limit_hit=FALSE period=T#2000ms

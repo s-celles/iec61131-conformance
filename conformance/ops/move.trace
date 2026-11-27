@@ -1,0 +1,18 @@
+# MOVE on several types, with an expression and a formal argument.
+#
+# Derivation (AI-derived, not checked against the text; verification
+# pending, notes/verification.md V-06): MOVE(IN) = IN, of the type of IN
+# (ANY); its input is named IN.
+# cycle 0: i=4  b=FALSE k=4.0  -> mi=4,  mr=2.5*4=10.0,  mb=TRUE
+# cycle 1: i=-3 b=TRUE  k=-3.0 -> mi=-3, mr=2.5*-3=-7.5, mb=FALSE
+# mt, mw, ms and mx do not depend on the inputs: T#1500ms, 16#BEEF,
+# 'move', arr[1] = 20.
+period_ms: 100
+program: main
+inputs: i b k
+outputs: mi mr mb mt mw ms mx
+status: conformant
+reference: IEC 61131-3 ed.3 table 22 (MOVE); ed.2 table 22
+---
+0 i=4  b=FALSE k=4.0  => mi=4  mr=10.0 mb=TRUE  mt=T#1500ms mw=16#BEEF ms='move' mx=20
+1 i=-3 b=TRUE  k=-3.0 => mi=-3 mr=-7.5 mb=FALSE mt=T#1500ms mw=16#BEEF ms='move' mx=20
