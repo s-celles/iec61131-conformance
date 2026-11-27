@@ -2,6 +2,7 @@
 """Checks for the site generator. Run with python3 -I tools/site/test_sitegen.py."""
 import pathlib
 import re
+import shutil
 import sys
 import tempfile
 import unittest
@@ -10,6 +11,14 @@ sys.path.insert(0, str(pathlib.Path(__file__).resolve().parent))
 import sitegen
 
 ROOT = pathlib.Path(__file__).resolve().parents[2]
+
+
+def scratch(case):
+    """A temporary directory removed when the test (or, from setUpClass, the
+    class) ends: the generator writes a whole site, so leaks fill /tmp."""
+    d = pathlib.Path(tempfile.mkdtemp(prefix="sitegen-"))
+    (case.addClassCleanup if isinstance(case, type) else case.addCleanup)(shutil.rmtree, d, True)
+    return d
 
 EVIDENCE = """### conformance/ops/a.st
 0 => x=1
@@ -86,9 +95,22 @@ class Parsing(unittest.TestCase):
         self.assertEqual(sitegen.description(st), "MUX whose selector is a MUX call.")
 
 
+class Scratch(unittest.TestCase):
+    def test_scratch_directories_are_removed(self):
+        seen = []
+
+        class Inner(unittest.TestCase):
+            def test(inner):
+                seen.append(scratch(inner))
+                (seen[0] / "x").write_text("x")
+        unittest.TextTestRunner(stream=open("/dev/null", "w")).run(unittest.defaultTestLoader.loadTestsFromTestCase(Inner))
+        self.assertEqual(len(seen), 1)
+        self.assertFalse(seen[0].exists())
+
+
 class Generation(unittest.TestCase):
     def generate(self):
-        out = pathlib.Path(tempfile.mkdtemp(prefix="sitegen-"))
+        out = scratch(self)
         sitegen.generate(ROOT, out)
         return out / "content"
 
@@ -163,7 +185,7 @@ class Findings(unittest.TestCase):
         self.assertEqual(f["matiec-11"]["status"], "fixed")
 
     def test_pages(self):
-        out = pathlib.Path(tempfile.mkdtemp(prefix="sitegen-"))
+        out = scratch(self)
         sitegen.generate(ROOT, out)
         c = out / "content"
         index = (c / "findings" / "_index.md").read_text()
@@ -179,7 +201,7 @@ class Findings(unittest.TestCase):
 
 class Wording(unittest.TestCase):
     def test_disclaimer_and_provenance(self):
-        out = pathlib.Path(tempfile.mkdtemp(prefix="sitegen-"))
+        out = scratch(self)
         sitegen.generate(ROOT, out)
         home = (out / "content" / "_index.md").read_text()
         self.assertIn("non-commercial", home)
@@ -194,7 +216,7 @@ class Wording(unittest.TestCase):
 
 class Properties(unittest.TestCase):
     def test_block_tests_show_the_property_check(self):
-        out = pathlib.Path(tempfile.mkdtemp(prefix="sitegen-"))
+        out = scratch(self)
         sitegen.generate(ROOT, out)
         ton = (out / "content" / "tests" / "timers" / "ton.md").read_text()
         self.assertIn("## Properties", ton)
@@ -211,7 +233,7 @@ class History(unittest.TestCase):
         self.assertEqual(sitegen.history_totals(old), (51, {"IronPLC": 38, "matiec": 43, "OpenPLC's matiec": 40}))
 
     def test_history_page(self):
-        out = pathlib.Path(tempfile.mkdtemp(prefix="sitegen-"))
+        out = scratch(self)
         sitegen.generate(ROOT, out)
         page = (out / "content" / "history.md").read_text()
         self.assertIn("<svg", page)
@@ -230,7 +252,7 @@ class History(unittest.TestCase):
 class Quality(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        cls.out = pathlib.Path(tempfile.mkdtemp(prefix="sitegen-"))
+        cls.out = scratch(cls)
         sitegen.generate(ROOT, cls.out)
         cls.c = cls.out / "content"
 
@@ -277,7 +299,7 @@ class SiteKit(unittest.TestCase):
     check_site.py on the built site, these check the generator's side."""
     @classmethod
     def setUpClass(cls):
-        cls.out = pathlib.Path(tempfile.mkdtemp(prefix="sitegen-"))
+        cls.out = scratch(cls)
         sitegen.generate(ROOT, cls.out)
         cls.c = cls.out / "content"
         cls.hugo = (ROOT / "site/hugo.yaml").read_text()
@@ -348,7 +370,7 @@ class Disclosure(unittest.TestCase):
     is the only source; the page and the one-line summaries are generated."""
     @classmethod
     def setUpClass(cls):
-        cls.out = pathlib.Path(tempfile.mkdtemp(prefix="sitegen-"))
+        cls.out = scratch(cls)
         sitegen.generate(ROOT, cls.out)
         cls.c = cls.out / "content"
         cls.rows = sitegen.disclosures(ROOT)

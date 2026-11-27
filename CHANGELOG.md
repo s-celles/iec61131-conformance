@@ -160,6 +160,9 @@ Notable changes are recorded here following Keep a Changelog.
 
 ### Fixed
 
+- `tools/site/test_sitegen.py` removes the temporary sites it generates;
+  each run left about nine `sitegen-*` directories of a whole site in
+  `/tmp`.
 - Site: a link anchor such as `notes/findings.md#28` was counted as an upstream
   issue.
 - `pou/fb_method` declares its methods PUBLIC: without an access specifier a
